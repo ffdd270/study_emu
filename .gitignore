@@ -30,3 +30,4 @@
 *.exe
 *.out
 *.app
+chip8/cmake-build-debug-visual-studio
