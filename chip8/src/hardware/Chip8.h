@@ -13,8 +13,12 @@ class Chip8
 public:
 	Chip8();
 
+	WORD GetNextOpcode();
+
 private:
 	void CPUReset();
+
+
 
 
 	// CHIP 8 내부 메모리 & CPU등 설정.
@@ -30,10 +34,11 @@ private:
 private:
 	BYTE mGameMemory[0xFFF]; // 메모리 : 0xFFF 바이트.
 	BYTE mRegisters[16]; // 16개의 레지스터들.
-	WORD mAddressI; // 레지스터 I의 16비트 주소.
+	WORD mAddressIndex; // 레지스터 I의 16비트 주소.
 	WORD mProgramCounter; // 16비트 프로그램 카운터.
 
-	std::vector<WORD> mStack; // 16비트 변수들 스택.
+	// 함수 호출시 리턴 위치를 알기 위해 위치를 기록해 놓는 콜 스택.
+	std::vector<WORD> mStack;
 };
 
 
