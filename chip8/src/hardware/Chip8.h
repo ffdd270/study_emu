@@ -13,7 +13,25 @@ class Chip8
 public:
 	Chip8();
 
-	WORD GetNextOpcode();
+	WORD getNextOpCode();
+
+	void nextStep();
+
+	/*
+	 * OP Code는 4자리다. 0xFFFF 형식으로 되어 있기도 하고..
+	 * 그래서 최대수의 AND 연산으로 각 자리수를 구해줄 수 있다. 이를태면..
+	 * 0xABCD & 0xF000 = A. 아렇게.
+	 */
+
+
+	static inline WORD DecodeOpCodeFirst( WORD opcode ) { return opcode & 0xF000; }
+	static inline WORD DecodeOpCodeSecond( WORD opcode )  { return opcode & 0x0F00; }
+	static inline WORD DecodeOpCodeThird( WORD opcode ) { return opcode & 0x00F0; }
+	static inline WORD DecodeOpCodeForth( WORD opcode ) { return opcode & 0x000F; }
+
+private: //명령어를 실제로 수행하는 곳.
+
+	void opCode1NNN(WORD opCode);
 
 private:
 	void CPUReset();

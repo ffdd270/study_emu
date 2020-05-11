@@ -38,7 +38,7 @@ void Chip8::CPUReset()
  * EX ) 0x200이 0xAB이고, 0x201이 0xCB이면 opcode는 0xABDD
  */
 
-WORD Chip8::GetNextOpcode()
+WORD Chip8::getNextOpCode()
 {
 	// 주석은 모두 0x200이 0xAB, 0x201이 0xCD인 걸 가정하였다. 아. PC는 0x200이고.
 
@@ -48,4 +48,37 @@ WORD Chip8::GetNextOpcode()
 	res |= mGameMemory[ mProgramCounter + 1 ];  // 1바이트 더 읽음. 0x201은 0xCD. res에 OR 연산 하면 res = 0xABCD.
 
 	return res; // opCode 반환
+}
+
+void Chip8::nextStep()
+{
+	WORD opCode = getNextOpCode();
+	// OP 코드 해독..
+	switch (DecodeOpCodeFirst(opCode)) //opCode & 0xF000
+	{
+		case 0x1000: // 코드 점프! 명령어 . 0x1XXX 만 이곳에 들어올 것이다.
+			opCode1NNN( opCode );
+			break;
+		case 0x0000: // 기타 명령어.
+		{
+			switch (DecodeOpCodeForth(opCode)) // opCode & 0x000F
+			{
+				case 0x0000:
+					break;
+				case 0x000E:
+					break;
+			}
+		}
+		break;
+
+		default: // 아직 안 하고..
+			break;
+	}
+
+
+}
+
+void Chip8::opCode1NNN(WORD opCode)
+{
+	mProgramCounter = opCode & 0x0FFF; // 앞 자리는 해독이 끝났으니. 실제 명령어가 점프할 데이터인 뒷 바이트를 가져온다.
 }
