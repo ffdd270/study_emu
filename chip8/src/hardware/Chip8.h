@@ -22,16 +22,39 @@ public:
 	 * 그래서 최대수의 AND 연산으로 각 자리수를 구해줄 수 있다. 이를태면..
 	 * 0xABCD & 0xF000 = A. 아렇게.
 	 */
-
-
 	static inline WORD DecodeOpCodeFirst( WORD opcode ) { return opcode & 0xF000; }
 	static inline WORD DecodeOpCodeSecond( WORD opcode )  { return opcode & 0x0F00; }
 	static inline WORD DecodeOpCodeThird( WORD opcode ) { return opcode & 0x00F0; }
 	static inline WORD DecodeOpCodeForth( WORD opcode ) { return opcode & 0x000F; }
 
-private: //명령어를 실제로 수행하는 곳.
-
+private: //명령어를 실제로 수행하는 함수들.
+	//JP(jump) addr ( 점프 addr. ) addr = NNN.
 	void opCode1NNN(WORD opCode);
+
+	//call addr. ( 호출 addr ). addr = NNN
+	void opCode2NNN(WORD opCode);
+
+	// !주의! 이 아래서 부터는 모든 '피연산자'는 좌항입니다!
+	// EX )  V1 레지스터의 값을 V2에 넣는다면 -> LD V2 V1
+	
+	//SE (Skip if Equal) Vx, Byte( 같으면_건너띄기 Vx Byte ).Vx =  X. Byte = KK.
+	void opCode3XKK(WORD opCode);
+
+	//SNE (Skip not Equal) Vx, Byte (같지_않으면_건너띄기 Vx Byte )  Vx = X. Byte = KK,
+	void opCode4XKK(WORD opCode);
+
+	//SE (Skip if Equal ) Vx, Vy ( 같으면_건너띄기  Vx Vy ). Vx =  X, Vy = Y
+	void opCode5XY0(WORD opCode);
+
+	//LD (LoaD) Vx, Byte . ( 로드 Vx Byte ) Vx = X, Byte = KK
+	//LD는 Load의 약자다 =ㅁ=.
+	void opCode6XKK(WORD opCode);
+
+	//ADD Vx Byte. ( 더하기 Vx Byte ) Vx = X, Byte = NN
+	void opCode7XKK(WORD opCode);
+
+	//LD(LoaD) Vx, Vy. ( 로드 Vx Vy )
+	void opCode8XY0(WORD opCode);
 
 private:
 	void CPUReset();

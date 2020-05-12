@@ -5,6 +5,9 @@
 #include "Chip8.h"
 #include <cstdio>
 
+//http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
+// 위 사이트 참고.
+
 Chip8::Chip8()
 {
 	CPUReset();
@@ -56,11 +59,13 @@ void Chip8::nextStep()
 	// OP 코드 해독..
 	switch (DecodeOpCodeFirst(opCode)) //opCode & 0xF000
 	{
-		case 0x1000: // 코드 점프! 명령어 . 0x1XXX 만 이곳에 들어올 것이다.
+		case 0x1000: // 코드 점프! 명령어 . 0x1XXX 만 이곳에 들어올 것이다. 명령어론 JP addr ( 점프 addr. )
 			opCode1NNN( opCode );
 			break;
 		case 0x0000: // 기타 명령어.
 		{
+			// 명령어 SET 중에 0x0N00. 즉, N 부분을 명령으로 사용하는 코드는 없다. 그래서 마지막만 찾으면 됨.
+			//http://devernay.free.fr/hacks/chip8/C8TECH10.HTM 여기서 opcode 참고.
 			switch (DecodeOpCodeForth(opCode)) // opCode & 0x000F
 			{
 				case 0x0000:
