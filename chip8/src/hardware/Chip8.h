@@ -36,7 +36,7 @@ private: //명령어를 실제로 수행하는 함수들.
 
 	// !주의! 이 아래서 부터는 모든 '피연산자'는 좌항입니다!
 	// EX )  V1 레지스터의 값을 V2에 넣는다면 -> LD V2 V1
-	
+
 	//SE (Skip if Equal) Vx, Byte( 같으면_건너띄기 Vx Byte ).Vx =  X. Byte = KK.
 	void opCode3XKK(WORD opCode);
 
@@ -56,11 +56,26 @@ private: //명령어를 실제로 수행하는 함수들.
 	//LD(LoaD) Vx, Vy. ( 로드 Vx Vy )
 	void opCode8XY0(WORD opCode);
 
+	//OR Vx, Vy .  Vx = Vx | Vy. 비트 OR 연산자.
+	void opCode8XY1(WORD opCode);
+
+	//AND Vx Vy .  Vx = Vx & Vy. 비트 AND 연산자 .
+	void opCode8XY2(WORD opCode);
+
+	//XOR Vx Vy . Vx = Vx XOR Vy. 비트 XOR 연산자.
+	void opCode8XY3(WORD opCode);
+
+	//ADD Vx Vy.   Vx = Vx + Vy. Vf = Carry.
+	//Vx와 Vy를 더하고. 결과가 8비트(255)가 넘는다면 Vf를 1로. 넘지 않으면 Vf 0으로 정합니다. Vx에는 나머지 8비트만 저장됩니다.
+	void opCode8XY4(WORD opCode);
+
+	//SUB Vx Vy. Vx = Vx - Vy . Vf = NOT borrow.
+	//Vx에 Vy를 빼고, Vf를 Vx가 Vy보다 크면 1. 크지 않으면 0으로 정합니다. Vx엔 결과가 저장됩니다.
+	void opCode8XY5(WORD opCode);
+
+
 private:
 	void CPUReset();
-
-
-
 
 	// CHIP 8 내부 메모리 & CPU등 설정.
 
