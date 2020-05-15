@@ -73,6 +73,43 @@ private: //명령어를 실제로 수행하는 함수들.
 	//Vx에 Vy를 빼고, Vf를 Vx가 Vy보다 크면 1. 크지 않으면 0으로 정합니다. Vx엔 결과가 저장됩니다.
 	void opCode8XY5(WORD opCode);
 
+	void opCode8XY6(WORD opCode);
+
+	void opCode8XY7(WORD opCode);
+
+	void opCode8XYE(WORD opCode);
+
+	void opCode9XY0(WORD opCode);
+
+	void opCodeANNN(WORD opCode);
+
+	void opCodeBNNN(WORD opCode);
+
+	void opCodeCXKK(WORD opCode);
+
+	void opCodeDXYN(WORD opCode);
+
+	void opCodeEX9E(WORD opCode);
+
+	void opCodeEXA1(WORD opCode);
+
+	void opCodeFX07(WORD opCode);
+
+	void opCodeFX0A(WORD opCode);
+
+	void opCodeFX15(WORD opCode);
+
+	void opCodeFX18(WORD opCode);
+
+	void opCodeFX1E(WORD opCode);
+
+	void opCodeFX29(WORD opCode);
+
+	void opCodeFX33(WORD opCode);
+
+	void opCodeFX55(WORD opCode);
+
+	void opCodeFX65(WORD opCode);
 
 private:
 	void CPUReset();
