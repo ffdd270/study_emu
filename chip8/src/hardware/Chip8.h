@@ -52,7 +52,7 @@ private:
 	//SE (Skip if Equal ) Vx, Vy ( 같으면_건너띄기  Vx Vy ). Vx =  X, Vy = Y
 	void opCode5XY0(WORD opCode);
 
-	// [code]
+	// [load]
 	//LD (LoaD) Vx, Byte . ( 로드 Vx Byte ) Vx = X, Byte = KK
 	//LD는 Load의 약자다 =ㅁ=.
 	void opCode6XKK(WORD opCode);
@@ -131,30 +131,59 @@ private:
  	// XOR 명령은 8xy3 명령을 참조.
 	void opCodeDXYN(WORD opCode);
 
-	// [code]
+	// [key]
 	// SKP( SKip if Pressed ) Vx.
 	// 키보드 확인 후 키가 눌러 져있다면, PC 2 증가.
 	void opCodeEX9E(WORD opCode);
 
-	//
+	// [key]
+	// SKNP ( SKip if Not Pressed ) Vx.
+	// 키보드 확인 후 키가 눌러져있지 않다면, PC 2 증가.
 	void opCodeEXA1(WORD opCode);
 
+	// [load]
+	// LD Vx, DT. Delay Vx = DT.
+	// Vx를 DT로 Set.
 	void opCodeFX07(WORD opCode);
 
+	// [load]
+	// LD Vx, Key. Set Vx = Key.
+	// 키 입력까지 대기 후, Vx에 키 값을 저장. 키를 누를 떄 까지 모든 행동을 중지.
 	void opCodeFX0A(WORD opCode);
 
+	// [code]
+	// LD Vx, K. Delay Timer = Vx.
+	// DT(Delay Timer)를 Vx로.
 	void opCodeFX15(WORD opCode);
 
+	// [load]
+	// LD ST, Vx. Sound Timer = Vx.
+	// ST(Sound Timer)를 Vx로.
 	void opCodeFX18(WORD opCode);
 
+	// [sub, add]
+	// ADD I, Vx. I = I + Vx.
+	// register I의 값에 Vx를 더한다.
 	void opCodeFX1E(WORD opCode);
 
+	// [code]
+	// Set F, V. I = Vx 값에 해당하는 숫자의 스프라이트 주소로.
+	// 레지스터 I를 Vx값에 해당하는 16진수 스프라이트 위치로 설정.
 	void opCodeFX29(WORD opCode);
 
+	// [load]
+	// LD B, Vx. I = BCD( Vx의 100자리 수. ) I + 1 = BCD( Vx의 10자리 수.) I + 2 = BCD( Vx의 1자리 수 ),
+	// 메모리 위치 I, I + 1 및 I + 2에 Vx의 백~일의 자리수의 BCD 표현을 저장. ( BCD : 4비트로 10자리 수를 표현하는 기법. )
 	void opCodeFX33(WORD opCode);
 
+	// [load]
+	// LD [I], Vx. Memory Address [I] to length of ( V0 to Vx ) = V0 to Vx.
+	// V0부터 Vx에 해당하는 값들을 메모리 주소 I에 저장 ( 그럼 메모리 끝점은 Vx 만큼 이동하겠죠? )
 	void opCodeFX55(WORD opCode);
 
+	// [load]
+	// LD Vx, [I]. V0 to Vx = Memory Address [I] to length of ( V0 to Vx ).
+	// 메모리 주소 I부터 I + x에 해당하는 메모리 주소까지 불러온 다음, V0부터 Vx에 저장합니다.
 	void opCodeFX65(WORD opCode);
 
 private:
