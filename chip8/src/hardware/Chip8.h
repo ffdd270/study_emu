@@ -14,7 +14,7 @@ public:
 	Chip8();
 
 	WORD getNextOpCode();
-
+	void loadFile();
 	void nextStep();
 
 	/*
@@ -37,8 +37,8 @@ private:
 	void opCode1NNN(WORD opCode);
 
 	// [code]
-	//call addr. ( 호출 addr ). addr = NNN
-	void opCode2NNN(WORD opCode);\
+	//call addr. ( 호출 addr ). addr = NNN. stack에 현재 주소 push.
+	void opCode2NNN(WORD opCode);
 
 	// [if]
 	//SE (Skip if Equal) Vx, Byte( 같으면_건너띄기 Vx Byte ).Vx =  X. Byte = KK.

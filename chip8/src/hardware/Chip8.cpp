@@ -28,7 +28,7 @@ void Chip8::CPUReset()
 
 	// 게임 로드 -
 	FILE * game = nullptr;
-	fopen_s( &game, "../rom/PONG", "rb" );
+	fopen_s( &game, "rom/PONG", "rb" );
 	fread_s( &mGameMemory, sizeof(mGameMemory),0xfff, 1, game);
 	fclose(game);
 }
@@ -83,7 +83,26 @@ void Chip8::nextStep()
 
 }
 
+
+// [code]
+//JP(jump) addr ( 점프 addr. ) addr = NNN.
 void Chip8::opCode1NNN(WORD opCode)
 {
 	mProgramCounter = opCode & 0x0FFF; // 앞 자리는 해독이 끝났으니. 실제 명령어가 점프할 데이터인 뒷 바이트를 가져온다.
+}
+
+
+// [code]
+//call addr. ( 호출 addr ). addr = NNN. stack에 현재 주소 push.
+void Chip8::opCode2NNN(WORD opCode)
+{
+	mStack.push_back( mProgramCounter ); //stack에 현재 주소 push.
+	mProgramCounter = opCode & 0xFFF;
+}
+
+// [if]
+//SE (Skip if Equal) Vx, Byte( 같으면_건너띄기 Vx Byte ).Vx =  X. Byte = KK.
+void Chip8::opCode3XKK(WORD opCode)
+{
+
 }
