@@ -7,7 +7,7 @@ include_directories( lib/
 
 set(chip8_test_src_files
         src/main.cpp
-        src/chip8_opcode_test_jump.cpp src/chip8_opcode_test_if.cpp)
+        src/chip8_opcode_test_jump.cpp)
 
 
 add_executable( chip8_test

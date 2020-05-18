@@ -16,7 +16,6 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 	SECTION( "1NNN" )
 	{
 		chip8.injectionCode( 0x1300 ); // JUMP 0x300
-
 		chip8.nextStep();
 
 		REQUIRE( chip8.getProgramCounter() == 0x300 );

@@ -215,7 +215,7 @@ private:
  */
 private:
 	BYTE mGameMemory[0xFFF]; // 메모리 : 0xFFF 바이트.
-	BYTE mRegisters[16]; // Vx 16개의 레지스터들.
+	BYTE mRegisters[16]; // 16개의 레지스터들.
 	WORD mAddressIndex; // 레지스터 I. 16비트 주소를 담는 변수.
 	WORD mProgramCounter; // 16비트 프로그램 카운터.
 	WORD mInjectionCounter; // 디버깅용 16비트 코드 인젝션 카운터.

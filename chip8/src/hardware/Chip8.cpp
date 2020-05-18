@@ -89,15 +89,6 @@ void Chip8::nextStep()
 		case 0x2000:
 			opCode2NNN( opCode );
 			break;
-	    case 0x3000:
-	        opCode3XKK( opCode );
-	        break;
-	    case 0X4000:
-	        opCode4XKK( opCode );
-	        break;
-	    case 0X5000:
-	        opCode5XY0( opCode );
-	        break;
 		case 0x0000: // 기타 명령어.
 		{
 			// 명령어 SET 중에 0x0N00. 즉, N 부분을 명령으로 사용하는 코드는 없다. 그래서 마지막만 찾으면 됨.
@@ -137,40 +128,7 @@ void Chip8::opCode1NNN(WORD opCode)
 void Chip8::opCode2NNN(WORD opCode)
 {
 	mStack.push_back( mProgramCounter ); //stack에 현재 주소 push.
-	mProgramCounter = opCode & 0x0FFF;
-}
-
-// [if]
-//SE (Skip if Equal) Vx, Byte( 같으면_건너띄기 Vx Byte ).Vx =  X. Byte = KK.
-void Chip8::opCode3XKK(WORD opCode)
-{
-    WORD index = (opCode & 0x0F00) >> 8;
-    if(mRegisters[index] == (opCode & 0x00FF))
-    {
-        mProgramCounter+=2;
-    }
-}
-
-// [if]
-//SNE (Skip if not Equal) Vx, Byte (같지_않으면_건너띄기 Vx Byte )  Vx = X. Byte = KK,
-void Chip8::opCode4XKK(WORD opCode)
-{
-    WORD index = (opCode & 0x0F00) >> 8;
-    if(mRegisters[index] != (opCode & 0x00FF))
-    {
-        mProgramCounter += 2;
-    }
-}
-
-// [if]
-//SE (Skip if Equal ) Vx, Vy ( 같으면_건너띄기  Vx Vy ). Vx =  X, Vy = Y
-void Chip8::opCode5XY0(WORD opCode)
-{
-    WORD index = (opCode & 0x0F00) >> 8;
-    if(mRegisters[index] == (opCode & 0x00F0))
-    {
-        mProgramCounter += 2;
-    }
+	mProgramCounter = opCode & 0xFFF;
 }
 
 // [load]
