@@ -13,6 +13,24 @@ Chip8::Chip8()
 	CPUReset();
 }
 
+
+void Chip8::injectionCode(WORD code)
+{
+	BYTE first = (code & 0xFF00) >> 8;
+	BYTE second = (code & 0x00FF);
+
+	mGameMemory[mInjectionCounter] = first;
+	mGameMemory[mInjectionCounter + 1] = second;
+
+	mInjectionCounter += 2;
+}
+
+void Chip8::reset()
+{
+	CPUReset();
+}
+
+
 void Chip8::CPUReset()
 {
 	mAddressIndex = 0;
@@ -22,15 +40,19 @@ void Chip8::CPUReset()
 	 * 그래서 프로그램이 로드 되는 곳은 0x200부터일 것이고, Program Counter 는 첫 명령 시작점일 0x200을 가리켜야한다.
 	 */
 
-	mProgramCounter = 0x200; // 왜 0x200이징;
+	mProgramCounter = 0x200; // 메모리에서 코드 시작은 0x200번부터.
+	mInjectionCounter = 0x200;
+
 	memset(mRegisters, 0, sizeof(mRegisters));
 
 
 	// 게임 로드 -
+	/*
 	FILE * game = nullptr;
 	fopen_s( &game, "rom/PONG", "rb" );
 	fread_s( &mGameMemory, sizeof(mGameMemory),0xfff, 1, game);
 	fclose(game);
+	 */
 }
 
 /*
@@ -50,6 +72,8 @@ WORD Chip8::getNextOpCode()
 	res <<= 8; // res를 8비트 시프트. 8비트 == 2^8 == 255 == 16진수 2개 점프. res = 0xAB00
 	res |= mGameMemory[ mProgramCounter + 1 ];  // 1바이트 더 읽음. 0x201은 0xCD. res에 OR 연산 하면 res = 0xABCD.
 
+	mProgramCounter += 2; // 프로그램 카운터 증가.
+
 	return res; // opCode 반환
 }
 
@@ -61,6 +85,9 @@ void Chip8::nextStep()
 	{
 		case 0x1000: // 코드 점프! 명령어 . 0x1XXX 만 이곳에 들어올 것이다. 명령어론 JP addr ( 점프 addr. )
 			opCode1NNN( opCode );
+			break;
+		case 0x2000:
+			opCode2NNN( opCode );
 			break;
 		case 0x0000: // 기타 명령어.
 		{
@@ -80,6 +107,10 @@ void Chip8::nextStep()
 			break;
 	}
 
+}
+
+Chip8::~Chip8()
+{
 
 }
 

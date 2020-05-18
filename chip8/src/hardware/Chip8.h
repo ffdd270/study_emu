@@ -14,8 +14,17 @@ public:
 	Chip8();
 
 	WORD getNextOpCode();
-	void loadFile();
+
+	WORD getProgramCounter( ) const { return mProgramCounter; }
+	WORD getRegisterValue( WORD index ) const { return mRegisters[index]; }
+	WORD getAddressIndex() const { return mAddressIndex; }
+	std::vector<WORD>  getCallStack() const {return mStack;}
+
 	void nextStep();
+	void injectionCode( WORD code );
+	void reset();
+
+
 
 	/*
 	 * OP Code는 4자리다. 0xFFFF 형식으로 되어 있기도 하고..
@@ -27,6 +36,7 @@ public:
 	static inline WORD DecodeOpCodeThird( WORD opcode ) { return opcode & 0x00F0; }
 	static inline WORD DecodeOpCodeForth( WORD opcode ) { return opcode & 0x000F; }
 
+	~Chip8();
 private:
 	//명령어를 실제로 수행하는 함수들.
 	// !주의! 값이 저장되는  모든 연산의 '피연산자'는 좌항입니다!
@@ -204,6 +214,7 @@ private:
 	BYTE mRegisters[16]; // 16개의 레지스터들.
 	WORD mAddressIndex; // 레지스터 I. 16비트 주소를 담는 변수.
 	WORD mProgramCounter; // 16비트 프로그램 카운터.
+	WORD mInjectionCounter; // 디버깅용 16비트 코드 인젝션 카운터.
 
 	// 함수 호출시 리턴 위치를 알기 위해 위치를 기록해 놓는 콜 스택.
 	std::vector<WORD> mStack;
