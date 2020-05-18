@@ -131,9 +131,13 @@ void Chip8::opCode2NNN(WORD opCode)
 	mProgramCounter = opCode & 0xFFF;
 }
 
-// [if]
-//SE (Skip if Equal) Vx, Byte( 같으면_건너띄기 Vx Byte ).Vx =  X. Byte = KK.
-void Chip8::opCode3XKK(WORD opCode)
+// [load]
+//LD (LoaD) Vx, Byte . ( 로드 Vx Byte ) Vx = X, Byte = KK
+//LD는 Load의 약자다 =ㅁ=.
+void Chip8::opCode6XKK(WORD opCode)
 {
+	BYTE register_index = opCode & 0x0F00;
+	BYTE load_byte =  opCode & 0x00FF;
 
+	mRegisters[register_index] = load_byte;
 }

@@ -15,9 +15,13 @@ public:
 
 	WORD getNextOpCode();
 
+
 	WORD getProgramCounter( ) const { return mProgramCounter; }
-	WORD getRegisterValue( WORD index ) const { return mRegisters[index]; }
+	BYTE getRegisterValue( WORD index ) const { return mRegisters[index]; }
 	WORD getAddressIndex() const { return mAddressIndex; }
+
+	void setRegisterValue( BYTE index, BYTE value ) { mRegisters[index] = value; }
+
 	std::vector<WORD>  getCallStack() const {return mStack;}
 
 	void nextStep();
