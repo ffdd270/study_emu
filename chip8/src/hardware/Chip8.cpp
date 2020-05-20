@@ -71,7 +71,6 @@ WORD Chip8::getNextOpCode()
 	res = mGameMemory[ mProgramCounter ]; // 0xAB로드. res = 0xAB.
 	res <<= 8; // res를 8비트 시프트. 8비트 == 2^8 == 255 == 16진수 2개 점프. res = 0xAB00
 	res |= mGameMemory[ mProgramCounter + 1 ];  // 1바이트 더 읽음. 0x201은 0xCD. res에 OR 연산 하면 res = 0xABCD.
-
 	mProgramCounter += 2; // 프로그램 카운터 증가.
 
 	return res; // opCode 반환
@@ -92,10 +91,10 @@ void Chip8::nextStep()
 	    case 0x3000:
 	        opCode3XKK( opCode );
 	        break;
-	    case 0X4000:
+	    case 0x4000:
 	        opCode4XKK( opCode );
 	        break;
-	    case 0X5000:
+	    case 0x5000:
 	        opCode5XY0( opCode );
 	        break;
 		case 0x0000: // 기타 명령어.
@@ -166,8 +165,9 @@ void Chip8::opCode4XKK(WORD opCode)
 //SE (Skip if Equal ) Vx, Vy ( 같으면_건너띄기  Vx Vy ). Vx =  X, Vy = Y
 void Chip8::opCode5XY0(WORD opCode)
 {
-    WORD index = (opCode & 0x0F00) >> 8;
-    if(mRegisters[index] == (opCode & 0x00F0))
+    WORD indexVx = (opCode & 0x0F00) >> 8;
+    WORD indexVy = (opCode & 0x00F0) >> 4;
+    if(mRegisters[indexVx] == mRegisters[indexVy])
     {
         mProgramCounter += 2;
     }
