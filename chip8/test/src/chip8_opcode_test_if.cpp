@@ -8,7 +8,7 @@ TEST_CASE( "Test if OpCodes", "[if]" )
     SECTION( "3XKK" )
     {
 
-        chip8.injectionCode( 0x3128); //x = 0x1 kk = 0x28
+        chip8.injectionCode(0x3128); //x = 0x1 kk = 0x28
         chip8.injectionCode(0x3333); //x = 0x3 kk = 0x33
 
         WORD temp = chip8.getProgramCounter();
@@ -33,7 +33,7 @@ TEST_CASE( "Test if OpCodes", "[if]" )
         chip8.nextStep();
         REQUIRE(chip8.getProgramCounter() == temp+4); //다르면 +4가 되어야함
 
-        chip8.setRegisterValue(1,0x0028);
+        chip8.setRegisterValue(0,0x0028);
         chip8.nextStep();
         REQUIRE(chip8.getProgramCounter() == temp+6); //같으면 +2가 되어야 함.
     }
@@ -41,8 +41,8 @@ TEST_CASE( "Test if OpCodes", "[if]" )
 
     SECTION( "5XY0" )
     {
-		chip8.injectionCode(0x5120); //x = 0x1 y = 0x2
-		chip8.injectionCode(0x5230); //x = 0x2 y = 0x3
+		chip8.injectionCode(0x5120); //Vx = 0x1 Vy = 0x2
+		chip8.injectionCode(0x5230); //Vx = 0x2 Vy = 0x3
 
 		WORD temp = chip8.getProgramCounter();
 
