@@ -44,7 +44,7 @@ void Chip8::CPUReset()
 	mInjectionCounter = 0x200;
 
 	memset(mRegisters, 0, sizeof(mRegisters));
-
+	memset(mScreenData, 0, sizeof(mScreenData));
 
 	// 게임 로드 -
 	/*
@@ -97,6 +97,9 @@ void Chip8::nextStep()
 	    case 0x5000:
 	        opCode5XY0( opCode );
 	        break;
+		case 0xD000:
+			opCodeDXYN( opCode );
+			break;
 		case 0x0000: // 기타 명령어.
 		{
 			// 명령어 SET 중에 0x0N00. 즉, N 부분을 명령으로 사용하는 코드는 없다. 그래서 마지막만 찾으면 됨.

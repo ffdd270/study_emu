@@ -41,5 +41,43 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 		REQUIRE( callStack[0] == 0x206 ); // 콜스택은 0x204.
 	}
 
+	SECTION( "DXYN" )
+	{
+		chip8.injectionCode( 0xD005 ); // V0, V0 좌표에서 Register Index로 부터 5바이트 READ후 Screen에 DRW.
+
+		BYTE sprite_data[] = {
+				0b11111111,
+				0b10000001,
+				0b10000001,
+				0b10000001,
+				0b11111111,
+		};
+
+		// 메모리 0번지부터 5번지까지.
+		for( int i = 0; i < 5; i++ )
+		{
+			chip8.setMemoryValue( i, sprite_data[i] );
+		}
+
+		// 여기까지 O. 메모리 0x0-0x5 스프라이트 데이터.
+		chip8.setAddressIndex( 0 ); // I를 0.
+		chip8.setRegisterValue( 0, 0 );
+
+		chip8.nextStep();
+
+		for( int y = 0; y < 5; y++ )
+		{
+			BYTE result = 0;
+
+			for (int x = 0; x < 8; x++)
+			{
+				BYTE screen_data = chip8.getScreenData(x, y);
+				result |= screen_data << x;
+			}
+
+			REQUIRE(sprite_data[y] == result);
+		}
+	}
+
 	chip8.reset();
 }

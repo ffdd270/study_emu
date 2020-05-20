@@ -16,10 +16,13 @@ public:
 	WORD getNextOpCode();
 
 
+	BYTE getScreenData(int x, int y) { return mScreenData[y][x]; }
 	WORD getProgramCounter( ) const { return mProgramCounter; }
 	BYTE getRegisterValue( WORD index ) const { return mRegisters[index]; }
 	WORD getAddressIndex() const { return mAddressIndex; }
 
+	void setMemoryValue(BYTE index, BYTE value) { mGameMemory[index] = value; }
+	void setAddressIndex(BYTE mem_index) { mAddressIndex = mem_index; }
 	void setRegisterValue( BYTE index, BYTE value ) { mRegisters[index] = value; }
 
 	std::vector<WORD>  getCallStack() const {return mStack;}
@@ -137,7 +140,7 @@ private:
 	void opCodeCXKK(WORD opCode);
 
 	// [code]
-	// DRW Vx, Vy, nibble. 메모리 레지스터 I 에서 부터 N 바이트에 읽은 스프라이트를 (x = Vx, y = Vy) 에 표시하고. Vf = Collision 설정.
+	// DRW Vx, Vy, nibble. 메모리 레지스터 (mAddressIndex) I 에서 부터 N 바이트에 읽은 스프라이트를 (x = Vx, y = Vy) 에 표시하고. Vf = Collision 설정.
  	// 주소 I부터 N바이트에 있는 스프라이트를 부른 다음, ( Vx, Vy ) 좌표에 그린다. 그리는 방식은 기존 화면에 XOR.
  	// 만약 이로 인해 픽셀이 지워지면 Vf를 1로 설정. 아니면 0으로 설정.
  	// 스프라이트가 디스플레이의 외부로 위치하도록 좌표를 설정하면, 반대편 화면 ( 오른쪽에 배치하면 왼쪽에서 튀어나옴 ) 에서 나온다.
@@ -215,6 +218,8 @@ private:
 private:
 	BYTE mGameMemory[0xFFF]; // 메모리 : 0xFFF 바이트.
 	BYTE mRegisters[16]; // Vx 16개의 레지스터들.
+	BYTE mScreenData[32][64]; // y ,x  좌표계.
+
 	WORD mAddressIndex; // 레지스터 I. 16비트 주소를 담는 변수.
 	WORD mProgramCounter; // 16비트 프로그램 카운터.
 	WORD mInjectionCounter; // 디버깅용 16비트 코드 인젝션 카운터.
