@@ -71,48 +71,47 @@ private:
 	//LD는 Load의 약자다 =ㅁ=.
 	void opCode6XKK(WORD opCode);
 
-	// [sub, add]
+	// [math]
 	//ADD Vx Byte. ( 더하기 Vx Byte ) Vx = X, Byte = NN
 	void opCode7XKK(WORD opCode);
 
-	// [etc]
+	// [load]
 	//LD(LoaD) Vx, Vy. ( 로드 Vx Vy )
 	void opCode8XY0(WORD opCode);
 
-	// [or, and.. bit.]
+	// [bit]
 	//OR Vx, Vy .  Vx = Vx | Vy. 비트 OR 연산자.
 	void opCode8XY1(WORD opCode);
 
-	// [or, and.. bit.]
+	// [bit]
 	//AND Vx Vy .  Vx = Vx & Vy. 비트 AND 연산자 .
 	void opCode8XY2(WORD opCode);
 
-	// [or, and.. bit.]
+	// [bit]
 	//XOR Vx Vy . Vx = Vx XOR Vy. 비트 XOR 연산자.
 	void opCode8XY3(WORD opCode);
 
-	// [sub, add]
+	// [math]
 	//ADD Vx Vy.   Vx = Vx + Vy. Vf = Carry.
 	//Vx와 Vy를 더하고. 결과가 8비트(255)가 넘는다면 Vf를 1로. 넘지 않으면 Vf 0으로 정합니다. Vx에는 나머지 8비트만 저장됩니다.
 	void opCode8XY4(WORD opCode);
 
-	// [sub, add]
+	// [math]
 	//SUB (빼기)  Vx Vy. Vx = Vx - Vy . Vf = NOT borrow.
 	//Vx에 Vy를 빼고, Vf를 Vx가 Vy보다 크면 1. 크지 않으면 0을 저장. Vx엔 결과가 저장된다.
 	void opCode8XY5(WORD opCode);
 
-
-	// [or, and.. bit.]
+	// [bit]
 	//SHR (SHfit Right) Vx {, Vy } Vx = Vx SHR 1 (혹은 y.).
 	//Vx의 최하위 비트가 1이면 VF는 1로 설정하고, 그렇지 않으면 0으로 설정. 그 다음, Vx는 2만큼 나눈다. ( 1비트씩 우로 밀렸으니까 )
 	void opCode8XY6(WORD opCode);
 
-	// [sub, add]
+	// [math]
 	//SUBN (SUB Not ( 반대로 빼기 ) ) Vx, Vy. Vx = Vy - Vx. VF = NOT borrow.
 	//Vy에 Vx를 빼고, Vf를 Vy가 Vx보다 크면 1. 크지 않으면 0을 저장. Vx엔 결과가 저장된다.
 	void opCode8XY7(WORD opCode);
 
-	// [or, and.. bit.]
+	// [bit]
 	//SHL(SHift Left) Vx, {Vy}. Vx = Vx SHL 1.
 	//Vx의 최하의 비트가 1이면 VF를 1로 설정. 아니라면 0. 그 후, Vx를 2만큼 곱해진다. ( 1비트씩 좌로 밀렸으니까 )
 	void opCode8XYE(WORD opCode);
@@ -145,12 +144,12 @@ private:
  	// XOR 명령은 8xy3 명령을 참조.
 	void opCodeDXYN(WORD opCode);
 
-	// [key]
+	// [keyboard]
 	// SKP( SKip if Pressed ) Vx.
 	// 키보드 확인 후 키가 눌러 져있다면, PC 2 증가.
 	void opCodeEX9E(WORD opCode);
 
-	// [key]
+	// [keyboard]
 	// SKNP ( SKip if Not Pressed ) Vx.
 	// 키보드 확인 후 키가 눌러져있지 않다면, PC 2 증가.
 	void opCodeEXA1(WORD opCode);
@@ -175,7 +174,7 @@ private:
 	// ST(Sound Timer)를 Vx로.
 	void opCodeFX18(WORD opCode);
 
-	// [sub, add]
+	// [math]
 	// ADD I, Vx. I = I + Vx.
 	// register I의 값에 Vx를 더한다.
 	void opCodeFX1E(WORD opCode);
