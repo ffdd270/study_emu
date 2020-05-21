@@ -97,7 +97,27 @@ void Chip8::nextStep()
 	    case 0x5000:
 	        opCode5XY0( opCode );
 	        break;
-		case 0xD000:
+		case 0x8000:
+			switch (DecodeOpCodeForth(opCode)) //4번째 비트로 함수를 구별함.
+			{
+				case 0x0001:
+					opCode8XY1( opCode );
+					break;
+				case 0x0002:
+					opCode8XY2( opCode );
+					break;
+				case 0x0003:
+					opCode8XY3( opCode );
+					break;
+				case 0x0006:
+					opCode8XY6( opCode );
+					break;
+				case 0x000E:
+					opCode8XYE( opCode );
+					break;
+			}
+			break;
+		case 0xD000:	
 			opCodeDXYN( opCode );
 			break;
 		case 0x0000: // 기타 명령어.
