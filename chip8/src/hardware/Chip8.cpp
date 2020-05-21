@@ -88,15 +88,15 @@ void Chip8::nextStep()
 		case 0x2000:
 			opCode2NNN( opCode );
 			break;
-	    case 0x3000:
-	        opCode3XKK( opCode );
-	        break;
-	    case 0x4000:
-	        opCode4XKK( opCode );
-	        break;
-	    case 0x5000:
-	        opCode5XY0( opCode );
-	        break;
+		case 0x3000:
+			opCode3XKK( opCode );
+			break;
+		case 0x4000:
+			opCode4XKK( opCode );
+			break;
+		case 0x5000:
+			opCode5XY0( opCode );
+			break;
 		case 0x8000:
 			switch (DecodeOpCodeForth(opCode)) //4번째 비트로 함수를 구별함.
 			{
