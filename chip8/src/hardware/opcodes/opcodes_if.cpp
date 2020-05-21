@@ -39,4 +39,3 @@ void Chip8::opCode5XY0(WORD opCode)
 		mProgramCounter += 2;
 	}
 }
-

@@ -20,6 +20,7 @@ public:
 	WORD getProgramCounter( ) const { return mProgramCounter; }
 	BYTE getRegisterValue( WORD index ) const { return mRegisters[index]; }
 	WORD getAddressIndex() const { return mAddressIndex; }
+	BYTE getRandomValue() const { return mRandomValue; }
 
 	void setMemoryValue(BYTE index, BYTE value) { mGameMemory[index] = value; }
 	void setAddressIndex(BYTE mem_index) { mAddressIndex = mem_index; }
@@ -44,6 +45,10 @@ public:
 	static inline WORD DecodeOpCodeForth( WORD opcode ) { return opcode & 0x000F; }
 
 	~Chip8();
+
+private:
+	void generateRandomValue();
+
 private:
 	//명령어를 실제로 수행하는 함수들.
 	// !주의! 값이 저장되는  모든 연산의 '피연산자'는 좌항입니다!
@@ -219,6 +224,7 @@ private:
 	BYTE mGameMemory[0xFFF]; // 메모리 : 0xFFF 바이트.
 	BYTE mRegisters[16]; // Vx 16개의 레지스터들.
 	BYTE mScreenData[32][64]; // y ,x  좌표계.
+	BYTE mRandomValue ;
 
 	WORD mAddressIndex; // 레지스터 I. 16비트 주소를 담는 변수.
 	WORD mProgramCounter; // 16비트 프로그램 카운터.

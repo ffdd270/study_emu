@@ -28,7 +28,7 @@ void Chip8::opCode2NNN(WORD opCode)
 //레지스터 I의 값을 NNN으로 설정한다.
 void Chip8::opCodeANNN(WORD opCode)
 {
-	WORD NNN = ( opCode & 0x0FFF ) >> 4;
+	WORD NNN = ( opCode & 0x0FFF );
 	mAddressIndex = NNN;
 }
 
@@ -37,7 +37,7 @@ void Chip8::opCodeANNN(WORD opCode)
 //Program Count를 NNN + V0로 점프한다.
 void Chip8::opCodeBNNN(WORD opCode)
 {
-	WORD NNN = ( opCode & 0x0FFF ) >> 4;
+	WORD NNN = ( opCode & 0x0FFF );
 	mProgramCounter = NNN + mRegisters[0];
 }
 
@@ -46,11 +46,12 @@ void Chip8::opCodeBNNN(WORD opCode)
 //0에서 255까지의 값을 생성한 후, kk값으로 AND 연산을 한 결과를 Vx에 저장한다. AND에 관한 정보는 8xy2를 참조.
 void Chip8::opCodeCXKK(WORD opCode)
 {
-	BYTE rand_result = rand() % 0xFF;
-	BYTE register_index = 0x0F00 & opCode >> 8;
+	BYTE register_index = ( 0x0F00 & opCode ) >> 8;
 	BYTE and_op_byte = 0x00FF & opCode;
 
-	mRegisters[register_index] = rand_result & and_op_byte;
+	generateRandomValue();
+
+	mRegisters[register_index] = mRandomValue & and_op_byte;
 }
 
 

@@ -41,8 +41,46 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 		REQUIRE( callStack[0] == 0x206 ); // 콜스택은 0x204.
 	}
 
+
+	chip8.reset();
+
+	SECTION( "ANNN" )
+	{
+		chip8.injectionCode( 0xAABC ); // AddressIndex = ABC;
+		chip8.nextStep();
+
+		REQUIRE( chip8.getAddressIndex() == 0xABC );
+	}
+
+	chip8.reset();
+
+	SECTION( "BNNN" )
+	{
+		chip8.injectionCode( 0xB700 ); // 0x700 +  V0로 점프.
+		chip8.setRegisterValue( 0, 0x65 ); // V0 = 65
+
+		chip8.nextStep();
+
+		REQUIRE( chip8.getProgramCounter() == 0x765 );
+	}
+
+	chip8.reset();
+
+	SECTION( "CXKK" )
+	{
+		chip8.injectionCode( 0xC10F ); // V1 = ( rand % 255 )  &  0x0F
+
+		chip8.nextStep();
+
+		int value = chip8.getRegisterValue( 1 );
+		REQUIRE( ( chip8.getRandomValue() & 0x0F )  == value );
+	}
+
+	chip8.reset();
+
 	SECTION( "DXYN" )
 	{
+		chip8.injectionCode( 0xA000 ); // Register Index를 0으로 Set.
 		chip8.injectionCode( 0xD005 ); // V0, V0 좌표에서 Register Index로 부터 5바이트 READ후 Screen에 DRW.
 
 		BYTE sprite_data[] = {
@@ -60,9 +98,9 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 		}
 
 		// 여기까지 O. 메모리 0x0-0x5 스프라이트 데이터.
-		chip8.setAddressIndex( 0 ); // I를 0.
 		chip8.setRegisterValue( 0, 0 );
 
+		chip8.nextStep();
 		chip8.nextStep();
 
 		for( int y = 0; y < 5; y++ )
@@ -79,5 +117,5 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 		}
 	}
 
-	chip8.reset();
+
 }
