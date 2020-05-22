@@ -34,7 +34,7 @@ void Chip8::reset()
 void Chip8::CPUReset()
 {
 	mAddressIndex = 0;
-
+	mRandomValue = 0;
 	/*
 	 * CHIP-8의 메모리 중 0x0~0x1FF은 인터프리터를 위해 사용한다.
 	 * 그래서 프로그램이 로드 되는 곳은 0x200부터일 것이고, Program Counter 는 첫 명령 시작점일 0x200을 가리켜야한다.
@@ -44,7 +44,7 @@ void Chip8::CPUReset()
 	mInjectionCounter = 0x200;
 
 	memset(mRegisters, 0, sizeof(mRegisters));
-
+	memset(mScreenData, 0, sizeof(mScreenData));
 
 	// 게임 로드 -
 	/*
@@ -117,6 +117,19 @@ void Chip8::nextStep()
 					break;
 			}
 			break;
+
+		case 0xA000:
+			opCodeANNN( opCode );
+			break;
+		case 0xB000:
+			opCodeBNNN( opCode );
+			break;
+		case 0xC000:
+			opCodeCXKK( opCode );
+			break;
+		case 0xD000:	
+			opCodeDXYN( opCode );
+			break;
 		case 0x0000: // 기타 명령어.
 		{
 			// 명령어 SET 중에 0x0N00. 즉, N 부분을 명령으로 사용하는 코드는 없다. 그래서 마지막만 찾으면 됨.
@@ -135,6 +148,12 @@ void Chip8::nextStep()
 			break;
 	}
 
+}
+
+
+void Chip8::generateRandomValue()
+{
+	mRandomValue = rand() % 255;
 }
 
 Chip8::~Chip8()
