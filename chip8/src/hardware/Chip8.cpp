@@ -112,16 +112,16 @@ void Chip8::nextStep()
 				case 0x0003:
 					opCode8XY3( opCode );
 					break;
-				case 0x004:
+				case 0x0004:
 					opCode8XY4( opCode );
 					break;
-				case 0x005:
+				case 0x0005:
 					opCode8XY5( opCode );
 					break;
 				case 0x0006:
 					opCode8XY6( opCode );
 					break;
-				case 0x007:
+				case 0x0007:
 					opCode8XY7( opCode );
 					break;
 				case 0x000E:

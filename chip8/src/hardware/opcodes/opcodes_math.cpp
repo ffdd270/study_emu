@@ -9,7 +9,7 @@
 void Chip8::opCode7XKK(WORD opCode)
 {
 	WORD VxIndex = (opCode & 0x0F00) >> 8;
-	WORD NN = opCode & 0x00FF;
+	BYTE NN = opCode & 0x00FF;
 	mRegisters[VxIndex] += NN;
 }
 
