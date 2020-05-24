@@ -39,3 +39,16 @@ void Chip8::opCode5XY0(WORD opCode)
 		mProgramCounter += 2;
 	}
 }
+
+// [if]
+//SNE ( Skip Not Equal ) Vx, Vy.
+//Vx와 Vy가 같지 않으면 다음 구문을 생략한다.
+void Chip8::opCode9XY0(WORD opCode)
+{
+	WORD indexVx = (opCode & 0x0F00) >> 8;
+	WORD indexVy = (opCode & 0x00F0) >> 4;
+	if(mRegisters[indexVx] != mRegisters[indexVy])
+	{
+		mProgramCounter += 2;
+	}
+}

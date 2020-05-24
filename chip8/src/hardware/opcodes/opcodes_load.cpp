@@ -15,3 +15,71 @@ void Chip8::opCode6XKK(WORD opCode)
 
 	mRegisters[register_index] = load_byte;
 }
+
+
+// [load]
+//LD(LoaD) Vx, Vy. ( 로드 Vx Vy )
+void Chip8::opCode8XY0(WORD opCode)
+{
+	BYTE vx_reg_index = opCode & 0x0F00;
+	BYTE vy_reg_index = opCode & 0x00F0;
+
+	mRegisters[vx_reg_index] = mRegisters[vy_reg_index];
+}
+
+// [load]
+// LD Vx, DT. Delay Vx = DT.
+// Vx를 DT로 Set.
+void Chip8::opCodeFX07(WORD opCode)
+{
+
+}
+
+// [load]
+// LD Vx, Key. Set Vx = Key.
+// 키 입력까지 대기 후, Vx에 키 값을 저장. 키를 누를 떄 까지 모든 행동을 중지.
+void Chip8::opCodeFX0A(WORD opCode)
+{
+
+}
+
+
+// [load]
+// LD Vx, K. Delay Timer = Vx.
+// DT(Delay Timer)를 Vx로.
+void Chip8::opCodeFX15(WORD opCode)
+{
+
+}
+// [load]
+// LD ST, Vx. Sound Timer = Vx.
+// ST(Sound Timer)를 Vx로.
+void Chip8::opCodeFX18(WORD opCode)
+{
+
+}
+
+
+// [load]
+// LD B, Vx. I = BCD( Vx의 100자리 수. ) I + 1 = BCD( Vx의 10자리 수.) I + 2 = BCD( Vx의 1자리 수 ),
+// 메모리 위치 I, I + 1 및 I + 2에 Vx의 백~일의 자리수의 BCD 표현을 저장. ( BCD : 4비트로 10자리 수를 표현하는 기법. )
+void Chip8::opCodeFX33(WORD opCode)
+{
+
+}
+// [load]
+// LD [I], Vx. Memory Address [I] to length of ( V0 to Vx ) = V0 to Vx.
+// V0부터 Vx에 해당하는 값들을 메모리 주소 I에 저장 ( 그럼 메모리 끝점은 Vx 만큼 이동하겠죠? )
+void Chip8::opCodeFX55(WORD opCode)
+{
+
+}
+
+
+// [load]
+// LD Vx, [I]. V0 to Vx = Memory Address [I] to length of ( V0 to Vx ).
+// 메모리 주소 I부터 I + x에 해당하는 메모리 주소까지 불러온 다음, V0부터 Vx에 저장합니다.
+void Chip8::opCodeFX65(WORD opCode)
+{
+
+}

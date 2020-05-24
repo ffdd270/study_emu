@@ -172,7 +172,7 @@ private:
 	// 키 입력까지 대기 후, Vx에 키 값을 저장. 키를 누를 떄 까지 모든 행동을 중지.
 	void opCodeFX0A(WORD opCode);
 
-	// [code]
+	// [load]
 	// LD Vx, K. Delay Timer = Vx.
 	// DT(Delay Timer)를 Vx로.
 	void opCodeFX15(WORD opCode);
