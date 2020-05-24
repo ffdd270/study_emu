@@ -16,7 +16,7 @@ TEST_CASE("Test bit OpCodes", "[bit]")
 		chip8.setRegisterValue(1,0xF0);
 		chip8.setRegisterValue(2,0x0F);
 		chip8.nextStep();
-		REQUIRE(chip8.getRegisterValue(1) == 0xFF);
+		REQUIRE(chip8.getRegisterValue(1) == 0xFF); //Vx = Vx | Vy
 
 		chip8.setRegisterValue(3,0xA0);
 		chip8.setRegisterValue(4,0x0B);
@@ -34,7 +34,7 @@ TEST_CASE("Test bit OpCodes", "[bit]")
 		chip8.setRegisterValue(1,0xF0);
 		chip8.setRegisterValue(2,0x0F);
 		chip8.nextStep();
-		REQUIRE(chip8.getRegisterValue(1) == 0x00);
+		REQUIRE(chip8.getRegisterValue(1) == 0x00); //Vx = Vx & Vy
 
 		chip8.setRegisterValue(3,0xAB);
 		chip8.setRegisterValue(4,0x9B);
@@ -51,7 +51,7 @@ TEST_CASE("Test bit OpCodes", "[bit]")
 		chip8.setRegisterValue(1,0xF0);
 		chip8.setRegisterValue(2,0x0F);
 		chip8.nextStep();
-		REQUIRE(chip8.getRegisterValue(1) == 0xFF);
+		REQUIRE(chip8.getRegisterValue(1) == 0xFF); //Vx = Vx ^ Vy
 
 		chip8.setRegisterValue(3,0xAB);
 		chip8.setRegisterValue(4,0x9B);
@@ -65,17 +65,17 @@ TEST_CASE("Test bit OpCodes", "[bit]")
 		chip8.injectionCode(0x8016);
 		chip8.injectionCode(0x8126);
 
-		chip8.setRegisterValue(0,0x1); //최하위 비트 1
+		chip8.setRegisterValue(0,0x1); //Vx 최하위 비트 1
 		auto temp = chip8.getRegisterValue(0);
 		chip8.nextStep();
-		REQUIRE(chip8.getRegisterValue(0xF) == 1);
-		REQUIRE(temp / 2 == chip8.getRegisterValue(0));
+		REQUIRE(chip8.getRegisterValue(0xF) == 1); //최하위비트가 1이면 VF = 1
+		REQUIRE(temp >> 1 == chip8.getRegisterValue(0)); //SHR
 
-		chip8.setRegisterValue(1,0x2); //최하위 비트 0
+		chip8.setRegisterValue(1,0x2); //Vx 최하위 비트 0
 		temp = chip8.getRegisterValue(1);
 		chip8.nextStep();
-		REQUIRE(chip8.getRegisterValue(0xF) == 0);
-		REQUIRE(temp / 2 == chip8.getRegisterValue(1));
+		REQUIRE(chip8.getRegisterValue(0xF) == 0); //최하위비트가 0이면 Vf = 0
+		REQUIRE(temp >> 1 == chip8.getRegisterValue(1));
 
 	}
 	chip8.reset();
@@ -88,14 +88,14 @@ TEST_CASE("Test bit OpCodes", "[bit]")
 		chip8.setRegisterValue(0,0x1); //최하위 비트 1
 		auto temp = chip8.getRegisterValue(0);
 		chip8.nextStep();
-		REQUIRE(chip8.getRegisterValue(0xF) == 1);
-		REQUIRE(temp * 2 == chip8.getRegisterValue(0));
+		REQUIRE(chip8.getRegisterValue(0xF) == 1); //최하위비트가 0이면 VF = 1
+		REQUIRE((temp << 1) == chip8.getRegisterValue(0)); //SHL
 
 		chip8.setRegisterValue(1,0x2); //최하위 비트 0
 		temp = chip8.getRegisterValue(1);
 		chip8.nextStep();
-		REQUIRE(chip8.getRegisterValue(0xF) == 0);
-		REQUIRE(temp * 2 == chip8.getRegisterValue(1));
+		REQUIRE(chip8.getRegisterValue(0xF) == 0); //최하위비트가 0이면 VF = 0
+		REQUIRE((temp << 1) == chip8.getRegisterValue(1));
 	}
 	chip8.reset();
 

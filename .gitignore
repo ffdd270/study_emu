@@ -33,3 +33,4 @@
 chip8/cmake-build-debug-visual-studio
 .idea
 .idea
+gameboy/cmake-build-debug

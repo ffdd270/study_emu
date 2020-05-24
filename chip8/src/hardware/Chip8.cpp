@@ -88,15 +88,18 @@ void Chip8::nextStep()
 		case 0x2000:
 			opCode2NNN( opCode );
 			break;
-	    case 0x3000:
-	        opCode3XKK( opCode );
-	        break;
-	    case 0x4000:
-	        opCode4XKK( opCode );
-	        break;
-	    case 0x5000:
-	        opCode5XY0( opCode );
-	        break;
+		case 0x3000:
+			opCode3XKK( opCode );
+			break;
+		case 0x4000:
+			opCode4XKK( opCode );
+			break;
+		case 0x5000:
+			opCode5XY0( opCode );
+			break;
+		case 0x7000:
+			opCode7XKK( opCode );
+			break;
 		case 0x8000:
 			switch (DecodeOpCodeForth(opCode)) //4번째 비트로 함수를 구별함.
 			{
@@ -109,15 +112,23 @@ void Chip8::nextStep()
 				case 0x0003:
 					opCode8XY3( opCode );
 					break;
+				case 0x0004:
+					opCode8XY4( opCode );
+					break;
+				case 0x0005:
+					opCode8XY5( opCode );
+					break;
 				case 0x0006:
 					opCode8XY6( opCode );
+					break;
+				case 0x0007:
+					opCode8XY7( opCode );
 					break;
 				case 0x000E:
 					opCode8XYE( opCode );
 					break;
 			}
 			break;
-
 		case 0xA000:
 			opCodeANNN( opCode );
 			break;
@@ -130,6 +141,9 @@ void Chip8::nextStep()
 		case 0xD000:	
 			opCodeDXYN( opCode );
 			break;
+    case 0xF000:
+			opCodeFX1E( opCode );
+      break;
 		case 0x0000: // 기타 명령어.
 		{
 			// 명령어 SET 중에 0x0N00. 즉, N 부분을 명령으로 사용하는 코드는 없다. 그래서 마지막만 찾으면 됨.
