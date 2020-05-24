@@ -23,7 +23,7 @@ public:
 	BYTE getRandomValue() const { return mRandomValue; }
 
 	void setMemoryValue(BYTE index, BYTE value) { mGameMemory[index] = value; }
-	void setAddressIndex(BYTE mem_index) { mAddressIndex = mem_index; }
+	void setAddressIndex(BYTE address_index) { mAddressIndex = address_index; }
 	void setRegisterValue( BYTE index, BYTE value ) { mRegisters[index] = value; }
 
 	std::vector<WORD>  getCallStack() const {return mStack;}
