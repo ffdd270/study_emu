@@ -98,6 +98,9 @@ void Chip8::nextStep()
 		case 0x5000:
 			opCode5XY0( opCode );
 			break;
+		case 0x7000:
+			opCode7XKK( opCode );
+			break;
 		case 0x8000:
 			switch (DecodeOpCodeForth(opCode)) //4번째 비트로 함수를 구별함.
 			{
@@ -110,15 +113,26 @@ void Chip8::nextStep()
 				case 0x0003:
 					opCode8XY3( opCode );
 					break;
+				case 0x0004:
+					opCode8XY4( opCode );
+					break;
+				case 0x0005:
+					opCode8XY5( opCode );
+					break;
 				case 0x0006:
 					opCode8XY6( opCode );
+					break;
+				case 0x0007:
+					opCode8XY7( opCode );
 					break;
 				case 0x000E:
 					opCode8XYE( opCode );
 					break;
 			}
 			break;
-
+		case 0xF000:
+			opCodeFX1E( opCode );
+			break;
 		case 0xA000:
 			opCodeANNN( opCode );
 			break;
