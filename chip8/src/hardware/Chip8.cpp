@@ -130,9 +130,6 @@ void Chip8::nextStep()
 					break;
 			}
 			break;
-		case 0xF000:
-			opCodeFX1E( opCode );
-			break;
 		case 0xA000:
 			opCodeANNN( opCode );
 			break;
@@ -145,6 +142,9 @@ void Chip8::nextStep()
 		case 0xD000:	
 			opCodeDXYN( opCode );
 			break;
+        case 0xF000:
+			opCodeFX1E( opCode );
+            break;
 		case 0x0000: // 기타 명령어.
 		{
 			// 명령어 SET 중에 0x0N00. 즉, N 부분을 명령으로 사용하는 코드는 없다. 그래서 마지막만 찾으면 됨.
