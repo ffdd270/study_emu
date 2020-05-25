@@ -32,7 +32,9 @@ void Chip8::opCode8XY0(WORD opCode)
 // Vx를 DT로 Set.
 void Chip8::opCodeFX07(WORD opCode)
 {
+    BYTE vx_reg_index = opCode & 0x0F00;
 
+    mRegisters[vx_reg_index] = mDelayTimer;
 }
 
 // [load]
@@ -40,7 +42,9 @@ void Chip8::opCodeFX07(WORD opCode)
 // 키 입력까지 대기 후, Vx에 키 값을 저장. 키를 누를 떄 까지 모든 행동을 중지.
 void Chip8::opCodeFX0A(WORD opCode)
 {
+    BYTE vx_reg_index = opCode & 0x0F00;
 
+    mRegisters[vx_reg_index] = getchar();
 }
 
 
@@ -49,8 +53,11 @@ void Chip8::opCodeFX0A(WORD opCode)
 // DT(Delay Timer)를 Vx로.
 void Chip8::opCodeFX15(WORD opCode)
 {
+    BYTE vx_reg_index = opCode & 0x0F00;
 
+    mRegisters[vx_reg_index] = mDelayTimer;
 }
+
 // [load]
 // LD ST, Vx. Sound Timer = Vx.
 // ST(Sound Timer)를 Vx로.

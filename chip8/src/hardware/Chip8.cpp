@@ -44,6 +44,9 @@ void Chip8::CPUReset()
 	mProgramCounter = 0x200; // 메모리에서 코드 시작은 0x200번부터.
 	mInjectionCounter = 0x200;
 
+	mDelayTimer = 0;
+	mSoundTimer = 0;
+
 	memset(mRegisters, 0, sizeof(mRegisters));
 	memset(mScreenData, 0, sizeof(mScreenData));
 

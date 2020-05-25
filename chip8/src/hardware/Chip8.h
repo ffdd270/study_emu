@@ -226,6 +226,8 @@ private:
 	BYTE mScreenData[32][64]; // y ,x  좌표계.
 	BYTE mRandomValue ;
 
+	BYTE mDelayTimer, mSoundTimer;
+
 	WORD mAddressIndex; // 레지스터 I. 16비트 주소를 담는 변수.
 	WORD mProgramCounter; // 16비트 프로그램 카운터.
 	WORD mInjectionCounter; // 디버깅용 16비트 코드 인젝션 카운터.
