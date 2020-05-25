@@ -21,6 +21,11 @@ public:
 	BYTE getRegisterValue( WORD index ) const { return mRegisters[index]; }
 	WORD getAddressIndex() const { return mAddressIndex; }
 	BYTE getRandomValue() const { return mRandomValue; }
+	BYTE getMemoryValue(BYTE index){ return mGameMemory[index]; }
+
+	static BYTE * getFontSet();
+	static int getFontSetLength() { return 80; }
+
 
 	void setMemoryValue(BYTE index, BYTE value) { mGameMemory[index] = value; }
 	void setAddressIndex(BYTE address_index) { mAddressIndex = address_index; }

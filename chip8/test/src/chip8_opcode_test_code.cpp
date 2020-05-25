@@ -83,7 +83,7 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 		chip8.injectionCode( 0xA000 ); // Register Index를 0으로 Set.
 		chip8.injectionCode( 0xD005 ); // V0, V0 좌표에서 Register Index로 부터 5바이트 READ후 Screen에 DRW.
 
-		BYTE sprite_data[] = {
+		BYTE sprite_data[] = { // 0.
 				0b11111111,
 				0b10000001,
 				0b10000001,
@@ -117,5 +117,20 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 		}
 	}
 
+	chip8.reset();
 
+	SECTION( "FX29" )
+	{
+		chip8.injectionCode(0xF129);
+		chip8.injectionCode(0xFF29);
+
+		BYTE * font_set = Chip8::getFontSet();
+
+		chip8.nextStep();
+
+
+		chip8.nextStep();
+
+
+	}
 }
