@@ -34,8 +34,11 @@ public:
 	std::vector<WORD>  getCallStack() const {return mStack;}
 
 	void nextStep();
+	void nextStep0xF(WORD opCode);
+
 	void injectionCode( WORD code );
 	void reset();
+
 
 
 

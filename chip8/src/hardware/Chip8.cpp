@@ -184,7 +184,7 @@ void Chip8::nextStep()
 			opCodeDXYN( opCode );
 			break;
         case 0xF000:
-			opCodeFX1E( opCode );
+			nextStep0xF( opCode );
             break;
 		case 0x0000: // 기타 명령어.
 		{
@@ -201,6 +201,20 @@ void Chip8::nextStep()
 		break;
 
 		default: // 아직 안 하고..
+			break;
+	}
+
+}
+
+void Chip8::nextStep0xF(WORD opCode)
+{
+	switch (DecodeOpCodeForth(opCode))
+	{
+		case 0x0009:
+			opCodeFX29( opCode );
+			break;
+		case 0x000E:
+			opCodeFX1E( opCode );
 			break;
 	}
 
