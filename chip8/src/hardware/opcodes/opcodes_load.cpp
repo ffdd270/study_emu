@@ -3,7 +3,7 @@
 //
 
 #include "../Chip8.h"
-
+#include <array>
 
 // [load]
 //LD (LoaD) Vx, Byte . ( 로드 Vx Byte ) Vx = X, Byte = KK
@@ -55,7 +55,7 @@ void Chip8::opCodeFX15(WORD opCode)
 {
     BYTE vx_reg_index = opCode & 0x0F00;
 
-    mRegisters[vx_reg_index] = mDelayTimer;
+    mDelayTimer = mRegisters[vx_reg_index];
 }
 
 // [load]
@@ -63,17 +63,43 @@ void Chip8::opCodeFX15(WORD opCode)
 // ST(Sound Timer)를 Vx로.
 void Chip8::opCodeFX18(WORD opCode)
 {
+    BYTE vx_reg_index = opCode & 0x0F00;
 
+    mSoundTimer = mRegisters[vx_reg_index];
 }
 
 
 // [load]
 // LD B, Vx. I = BCD( Vx의 100자리 수. ) I + 1 = BCD( Vx의 10자리 수.) I + 2 = BCD( Vx의 1자리 수 ),
 // 메모리 위치 I, I + 1 및 I + 2에 Vx의 백~일의 자리수의 BCD 표현을 저장. ( BCD : 4비트로 10자리 수를 표현하는 기법. )
+inline std::array<BYTE, 3> get_numbers( BYTE value )
+{
+    std::array<BYTE, 3> numbers = { 0 };
+
+    BYTE number = value;
+
+    for( int i = 0; i < 3 && number != 0; i++ )
+    {
+        numbers[i] = number % 10;
+        number /= 10;
+    }
+
+    return numbers;
+}
+
+
 void Chip8::opCodeFX33(WORD opCode)
 {
+    BYTE vx_reg_index = opCode & 0x0F00;
+    BYTE vx_reg_value = mRegisters[vx_reg_index];
 
+    std::array<BYTE, 3> bytes = get_numbers( vx_reg_value );
+
+    mGameMemory[mAddressIndex] = bytes[2];
+    mGameMemory[mAddressIndex+1] = bytes[1];
+    mGameMemory[mAddressIndex+2] = bytes[0];
 }
+
 // [load]
 // LD [I], Vx. Memory Address [I] to length of ( V0 to Vx ) = V0 to Vx.
 // V0부터 Vx에 해당하는 값들을 메모리 주소 I에 저장 ( 그럼 메모리 끝점은 Vx 만큼 이동하겠죠? )

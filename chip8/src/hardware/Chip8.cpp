@@ -216,6 +216,9 @@ void Chip8::nextStep0xF(WORD opCode)
 		case 0x000E:
 			opCodeFX1E( opCode );
 			break;
+	    case 0x0003:
+	        opCodeFX33( opCode );
+	        break;
 	}
 
 }
