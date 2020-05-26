@@ -90,7 +90,7 @@ inline std::array<BYTE, 3> get_numbers( BYTE value )
 
 void Chip8::opCodeFX33(WORD opCode)
 {
-    BYTE vx_reg_index = opCode & 0x0F00;
+    BYTE vx_reg_index = ( opCode & 0x0F00 ) >> 8;
     BYTE vx_reg_value = mRegisters[vx_reg_index];
 
     std::array<BYTE, 3> bytes = get_numbers( vx_reg_value );
