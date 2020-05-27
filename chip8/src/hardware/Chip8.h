@@ -21,6 +21,16 @@ public:
 	BYTE getRegisterValue( WORD index ) const { return mRegisters[index]; }
 	WORD getAddressIndex() const { return mAddressIndex; }
 	BYTE getRandomValue() const { return mRandomValue; }
+	BYTE getMemoryValue(BYTE index){ return mGameMemory[index]; }
+	BYTE getDelayTimer() { return mDelayTimer; }
+	BYTE getSoundTimer() { return mSoundTimer; }
+
+	BYTE waitInput();
+	void addInput(BYTE input_code);
+
+	static BYTE * getFontSet();
+	static int getFontSetLength() { return 80; }
+
 
 	void setMemoryValue(BYTE index, BYTE value) { mGameMemory[index] = value; }
 	void setAddressIndex(BYTE address_index) { mAddressIndex = address_index; }
@@ -29,8 +39,13 @@ public:
 	std::vector<WORD>  getCallStack() const {return mStack;}
 
 	void nextStep();
+	void nextStep0xF(WORD opCode);
+	void nextStep0x8(WORD opCode);
+
 	void injectionCode( WORD code );
 	void reset();
+	void loadRom();
+
 
 
 
@@ -172,7 +187,7 @@ private:
 	// 키 입력까지 대기 후, Vx에 키 값을 저장. 키를 누를 떄 까지 모든 행동을 중지.
 	void opCodeFX0A(WORD opCode);
 
-	// [code]
+	// [load]
 	// LD Vx, K. Delay Timer = Vx.
 	// DT(Delay Timer)를 Vx로.
 	void opCodeFX15(WORD opCode);
@@ -226,12 +241,17 @@ private:
 	BYTE mScreenData[32][64]; // y ,x  좌표계.
 	BYTE mRandomValue ;
 
+	BYTE mDelayTimer, mSoundTimer;
+
 	WORD mAddressIndex; // 레지스터 I. 16비트 주소를 담는 변수.
 	WORD mProgramCounter; // 16비트 프로그램 카운터.
 	WORD mInjectionCounter; // 디버깅용 16비트 코드 인젝션 카운터.
 
 	// 함수 호출시 리턴 위치를 알기 위해 위치를 기록해 놓는 콜 스택.
 	std::vector<WORD> mStack;
+
+	//입력 스택. 여기 쌓인대로 키가 입력된다.
+	std::vector<BYTE> mKeys;
 };
 
 

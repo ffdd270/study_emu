@@ -104,3 +104,11 @@ void Chip8::opCodeDXYN(WORD opCode)
 	}
 }
 
+// [code]
+// Set F, V. I = Vx 값에 해당하는 숫자의 스프라이트 주소로.
+// 레지스터 I를 Vx값에 해당하는 16진수 스프라이트 위치로 설정.
+void Chip8::opCodeFX29(WORD opCode)
+{
+	BYTE reg_x_index = ( opCode & 0x0F00 ) >> 8;
+	mAddressIndex = mRegisters[reg_x_index] * 5;
+}

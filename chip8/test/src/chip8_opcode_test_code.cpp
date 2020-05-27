@@ -83,7 +83,7 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 		chip8.injectionCode( 0xA000 ); // Register Index를 0으로 Set.
 		chip8.injectionCode( 0xD005 ); // V0, V0 좌표에서 Register Index로 부터 5바이트 READ후 Screen에 DRW.
 
-		BYTE sprite_data[] = {
+		BYTE sprite_data[] = { // 0.
 				0b11111111,
 				0b10000001,
 				0b10000001,
@@ -117,5 +117,39 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 		}
 	}
 
+	chip8.reset();
 
+	// [code]
+	// Set F, V. I = Vx 값에 해당하는 숫자의 스프라이트 주소로.
+	// 레지스터 I를 Vx값에 해당하는 16진수 스프라이트 위치로 설정.
+	SECTION( "FX29" )
+	{
+		chip8.injectionCode(0xF129);
+		chip8.injectionCode(0xFE29);
+
+		chip8.setRegisterValue( 0x1, 0x0 ); // V1 = 0
+		chip8.setRegisterValue( 0xE, 0xA ); // Vf = F
+
+		BYTE * font_set = Chip8::getFontSet();
+
+		chip8.nextStep();
+
+		BYTE add_i = chip8.getAddressIndex();
+		BYTE start_index = 0 * 5;
+
+		for( int i = 0; i < 5; i++ )
+		{
+			REQUIRE( font_set[ 0 + i ] == chip8.getMemoryValue( add_i + i ) );
+		}
+
+		chip8.nextStep();
+
+		add_i = chip8.getAddressIndex();
+		start_index = 0xA * 5;
+
+		for( int i = 0; i < 5; i++ )
+		{
+			REQUIRE( font_set[ start_index + i ] == chip8.getMemoryValue( add_i + i ) );
+		}
+	}
 }

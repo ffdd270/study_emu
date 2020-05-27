@@ -31,6 +31,32 @@ void Chip8::reset()
 }
 
 
+
+BYTE * Chip8::getFontSet()
+{
+	static BYTE bytes[] = {
+			0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+			0x20, 0x60, 0x20, 0x20, 0x70, // 1
+			0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+			0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+			0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+			0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+			0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+			0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+			0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+			0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+			0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+			0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+			0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+			0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+			0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+			0xF0, 0x80, 0xF0, 0x80, 0x80, // F
+	};
+
+	return bytes;
+}
+
+
 void Chip8::CPUReset()
 {
 	mAddressIndex = 0;
@@ -44,16 +70,84 @@ void Chip8::CPUReset()
 	mProgramCounter = 0x200; // 메모리에서 코드 시작은 0x200번부터.
 	mInjectionCounter = 0x200;
 
+	mDelayTimer = 0;
+	mSoundTimer = 0;
+
 	memset(mRegisters, 0, sizeof(mRegisters));
 	memset(mScreenData, 0, sizeof(mScreenData));
+	memset(mGameMemory, 0, sizeof(mGameMemory));
 
-	// 게임 로드 -
-	/*
+	auto * font_set = this->getFontSet();
+
+	for( int i = 0 ; i < getFontSetLength(); i++  )
+	{
+		mGameMemory[i] = font_set[i];
+	}
+
+	mStack.clear();
+	mKeys.clear();
+}
+
+void Chip8::loadRom()
+{
 	FILE * game = nullptr;
 	fopen_s( &game, "rom/PONG", "rb" );
-	fread_s( &mGameMemory, sizeof(mGameMemory),0xfff, 1, game);
+	fread_s( &mGameMemory[0x200], sizeof(mGameMemory), 0xfff, 1, game);
 	fclose(game);
-	 */
+}
+
+struct KeyBind
+{
+	BYTE key; BYTE bind;
+};
+
+static KeyBind keyMap[] = {
+		{ '1', 0x0 },
+		{ '2', 0x1 },
+		{ '3', 0x2 },
+		{ '4', 0x3 },
+		{ 'q', 0x4 },
+		{ 'w', 0x5 },
+		{ 'e', 0x6 },
+		{ 'r', 0x7 },
+		{ 'a', 0x8 },
+		{ 's', 0x9 },
+		{ 'd', 0xA },
+		{ 'f', 0xB },
+		{ 'z', 0xC },
+		{ 'x', 0xD },
+		{ 'c', 0xE },
+		{ 'v', 0xF },
+};
+
+BYTE Chip8::waitInput()
+{
+	if ( mKeys.empty() )
+	{
+		while( true )
+		{
+			int get_char = getchar();
+
+			for ( auto & ref : keyMap )
+			{
+				if ( get_char == ref.bind )
+				{
+					return ref.bind;
+				}
+			}
+		}
+	}
+	else
+	{
+		BYTE key = mKeys.back();
+		mKeys.pop_back();
+		return key;
+	}
+}
+
+void Chip8::addInput(BYTE input_code)
+{
+	mKeys.push_back( input_code );
 }
 
 /*
@@ -79,6 +173,11 @@ WORD Chip8::getNextOpCode()
 
 void Chip8::nextStep()
 {
+	if( mDelayTimer > 0 )
+	{
+		mDelayTimer--;
+	}
+
 	WORD opCode = getNextOpCode();
 	// OP 코드 해독..
 	switch (DecodeOpCodeFirst(opCode)) //opCode & 0xF000
@@ -98,37 +197,17 @@ void Chip8::nextStep()
 		case 0x5000:
 			opCode5XY0( opCode );
 			break;
+	    case 0x6000:
+            opCode6XKK( opCode );
+            break;
 		case 0x7000:
 			opCode7XKK( opCode );
 			break;
 		case 0x8000:
-			switch (DecodeOpCodeForth(opCode)) //4번째 비트로 함수를 구별함.
-			{
-				case 0x0001:
-					opCode8XY1( opCode );
-					break;
-				case 0x0002:
-					opCode8XY2( opCode );
-					break;
-				case 0x0003:
-					opCode8XY3( opCode );
-					break;
-				case 0x0004:
-					opCode8XY4( opCode );
-					break;
-				case 0x0005:
-					opCode8XY5( opCode );
-					break;
-				case 0x0006:
-					opCode8XY6( opCode );
-					break;
-				case 0x0007:
-					opCode8XY7( opCode );
-					break;
-				case 0x000E:
-					opCode8XYE( opCode );
-					break;
-			}
+			nextStep0x8( opCode );
+			break;
+		case 0x9000:
+			opCode9XY0( opCode );
 			break;
 		case 0xA000:
 			opCodeANNN( opCode );
@@ -143,7 +222,7 @@ void Chip8::nextStep()
 			opCodeDXYN( opCode );
 			break;
         case 0xF000:
-			opCodeFX1E( opCode );
+			nextStep0xF( opCode );
             break;
 		case 0x0000: // 기타 명령어.
 		{
@@ -161,6 +240,80 @@ void Chip8::nextStep()
 
 		default: // 아직 안 하고..
 			break;
+	}
+
+}
+
+void Chip8::nextStep0x8(WORD opCode)
+{
+    switch (DecodeOpCodeForth(opCode)) //4번째 비트로 함수를 구별함.
+    {
+        case 0x0000:
+            opCode8XY0(opCode);
+            break;
+        case 0x0001:
+            opCode8XY1( opCode );
+            break;
+        case 0x0002:
+            opCode8XY2( opCode );
+            break;
+        case 0x0003:
+            opCode8XY3( opCode );
+            break;
+        case 0x0004:
+            opCode8XY4( opCode );
+            break;
+        case 0x0005:
+            opCode8XY5( opCode );
+            break;
+        case 0x0006:
+            opCode8XY6( opCode );
+            break;
+        case 0x0007:
+            opCode8XY7( opCode );
+            break;
+        case 0x000E:
+            opCode8XYE( opCode );
+            break;
+    }
+}
+
+void Chip8::nextStep0xF(WORD opCode)
+{
+	switch (DecodeOpCodeForth(opCode))
+	{
+	    case 0x0005:
+	        switch (DecodeOpCodeThird(opCode))
+            {
+                case 0x0060:
+                    opCodeFX65( opCode );
+                    break;
+                case 0x0050:
+                    opCodeFX55( opCode );
+                    break;
+                case 0x0010:
+                    opCodeFX15( opCode );
+                    break;
+            }
+            break;
+	    case 0x0007:
+            opCodeFX07( opCode );
+            break;
+	    case 0x0008:
+            opCodeFX18(opCode);
+            break;
+		case 0x0009:
+			opCodeFX29( opCode );
+			break;
+	    case 0x000A:
+	        opCodeFX0A( opCode );
+            break;
+		case 0x000E:
+			opCodeFX1E( opCode );
+			break;
+	    case 0x0003:
+	        opCodeFX33( opCode );
+	        break;
 	}
 
 }

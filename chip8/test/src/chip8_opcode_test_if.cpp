@@ -56,4 +56,24 @@ TEST_CASE( "Test if OpCodes", "[if]" )
 		REQUIRE(temp+6 == chip8.getProgramCounter());
     }
     chip8.reset();
+
+	//SNE ( Skip Not Equal ) Vx, Vy.
+	//Vx와 Vy가 같지 않으면 다음 구문을 생략한다.
+    SECTION( "9XY0" )
+	{
+    	chip8.injectionCode(0x9010 );
+    	chip8.injectionCode(0x9120 );
+
+    	chip8.setRegisterValue( 0, 0x00 );
+    	chip8.setRegisterValue( 1, 0x00 );
+    	chip8.setRegisterValue( 2, 0x30 );
+
+    	WORD start_pc = chip8.getProgramCounter();
+
+    	chip8.nextStep();
+    	REQUIRE( start_pc + 2 == chip8.getProgramCounter() );
+
+    	chip8.nextStep();
+		REQUIRE( start_pc + 6 == chip8.getProgramCounter() );
+	}
 }
