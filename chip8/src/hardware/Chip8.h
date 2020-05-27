@@ -34,6 +34,7 @@ public:
 
 	void setMemoryValue(BYTE index, BYTE value) { mGameMemory[index] = value; }
 	void setAddressIndex(BYTE address_index) { mAddressIndex = address_index; }
+	void setInjectionCounter(WORD counter) { mInjectionCounter = counter; }
 	void setRegisterValue( BYTE index, BYTE value ) { mRegisters[index] = value; }
 
 	std::vector<WORD>  getCallStack() const {return mStack;}
@@ -68,6 +69,19 @@ private:
 	//명령어를 실제로 수행하는 함수들.
 	// !주의! 값이 저장되는  모든 연산의 '피연산자'는 좌항입니다!
 	// EX )  V1 레지스터의 값을 V2에 넣는다면 -> LD V2 V1
+
+	// [jump]
+	// JP NNN. 실제로 사용되진 않음.
+	void opCode0NNN(WORD opCode);
+
+	// [code]
+	// Clear the display.
+	void opCode00E0(WORD opCode);
+
+	// [code]
+	// Return from a subroutine.
+	//The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
+	void opCode00EE(WORD opCode);
 
 	// [code]
 	//JP(jump) addr ( 점프 addr. ) addr = NNN.
@@ -119,9 +133,11 @@ private:
 	//Vx와 Vy를 더하고. 결과가 8비트(255)가 넘는다면 Vf를 1로. 넘지 않으면 Vf 0으로 정합니다. Vx에는 나머지 8비트만 저장됩니다.
 	void opCode8XY4(WORD opCode);
 
+
 	// [math]
 	//SUB (빼기)  Vx Vy. Vx = Vx - Vy . Vf = NOT borrow.
-	//Vx에 Vy를 빼고, Vf를 Vx가 Vy보다 크면 1. 크지 않으면 0을 저장. Vx엔 결과가 저장된다.
+	//Vf를 Vx가 Vy보다 크면 1. 크지 않으면 0을 저장. Vx에 Vy를 뺀다.  Vx엔 결과가 저장된다.
+	//If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
 	void opCode8XY5(WORD opCode);
 
 	// [bit]
@@ -250,8 +266,8 @@ private:
 	// 함수 호출시 리턴 위치를 알기 위해 위치를 기록해 놓는 콜 스택.
 	std::vector<WORD> mStack;
 
-	//입력 스택. 여기 쌓인대로 키가 입력된다.
-	std::vector<BYTE> mKeys;
+	//입력 스택. 1이면 입력. 0이면 미입력.
+	BYTE mKeys[16];
 };
 
 

@@ -11,7 +11,8 @@
 void Chip8::opCode3XKK(WORD opCode)
 {
 	WORD index = (opCode & 0x0F00) >> 8;
-	if(mRegisters[index] == (opCode & 0x00FF))
+	WORD value =  (opCode & 0x00FF);
+	if(mRegisters[index] == value)
 	{
 		mProgramCounter+=2;
 	}
@@ -22,7 +23,9 @@ void Chip8::opCode3XKK(WORD opCode)
 void Chip8::opCode4XKK(WORD opCode)
 {
 	WORD index = (opCode & 0x0F00) >> 8;
-	if(mRegisters[index] != (opCode & 0x00FF))
+	WORD value =  (opCode & 0x00FF);
+
+	if(mRegisters[index] != value)
 	{
 		mProgramCounter += 2;
 	}

@@ -6,6 +6,21 @@
 #include "../Chip8.h"
 #include <cstdlib>
 
+// [code]
+// Clear the display.
+void Chip8::opCode00E0(WORD opCode)
+{
+	memset( &mScreenData[0][0], 0, sizeof(mScreenData));
+}
+
+// [code]
+// Return from a subroutine.
+//The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
+void Chip8::opCode00EE(WORD opCode)
+{
+	mProgramCounter = mStack.back( ) ;
+	mStack.pop_back( ) ;
+}
 
 // [code]
 //JP(jump) addr ( 점프 addr. ) addr = NNN.
@@ -89,17 +104,24 @@ void Chip8::opCodeDXYN(WORD opCode)
 		{
 			BYTE value = ( line & and_byte ) >>  ( 8 - ( and_index + 1 ) );
 
-			// 스크린 초과하면 스크린 좌측부터 다시 시작하는 코드.
-			int index_x = get_screen_pos( reg_x_value + and_index, 64 );
-			int index_y = get_screen_pos(reg_y_value + index, 32 );
-
-			if ( value == 1 && mScreenData[index_y][index_x] == 1 )
+			if (value == 1)
 			{
-				mRegisters[0xF] = 1;
+				int bit = 0;
+				// 스크린 초과하면 스크린 좌측부터 다시 시작하는 코드.
+				int index_x = get_screen_pos( reg_x_value + and_index, 64 );
+				int index_y = get_screen_pos(reg_y_value + index, 32 );
+
+				if ( mScreenData[index_y][index_x] == 0 )
+				{
+					bit = 1;
+					mRegisters[0xF] = 1;
+				}
+
+				mScreenData[index_y][index_x] = bit;
 			}
 
-			mScreenData[index_y][index_x] = value;
 			and_byte = and_byte >> 1;
+
 		}
 	}
 }

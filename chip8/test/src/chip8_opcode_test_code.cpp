@@ -13,6 +13,51 @@ TEST_CASE( "Test Code OpCodes", "[code]" )
 {
 	Chip8 chip8;
 
+	// [code]
+	// Clear the display.
+	SECTION( "00E0" )
+	{
+		chip8.injectionCode(0xF129 );
+		chip8.injectionCode( 0xD005 );
+		chip8.injectionCode( 0x00E0 );
+		chip8.setRegisterValue( 0x1, 0x0 ); // V1 = 0
+
+		chip8.nextStep();
+		chip8.nextStep();
+		chip8.nextStep();
+
+		for( int y = 0; y < 32; y++ )
+		{
+			for (int x = 0; x < 64; x++ )
+			{
+				REQUIRE(chip8.getScreenData( x, y ) == 0);
+			}
+		}
+	}
+
+	// [code]
+	// Return from a subroutine.
+	// The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
+	SECTION("00EE")
+	{
+		chip8.injectionCode( 0x0000 ); // 의미 없는 코드. PC -> 0x202.
+		chip8.injectionCode( 0x0000 ); // 의미 없는 코드. PC -> 0x204.
+		chip8.injectionCode( 0x2404 ); // call 404; PC -> 0x404. Stack -> 0x204.
+
+		chip8.setInjectionCounter( 0x0404 ); // 0x404부터 코드 작성.
+		chip8.injectionCode(0x00EE); // return subroutine.
+
+		chip8.nextStep(); // 0x0000
+		chip8.nextStep(); // 0x0000
+		chip8.nextStep(); // 0x2404
+		chip8.nextStep(); // 0x00EE -> ret;
+
+		std::vector<WORD> callStack = chip8.getCallStack();
+
+		REQUIRE( chip8.getProgramCounter() == 0x204 + 2  ); // 0x204로 돌아갔어야 했고, 직후 PC가 +2.
+		REQUIRE( callStack.size() == 0 ); // 콜스택이 비어있어야 한다.
+	}
+
 	SECTION( "1NNN" )
 	{
 		chip8.injectionCode( 0x1300 ); // JUMP 0x300

@@ -54,18 +54,12 @@ void Chip8::opCode8XY6(WORD opCode)
 
 // [bit]
 //SHL(SHift Left) Vx, {Vy}. Vx = Vx SHL 1.
-//Vx의 최하의 비트가 1이면 VF를 1로 설정. 아니라면 0. 그 후, Vx를 2만큼 곱해진다. ( 1비트씩 좌로 밀렸으니까 )
+//Vx의 최상위 비트가 1이면 VF를 1로 설정. 아니라면 0. 그 후, Vx를 2만큼 곱해진다. ( 1비트씩 좌로 밀렸으니까 )
 void Chip8::opCode8XYE(WORD opCode)
 {
 	WORD VxIndex = (opCode & 0x0F00) >> 8;
 
-	if((mRegisters[VxIndex] & 0x1) != 0)
-	{
-		mRegisters[0xF] = 1;
-	}
-	else
-	{
-		mRegisters[0xF] = 0;
-	}
+	mRegisters[0xF] = mRegisters[VxIndex] >> 7;
+
 	mRegisters[VxIndex] <<= 1;
 }
