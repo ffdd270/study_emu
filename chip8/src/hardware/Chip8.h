@@ -44,6 +44,7 @@ public:
 
 	void injectionCode( WORD code );
 	void reset();
+	void loadRom();
 
 
 

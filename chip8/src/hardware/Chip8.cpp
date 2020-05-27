@@ -86,22 +86,20 @@ void Chip8::CPUReset()
 
 	mStack.clear();
 	mKeys.clear();
+}
 
-	// 게임 로드 -
-	/*
+void Chip8::loadRom()
+{
 	FILE * game = nullptr;
 	fopen_s( &game, "rom/PONG", "rb" );
-	fread_s( &mGameMemory, sizeof(mGameMemory),0xfff, 1, game);
+	fread_s( &mGameMemory[0x200], sizeof(mGameMemory), 0xfff, 1, game);
 	fclose(game);
-	 */
 }
 
 struct KeyBind
 {
 	BYTE key; BYTE bind;
 };
-
-
 
 static KeyBind keyMap[] = {
 		{ '1', 0x0 },
@@ -175,6 +173,11 @@ WORD Chip8::getNextOpCode()
 
 void Chip8::nextStep()
 {
+	if( mDelayTimer > 0 )
+	{
+		mDelayTimer--;
+	}
+
 	WORD opCode = getNextOpCode();
 	// OP 코드 해독..
 	switch (DecodeOpCodeFirst(opCode)) //opCode & 0xF000

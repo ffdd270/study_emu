@@ -69,7 +69,7 @@ TEST_CASE("TEST Load Opcodes", "load")
 		chip8.nextStep();
 		chip8.nextStep();
 
-		REQUIRE( chip8.getRegisterValue(1) == 0xFE );
+		REQUIRE( chip8.getRegisterValue(1) == 0xFD );
 	}
 
 
