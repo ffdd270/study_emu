@@ -44,7 +44,15 @@ void Chip8::opCodeFX0A(WORD opCode)
 {
 	BYTE vx_reg_index = ( opCode & 0x0F00 ) >> 8;
 
-	mRegisters[vx_reg_index] = waitInput();
+	BYTE input = waitInput();
+
+	if (input == 0xFF)
+	{
+		mProgramCounter -= 2; //대기..
+		return;
+	}
+
+	mRegisters[vx_reg_index] = input;
 }
 
 
@@ -111,6 +119,8 @@ void Chip8::opCodeFX55(WORD opCode)
 	{
 		mGameMemory[mAddressIndex + i] = mRegisters[i];
 	}
+
+	mAddressIndex += reg_end_index + 1;
 }
 
 
@@ -125,4 +135,7 @@ void Chip8::opCodeFX65(WORD opCode)
 	{
 		mRegisters[i] = mGameMemory[mAddressIndex + i];
 	}
+
+
+	mAddressIndex += reg_end_index + 1;
 }

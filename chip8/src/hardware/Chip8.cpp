@@ -76,6 +76,7 @@ void Chip8::CPUReset()
 	memset(mRegisters, 0, sizeof(mRegisters));
 	memset(mScreenData, 0, sizeof(mScreenData));
 	memset(mGameMemory, 0, sizeof(mGameMemory));
+	memset(mKeys, 0, sizeof(mKeys));
 
 	auto * font_set = this->getFontSet();
 
@@ -85,14 +86,13 @@ void Chip8::CPUReset()
 	}
 
 	mStack.clear();
-	mKeys.clear();
 }
 
 void Chip8::loadRom()
 {
 	FILE * game = nullptr;
 	fopen_s( &game, "rom/PONG", "rb" );
-	fread_s( &mGameMemory[0x200], sizeof(mGameMemory), 0xfff, 1, game);
+	fread_s( &mGameMemory[0x200], 0xfff, 0xfff, 1, game);
 	fclose(game);
 }
 
@@ -122,32 +122,20 @@ static KeyBind keyMap[] = {
 
 BYTE Chip8::waitInput()
 {
-	if ( mKeys.empty() )
+	for( int i = 0; i < 16; i++ )
 	{
-		while( true )
+		if ( mKeys[i] == 1 )
 		{
-			int get_char = getchar();
-
-			for ( auto & ref : keyMap )
-			{
-				if ( get_char == ref.bind )
-				{
-					return ref.bind;
-				}
-			}
+			return i;
 		}
 	}
-	else
-	{
-		BYTE key = mKeys.back();
-		mKeys.pop_back();
-		return key;
-	}
+
+	return 0xFF;
 }
 
 void Chip8::addInput(BYTE input_code)
 {
-	mKeys.push_back( input_code );
+	mKeys[input_code] = 1;
 }
 
 /*
@@ -182,6 +170,17 @@ void Chip8::nextStep()
 	// OP 코드 해독..
 	switch (DecodeOpCodeFirst(opCode)) //opCode & 0xF000
 	{
+		case 0x0000:
+			switch (DecodeOpCodeForth(opCode))
+			{
+				case 0x0000:
+					opCode00E0(opCode);
+					break;
+				case 0x000E:
+					opCode00EE(opCode);
+					break;
+			}
+			break;
 		case 0x1000: // 코드 점프! 명령어 . 0x1XXX 만 이곳에 들어올 것이다. 명령어론 JP addr ( 점프 addr. )
 			opCode1NNN( opCode );
 			break;
@@ -221,27 +220,25 @@ void Chip8::nextStep()
 		case 0xD000:	
 			opCodeDXYN( opCode );
 			break;
+		case 0xE000:
+			switch (DecodeOpCodeForth( opCode ))
+			{
+				case 0x000E:
+					opCodeEX9E( opCode );
+					break;
+				case 0x0001:
+					opCodeEXA1( opCode );
+					break;
+			}
+			break;
         case 0xF000:
 			nextStep0xF( opCode );
             break;
-		case 0x0000: // 기타 명령어.
-		{
-			// 명령어 SET 중에 0x0N00. 즉, N 부분을 명령으로 사용하는 코드는 없다. 그래서 마지막만 찾으면 됨.
-			//http://devernay.free.fr/hacks/chip8/C8TECH10.HTM 여기서 opcodes 참고.
-			switch (DecodeOpCodeForth(opCode)) // opCode & 0x000F
-			{
-				case 0x0000:
-					break;
-				case 0x000E:
-					break;
-			}
-		}
-		break;
-
 		default: // 아직 안 하고..
 			break;
 	}
 
+	memset(mKeys, 0, sizeof(mKeys));
 }
 
 void Chip8::nextStep0x8(WORD opCode)
