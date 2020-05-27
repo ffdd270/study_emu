@@ -35,6 +35,7 @@ public:
 
 	void nextStep();
 	void nextStep0xF(WORD opCode);
+	void nextStep0x8(WORD opCode);
 
 	void injectionCode( WORD code );
 	void reset();

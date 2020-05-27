@@ -136,37 +136,14 @@ void Chip8::nextStep()
 		case 0x5000:
 			opCode5XY0( opCode );
 			break;
+	    case 0x6000:
+            opCode6XKK( opCode );
+            break;
 		case 0x7000:
 			opCode7XKK( opCode );
 			break;
 		case 0x8000:
-			switch (DecodeOpCodeForth(opCode)) //4번째 비트로 함수를 구별함.
-			{
-				case 0x0001:
-					opCode8XY1( opCode );
-					break;
-				case 0x0002:
-					opCode8XY2( opCode );
-					break;
-				case 0x0003:
-					opCode8XY3( opCode );
-					break;
-				case 0x0004:
-					opCode8XY4( opCode );
-					break;
-				case 0x0005:
-					opCode8XY5( opCode );
-					break;
-				case 0x0006:
-					opCode8XY6( opCode );
-					break;
-				case 0x0007:
-					opCode8XY7( opCode );
-					break;
-				case 0x000E:
-					opCode8XYE( opCode );
-					break;
-			}
+			nextStep0x8( opCode );
 			break;
 		case 0x9000:
 			opCode9XY0( opCode );
@@ -206,13 +183,70 @@ void Chip8::nextStep()
 
 }
 
+void Chip8::nextStep0x8(WORD opCode)
+{
+    switch (DecodeOpCodeForth(opCode)) //4번째 비트로 함수를 구별함.
+    {
+        case 0x0000:
+            opCode8XY0(opCode);
+            break;
+        case 0x0001:
+            opCode8XY1( opCode );
+            break;
+        case 0x0002:
+            opCode8XY2( opCode );
+            break;
+        case 0x0003:
+            opCode8XY3( opCode );
+            break;
+        case 0x0004:
+            opCode8XY4( opCode );
+            break;
+        case 0x0005:
+            opCode8XY5( opCode );
+            break;
+        case 0x0006:
+            opCode8XY6( opCode );
+            break;
+        case 0x0007:
+            opCode8XY7( opCode );
+            break;
+        case 0x000E:
+            opCode8XYE( opCode );
+            break;
+    }
+}
+
 void Chip8::nextStep0xF(WORD opCode)
 {
 	switch (DecodeOpCodeForth(opCode))
 	{
+	    case 0x0005:
+	        switch (DecodeOpCodeThird(opCode))
+            {
+                case 0x0060:
+                    opCodeFX65( opCode );
+                    break;
+                case 0x0050:
+                    opCodeFX55( opCode );
+                    break;
+                case 0x0010:
+                    opCodeFX15( opCode );
+                    break;
+            }
+
+	    case 0x0007:
+            opCodeFX07( opCode );
+            break;
+	    case 0x0008:
+            opCodeFX18(opCode);
+            break;
 		case 0x0009:
 			opCodeFX29( opCode );
 			break;
+	    case 0x000A:
+	        opCodeFX0A( opCode );
+            break;
 		case 0x000E:
 			opCodeFX1E( opCode );
 			break;
