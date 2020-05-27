@@ -84,6 +84,8 @@ void Chip8::CPUReset()
 		mGameMemory[i] = font_set[i];
 	}
 
+	mStack.clear();
+	mKeys.clear();
 
 	// 게임 로드 -
 	/*
@@ -92,6 +94,62 @@ void Chip8::CPUReset()
 	fread_s( &mGameMemory, sizeof(mGameMemory),0xfff, 1, game);
 	fclose(game);
 	 */
+}
+
+struct KeyBind
+{
+	BYTE key; BYTE bind;
+};
+
+
+
+static KeyBind keyMap[] = {
+		{ '1', 0x0 },
+		{ '2', 0x1 },
+		{ '3', 0x2 },
+		{ '4', 0x3 },
+		{ 'q', 0x4 },
+		{ 'w', 0x5 },
+		{ 'e', 0x6 },
+		{ 'r', 0x7 },
+		{ 'a', 0x8 },
+		{ 's', 0x9 },
+		{ 'd', 0xA },
+		{ 'f', 0xB },
+		{ 'z', 0xC },
+		{ 'x', 0xD },
+		{ 'c', 0xE },
+		{ 'v', 0xF },
+};
+
+BYTE Chip8::waitInput()
+{
+	if ( mKeys.empty() )
+	{
+		while( true )
+		{
+			int get_char = getchar();
+
+			for ( auto & ref : keyMap )
+			{
+				if ( get_char == ref.bind )
+				{
+					return ref.bind;
+				}
+			}
+		}
+	}
+	else
+	{
+		BYTE key = mKeys.back();
+		mKeys.pop_back();
+		return key;
+	}
+}
+
+void Chip8::addInput(BYTE input_code)
+{
+	mKeys.push_back( input_code );
 }
 
 /*
@@ -234,7 +292,7 @@ void Chip8::nextStep0xF(WORD opCode)
                     opCodeFX15( opCode );
                     break;
             }
-
+            break;
 	    case 0x0007:
             opCodeFX07( opCode );
             break;

@@ -22,6 +22,11 @@ public:
 	WORD getAddressIndex() const { return mAddressIndex; }
 	BYTE getRandomValue() const { return mRandomValue; }
 	BYTE getMemoryValue(BYTE index){ return mGameMemory[index]; }
+	BYTE getDelayTimer() { return mDelayTimer; }
+	BYTE getSoundTimer() { return mSoundTimer; }
+
+	BYTE waitInput();
+	void addInput(BYTE input_code);
 
 	static BYTE * getFontSet();
 	static int getFontSetLength() { return 80; }
@@ -243,6 +248,9 @@ private:
 
 	// 함수 호출시 리턴 위치를 알기 위해 위치를 기록해 놓는 콜 스택.
 	std::vector<WORD> mStack;
+
+	//입력 스택. 여기 쌓인대로 키가 입력된다.
+	std::vector<BYTE> mKeys;
 };
 
 

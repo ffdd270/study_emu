@@ -44,7 +44,7 @@ void Chip8::opCodeFX0A(WORD opCode)
 {
 	BYTE vx_reg_index = ( opCode & 0x0F00 ) >> 8;
 
-	mRegisters[vx_reg_index] = getchar();
+	mRegisters[vx_reg_index] = waitInput();
 }
 
 
@@ -107,7 +107,7 @@ void Chip8::opCodeFX55(WORD opCode)
 {
 	BYTE reg_end_index = ( opCode & 0x0F00 ) >> 8;
 
-	for ( BYTE i = 0; i < reg_end_index; i++ )
+	for ( BYTE i = 0; i <= reg_end_index; i++ )
 	{
 		mGameMemory[mAddressIndex + i] = mRegisters[i];
 	}
@@ -121,7 +121,7 @@ void Chip8::opCodeFX65(WORD opCode)
 {
 	BYTE reg_end_index = ( opCode & 0x0F00 ) >> 8;
 
-	for ( BYTE i = 0; i < reg_end_index; i++ )
+	for ( BYTE i = 0; i <= reg_end_index; i++ )
 	{
 		mRegisters[i] = mGameMemory[mAddressIndex + i];
 	}
