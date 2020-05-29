@@ -109,7 +109,7 @@ void Chip8::opCodeDXYN(WORD opCode)
 				int bit = 0;
 				// 스크린 초과하면 스크린 좌측부터 다시 시작하는 코드.
 				int index_x = get_screen_pos( reg_x_value + and_index, 64 );
-				int index_y = get_screen_pos(reg_y_value + index, 32 );
+				int index_y = get_screen_pos( reg_y_value + ( index - mAddressIndex ), 32 );
 
 				if ( mScreenData[index_y][index_x] == 0 )
 				{
