@@ -159,6 +159,10 @@ WORD Chip8::getNextOpCode()
 	return res; // opCode 반환
 }
 
+
+
+
+
 void Chip8::nextStep()
 {
 	if( mDelayTimer > 0 )

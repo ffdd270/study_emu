@@ -57,7 +57,7 @@ void Chip8::opCodeFX0A(WORD opCode)
 
 
 // [load]
-// LD Vx, K. Delay Timer = Vx.
+// LD K, Vx. Delay Timer = Vx.
 // DT(Delay Timer)를 Vx로.
 void Chip8::opCodeFX15(WORD opCode)
 {
