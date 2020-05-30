@@ -15,7 +15,7 @@
 // Clear the display.
 void Chip8::opCode00E0(WORD opCode)
 {
-	pushDisasmString( opCodeToDisASMString( opCode, "CLS" ) );
+	pushDisASMString(opCodeToDisASMString(opCode, "CLS"));
 }
 
 // [code]
@@ -23,7 +23,7 @@ void Chip8::opCode00E0(WORD opCode)
 //The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
 void Chip8::opCode00EE(WORD opCode)
 {
-	pushDisasmString( opCodeToDisASMString( opCode, "RTN" ) );
+	pushDisASMString(opCodeToDisASMString(opCode, "RTN"));
 }
 
 // [code]
@@ -32,7 +32,7 @@ void Chip8::opCode1NNN(WORD opCode)
 {
 	std::string comment = "JP " + hex_to_string( opCode & 0xFFF );
 
-	pushDisasmString( opCodeToDisASMString( opCode, comment ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 
@@ -42,7 +42,7 @@ void Chip8::opCode2NNN(WORD opCode)
 {
 	std::string comment = "CALL " + hex_to_string( opCode & 0xFFF );
 
-	pushDisasmString( opCodeToDisASMString( opCode, comment ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 // [code]
@@ -52,7 +52,7 @@ void Chip8::opCodeANNN(WORD opCode)
 {
 	std::string comment = "LD I " + hex_to_string( opCode & 0xFFF );
 
-	pushDisasmString( opCodeToDisASMString( opCode, comment ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 // [code]
@@ -62,7 +62,7 @@ void Chip8::opCodeBNNN(WORD opCode)
 {
 	std::string comment = "JP V0 +" + hex_to_string( opCode & 0xFFF );
 
-	pushDisasmString( opCodeToDisASMString( opCode, comment ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 // [code]
@@ -70,7 +70,8 @@ void Chip8::opCodeBNNN(WORD opCode)
 //0에서 255까지의 값을 생성한 후, kk값으로 AND 연산을 한 결과를 Vx에 저장한다. AND에 관한 정보는 8xy2를 참조.
 void Chip8::opCodeCXKK(WORD opCode)
 {
-	pushDisasmString( opCodeToDisASMString( opCode, createComment_RegByte("RND", DecodeOpCodeSecond(opCode), opCode & 0x00FF ) ) );
+	pushDisASMString(
+			opCodeToDisASMString(opCode, createComment_RegByte("RND", GetOpCodeSecondValue(opCode), opCode & 0x00FF)));
 }
 
 
@@ -82,10 +83,10 @@ void Chip8::opCodeCXKK(WORD opCode)
 // XOR 명령은 8xy3 명령을 참조.
 void Chip8::opCodeDXYN(WORD opCode)
 {
-	std::string comment = createComment_Registers( "DRW", DecodeOpCodeSecond( opCode ), DecodeOpCodeThird( opCode ) );
-	comment += " , Load " + hex_to_string( DecodeOpCodeForth( opCode ) ) +  " Byte.";
+	std::string comment = createComment_Registers( "DRW", GetOpCodeSecondValue( opCode ), GetOpCodeThirdValue( opCode ) );
+	comment += " , Load " + hex_to_string( GetOpCodeForthValue( opCode ) ) +  " Byte.";
 
-	pushDisasmString( opCodeToDisASMString( opCode, comment ) );\
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 // [code]
@@ -95,7 +96,7 @@ void Chip8::opCodeFX29(WORD opCode)
 {
 	std::string comment = "LD ADDRESS_REG SPRITE( V" + hex_to_string( opCode & 0x0F00 ) + " ) ";
 
-	pushDisasmString( opCodeToDisASMString( opCode, comment ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 #endif

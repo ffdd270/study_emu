@@ -10,7 +10,7 @@ inline std::string hex_to_string( int opCode )
 {
 	std::string string = "";
 
-	while ( opCode != 0 )
+	do
 	{
 		int number = opCode % 16;
 		std::string add_string = "";
@@ -42,9 +42,9 @@ inline std::string hex_to_string( int opCode )
 		string.append( add_string );
 
 		opCode /= 16;
-	}
+	} while ( opCode != 0 );
 
-	return "0x" + std::string( string.rbegin(), string.rend());
+	return std::string( string.rbegin(), string.rend());
 }
 
 inline std::string createComment_Registers( const std::string & func_name, BYTE register_index_x, BYTE register_index_y )
@@ -54,14 +54,28 @@ inline std::string createComment_Registers( const std::string & func_name, BYTE 
 
 inline std::string createComment_RegByte( const std::string & func_name, BYTE register_index_x, BYTE byte )
 {
-	return func_name + " V" + hex_to_string( register_index_x ) + " " + hex_to_string( byte );
+	return func_name + " V" + hex_to_string( register_index_x ) + " 0x" + hex_to_string( byte );
 }
 
 
 inline std::string opCodeToDisASMString( WORD opCode, const std::string & comment )
 {
-	return hex_to_string(opCode) + " # " + comment;
+	return  "0x" + hex_to_string(opCode) + " # " + comment;
 }
 
+inline WORD GetOpCodeSecondValue( WORD opCode )
+{
+	return (opCode & 0x0F00)  >> 8;
+}
 
+inline WORD GetOpCodeThirdValue( WORD opCode )
+{
+	return (opCode & 0x00F0)  >> 4;
+}
+
+inline WORD GetOpCodeForthValue( WORD opCode )
+{
+	return (opCode & 0xF000)  >> 12;
+}
+\
 #endif //CHIP8_DISASM_UTIL_H

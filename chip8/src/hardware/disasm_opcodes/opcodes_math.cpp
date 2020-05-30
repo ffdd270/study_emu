@@ -6,14 +6,13 @@
 //
 
 #include "../Chip8.h"
-
+#include "disasm_util.h"
 // [math]
 //ADD Vx Byte. ( 더하기 Vx Byte ) Vx = X, Byte = NN
 void Chip8::opCode7XKK(WORD opCode)
 {
-	WORD VxIndex = (opCode & 0x0F00) >> 8;
-	BYTE NN = opCode & 0x00FF;
-	mRegisters[VxIndex] += NN;
+	std::string comment = createComment_RegByte( "ADD", GetOpCodeSecondValue( opCode ), opCode & 0x00FF );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 // [math]
@@ -21,17 +20,8 @@ void Chip8::opCode7XKK(WORD opCode)
 //Vx와 Vy를 더하고. 결과가 8비트(255)가 넘는다면 Vf를 1로. 넘지 않으면 Vf 0으로 정합니다. Vx에는 나머지 8비트만 저장됩니다.
 void Chip8::opCode8XY4(WORD opCode)
 {
-	WORD VxIndex = (opCode & 0x0F00) >> 8;
-	WORD VyIndex = (opCode & 0x00F0) >> 4;
-	if(mRegisters[VxIndex] > 0xFF - mRegisters[VyIndex]) //더하고 계산하면 오버플로우 발생
-	{
-		mRegisters[0xF] = 1; //carry
-	}
-	else
-	{
-		mRegisters[0xF] = 0;
-	}
-	mRegisters[VxIndex] += mRegisters[VyIndex];
+	std::string comment = createComment_Registers( "ADD", GetOpCodeSecondValue( opCode ), GetOpCodeThirdValue( opCode ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 // [math]
@@ -40,20 +30,8 @@ void Chip8::opCode8XY4(WORD opCode)
 //If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
 void Chip8::opCode8XY5(WORD opCode)
 {
-	WORD VxIndex = (opCode & 0x0F00) >> 8;
-	WORD VyIndex = (opCode & 0x00F0) >> 4;
-
-
-	if(mRegisters[VxIndex] > mRegisters[VyIndex])
-	{
-		mRegisters[0xF] = 1;
-	}
-	else
-	{
-		mRegisters[0xF] = 0;
-	}
-
-	mRegisters[VxIndex] -= mRegisters[VyIndex];
+	std::string comment = createComment_Registers( "SUB", GetOpCodeSecondValue( opCode ), GetOpCodeThirdValue( opCode ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 
 }
 
@@ -63,20 +41,8 @@ void Chip8::opCode8XY5(WORD opCode)
 //If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
 void Chip8::opCode8XY7(WORD opCode)
 {
-	WORD VxIndex = (opCode & 0x0F00) >> 8;
-	WORD VyIndex = (opCode & 0x00F0) >> 4;
-
-
-	if(mRegisters[VyIndex] > mRegisters[VxIndex])
-	{
-		mRegisters[0xF] = 1;
-	}
-	else
-	{
-		mRegisters[0xF] = 0;
-	}
-
-	mRegisters[VxIndex] =  mRegisters[VyIndex] - mRegisters[VxIndex];
+	std::string comment = createComment_Registers( "SUBN", GetOpCodeSecondValue( opCode ), GetOpCodeThirdValue( opCode ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 // [math]
@@ -84,8 +50,8 @@ void Chip8::opCode8XY7(WORD opCode)
 // register I의 값에 Vx를 더한다.
 void Chip8::opCodeFX1E(WORD opCode)
 {
-	WORD VxIndex = (opCode & 0x0F00) >> 8;
-	mAddressIndex += mRegisters[VxIndex];
+	std::string comment = "ADD I, V" + hex_to_string( GetOpCodeSecondValue( opCode ) );
+	pushDisASMString(opCodeToDisASMString(opCode, comment));
 }
 
 #endif
