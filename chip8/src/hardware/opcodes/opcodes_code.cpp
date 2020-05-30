@@ -1,3 +1,5 @@
+#ifndef _CHIP8_DISASM_BUILD
+
 //
 // Created by ffdd270 on 2020-05-20.
 //
@@ -109,7 +111,7 @@ void Chip8::opCodeDXYN(WORD opCode)
 				int bit = 0;
 				// 스크린 초과하면 스크린 좌측부터 다시 시작하는 코드.
 				int index_x = get_screen_pos( reg_x_value + and_index, 64 );
-				int index_y = get_screen_pos(reg_y_value + index, 32 );
+				int index_y = get_screen_pos( reg_y_value + ( index - mAddressIndex ), 32 );
 
 				if ( mScreenData[index_y][index_x] == 0 )
 				{
@@ -134,3 +136,5 @@ void Chip8::opCodeFX29(WORD opCode)
 	BYTE reg_x_index = ( opCode & 0x0F00 ) >> 8;
 	mAddressIndex = mRegisters[reg_x_index] * 5;
 }
+
+#endif

@@ -1,3 +1,5 @@
+#ifndef _CHIP8_DISASM_BUILD
+
 //
 // Created by ffdd270 on 2020-05-20.
 //
@@ -57,7 +59,7 @@ void Chip8::opCodeFX0A(WORD opCode)
 
 
 // [load]
-// LD Vx, K. Delay Timer = Vx.
+// LD K, Vx. Delay Timer = Vx.
 // DT(Delay Timer)를 Vx로.
 void Chip8::opCodeFX15(WORD opCode)
 {
@@ -139,3 +141,5 @@ void Chip8::opCodeFX65(WORD opCode)
 
 	mAddressIndex += reg_end_index + 1;
 }
+
+#endif

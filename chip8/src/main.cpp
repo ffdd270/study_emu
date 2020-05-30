@@ -121,9 +121,6 @@ void render( Chip8 & chip8 )
 			}
 		}
 	}
-
-
-
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -136,6 +133,26 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
+#ifdef  _CHIP8_DISASM_BUILD
+
+int main() // 디스어셈블러 빌드
+{
+	chip8.reset();
+	chip8.loadRom();
+
+	while( !chip8.isEOF() )
+	{
+		chip8.nextStep();
+	}
+
+	chip8.createDisASMFile();
+}
+
+
+#endif
+
+
+#ifndef _CHIP8_DISASM_BUILD
 
 int main()
 {
@@ -174,9 +191,8 @@ int main()
 
 
 	double lastTime = 0.0;
-	const double maxFPS = 120.0;
+	const double maxFPS = 240.0;
 	const double maxPeriod = 1.0 / maxFPS;
-#define __CHIP8_DEBUG
 
 	glfwSetKeyCallback(window, key_callback);
 
@@ -204,12 +220,13 @@ int main()
 
 #ifdef __CHIP8_DEBUG
 		}
+#endif
 		while ( time - lastTime < maxPeriod )
 		{
 			time = glfwGetTime();
 			glfwPollEvents();
 		}
-#endif
+
 		lastTime = glfwGetTime();
 	}
 
@@ -244,3 +261,9 @@ int main()
 
 	return 0;
 }
+
+
+
+
+
+#endif //  _CHIP8_DISASM_BUILD

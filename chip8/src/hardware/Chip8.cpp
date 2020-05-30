@@ -159,6 +159,39 @@ WORD Chip8::getNextOpCode()
 	return res; // opCode 반환
 }
 
+
+
+
+#ifdef _CHIP8_DISASM_BUILD
+
+#include "disasm_opcodes/disasm_util.h"
+
+void Chip8::pushDisASMString(const std::string &code)
+{
+	codes.push_back( code );
+}
+
+void Chip8::createDisASMFile()
+{
+	int start_address = 0x200;
+
+
+	FILE * disasm = nullptr;
+	fopen_s( &disasm, "rom/PONG_disasm_debug.txt", "wt" );
+
+	for(  auto & string : codes )
+	{
+		std::string result = "0x" + hex_to_string(start_address) + ": " + string + "\n";
+		fwrite(result.c_str(), sizeof ( char ), result.length(), disasm );
+
+		start_address += 2;
+	}
+
+	fclose(disasm);
+}
+
+#endif
+
 void Chip8::nextStep()
 {
 	if( mDelayTimer > 0 )
@@ -167,6 +200,15 @@ void Chip8::nextStep()
 	}
 
 	WORD opCode = getNextOpCode();
+
+	if (opCode == 0x0000)
+	{
+#ifdef _CHIP8_DISASM_BUILD
+		mIsEOF = true;
+		return;
+#endif
+	}
+
 	// OP 코드 해독..
 	switch (DecodeOpCodeFirst(opCode)) //opCode & 0xF000
 	{
@@ -234,7 +276,7 @@ void Chip8::nextStep()
         case 0xF000:
 			nextStep0xF( opCode );
             break;
-		default: // 아직 안 하고..
+		default:
 			break;
 	}
 

@@ -1,0 +1,185 @@
+
+THIS IS PONG.
+
+# 주소는 0x200부터 시작합니다. 
+...
+#FUNC : INIT
+
+0x000: 6A 02 # LD VA 02
+0x002: 6B 0C # LD VB 0C
+0x004: 6C 3F # LD VC 3F 
+0x006: 6D 0C # LD VD 0C
+0x008: A2 EA # LD ADDRESS_INDEX 2EA
+0x00A: DA B6 # DRW VA VB, 6Byte
+0x00C: DC D6 # DRW VC VD, 6Byte
+0x00E: 6E 00 # LD VE 00
+0x010: 22 D4 # call 2D4 ( D4 호출 )
+
+
+# 변수값 세팅. 
+
+0x012: 66 03 # LD V6, 03
+0x014: 68 02 # LD V8, 02
+0x016: 60 60 # LD V0, 60
+0x018: F0 15 # LD DT, V0
+
+# 변수값 세팅
+
+# 60Hz 만큼 대기
+
+0x01A: F0 07 # LD V0, DT
+0x01C: 30 00 # SE V0, 00
+0x01E: 12 1A # JP 21A ( 1A로 점프. 200부터 코드 영역. )
+
+# 60Hz 만큼 대기
+...
+
+# FUNC : MAIN_LOOP. 
+
+# 랜덤으로 공을 생성해서 대충 배치함
+
+0x020: C7 17 # RAND V7, 17
+0x022: 77 08 # ADD V7, 8
+0x024: 69 FF # LOAD V9 FF
+0x026: A2 F0 # LD ADDRESS_INDEX, F0
+0x028: D6 71 # DRW V6, V7
+
+# 랜덤으로 공을 생성해서 대충 배치함
+
+
+0x02A: A2 EA # LD ADDRESS INDEX 2EA # 0x076에서 여기로 JP함.
+0x02C: DA B6 # DRW VA, VB. 6 Byte.
+0x02E: DC D6 # DRW VC, VD, 6 Byte.
+0x030: 60 01 # LD V0, 01
+0x032: E0 A1 # SKNP V0 ( V0 == Not Pressed? PC += 2.)
+    0x034: 7B FE # ADD VB, FE
+
+0x036: 60 04 # LD V0, 04
+0x038: E0 A1 # SKNP V0 ( V0 == Not Pressed? PC += 2. )
+    0x03A: 7B 02 # ADD VB, 02
+
+0x03C: 60 1F # LD V0, 1F
+0x03E: 8B 02 # AND VB, 02
+0x040: DA B6 # DRW VA, VB. 6Byte.
+0x042: 60 0C # LD V0, 0C
+0x044: E0 A1 # SNKP V0F
+    0x046: 7D FE # ADD VD, FE
+    
+0x048: 60 0D # LD V0, 0D
+0x04A: E0 A1 # SKNP V0
+    0x04C: 7D 02 # ADD VD, 02
+
+0x04E: 60 1F # LD V0, 1F
+0x050: 8D 02 # AND VD, V0
+0x052: DC D6 # DRW VC, VD. 6
+0x054: A2 F0 # LD ADDRESS_INDEX 2F0
+0x056: D6 71 # DRW V6, V7, 1
+0x058: 86 84 # ADD V6 V8
+0x05A: 87 94 # ADD V7 V9
+
+0x05C: 60 3F # LD V0 3F 
+0x05E: 86 02 # AND V6 V0 # V6 ( X값 )을 V0(3f, 63)로 AND.
+
+0x060: 61 1F # LD V1 1F
+0x062: 87 12 # AND V7 V1 # V7 ( Y값 )을 V0(1f, 31)로 AND. 
+
+# 값 확인. 벽이랑 충돌 했는가? 
+0x064: 46 02 # SNE V6 02 # X값이 왼쪽 끝?   
+    0x066: 12 78 # JP 278
+
+0x068: 46 3F # SNE V6 3F # X값이 오른쪽 끝?
+    0x06A: 12 82 # JP 282
+
+0x06C: 47 1F # SNE V7 1F #.. AND 했는데 Y값이 위에?
+    0x06E: 69 FF # LD V9 FF
+
+0x070: 47 00 # SNE V7 00 # Y값이 바닥? 
+    0x072: 69 01 # LD V9 01
+
+0x074: D6 71 # DRW V6 V7 1byte.
+0x076: 12 2A # JP 22A
+# 값 확인. 벽이랑 충돌 했는가? 
+
+...
+
+0x078: 68 02 # LD V8 02
+0x07A: 63 01 # LD V3 01
+0x07C: 80 70 # LD V0 V7
+0x07E: 80 B5 # SUB V0 VB
+0x080: 12 8A # JP 28A
+
+...
+
+0x082: 68 FE # LD V8 FE
+0x084: 63 0A # LD V3 0A
+0x086: 80 70 # LD V0 V7
+
+0x088: 80 D5 # SUB V0 VD 
+0x08A: 3F 01 # SE VF 01
+    0x08C: 12 A2 # JP 2A2
+    
+0x08E: 61 02 # LD V1 02
+0x090: 80 15 # SUB V0 V1 
+0x092: 3F 01 # SE VF 01 
+    0x094: 12 BA # JP 2BA 
+    
+0x096: 80 15 # SUB V0 V1
+0x098: 3F 01 # SE VF 01
+    0x09A: 12 C8 # JP 2C8 
+
+0x09C: 80 15 # SUB V0 V1
+0x09E: 3F 01 # SE VF 01 
+    0x0A0: 12 C2 # JP 2C2
+
+0x0A2: 60 20 # LD V0 20 
+0x0A4: F0 18 # LD ST V0
+0x0A6: 22 D4 # call 2D4
+0x0A8: 8E 34 # ADD VE V3
+0x0AA: 22 D4 # call 2D4
+0x0AC: 66 3E # LD V6 3E
+0x0AE: 33 01 # SE V3 01
+    0x0B0: 66 03 # LD V6 03
+
+0x0B2: 68 FE # LD V8 FE
+0x0B4: 33 01 # SE V3 01 
+    0x0B6: 68 02 # LD V8 02
+
+0x0B8: 12 16 # JP 216
+
+... 
+
+0x0BA: 79 FF # ADD V9 FF
+0x0BC: 49 FE # SNE V9 FE
+0x0BE: 69 FF # LD V9 FF
+0x0C0: 12 C8 # JP 2C8 
+
+... 
+
+
+0x0C2: 79 01 # ADD V9 01
+0x0C4: 49 02 # SNE V9 02
+0x0C6: 69 01 # LD V9 01
+0x0C8: 60 04 # LD V0 04
+0x0CA: F0 18 # LD ST V0
+0x0CC: 76 01 # ADD V6 01
+0x0CE: 46 40 # SNE V6 40
+0x0D0: 76 FE # ADD V6, FE
+0x0D2: 12 6C # JP 26C
+
+...
+
+#FUNC : SET 점수판
+
+0x0D4: A2 F2 # LD ADDRESS_INDEX F2
+0x0D6: FE 33 # LD B VE ( BCD VE. LOAD 0xF2~0xF5 )
+0x0D8: F2 65 # LD V0~V2 ADDRESS_INDEX~ADDRESS_INDEX+2. 
+0x0DA: F1 29 # LD ADDRESS_INDEX SPRITE_ADDRESS(V1)
+0x0DC: 64 14 # LD V4, 14
+0x0DE: 65 00 # LD V5, 00
+0x0E0: D4 55 # DRW V4, V5. 5 Byte.
+0x0E2: 74 15 # ADD V4, 15
+0x0E4: F2 29 # LD ADDRESS_INDEX SPRITE_ADDRESS(V2)
+0x0E8: D4 55 # DRW V4, V5. 5 Byte.
+0x0EA: 00 EE # RTN SUBRUTINE
+
+# 맨날 불리는 그 부분. 점수 찍는 부분이다. 

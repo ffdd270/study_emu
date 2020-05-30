@@ -1,3 +1,5 @@
+#ifndef _CHIP8_DISASM_BUILD
+
 //
 // Created by ffdd270 on 2020-05-20.
 //
@@ -55,3 +57,5 @@ void Chip8::opCode9XY0(WORD opCode)
 		mProgramCounter += 2;
 	}
 }
+
+#endif
