@@ -16,7 +16,7 @@ include_directories(${GLFW_INCLUDE_DIR})
 
 
 # 디스어셈블러 빌드 옵션
-add_compile_definitions( _CHIP8_DISASM_BUILD )
+# add_compile_definitions( _CHIP8_DISASM_BUILD )
 
 
 set(chip8_src_files

@@ -4,6 +4,9 @@
 
 #ifndef CHIP8_DISASM_UTIL_H
 #define CHIP8_DISASM_UTIL_H
+
+#ifdef _CHIP8_DISASM_BUILD
+
 #include <string>
 
 inline std::string hex_to_string( int opCode )
@@ -77,5 +80,7 @@ inline WORD GetOpCodeForthValue( WORD opCode )
 {
 	return (opCode & 0xF000)  >> 12;
 }
-\
+
+#endif //_CHIP8_DISASM_BUILD
+
 #endif //CHIP8_DISASM_UTIL_H
