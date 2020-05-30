@@ -7,7 +7,7 @@
 
 #include "../typedef.h"
 #include <vector>
-
+#include <string>
 class Chip8
 {
 public:
@@ -47,9 +47,9 @@ public:
 	void reset();
 	void loadRom();
 
-
-
-
+#ifdef _CHIP8_DISASM_BUILD
+	void pushDisasmString(const std::string & code);
+#endif
 	/*
 	 * OP Code는 4자리다. 0xFFFF 형식으로 되어 있기도 하고..
 	 * 그래서 최대수의 AND 연산으로 각 자리수를 구해줄 수 있다. 이를태면..

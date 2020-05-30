@@ -1,3 +1,5 @@
+#ifndef _CHIP8_DISASM_BUILD
+
 //
 // Created by ffdd270 on 2020-05-20.
 //
@@ -134,3 +136,5 @@ void Chip8::opCodeFX29(WORD opCode)
 	BYTE reg_x_index = ( opCode & 0x0F00 ) >> 8;
 	mAddressIndex = mRegisters[reg_x_index] * 5;
 }
+
+#endif

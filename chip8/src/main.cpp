@@ -171,9 +171,8 @@ int main()
 
 
 	double lastTime = 0.0;
-	const double maxFPS = 120.0;
+	const double maxFPS = 240.0;
 	const double maxPeriod = 1.0 / maxFPS;
-#define __CHIP8_DEBUG
 
 	glfwSetKeyCallback(window, key_callback);
 
@@ -201,12 +200,13 @@ int main()
 
 #ifdef __CHIP8_DEBUG
 		}
+#endif
 		while ( time - lastTime < maxPeriod )
 		{
 			time = glfwGetTime();
 			glfwPollEvents();
 		}
-#endif
+
 		lastTime = glfwGetTime();
 	}
 
