@@ -91,7 +91,7 @@ void Chip8::CPUReset()
 void Chip8::loadRom()
 {
 	FILE * game = nullptr;
-	fopen_s( &game, "rom/PONG", "rb" );
+	fopen_s( &game, "rom/INVADERS", "rb" );
 	fread_s( &mGameMemory[0x200], 0xfff, 0xfff, 1, game);
 	fclose(game);
 }
