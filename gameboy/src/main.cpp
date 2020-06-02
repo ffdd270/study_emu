@@ -1,8 +1,20 @@
-#include <iostream>
-#include <GLFW/glfw3.h>
+#include "lib/GLRenderer.h"
+#include "lib/Window.h"
+
 
 int main()
 {
-	std::cout << "Hello, World!" << std::endl;
-	return 0;
+	Angelica::Window window;
+	Angelica::GLRenderer renderer;
+
+	window.create( "I Will Keep Comming", 640, 320 );
+	renderer.init();
+
+
+	while( !window.windowShouldClose() )
+	{
+		window.pollEvents();
+
+	}
+
 }
