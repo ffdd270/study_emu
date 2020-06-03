@@ -6,9 +6,7 @@
 #define GAMEBOY_GLRENDERER_H
 
 
-#include <gl/gl3w.h>
-#include <GLFW/glfw3.h>
-#include <string>
+#include "GLProgram.h"
 
 
 namespace Angelica
@@ -21,6 +19,8 @@ namespace Angelica
 		GLuint createVertexShader( const std::string & filename );
 		GLuint createFragmentShader( const std::string & filename );
 		GLuint createProgram(GLuint vertex_shader, GLuint fragment_shader);
+
+		GLuint getDefaultProgram() { return default_program; }
 
 	private:
 		static std::string getShaderSourceCode( const std::string & filename );

@@ -16,7 +16,6 @@ void GLRenderer::init()
 	default_program = createProgram( createVertexShader( "shader/basic_vert.glsl" ), createFragmentShader("shader/basic_frag.glsl") );
 
 	assert(default_program != 0);
-
 }
 
 // return 0 is failed.
