@@ -15,7 +15,7 @@ void GLRenderer::init()
 
 	default_program = createProgram( createVertexShader( "shader/basic_vert.glsl" ), createFragmentShader("shader/basic_frag.glsl") );
 
-	assert(default_program != 0);
+	assert(!default_program.isVoid());
 }
 
 // return 0 is failed.
@@ -73,14 +73,16 @@ GLuint GLRenderer::createFragmentShader(const std::string & filename )
 	return fs;
 }
 
-GLuint GLRenderer::createProgram(GLuint vertex_shader, GLuint fragment_shader)
+GLProgram GLRenderer::createProgram(GLuint vertex_shader, GLuint fragment_shader)
 {
-	if( vertex_shader == 0 || fragment_shader == 0 ) { return 0; }
+	GLProgram glProgram;
+
+	if( vertex_shader == 0 || fragment_shader == 0 ) { return glProgram; }
 
 	GLuint program = glCreateProgram();
 
 	glAttachShader( program, vertex_shader );
-	glAttachShader( program, fragment_shader);
+	glAttachShader( program, fragment_shader );
 
 	glLinkProgram( program );
 
@@ -89,10 +91,15 @@ GLuint GLRenderer::createProgram(GLuint vertex_shader, GLuint fragment_shader)
 
 	if(!ok)
 	{
-		return 0 ;
+		return glProgram;
 	}
 
-	return program;
+	glGenVertexArrays(1, &vertex_arrays);
+	glBindVertexArray(vertex_arrays);
+
+	glProgram.init( program );
+
+	return glProgram;
 }
 
 std::string GLRenderer::getShaderSourceCode(const std::string &filename)

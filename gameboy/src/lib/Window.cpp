@@ -50,3 +50,9 @@ bool Window::pollEvents()
 
 	return true;
 }
+
+bool Window::swapBuffers()
+{
+	glfwSwapBuffers( window );
+	return true;
+}

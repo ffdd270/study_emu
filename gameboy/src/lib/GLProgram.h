@@ -14,14 +14,17 @@ namespace Angelica
 {
 	class GLProgram
 	{
+	public:
 		GLProgram();
 
 		bool init(GLuint program);
+		bool isVoid() const;
 
 		bool addAttrib(const std::string & attrib_name);
 		bool addUniform(const std::string & attrib_name);
 
 		GLuint getLocation(const std::string & attrib_key);
+		GLuint getProgram()  const { return m_program; }
 
 
 	private:
