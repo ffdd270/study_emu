@@ -18,6 +18,7 @@ namespace Angelica
 
 		bool windowShouldClose();
 		bool pollEvents();
+		bool swapBuffers();
 	private:
 		GLFWwindow * window = nullptr;
 	};

@@ -16,19 +16,29 @@ int main()
 					{ 2.0f/ 640, 0.0f, 0.0f, 0.0f },
 					{ 0.0f, 2.0f / -320, 0.0f, 0.0f },
 					{ 0.0f, 0.0f, -1.0f, 0.0f },
-					{-1.0f,                  1.0f,                   0.0f, 1.0f },
+					{-1.0f, 1.0f,  0.0f, 1.0f },
 			};
 
+	Angelica::GLProgram program = renderer.getDefaultProgram();
+	program.addAttrib( "position");
+	program.addUniform("proj_ortho");
+
+	static const GLfloat black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	while( !window.windowShouldClose() )
 	{
 		window.pollEvents();
 
-		GLuint program = renderer.getDefaultProgram();
-		glUseProgram( program );
+		glClearBufferfv(GL_COLOR, 0, black);
+
+		glUseProgram( program.getProgram() );
 		glPointSize( 10.0f );
-		glUniformMatrix4fv( ortho_projection, 1, GL_FALSE, &ortho_projection[0][0] );
-		glVertexAttrib2f()
+		glUniformMatrix4fv( program.getLocation("proj_ortho"), 1, GL_FALSE, &ortho_projection[0][0] );
+		glVertexAttrib2f( program.getLocation("position"), 320, 160 );
+		glDrawArrays(GL_POINTS, 0, 1);
+
+
+		window.swapBuffers();
 	}
 
 }

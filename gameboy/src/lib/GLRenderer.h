@@ -18,15 +18,17 @@ namespace Angelica
 
 		GLuint createVertexShader( const std::string & filename );
 		GLuint createFragmentShader( const std::string & filename );
-		GLuint createProgram(GLuint vertex_shader, GLuint fragment_shader);
+		GLProgram createProgram(GLuint vertex_shader, GLuint fragment_shader);
 
-		GLuint getDefaultProgram() { return default_program; }
+		GLProgram getDefaultProgram() { return default_program; }
 
 	private:
 		static std::string getShaderSourceCode( const std::string & filename );
 
 	private:
-		GLuint default_program;
+
+		GLuint vertex_arrays;
+		GLProgram default_program;
 	};
 
 }
