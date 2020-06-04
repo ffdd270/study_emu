@@ -31,7 +31,7 @@ bool Angelica::GLProgram::addAttrib(const std::string &attrib_name)
 
 	GLuint attrib_location = glGetAttribLocation( m_program, attrib_name.c_str() );
 
-	if ( attrib_location == 0 ) { return false; }
+	if ( attrib_location == static_cast<GLuint>(-1) ) { return false; }
 
 	m_location_map.insert(std::make_pair(attrib_name, attrib_location ) );
 	return true;
@@ -47,7 +47,7 @@ bool Angelica::GLProgram::addUniform(const std::string &attrib_name)
 
 	GLuint attrib_location = glGetUniformLocation( m_program, attrib_name.c_str() );
 
-	if ( attrib_location == 0 ) { return false; }
+	if ( attrib_location == static_cast<GLuint>(-1) ) { return false; }
 
 	m_location_map.insert(std::make_pair(attrib_name, attrib_location ) );
 	return true;

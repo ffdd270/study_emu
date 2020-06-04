@@ -34,7 +34,7 @@ int main()
 		glUseProgram( program.getProgram() );
 		glPointSize( 10.0f );
 		glUniformMatrix4fv( program.getLocation("proj_ortho"), 1, GL_FALSE, &ortho_projection[0][0] );
-		glVertexAttrib2f(program.getLocation("position"), 2, 2 );
+		glVertexAttrib2f( program.getLocation("position"), 320, 160 );
 		glDrawArrays(GL_POINTS, 0, 1);
 
 
