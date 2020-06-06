@@ -7,8 +7,8 @@
 
 #include <unordered_map>
 #include <string>
-#include <gl/gl3w.h>
-#include <GLFW/glfw3.h>
+#include "glutil.h"
+#include "typedef.h"
 
 namespace Angelica
 {
@@ -26,7 +26,10 @@ namespace Angelica
 		GLuint getLocation(const std::string & attrib_key);
 		GLuint getProgram()  const { return m_program; }
 
+		void setUniformMatrix4x4( const std::string & uniform_name, const Matrix4x4 & mat );
+		void setVertexAttrib2f(const std::string & atrrib_name, const Vec2 & vec );
 
+		void useProgram();
 	private:
 		std::unordered_map<std::string, GLuint> m_location_map;
 		GLuint m_program = 0;
