@@ -1,7 +1,7 @@
 #include "lib/GLRenderer.h"
 #include "lib/Window.h"
-
-
+#include "lib/typedef.h"
+#include <iostream>
 int main()
 {
 	Angelica::Window window;
@@ -19,6 +19,7 @@ int main()
 					{-1.0f, 1.0f,  0.0f, 1.0f },
 			};
 
+	Angelica::Matrix4x4 mat( ortho_projection );
 	Angelica::GLProgram program = renderer.getDefaultProgram();
 	program.addAttrib( "position");
 	program.addUniform("proj_ortho");
@@ -31,12 +32,12 @@ int main()
 
 		glClearBufferfv(GL_COLOR, 0, black);
 
-		glUseProgram( program.getProgram() );
+		program.useProgram();
 		glPointSize( 10.0f );
-		glUniformMatrix4fv( program.getLocation("proj_ortho"), 1, GL_FALSE, &ortho_projection[0][0] );
-		glVertexAttrib2f( program.getLocation("position"), 320, 160 );
-		glDrawArrays(GL_POINTS, 0, 1);
 
+		program.setUniformMatrix4x4( "proj_ortho", mat );
+		program.setVertexAttrib2f( "position", {  320, 160  } );
+		glDrawArrays( GL_POINTS, 0, 1 );
 
 		window.swapBuffers();
 	}
