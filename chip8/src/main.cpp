@@ -125,11 +125,11 @@ void render( Chip8 & chip8 )
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	// TODO : 키입력 구현.
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	{
 
 	}
-		//chip8.nextStep();
 }
 
 
@@ -229,35 +229,6 @@ int main()
 
 		lastTime = glfwGetTime();
 	}
-
-
-	/*
-	std::thread cinThread(ReadCh, std::ref(run));
-
-	while (run.load())
-	{
-		long_time tick = GetTickCount();
-
-		chip8.nextStep();
-		render(chip8);
-
-		long_time tock = GetTickCount();
-
-		while( tock - tick > 33 )
-		{
-			tick = GetTickCount();
-		}
-	}
-
-	run.store(false);
-	cinThread.join();
-
-
-	std::cout << "Hello, World!" << std::endl;
-	//Chip8 chip8;
-	//std::cout << "chip8.getNextOpCode(); : " << chip8.getNextOpCode() << std::endl;
-
-*/
 
 	return 0;
 }
