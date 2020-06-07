@@ -32,5 +32,10 @@ set( DISPLAY_LIB
 
 		${IMGUI_LIB} src/lib/ImGuiContext.cpp src/lib/ImGuiContext.h src/lib/Log.h src/lib/GLProgram.cpp src/lib/GLProgram.h src/lib/glutil.h)
 
-add_executable(gameboy src/main.cpp ${DISPLAY_LIB})
+set( GAMEBOY_SRC
+		src/gameboy/GameboyCPU.cpp
+		src/gameboy/GameboyCPU.h
+		src/gameboy/typedef.h)
+
+add_executable(gameboy src/main.cpp ${DISPLAY_LIB} ${GAMEBOY_SRC} )
 target_link_libraries(gameboy PRIVATE glfw OpenGL32 unofficial::gl3w::gl3w)
