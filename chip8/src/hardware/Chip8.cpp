@@ -91,34 +91,11 @@ void Chip8::CPUReset()
 void Chip8::loadRom()
 {
 	FILE * game = nullptr;
-	fopen_s( &game, "rom/INVADERS", "rb" );
+	fopen_s( &game, "rom/PONG", "rb" );
 	fread_s( &mGameMemory[0x200], 0xfff, 0xfff, 1, game);
 	fclose(game);
 }
 
-struct KeyBind
-{
-	BYTE key; BYTE bind;
-};
-
-static KeyBind keyMap[] = {
-		{ '1', 0x0 },
-		{ '2', 0x1 },
-		{ '3', 0x2 },
-		{ '4', 0x3 },
-		{ 'q', 0x4 },
-		{ 'w', 0x5 },
-		{ 'e', 0x6 },
-		{ 'r', 0x7 },
-		{ 'a', 0x8 },
-		{ 's', 0x9 },
-		{ 'd', 0xA },
-		{ 'f', 0xB },
-		{ 'z', 0xC },
-		{ 'x', 0xD },
-		{ 'c', 0xE },
-		{ 'v', 0xF },
-};
 
 BYTE Chip8::waitInput()
 {
@@ -137,6 +114,14 @@ void Chip8::addInput(BYTE input_code)
 {
 	mKeys[input_code] = 1;
 }
+
+
+void Chip8::upInput(BYTE input_code)
+{
+	mKeys[input_code] = 0;
+}
+
+
 
 /*
  * OPCODE는 CPU가 실행하는 명령어. mGameMemory로 부터 명령어를 읽는다.
@@ -280,7 +265,7 @@ void Chip8::nextStep()
 			break;
 	}
 
-	memset(mKeys, 0, sizeof(mKeys));
+	//memset(mKeys, 0, sizeof(mKeys));
 }
 
 void Chip8::nextStep0x8(WORD opCode)
