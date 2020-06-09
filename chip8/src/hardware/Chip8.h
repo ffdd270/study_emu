@@ -27,6 +27,7 @@ public:
 
 	BYTE waitInput();
 	void addInput(BYTE input_code);
+	void upInput(BYTE input_code);
 
 	static BYTE * getFontSet();
 	static int getFontSetLength() { return 80; }
