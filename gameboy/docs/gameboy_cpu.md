@@ -38,7 +38,7 @@ LD  (nnnn), SP
 LD  HL, SP+nn        ;nn = singed byte
 STOP                 ;Stop Processor & screen until button press ( 버튼 입력까지 프로세서 스크린 중지. )
 
-SWAP r               ;Swap high & low nibble of r ( R의 높고 & 낮은 비트 상호 교환 ) 
+SWAP r               ;Swap high & low nibble of r ( R의 높고 & 낮은 비트 상호 교환 )  
 ```
 
 삭제된 명령어들. 
@@ -217,40 +217,91 @@ BB BB 67 63 6E 0E EC CC DD DC 99 9F BB B9 33 3E
 
 0x0145
 
-아스키 HEX digit 값입니다, 낮은 자리수 ( nibble, 반-바이트 )  가 라이센스 코드입니다. 이 두 바이트는 최신 게임(SGB 이후)에만 사용됩니다. ( 일반적으로는 $014B가 $33이 아니라면 $00이 들어있습니다. )
+아스키 HEX digit 값입니다, 낮은 자리수 ( nibble, 반-바이트 )  가 라이센스 코드입니다. 이 두 바이트는 최신 게임(SGB 이후)에만 사용됩니다. ( 일반적으로는 0x014B가 0x33이 아니라면 0x00이 들어있습니다. )
 
 0x0146
 
-GB/SGB 구분자 ( 00 = GameBoy, 03 = Super GameBoy 함수들) ( 만약 $03이 아니라면, 슈퍼 게임 보이의 함수들이 작동하지 않습니다. )
+GB/SGB 구분자 ( 00 = GameBoy, 03 = Super GameBoy 함수들) ( 만약 0x03이 아니라면, 슈퍼 게임 보이의 함수들이 작동하지 않습니다. )
 
-0x0147
+0x0147 
 
-Restart $00 Address ( RST $00 calls this address ) 
+카트리지 타입 
 
-0x0148
+- 0 : ROM ONLY
+- 1 : ROM+MBC1
+- 2 : ROM+MBC1+RAM
+- 3 : ROM+MBC1+RAM+BATT
+- 5 : ROM+MBC2
+- 6 : ROM+MBC2+BATTERY
+- 8 : ROM+RAM
+- 9 : ROM+RAM+BATTERY
+- B : ROM+MMMD1
+- C : ROM+MMMD1+SRAM
+- D : ROM+MMMD1+SRAM+BATT
+- F : ROM+MBC3+TIMER+BATT
+- 10 : ROM+MBC3+TIMER+RAM+BATT
+- 11 : ROM+MBC3
+- 12 : ROM+MBC3+RAM
+- 13 : ROM+MBC3+RAM+BATT
+- 19 : ROM+MBC5
+- 1A : ROM+MBC5+RAM
+- 1B : ROM+BMC+RAM+BATT
+- 1C : ROM+MBC5+RUMBLE
+- 1D : ROM+MBC5+RUMBLE+SRAM
+- 1D : ROM+MBC5+RUMBLE+SRAM + BATT
+- 1F : Pocket Camera
+- FD : Bandai TAMA5
+- FE : HUDSON HuC - 3
+- FF : HUDSON HuC - 1
 
-Restart $00 Address ( RST $00 calls this address ) 
+0x0148 
 
-0x0149
+롬 크기 
 
-Restart $00 Address ( RST $00 calls this address ) 
+- 0 - 256Kbit = 32Kbyte = 2banks;
+- 1 - 512Kbit = 64Kbyte = 4banks;
+- 2 - 1Mbit = 128Kbyte = 8banks;
+- 3 - 2Mbit = 256Kbyte = 16banks;
+- 4 - 4Mbit = 512Kbyte = 32banks;
+- 5 - 8Mbit = 1Mbyte = 64banks;
+- 6 - 16Mbit = 2Mbyte = 128banks;
+- 0x52 - 9Mbit = 1.1Kbyte = 72banks;
+- 0x53 - 10Mbit = 1.2Kbyte = 80banks;
+- 0x54 - 12Mbit = 1.5Kbyte = 96banks;
+
+0x0149 ( RAM SIZE )
+
+렘 크기
+
+- 0 - 없음
+- 1 - 16kBit   = 2kB     = 1 bank
+- 2 - 64kBit   = 8kB     = 1 bank
+- 3 - 256kBit = 32kB   = 4 bank
+- 4 - 1MBit   = 128kB  =16 bank
 
 0x014A
 
-Restart $00 Address ( RST $00 calls this address ) 
+- 0 : 일본
+- 1 : 일본 아님
 
 0x014B
 
-Restart $00 Address ( RST $00 calls this address ) 
+라이센스 코드 ( 구 버전 , SGB 이전. ) 
+
+- 33 - 0x0144/0145 라이센스 코드 확인.
+- 79 - Accolade
+- A4 - Konami
+
+( 0x33이 아니라면 슈퍼 게임보이의 기능이 작동하지 않습니다. ) 
 
 0x014C
 
-Restart $00 Address ( RST $00 calls this address ) 
+ROM 버전 마스크 ( 주로 0x00 )
 
 0x014D
 
-Restart $00 Address ( RST $00 calls this address ) 
+보완 검사용 체크섬. 0x0134~0x014C 범위의 확인 값입니다. [https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header#0148_-_ROM_Size](https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header#0148_-_ROM_Size) 계산 방법은 해당 사이트를 참고해주세요. ( 만약 이 값이 맞지 않는다면 **게임보이에서 구동 실패합니다**.  )
 
 0x014E-0x014F
 
-Restart $00 Address ( RST $00 calls this address )
+ROM 전체에 대한 16비트 체크섬 값입니다. ( 상위 비트 우선 ) 카트리지의 모든 바이트를 더해 생성됩니다. (이 두 체크섬 바이트를 제외하고.) 게임 보이는 이 체크섬을 확인하지 않습니다.
