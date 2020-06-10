@@ -30,13 +30,23 @@
 
 그렇게 생각했던 제가 CHIP-8 이라는 기기를 만나고, 그걸 회사 퇴근하고 조금씩 만들어 2주 만에 완성하게 되었습니다. 만약 [https://github.com/danistefanovic/build-your-own-x](https://github.com/danistefanovic/build-your-own-x) '너의-무언가를-만들어보자' 레포지토리가 없었으면 여전히 저에게 에뮬레이팅은 무시무시한 영역이었을 것이고. [https://news.hada.io/](https://news.hada.io/) 항상 좋은 정보가 올라오는 GeekNews가 없었으면 저런 레포지토리가 있었는지도 몰랐을 거에요. 
 
-이 강좌는 [http://www.codeslinger.co.uk/pages/projects/chip8.html](http://www.codeslinger.co.uk/pages/projects/chip8.html) 이 강좌를 따라하고, [http://devernay.free.fr/hacks/chip8/C8TECH10.HTM](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM) 이 명세서를 보고 구현된 코드를 기반으로 설명할 거에요. 
+이 강좌는 [http://www.codeslinger.co.uk/pages/projects/chip8.html](http://www.codeslinger.co.uk/pages/projects/chip8.html) 이 강좌를 따라하고, [http://devernay.free.fr/hacks/chip8/C8TECH10.HTM](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM) 이 명세서를 보고 구현된 코드를 기반으로 설명할 거에요. 부디 여러분들도 이 글이 새로운 기술을 얻게되는 계기가 되길!
+
+# 우리의 목표는?
+
+ 우리의 궁극적인 목표는 CHIP - 8에서 돌아가는 게임. PONG을 구동하고 플레이 가능한 수준까지 만들어보는 거에요. 
+
+위 궁극적인 목표를 달성하기 위하여 부차적인 목표는, 빠른 디버깅을 위하여 테스트 코드를 작성하는 것과, 간단하게 점을 찍을 수 있는 OpenGL 렌더러를 작성할 수 있는 것입니다. 
 
 # 에뮬레이터란?
 
-에뮬레이터는 '다른 프로그램이나 장치를 모방한 프로그램, 혹은 전자기기의 능력'을 뜻해요.
+에뮬레이터는 '다른 프로그램이나 장치를 모방한 프로그램, 혹은 전자기기의 능력'을 뜻해요. 이 강좌에서는 'CHIP-8' 이라는 장치를 모방하는 프로그램을 작성할거에요. 즉, CHIP-8 에뮬레이터인거죠. 
+
+CHIP-8을 모방하는 프로그램을 작성하기 위해서 우선 CHIP - 8은 어떤 특징을 가지고 있는 지 알아봅시다. 
 
 # CHIP-8은?
+
+CHIP - 8은 8비트 에뮬레이터를 가진 프로그램이에요.
 
 # CPU Step 만들어보기
 
