@@ -328,4 +328,32 @@ ROM 전체에 대한 16비트 체크섬 값입니다. ( 상위 비트 우선 ) �
 
     0x4000~0x5FFF 영역에 값을 쓰면 ( XXXXXXBB - X = 신경 안 써도 됨. B = bank select bit. ) 0xA000~0xC000에서 적절한 RAM 뱅크가 선택됩니다.  RAM 뱅크를 읽거나 쓰기 전 0000~1FFF  영역에 XXXX1010 값을 써서 ( wrtiing ) RAM 뱅크를 활성화 해야 합니다. 램 뱅크를 비활성화 시키려면 XXXX1010값을 제외한 아무값이나 0x0000~0x1FFF 영역에 쓰면 됩니다.  RAM 뱅크를 비활성화시키는 것은 게임보이가 꺼지는 동안 RAM 뱅크를 잘못된 값을 쓰는 것을 보호하기 위함일 수 있습니다. ( 참고: 닌텐도는 램 뱅크를 활성화 값을 0x0A로, 비활성 값으로는 0x00을 제안했습니다. ) 
 
-[Gameboy CPU Commands](Gameboy%20CPU%20Manual%20d6b9869341884d8e9ae8c27139e987fb/Gameboy%20CPU%20Commands%20fe6b698cd41c4f6992f1a78a76044668.md)
+    만약 메모리 모델이 16/8 일 경우엔 : 
+
+    0x4000~0x5FFF 영역에 값을 쓰면 ( XXXXXXBB - X = 신경 안 써도 됨. B = Bank Select Bits) 두개의 가장 앞에 있는 ROM 주소 라인이 설정된다. 
+
+    참고 : Super Smart Card는 항상 RAM 뱅크가 활성화 되어 있기 때문에 이 연산이 필요하지 않습니다. Super Smart Card와 게임보이 양쪽에서 잘 동작해야 할 때 이 연산을 넣으시면 됩니다.
+
+- MBC( Memory Bank Controller 2 ):
+
+    이 메모리 컨트롤러는 MBC1과 아래 예외를 제외하고는 MBC1과 유사합니다.
+
+    MBC2는 ROM 사이즈가 최대 2Mbit입니다. 
+
+    0x2000~0x3FFF 영역에 값을 쓰는 건 ( XXXXBBBB - X는 상관 없는 값, B는 Bank Select Bits.) 0x4000~0x7FFF에 있는 적합한 ROM Bank를 선택할 것입니다. 
+
+    RAM 스위칭은 제공되지 않습니다. MBC1과 다르게 추가 램은 MBC2 자체가 가지고 있는 512 x 4 bits 램을 사용할 것이며. 전원이 꺼져 있는데에도 세이브데이터를 유지하기 위해 추가 배터리가 필요할 것입니다.
+
+    상위 주소 바이트의 최하위 비트는 카트리지에 있는 램을 활성화 / 비활성화 하기 위하여 0이어야 합니다. 예를 들어 카트리지의 RAM을 활성화하기 위해 다음 주소를 사용할 수 있습니다. 
+
+    0000-00FF, 0200-02FF, 0400-04FF, ... 1E00- 1EFF. 
+
+    MBC2의 램 활성화 / 비활성화에 권장되는 주소 범위는 0000-00FF가 권장됩니다. 
+
+    상위 주소의 최하위 비트는 ROM bank를 선택하기 위해선 1이어야 합니다. 예를 들어, ROM Bank를 선택하기 위해서는 다음과 같은 주소들을 사용할 수 있습니다. 
+
+    2100-21FF, 2300-23FF, 2500-25FF .. 3F00-3FFF.
+
+    MBC2 롬 뱅크를 선택하기 위해 사용되는 주소는  2100-21FF가 권장됩니다.  
+
+[Gameboy CPU Commands](https://www.notion.so/Gameboy-CPU-Commands-fe6b698cd41c4f6992f1a78a76044668)
