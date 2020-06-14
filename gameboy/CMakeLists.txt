@@ -23,19 +23,32 @@ set( IMGUI_LIB
 		src/lib/imgui/imstb_truetype.h
 		)
 
-set( DISPLAY_LIB
+set( ANGELICA_LIB
 		src/lib/Window.cpp
 		src/lib/Window.h
 		src/lib/GLRenderer.cpp
 		src/lib/GLRenderer.h
 		src/lib/typedef.h
+		src/lib/ImGuiContext.cpp
+		src/lib/ImGuiContext.h
+		src/lib/Log.h
+		src/lib/GLProgram.cpp
+		src/lib/GLProgram.h
+		src/lib/glutil.h
 
-		${IMGUI_LIB} src/lib/ImGuiContext.cpp src/lib/ImGuiContext.h src/lib/Log.h src/lib/GLProgram.cpp src/lib/GLProgram.h src/lib/glutil.h)
+		${IMGUI_LIB}
+)
 
+
+set( PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR} )
+set( SRC_PATH ${PROJECT_ROOT_PATH}/src )
+
+# 실제 테스트 돌릴 것들.
 set( GAMEBOY_SRC
-		src/gameboy/GameboyCPU.cpp
-		src/gameboy/GameboyCPU.h
-		src/gameboy/typedef.h)
+		${SRC_PATH}/gameboy/GameboyCPU.cpp
+		${SRC_PATH}/gameboy/GameboyCPU.h
+		${SRC_PATH}/gameboy/typedef.h)
 
-add_executable(gameboy src/main.cpp ${DISPLAY_LIB} ${GAMEBOY_SRC} )
+add_subdirectory(test)
+add_executable(gameboy src/main.cpp ${ANGELICA_LIB} ${GAMEBOY_SRC} )
 target_link_libraries(gameboy PRIVATE glfw OpenGL32 unofficial::gl3w::gl3w)

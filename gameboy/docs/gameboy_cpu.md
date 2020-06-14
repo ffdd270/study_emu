@@ -314,7 +314,7 @@ ROM 전체에 대한 16비트 체크섬 값입니다. ( 상위 비트 우선 ) �
 
     32kB ( 256kb ) ROM이며, 0000~7FFF 에 할당되어 있습니다.  
 
-- MBC ( Memory Bank Controller 1 )
+- MBC1( Memory Bank Controller 1 )
 
     MBC1는 두개의 다른 메모리 모드를 가지고 있습니다 : 16Mbit ROM/ 8Kbyte RAM이나 4Mibt ROM/32Kbyte RAM. 
 
@@ -334,7 +334,7 @@ ROM 전체에 대한 16비트 체크섬 값입니다. ( 상위 비트 우선 ) �
 
     참고 : Super Smart Card는 항상 RAM 뱅크가 활성화 되어 있기 때문에 이 연산이 필요하지 않습니다. Super Smart Card와 게임보이 양쪽에서 잘 동작해야 할 때 이 연산을 넣으시면 됩니다.
 
-- MBC( Memory Bank Controller 2 ):
+- MBC2( Memory Bank Controller 2 ):
 
     이 메모리 컨트롤러는 MBC1과 아래 예외를 제외하고는 MBC1과 유사합니다.
 
@@ -356,4 +356,34 @@ ROM 전체에 대한 16비트 체크섬 값입니다. ( 상위 비트 우선 ) �
 
     MBC2 롬 뱅크를 선택하기 위해 사용되는 주소는  2100-21FF가 권장됩니다.  
 
+- MBC3(Memory Bank Controller 3):
+
+    이 컨트롤러는 MBC1과 비슷하며, 16mbits의 롬을 4000-5FFF 영역에 값을 쓰지 않고 접근할 수 있습니다. ( expect it. )
+
+    2000-3FFF 영역에 값을 씀( XBBBBBBB  -  X - 아무 값. B = Bank Select Bit.) 으로써 ROM 뱅크 4000-7FFF 영역에 접근을 제어할 수 있습니다.
+
+    그리고, 이 MBC는 다른 MBC에서는 볼 수 없는, Real Time Clock을 위해 ( RTC ) 내장되어 있는 배터리를 가지고 있습니다. 일부 MBC3 카트리지는 이걸 지원하지 않지만 ( 와리오 랜드 2 비-컬러 버전 ) , 일부는 지원합니다. ( 하버스트 문 / 일어 버전 )\
+
+- MBC5( Memory Bank Controller 5):
+
+    이 컨트롤러 게임보이 컬러에서 두배속으로 돌아가도록 보장된 첫 MBC이지만, 다른 MBC들도 GBC 두배속 모드에서 잘 돌아갑니다. 
+
+    MBC5는 MBC3와 비슷하지만 ( RTC는 없음 ) ROM 64mibts과 1mbit RAM만큼 접근할 수 있습니다. 9bit의 롬 선택 비트중 상위 8비트는 2000-2FFF 영역에 기록하고,  푀하위 비트는 3000-3FFF 영역이 기록됩니다.
+
+    만약 카트리지에 RAM이 존재한다면, 4000-5FFF 영역에 값을 쓰는 것은 ( XXXXBBBB - X는 상관 없음, B =  뱅크 선택 비트 ) A000-BEFFF에 있는 렘 Bank를 접근하는 걸 선택하게 됩니다. 램 사이즈는 64kbit, 256kbit와 1mbit가 있습니다.
+
+    그리고, MBC5는 ROM 뱅크 선택 비트에 0x000을 기록하므로써 ROM Bank 0 가 4000-7FFF 범위에 나타나게 할 수 있는 첫 MBC입니다. 
+
+- Rumble Carts ( 럼블(진동) 카트리지  ) :
+
+    진동 카트리지는 MBC5 Memory Bank Controller를 사용합니다. 럼블 카트리지는 오직 256kibt RAM까지만 가질 수 있으며. 비 - 럼블  카트리지에서 사용하는 1mbit 램에 가장 높은 RAM 주소 라인은 럼블 카트리지가 모터를 끄고 킬 때 사용합니다.
+
+     만약 카트리지가 램을 가지고 있다면, 4000-5FFF 영역에 값을 쓰는 것은 ( XXXXMBBB = X = 신경 안 써도 됨. M = 모터, B = Bank Select Bit ) A000-BFFF 영역에 있는 RAM 뱅크의 접근에 대해 선택할 수 있습니다.
+
+    램 사이즈는 64kbit거나 256kbit입니다. 진동 모터를 켜기 위해서는 M =1,  끄기 위해서는 M = 0을 설정하면 됩니다.
+
+- HuC1( 메모리 뱅크 / 적외선 컨트롤러 ) :
+
 [Gameboy CPU Commands](https://www.notion.so/Gameboy-CPU-Commands-fe6b698cd41c4f6992f1a78a76044668)
+
+[Gameboy 레지스터와 Flags ](https://www.notion.so/Gameboy-Flags-d3a8a46663a34d4ba3012dde889c2eaf)
