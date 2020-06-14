@@ -1,7 +1,10 @@
 #include "lib/GLRenderer.h"
 #include "lib/Window.h"
 #include "lib/typedef.h"
+#include "gameboy/GameboyCPU.h"
 #include <iostream>
+
+
 int main()
 {
 	Angelica::Window window;

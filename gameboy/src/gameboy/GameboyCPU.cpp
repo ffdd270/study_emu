@@ -3,3 +3,7 @@
 //
 
 #include "GameboyCPU.h"
+
+void GameboyCPU::nextStep()
+{
+}
