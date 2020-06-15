@@ -1,4 +1,4 @@
-# Gameboy 레지스터와 Flags
+# Gameboy Register and Flags
 
 # 레지스터
 
