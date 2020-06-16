@@ -28,6 +28,11 @@ public:
 	void nextStep();
 	void injectionCode();
 private:
+	// instruction Set.
+	void load8Bit( BYTE & to_value, BYTE value );
+
+
+private:
 	BYTE mGameMemory[0x765];
 
 
