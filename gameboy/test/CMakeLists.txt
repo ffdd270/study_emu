@@ -8,7 +8,7 @@ include_directories( lib/
 set(TEST
         src/main.cpp
         src/register.cpp
-        )
+        src/load_reg_n.cpp)
 
 
 add_executable( gb_test
