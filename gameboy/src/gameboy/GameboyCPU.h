@@ -23,10 +23,22 @@ union Register
 class GameboyCPU
 {
 public:
-	bool boot();
+	bool Boot();
 
-	void nextStep();
-	void injectionCode();
+	void NextStep();
+
+
+
+	void InjectionCode();
+private:
+	// nibble은 반 바이트.
+	void nextStep0x0X( BYTE opcode, BYTE second_opcode_nibble );
+	void nextStep0x1X( BYTE opcode, BYTE second_opcode_nibble );
+	void nextStep0x2X( BYTE opcode, BYTE second_opcode_nibble );
+	void nextStep0x3X( BYTE opcode, BYTE second_opcode_nibble );
+	void nextStep0x4X( BYTE opcode, BYTE second_opcode_nibble );
+	// 0x4~0x7까진 모두 Load R1, R2
+	void loadR1R2Instructions( BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble );
 private:
 	// instruction Set.
 	void load8Bit( BYTE & to_value, BYTE value );
