@@ -29,10 +29,10 @@ public:
 	void InjectionCode(BYTE injection_code);
 	void NextStep();
 
-	Register getRegisterAF() { return mAF; }
-	Register getRegisterBC() { return mBC; }
-	Register getRegisterDE() { return mDE; }
-	Register getRegisterHL() { return mHL; }
+	Register getRegisterAF() { return mRegisters.array[0]; }
+	Register getRegisterBC() { return mRegisters.array[1]; }
+	Register getRegisterDE() { return mRegisters.array[2]; }
+	Register getRegisterHL() { return mRegisters.array[3]; }
 	Register getRegisterSP() { return mSP; }
 	Register getRegisterPC() { return mPC; }
 private:
@@ -66,21 +66,30 @@ private:
 	BYTE mGameMemory[0xFFFF];
 
 
-	// 레지스터 영역.
-	Register mAF; // Accumulator & Flags. Low 8bit Used by Flag.
-	//  mAF Low Bit ->
-	//  7 = Zero Flag.
-	//  6 = Zero Flag.
-	//  5 = Zero Flag.
-	//  4 = Carry Flag.
-	//  3-0 = Zero Fill. Not Used..
+	union Registers{
+		struct
+		{
+			// 레지스터 영역.
+			Register AF; // Accumulator & Flags. Low 8bit Used by Flag.
+			//  mAF Low Bit ->
+			//  7 = Zero Flag.
+			//  6 = Zero Flag.
+			//  5 = Zero Flag.
+			//  4 = Carry Flag.
+			//  3-0 = Zero Fill. Not Used..
 
-	Register mBC;
-	Register mDE;
-	Register mHL;
-	Register mSP; // Stack Pointer
-	Register mPC; // Program Counter
+			Register BC;
+			Register DE;
+			Register HL;
+		};
 
+		Register array[4];
+	};
+
+	Register mPC;
+	Register mSP;
+
+	Registers mRegisters;
 	// Debug Register
 	Register mDebugInjectionCount;
 };
