@@ -26,15 +26,23 @@ public:
 	bool Boot();
 	void Reset();
 
-	void InjectionCode(BYTE injection_code);
 	void NextStep();
 
-	Register getRegisterAF() { return mRegisters.array[0]; }
-	Register getRegisterBC() { return mRegisters.array[1]; }
-	Register getRegisterDE() { return mRegisters.array[2]; }
-	Register getRegisterHL() { return mRegisters.array[3]; }
-	Register getRegisterSP() { return mSP; }
-	Register getRegisterPC() { return mPC; }
+
+	// 게임 보이 디버거 함수들
+	void InjectionMemory(BYTE injection_byte);
+	void SetMemoryValue( unsigned int mem_index, BYTE value );
+	BYTE GetMemoryValue( unsigned int mem_index );
+
+	Register GetRegisterAF() { return mRegisters.array[0]; }
+	Register GetRegisterBC() { return mRegisters.array[1]; }
+	Register GetRegisterDE() { return mRegisters.array[2]; }
+	Register GetRegisterHL() { return mRegisters.array[3]; }
+
+
+
+	Register GetRegisterSP() { return mSP; }
+	Register GetRegisterPC() { return mPC; }
 private:
 	/*
 	 * 어떻게 명령어를 긁을 것인가?
@@ -49,6 +57,7 @@ private:
 
 	// 0x4~0x7까진 모두 Load R1, R2
 	void loadR1R2Instructions( BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble );
+
 	/*
 	 * CPU 내부 명령들.
 	*/

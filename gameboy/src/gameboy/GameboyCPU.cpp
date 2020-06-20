@@ -18,12 +18,6 @@ void GameboyCPU::Reset()
 	memset( mGameMemory, 0, sizeof ( mGameMemory )  );
 }
 
-void GameboyCPU::InjectionCode(BYTE injection_code)
-{
-	mGameMemory[ mDebugInjectionCount.reg_16 ] = injection_code;
-	mDebugInjectionCount.reg_16 += 1;
-}
-
 void GameboyCPU::NextStep()
 {
 	BYTE opcode = mGameMemory[ mPC.reg_16 ];
@@ -37,10 +31,10 @@ void GameboyCPU::NextStep()
 			nextStep0x0X( opcode, second_opcode_nibble );
 			break;
 		case 0x1:
-			nextStep0x1X(opcode, second_opcode_nibble);
+			nextStep0x1X( opcode, second_opcode_nibble );
 			break;
 		case 0x2:
-
+			nextStep0x2X( opcode, second_opcode_nibble );
 			break;
 		case 0x3:
 			break;
@@ -49,12 +43,35 @@ void GameboyCPU::NextStep()
 		case 0x6:
 			loadR1R2Instructions(opcode, first_opcode_nibble, second_opcode_nibble);
 			break;
-		case 0x07:
 
+		case 0x7: // 7은 예외 조건이 있다.
+			loadR1R2Instructions( opcode, first_opcode_nibble, second_opcode_nibble ); // 일단은 이렇게만...
 			break;
 	}
 
 }
+
+// 디버거 코드들
+
+void GameboyCPU::InjectionMemory(BYTE injection_byte)
+{
+	mGameMemory[ mDebugInjectionCount.reg_16 ] = injection_byte;
+	mDebugInjectionCount.reg_16 += 1;
+}
+
+BYTE GameboyCPU::GetMemoryValue(unsigned int mem_index)
+{
+	return mGameMemory[ mem_index ];
+}
+
+
+void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
+{
+	mGameMemory[ mem_index ] = value;
+}
+
+
+
 
 // 여기서부터 각 앞 자리 바이트에 대한 처리.
 
@@ -74,6 +91,22 @@ void GameboyCPU::nextStep0x0X(BYTE opcode, BYTE second_opcode_nibble)
 
 void GameboyCPU::nextStep0x1X(BYTE opcode, BYTE second_opcode_nibble)
 {
+
+}
+
+
+void GameboyCPU::nextStep0x2X(BYTE opcode, BYTE second_opcode_nibble)
+{
+
+	switch ( second_opcode_nibble )
+	{
+		case 0x1:
+			mRegisters.HL.reg_16 = immediateValue16();
+			break;
+		default:
+
+			break;
+	}
 
 }
 
@@ -122,7 +155,13 @@ BYTE GameboyCPU::immediateValue()
 
 WORD GameboyCPU::immediateValue16()
 {
-	return 0;
+	BYTE value_hi = mGameMemory[mPC.reg_16];
+	BYTE value_lo = mGameMemory[mPC.reg_16 + 1];
+
+	mPC.reg_16 += 2;
+
+	WORD value = ( value_hi << 8 ) | value_lo;
+	return value;
 }
 
 void GameboyCPU::load8BitToReg(BYTE &reg_8bit)
