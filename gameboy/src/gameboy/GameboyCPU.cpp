@@ -18,12 +18,6 @@ void GameboyCPU::Reset()
 	memset( mGameMemory, 0, sizeof ( mGameMemory )  );
 }
 
-void GameboyCPU::InjectionCode(BYTE injection_code)
-{
-	mGameMemory[ mDebugInjectionCount.reg_16 ] = injection_code;
-	mDebugInjectionCount.reg_16 += 1;
-}
-
 void GameboyCPU::NextStep()
 {
 	BYTE opcode = mGameMemory[ mPC.reg_16 ];
@@ -34,13 +28,13 @@ void GameboyCPU::NextStep()
 	switch ( first_opcode_nibble )
 	{
 		case 0x0:
-			nextStep0x0X(opcode, second_opcode_nibble);
+			nextStep0x0X( opcode, second_opcode_nibble );
 			break;
 		case 0x1:
-			nextStep0x1X(opcode, second_opcode_nibble);
+			nextStep0x1X( opcode, second_opcode_nibble );
 			break;
 		case 0x2:
-
+			nextStep0x2X( opcode, second_opcode_nibble );
 			break;
 		case 0x3:
 			break;
@@ -49,12 +43,35 @@ void GameboyCPU::NextStep()
 		case 0x6:
 			loadR1R2Instructions(opcode, first_opcode_nibble, second_opcode_nibble);
 			break;
-		case 0x07:
 
+		case 0x7: // 7은 예외 조건이 있다.
+			loadR1R2Instructions( opcode, first_opcode_nibble, second_opcode_nibble ); // 일단은 이렇게만...
 			break;
 	}
 
 }
+
+// 디버거 코드들
+
+void GameboyCPU::InjectionMemory(BYTE injection_byte)
+{
+	mGameMemory[ mDebugInjectionCount.reg_16 ] = injection_byte;
+	mDebugInjectionCount.reg_16 += 1;
+}
+
+BYTE GameboyCPU::GetMemoryValue(unsigned int mem_index)
+{
+	return mGameMemory[ mem_index ];
+}
+
+
+void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
+{
+	mGameMemory[ mem_index ] = value;
+}
+
+
+
 
 // 여기서부터 각 앞 자리 바이트에 대한 처리.
 
@@ -63,10 +80,10 @@ void GameboyCPU::nextStep0x0X(BYTE opcode, BYTE second_opcode_nibble)
 	switch ( second_opcode_nibble )
 	{
 		case 0x6: // LD B,n
-			load8BitToReg( mBC.hi  );
+			load8BitToReg( mRegisters.BC.hi  );
 			break;
 		case 0xE: // LD C,n
-			load8BitToReg( mBC.lo  );
+			load8BitToReg( mRegisters.BC.lo  );
 			break;
 	}
 }
@@ -78,9 +95,55 @@ void GameboyCPU::nextStep0x1X(BYTE opcode, BYTE second_opcode_nibble)
 }
 
 
-void GameboyCPU::loadR1R2Instructions(BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble)
+void GameboyCPU::nextStep0x2X(BYTE opcode, BYTE second_opcode_nibble)
 {
 
+	switch ( second_opcode_nibble )
+	{
+		case 0x1:
+			mRegisters.HL.reg_16 = immediateValue16();
+			break;
+		default:
+
+			break;
+	}
+
+}
+
+
+void GameboyCPU::loadR1R2Instructions(BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble)
+{
+	//Register
+	static constexpr int register_index_hash_map[4] = { 1, 2, 3, 0 };
+	int register_index = first_opcode_nibble - 4; // 4~7 = 0~3
+
+	Register & dest_register = mRegisters.array[ register_index_hash_map[ register_index ] ];
+	BYTE * dest_byte = second_opcode_nibble < 8 ? &dest_register.hi : &dest_register.lo;
+
+	if( first_opcode_nibble == 7 && second_opcode_nibble < 8 ) // ( HL )
+	{
+		dest_byte = &mGameMemory[ mRegisters.HL.reg_16 ];
+	}
+	else if ( first_opcode_nibble == 7 && second_opcode_nibble >= 8 ) // A
+	{
+		dest_byte = &mRegisters.AF.hi;
+	}
+
+	// Value
+	int value_index = ( second_opcode_nibble % 8 ) / 2;
+	Register & value_register = mRegisters.array[ register_index_hash_map[ value_index ] ];
+	BYTE value_byte = ( second_opcode_nibble % 2 ) == 0 ? value_register.hi : value_register.lo;
+
+	if( second_opcode_nibble % 8 == 6 ) // ( HL )
+	{
+		value_byte = mGameMemory[ mRegisters.HL.reg_16 ];
+	}
+	else if( second_opcode_nibble % 8 == 7 ) // A
+	{
+		value_byte = mRegisters.AF.hi;
+	}
+
+	*dest_byte = value_byte;
 }
 
 BYTE GameboyCPU::immediateValue()
@@ -92,13 +155,17 @@ BYTE GameboyCPU::immediateValue()
 
 WORD GameboyCPU::immediateValue16()
 {
-	return 0;
+	BYTE value_hi = mGameMemory[mPC.reg_16];
+	BYTE value_lo = mGameMemory[mPC.reg_16 + 1];
+
+	mPC.reg_16 += 2;
+
+	WORD value = ( value_hi << 8 ) | value_lo;
+	return value;
 }
 
-
-
-// 여기서부터는 명령어 셋
-void GameboyCPU::load8BitToReg(BYTE & reg_8bit)
+void GameboyCPU::load8BitToReg(BYTE &reg_8bit)
 {
 	reg_8bit = immediateValue();
 }
+

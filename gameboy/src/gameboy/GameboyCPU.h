@@ -26,15 +26,23 @@ public:
 	bool Boot();
 	void Reset();
 
-	void InjectionCode(BYTE injection_code);
 	void NextStep();
 
-	Register getRegisterAF() { return mAF; }
-	Register getRegisterBC() { return mBC; }
-	Register getRegisterDE() { return mDE; }
-	Register getRegisterHL() { return mHL; }
-	Register getRegisterSP() { return mSP; }
-	Register getRegisterPC() { return mPC; }
+
+	// 게임 보이 디버거 함수들
+	void InjectionMemory(BYTE injection_byte);
+	void SetMemoryValue( unsigned int mem_index, BYTE value );
+	BYTE GetMemoryValue( unsigned int mem_index );
+
+	Register GetRegisterAF() { return mRegisters.array[0]; }
+	Register GetRegisterBC() { return mRegisters.array[1]; }
+	Register GetRegisterDE() { return mRegisters.array[2]; }
+	Register GetRegisterHL() { return mRegisters.array[3]; }
+
+
+
+	Register GetRegisterSP() { return mSP; }
+	Register GetRegisterPC() { return mPC; }
 private:
 	/*
 	 * 어떻게 명령어를 긁을 것인가?
@@ -49,6 +57,7 @@ private:
 
 	// 0x4~0x7까진 모두 Load R1, R2
 	void loadR1R2Instructions( BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble );
+
 	/*
 	 * CPU 내부 명령들.
 	*/
@@ -66,21 +75,30 @@ private:
 	BYTE mGameMemory[0xFFFF];
 
 
-	// 레지스터 영역.
-	Register mAF; // Accumulator & Flags. Low 8bit Used by Flag.
-	//  mAF Low Bit ->
-	//  7 = Zero Flag.
-	//  6 = Zero Flag.
-	//  5 = Zero Flag.
-	//  4 = Carry Flag.
-	//  3-0 = Zero Fill. Not Used..
+	union Registers{
+		struct
+		{
+			// 레지스터 영역.
+			Register AF; // Accumulator & Flags. Low 8bit Used by Flag.
+			//  mAF Low Bit ->
+			//  7 = Zero Flag.
+			//  6 = Zero Flag.
+			//  5 = Zero Flag.
+			//  4 = Carry Flag.
+			//  3-0 = Zero Fill. Not Used..
 
-	Register mBC;
-	Register mDE;
-	Register mHL;
-	Register mSP; // Stack Pointer
-	Register mPC; // Program Counter
+			Register BC;
+			Register DE;
+			Register HL;
+		};
 
+		Register array[4];
+	};
+
+	Register mPC;
+	Register mSP;
+
+	Registers mRegisters;
 	// Debug Register
 	Register mDebugInjectionCount;
 };
