@@ -42,7 +42,10 @@ Z80에 대한 책은 점점 더 구하기 어려워지고 있기 때문에, 이 
 
 nn = B, C, D, E, H, L, BC, DE, HL, SP
 
-n = 8비트 즉시 값
+n = 8비트 즉시 값. 즉시 값에 대해서는 아래 문서를 참고해주세요. 
+
+[Gameboy Immediate Value](Gameboy%20CPU%20Commands%20Overview%20fe6b698cd41c4f6992f1a78a76044668/Gameboy%20Immediate%20Value%20f67d16859dfa4d529b490489c7b28bdd.md)
+
 
 ### 명령어들
 
@@ -56,3 +59,75 @@ n = 8비트 즉시 값
 | LD     | L, n     | 2E      | 8     |
 
 ## LD r1, r2
+
+### 설명
+
+r1에 r2 값을 넣습니다. 
+
+### 인자
+
+r1, r2 = A,B,C,D,E,H,L,(HL)
+
+### 명령어들
+
+[LD R1, R2 명령어 셋](Gameboy%20CPU%20Commands%20Overview%20fe6b698cd41c4f6992f1a78a76044668/LD%20R1%20R2%203e3459b33ca743958e1faabbb723c2f9.csv)
+
+Load Register 순서 ⇒ B, C, D, E, H, L, (HL), A
+
+0,1,2,3,4,5,6,7
+
+여기서 (HL)은 HL의 값이 아닌, 메모리 주소상 (HL)에 있는 값을 불러오는 것이다. 
+
+## LD A,n
+
+### 설명
+
+A안에 n을 넣습니다. 
+
+### 매개변수들
+
+n = A, B, C, D, E, H, L, (BC), (DE), (HL), (nn), #
+
+nn = 두 바이트의 즉시 값. ( LS 바이트 먼저. ) 
+
+## LD n,A
+
+### 설명
+
+A를 n에 넣음. 
+
+### 매개변수들
+
+n = A, B, C, D, E, H, L, (BC), (DE), (HL), (nn)
+
+nn = t두 바이트의 즉시 값. ( LS 바이트 먼저. )
+
+## LD A, (C)
+
+### 설명
+
+0xFF00 + register C의 값을 A에 넣습니다. 즉, LD A, (0xFF00+C) 과 같습니다. 
+
+## LD (C), A
+
+### 설명
+
+0xFF00 + register C에 A의 값을 넣습니다. 
+
+## LD A,(HLD)
+
+### 설명
+
+LDD A, (HL)와 같음.
+
+## LD A,(HL-)
+
+### 설명
+
+LDD A, (HL)와 같음. 
+
+## LDD A,(HL)
+
+### 설명
+
+주소 HL에 있는 값을 A에 넣습니다. HL을 감소 시킵니다.
