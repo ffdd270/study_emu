@@ -44,14 +44,15 @@ nn = B, C, D, E, H, L, BC, DE, HL, SP
 
 n = 8비트 즉시 값. 즉시 값에 대해서는 아래 문서를 참고해주세요. 
 
-[Gameboy Immediate Value](Gameboy%20CPU%20Commands%20Overview%20fe6b698cd41c4f6992f1a78a76044668/Gameboy%20Immediate%20Value%20f67d16859dfa4d529b490489c7b28bdd.md)
+### 즉시값 (imm)
 
+PC를 1 증가 시킨 다음, 해당 바이트를 반환합니다. WORD면 2바이트 증가.
 
 ### 명령어들
 
 | 명령어 | 파라미터 | Op code | Cycle |
 | ------ | -------- | ------- | ----- |
-| LD     | B, n     | 06      | 8     |
+| LD     | B, n     | 6       | 8     |
 | LD     | C, n     | 0E      | 8     |
 | LD     | D, n     | 16      | 8     |
 | LD     | E, n     | 1E      | 8     |
@@ -70,7 +71,65 @@ r1, r2 = A,B,C,D,E,H,L,(HL)
 
 ### 명령어들
 
-[LD R1, R2 명령어 셋](Gameboy%20CPU%20Commands%20Overview%20fe6b698cd41c4f6992f1a78a76044668/LD%20R1%20R2%203e3459b33ca743958e1faabbb723c2f9.csv)
+| 명령 | 매개변수 | 클럭 | OpCodes |
+| ---- | -------- | ---- | ------- |
+| LD   | (HL),E   | 8    | 73      |
+| LD   | L,D      | 4    | 6A      |
+| LD   | L,C      | 4    | 69      |
+| LD   | L,H      | 4    | 6C      |
+| LD   | C,C      | 4    | 49      |
+| LD   | A,(HL)   | 8    | 7E      |
+| LD   | A,H      | 4    | 7C      |
+| LD   | D,D      | 4    | 52      |
+| LD   | C,H      | 4    | 4C      |
+| LD   | C,D      | 4    | 4A      |
+| LD   | (HL),n   | 12   | 36      |
+| LD   | E,E      | 4    | 5B      |
+| LD   | L,E      | 4    | 6B      |
+| LD   | E,D      | 4    | 5A      |
+| LD   | C,L      | 4    | 4D      |
+| LD   | L,(HL)   | 8    | 6E      |
+| LD   | H,D      | 4    | 62      |
+| LD   | B,(HL)   | 8    | 46      |
+| LD   | A,D      | 4    | 7A      |
+| LD   | C,B      | 4    | 48      |
+| LD   | B,B      | 4    | 40      |
+| LD   | H,H      | 4    | 64      |
+| LD   | B,L      | 4    | 45      |
+| LD   | L,B      | 4    | 68      |
+| LD   | D,L      | 4    | 55      |
+| LD   | (HL),B   | 8    | 70      |
+| LD   | C,E      | 4    | 4B      |
+| LD   | D,E      | 4    | 53      |
+| LD   | A,C      | 4    | 79      |
+| LD   | L,L      | 4    | 6D      |
+| LD   | C,(HL)   | 8    | 4E      |
+| LD   | A,A      | 4    | 7F      |
+| LD   | (HL),H   | 8    | 74      |
+| LD   | B,D      | 4    | 42      |
+| LD   | E,(HL)   | 8    | 5E      |
+| LD   | E,L      | 4    | 5D      |
+| LD   | H,B      | 4    | 60      |
+| LD   | (HL),L   | 8    | 75      |
+| LD   | E,B      | 4    | 58      |
+| LD   | B,C      | 4    | 41      |
+| LD   | (HL),C   | 8    | 71      |
+| LD   | H,(HL)   | 8    | 66      |
+| LD   | E,H      | 4    | 5C      |
+| LD   | A,B      | 4    | 78      |
+| LD   | B,H      | 4    | 44      |
+| LD   | B,E      | 4    | 43      |
+| LD   | H,C      | 4    | 61      |
+| LD   | D,H      | 4    | 54      |
+| LD   | A,L      | 4    | 7D      |
+| LD   | H,L      | 4    | 65      |
+| LD   | H,E      | 4    | 63      |
+| LD   | D,B      | 4    | 50      |
+| LD   | D,(HL)   | 8    | 56      |
+| LD   | E,C      | 4    | 59      |
+| LD   | (HL),D   | 8    | 72      |
+| LD   | D,C      | 4    | 51      |
+| LD   | A,E      | 4    | 7B      |
 
 Load Register 순서 ⇒ B, C, D, E, H, L, (HL), A
 
@@ -78,7 +137,9 @@ Load Register 순서 ⇒ B, C, D, E, H, L, (HL), A
 
 여기서 (HL)은 HL의 값이 아닌, 메모리 주소상 (HL)에 있는 값을 불러오는 것이다. 
 
-## LD A,n
+- 여기서부터 opcode는 따로 적지 않고, 그냥 위 사이트를 참고하자. 
+
+## LD A,n 
 
 ### 설명
 
