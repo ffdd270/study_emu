@@ -70,9 +70,6 @@ void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
 	mGameMemory[ mem_index ] = value;
 }
 
-
-
-
 // 여기서부터 각 앞 자리 바이트에 대한 처리.
 
 void GameboyCPU::nextStep0x0X(BYTE opcode, BYTE second_opcode_nibble)
@@ -91,17 +88,30 @@ void GameboyCPU::nextStep0x0X(BYTE opcode, BYTE second_opcode_nibble)
 
 void GameboyCPU::nextStep0x1X(BYTE opcode, BYTE second_opcode_nibble)
 {
-
+	switch ( second_opcode_nibble )
+	{
+		case 0x6: // LD D,n
+			load8BitToReg( mRegisters.DE.hi  );
+			break;
+		case 0xE: // LD E,n
+			load8BitToReg( mRegisters.DE.lo  );
+			break;
+	}
 }
 
 
 void GameboyCPU::nextStep0x2X(BYTE opcode, BYTE second_opcode_nibble)
 {
-
 	switch ( second_opcode_nibble )
 	{
 		case 0x1:
 			mRegisters.HL.reg_16 = immediateValue16();
+			break;
+		case 0x6: // LD H, n
+			load8BitToReg( mRegisters.HL.hi );
+			break;
+		case 0xE: // LD L, n
+			load8BitToReg( mRegisters.HL.lo );
 			break;
 		default:
 
