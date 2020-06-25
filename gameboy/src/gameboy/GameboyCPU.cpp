@@ -5,6 +5,21 @@
 #include "GameboyCPU.h"
 #include <cstring>
 
+
+GameboyCPU::GameboyCPU() : m8bitArguments( 	{
+													  RefRegister8bit( mRegisters.BC.hi ), // 000
+													  RefRegister8bit( mRegisters.BC.lo ), // 001
+													  RefRegister8bit( mRegisters.DE.hi ), // 010
+													  RefRegister8bit( mRegisters.DE.lo ), // 011
+													  RefRegister8bit( mRegisters.HL.hi ), // 100
+													  RefRegister8bit( mRegisters.HL.lo ), // 101
+													  RefRegister8bit( mRegisters.HL.lo ), // 101
+													  RefRegister8bit( mRegisters.AF.hi ) // 111
+											  } )
+{
+}
+
+
 bool GameboyCPU::Boot()
 {
 	Reset();
@@ -15,7 +30,7 @@ void GameboyCPU::Reset()
 {
 	mPC.reg_16 = 0x1000;
 	mDebugInjectionCount.reg_16 = 0x1000;
-	memset( mGameMemory, 0, sizeof ( mGameMemory )  );
+	memset( mGameMemory, 0, sizeof ( mGameMemory ) );
 }
 
 void GameboyCPU::NextStep()
@@ -120,6 +135,18 @@ void GameboyCPU::nextStep0x2X(BYTE opcode, BYTE second_opcode_nibble)
 
 }
 
+
+// 이 구조체는 반드시 스코프 안에서 파기 되어야 합니다 . 객체간의 이동을 고려하고 만들지 않았습니다.
+
+// LD r, r'. (r'는 밑에서 y로 표기함.
+// binary :01rrryyy
+void GameboyCPU::loadRegtoReg(BYTE opcode)
+{
+	BYTE dest_reg_index = ( 0b00111000 & opcode ) >> 3;
+	BYTE origin_reg_index = ( 0b00000111 & opcode );
+
+	m8bitArguments[ dest_reg_index ].ref = m8bitArguments[ origin_reg_index ].ref;
+}
 
 void GameboyCPU::loadR1R2Instructions(BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble)
 {

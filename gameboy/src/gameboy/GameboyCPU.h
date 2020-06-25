@@ -7,6 +7,7 @@
 
 
 #include "typedef.h"
+#include <array>
 
 union Register
 {
@@ -23,6 +24,8 @@ union Register
 class GameboyCPU
 {
 public:
+	GameboyCPU();
+
 	bool Boot();
 	void Reset();
 
@@ -57,6 +60,8 @@ private:
 
 	// 0x4~0x7까진 모두 Load R1, R2
 	void loadR1R2Instructions( BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble );
+	void loadRegtoReg( BYTE opCode );
+
 
 	/*
 	 * CPU 내부 명령들.
@@ -99,6 +104,23 @@ private:
 	Register mSP;
 
 	Registers mRegisters;
+
+	struct RefRegister8bit
+	{
+		BYTE & ref;
+
+		explicit RefRegister8bit(BYTE & ref)  : ref(ref)
+		{
+
+		}
+	};
+
+	// B, C, D, E, H, L, A 순.
+	std::array<RefRegister8bit, 8> m8bitArguments;
+
+
+
+
 	// Debug Register
 	Register mDebugInjectionCount;
 };
