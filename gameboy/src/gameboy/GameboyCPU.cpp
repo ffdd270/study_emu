@@ -150,6 +150,12 @@ void GameboyCPU::loadRegtoReg(BYTE opcode)
 
 void GameboyCPU::loadR1R2Instructions(BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble)
 {
+	if (  !( opcode & 0b00110000 ) && !( opcode & 0b00000110 ) ) // 인자 둘다 0b110이 ( HL ) 이 아님.
+	{
+		loadRegtoReg( opcode );
+		return;
+	}
+
 	//Register
 	static constexpr int register_index_hash_map[4] = { 1, 2, 3, 0 };
 	int register_index = first_opcode_nibble - 4; // 4~7 = 0~3
