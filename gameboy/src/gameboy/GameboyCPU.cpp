@@ -13,7 +13,7 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 													  RefRegister8bit( mRegisters.DE.lo ), // 011
 													  RefRegister8bit( mRegisters.HL.hi ), // 100
 													  RefRegister8bit( mRegisters.HL.lo ), // 101
-													  RefRegister8bit( mRegisters.HL.lo ), // 101
+													  RefRegister8bit( mRegisters.HL.lo ), // 110 .. 은 ( HL ) 예외처리 코드를 넣고 싶다 =ㅁ=..
 													  RefRegister8bit( mRegisters.AF.hi ) // 111
 											  } )
 {
@@ -145,48 +145,18 @@ void GameboyCPU::loadRegtoReg(BYTE opcode)
 	BYTE dest_reg_index = ( 0b00111000 & opcode ) >> 3;
 	BYTE origin_reg_index = ( 0b00000111 & opcode );
 
-	m8bitArguments[ dest_reg_index ].ref = m8bitArguments[ origin_reg_index ].ref;
+	BYTE & ref_byte_dest = (dest_reg_index & 0b110) == 0b110 ?  // 0b110은 (HL)
+			mGameMemory[ mRegisters.HL.reg_16 ] :m8bitArguments[ dest_reg_index ].ref;
+
+	BYTE & ref_byte_origin = (origin_reg_index & 0b110) == 0b110 ?
+			mGameMemory[ mRegisters.HL.reg_16 ] : m8bitArguments[ origin_reg_index ].ref;
+
+	ref_byte_dest = ref_byte_origin;
 }
 
 void GameboyCPU::loadR1R2Instructions(BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble)
 {
-	if (  !( opcode & 0b00110000 ) && !( opcode & 0b00000110 ) ) // 인자 둘다 0b110이 ( HL ) 이 아님.
-	{
-		loadRegtoReg( opcode );
-		return;
-	}
-
-	//Register
-	static constexpr int register_index_hash_map[4] = { 1, 2, 3, 0 };
-	int register_index = first_opcode_nibble - 4; // 4~7 = 0~3
-
-	Register & dest_register = mRegisters.array[ register_index_hash_map[ register_index ] ];
-	BYTE * dest_byte = second_opcode_nibble < 8 ? &dest_register.hi : &dest_register.lo;
-
-	if( first_opcode_nibble == 7 && second_opcode_nibble < 8 ) // ( HL )
-	{
-		dest_byte = &mGameMemory[ mRegisters.HL.reg_16 ];
-	}
-	else if ( first_opcode_nibble == 7 && second_opcode_nibble >= 8 ) // A
-	{
-		dest_byte = &mRegisters.AF.hi;
-	}
-
-	// Value
-	int value_index = ( second_opcode_nibble % 8 ) / 2;
-	Register & value_register = mRegisters.array[ register_index_hash_map[ value_index ] ];
-	BYTE value_byte = ( second_opcode_nibble % 2 ) == 0 ? value_register.hi : value_register.lo;
-
-	if( second_opcode_nibble % 8 == 6 ) // ( HL )
-	{
-		value_byte = mGameMemory[ mRegisters.HL.reg_16 ];
-	}
-	else if( second_opcode_nibble % 8 == 7 ) // A
-	{
-		value_byte = mRegisters.AF.hi;
-	}
-
-	*dest_byte = value_byte;
+	loadRegtoReg( opcode );
 }
 
 BYTE GameboyCPU::immediateValue()
