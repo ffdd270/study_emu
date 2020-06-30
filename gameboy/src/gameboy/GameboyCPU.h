@@ -52,15 +52,38 @@ private:
 	*/
 
 	// nibble은 반 바이트.
-	void nextStep0x0X( BYTE opcode, BYTE second_opcode_nibble );
-	void nextStep0x1X( BYTE opcode, BYTE second_opcode_nibble );
-	void nextStep0x2X( BYTE opcode, BYTE second_opcode_nibble );
-	void nextStep0x3X( BYTE opcode, BYTE second_opcode_nibble );
-	void nextStep0x4X( BYTE opcode, BYTE second_opcode_nibble );
+	void pre0b00(BYTE opCode);
+	void pre0b01(BYTE opCode);
+	void pre0b10(BYTE opCode);
+	void pre0b11(BYTE opCode);
+
+
 
 	// 0x4~0x7까진 모두 Load R1, R2
 	void loadR1R2Instructions( BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble );
+	// LD r, r'
+	// 0b00rrryyy
 	void loadRegtoReg( BYTE opCode );
+
+	// LD r, n
+	// 0b00rrr110
+	// 0bnnnnnnnn
+	void loadRegtoImm8( BYTE opCode );
+
+	// LD r, ( HL )
+	// 0b01rrr110
+	void loadRegtoMemHL( BYTE opCode );
+
+	// LD (HL), r
+	// 0b01110rrr
+	void loadMemHLtoReg( BYTE opCode );
+
+
+	//LD DD, RR (3)
+	//0b00dd0001
+	//Imm
+	//Imm
+	void loadReg16toImm16( BYTE opCode );
 
 
 	/*
@@ -105,6 +128,8 @@ private:
 
 	Registers mRegisters;
 
+
+// 이 구조체는 반드시 스코프 안에서 파기 되어야 합니다 . 객체간의 이동을 고려하고 만들지 않았습니다.
 	struct RefRegister8bit
 	{
 		BYTE & ref;
@@ -115,11 +140,22 @@ private:
 		}
 	};
 
-	// B, C, D, E, H, L, A 순.
+	// 외부 전달 금지
+	struct RefRegister16Bit
+	{
+		WORD & ref;
+
+		explicit RefRegister16Bit( WORD & ref ) : ref( ref )
+		{
+
+		}
+	};
+
+	// B, C, D, E, H, L, (ERROR), A 순.
 	std::array<RefRegister8bit, 8> m8bitArguments;
 
-
-
+	// BC, DE, HL, SP
+	std::array<RefRegister16Bit, 4> m16bitArguments;
 
 	// Debug Register
 	Register mDebugInjectionCount;
