@@ -4,6 +4,7 @@
 
 #include "GameboyCPU.h"
 #include <cstring>
+#include <cassert>
 
 
 GameboyCPU::GameboyCPU() : m8bitArguments( 	{
@@ -15,7 +16,16 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 													  RefRegister8bit( mRegisters.HL.lo ), // 101
 													  RefRegister8bit( mRegisters.HL.lo ), // 110 .. 은 ( HL ) 예외처리 코드를 넣고 싶다 =ㅁ=..
 													  RefRegister8bit( mRegisters.AF.hi ) // 111
-											  } )
+											  } ),
+						   m16bitArguments(
+								   {
+								   		RefRegister16Bit( mRegisters.BC.reg_16 ),
+								   		RefRegister16Bit( mRegisters.DE.reg_16 ),
+								   		RefRegister16Bit( mRegisters.HL.reg_16 ),
+								   		RefRegister16Bit( mSP.reg_16 ),
+								   }
+						   		)
+
 {
 }
 
@@ -37,32 +47,75 @@ void GameboyCPU::NextStep()
 {
 	BYTE opcode = mGameMemory[ mPC.reg_16 ];
 	mPC.reg_16 += 1;
-	BYTE first_opcode_nibble = opcode >> 4;
-	BYTE second_opcode_nibble = opcode - ( first_opcode_nibble << 4 );
 
-	switch ( first_opcode_nibble )
+	BYTE check_pre = 0b11000000;
+	BYTE pre_two_bit = (opcode & check_pre) >> 6;
+
+	switch ( pre_two_bit )
 	{
-		case 0x0:
-			nextStep0x0X( opcode, second_opcode_nibble );
+		case 0b00:
+			pre0b00(opcode);
 			break;
-		case 0x1:
-			nextStep0x1X( opcode, second_opcode_nibble );
+		case 0b01:
+			pre0b01(opcode);
 			break;
-		case 0x2:
-			nextStep0x2X( opcode, second_opcode_nibble );
+		case 0b10:
+			pre0b10(opcode);
 			break;
-		case 0x3:
-			break;
-		case 0x4: // 모두 LD R1, R2 명령어.
-		case 0x5:
-		case 0x6:
-			loadR1R2Instructions(opcode, first_opcode_nibble, second_opcode_nibble);
-			break;
-
-		case 0x7: // 7은 예외 조건이 있다.
-			loadR1R2Instructions( opcode, first_opcode_nibble, second_opcode_nibble ); // 일단은 이렇게만...
+		case 0b11:
+			pre0b11(opcode);
 			break;
 	}
+
+}
+
+void GameboyCPU::pre0b00(BYTE opCode)
+{
+
+	if( ( opCode & 0b00000001 ) == 0b0001 )
+	{
+		loadReg16toImm16(opCode);
+		return;
+	}
+
+
+	// 0b00rrr110 -> LD r, imm8
+	if( ( opCode & 0b00000110 ) == 0b110 )
+	{
+		loadRegtoImm8(opCode);
+		return;
+	}
+}
+
+void GameboyCPU::pre0b01(BYTE opCode)
+{
+	BYTE dest_arg =  (( opCode & 0b00111000 ) >> 3);
+	BYTE origin_arg =  (opCode & 0b00000111 );
+
+	if( dest_arg == 0b110 ) // LD (HL), r
+	{
+		loadMemHLtoReg( opCode );
+		return;
+	}
+
+	if( origin_arg == 0b110 ) // LD r, (H:L)
+	{
+		loadRegtoMemHL( opCode );
+		return;
+	}
+
+
+	//LD r, r
+	loadRegtoReg( opCode );
+}
+
+void GameboyCPU::pre0b10(BYTE opCode)
+{
+
+}
+
+void GameboyCPU::pre0b11(BYTE opCode)
+{
 
 }
 
@@ -85,73 +138,48 @@ void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
 	mGameMemory[ mem_index ] = value;
 }
 
-// 여기서부터 각 앞 자리 바이트에 대한 처리.
-
-void GameboyCPU::nextStep0x0X(BYTE opcode, BYTE second_opcode_nibble)
-{
-	switch ( second_opcode_nibble )
-	{
-		case 0x6: // LD B,n
-			load8BitToReg( mRegisters.BC.hi  );
-			break;
-		case 0xE: // LD C,n
-			load8BitToReg( mRegisters.BC.lo  );
-			break;
-	}
-}
-
-
-void GameboyCPU::nextStep0x1X(BYTE opcode, BYTE second_opcode_nibble)
-{
-	switch ( second_opcode_nibble )
-	{
-		case 0x6: // LD D,n
-			load8BitToReg( mRegisters.DE.hi  );
-			break;
-		case 0xE: // LD E,n
-			load8BitToReg( mRegisters.DE.lo  );
-			break;
-	}
-}
-
-
-void GameboyCPU::nextStep0x2X(BYTE opcode, BYTE second_opcode_nibble)
-{
-	switch ( second_opcode_nibble )
-	{
-		case 0x1:
-			mRegisters.HL.reg_16 = immediateValue16();
-			break;
-		case 0x6: // LD H, n
-			load8BitToReg( mRegisters.HL.hi );
-			break;
-		case 0xE: // LD L, n
-			load8BitToReg( mRegisters.HL.lo );
-			break;
-		default:
-
-			break;
-	}
-
-}
-
-
-// 이 구조체는 반드시 스코프 안에서 파기 되어야 합니다 . 객체간의 이동을 고려하고 만들지 않았습니다.
 
 // LD r, r'. (r'는 밑에서 y로 표기함.
 // binary :01rrryyy
 void GameboyCPU::loadRegtoReg(BYTE opcode)
 {
-	BYTE dest_reg_index = ( 0b00111000 & opcode ) >> 3;
-	BYTE origin_reg_index = ( 0b00000111 & opcode );
+	BYTE dest_reg_index = (0b00111000 & opcode) >> 3;
+	BYTE origin_reg_index = (0b00000111 & opcode);
 
-	BYTE & ref_byte_dest = (dest_reg_index & 0b110) == 0b110 ?  // 0b110은 (HL)
-			mGameMemory[ mRegisters.HL.reg_16 ] :m8bitArguments[ dest_reg_index ].ref;
-
-	BYTE & ref_byte_origin = (origin_reg_index & 0b110) == 0b110 ?
-			mGameMemory[ mRegisters.HL.reg_16 ] : m8bitArguments[ origin_reg_index ].ref;
+	BYTE &ref_byte_dest = m8bitArguments[dest_reg_index].ref;
+	BYTE &ref_byte_origin = m8bitArguments[origin_reg_index].ref;
 
 	ref_byte_dest = ref_byte_origin;
+}
+
+// LD (HL), r
+// 0b01110rrr
+void GameboyCPU::loadMemHLtoReg(BYTE opCode)
+{
+	BYTE origin_reg_index = (0b00000111 & opCode);
+
+	BYTE &ref_byte_dest = m8bitArguments[origin_reg_index].ref;
+	mGameMemory[ mRegisters.HL.reg_16 ] = ref_byte_dest;
+}
+
+
+// LD r, ( HL )
+// 0b01rrr110
+void GameboyCPU::loadRegtoMemHL(BYTE opCode)
+{
+
+}
+
+// LD r, imm8
+// 0b00rrr110
+// 0bnnnnnnnn
+void GameboyCPU::loadRegtoImm8(BYTE opCode)
+{
+	BYTE dest_reg_index = (0b00111000 & opCode) >> 3;
+	assert(dest_reg_index != 0b110); // 110과 같으면 오류
+
+	BYTE & ref_byte_dest = m8bitArguments[dest_reg_index].ref;
+	ref_byte_dest = immediateValue();
 }
 
 void GameboyCPU::loadR1R2Instructions(BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble)
@@ -180,5 +208,13 @@ WORD GameboyCPU::immediateValue16()
 void GameboyCPU::load8BitToReg(BYTE &reg_8bit)
 {
 	reg_8bit = immediateValue();
+}
+
+void GameboyCPU::loadReg16toImm16(BYTE opCode)
+{
+	BYTE dest_reg_index = ( opCode & 0b00110000 ) >> 4;
+	WORD & dest_ref_word = m16bitArguments[ dest_reg_index ].ref;
+
+	dest_ref_word = immediateValue16();
 }
 
