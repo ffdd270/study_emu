@@ -12,7 +12,7 @@ TEST_CASE( "CPU Code", "[REG]" )
 	GameboyCPU cpu;
 
 
-	SECTION( "LD B, 0x3")
+	SECTION( "LD B, 0x3") // LD r, n
 	{
 		cpu.Reset();
 
@@ -26,7 +26,7 @@ TEST_CASE( "CPU Code", "[REG]" )
 	}
 
 
-	SECTION( "LD R1, R2" )
+	SECTION( "LD R1, R2" ) // LD reg to reg
 	{
 
 		SECTION( "LD B, C" )
@@ -98,6 +98,58 @@ TEST_CASE( "CPU Code", "[REG]" )
 			REQUIRE( mem_value == 0xAA );
 		}
 	}
+	
+	SECTION( "LD r16, imm16" )
+	{
+		SECTION( "HL" )
+		{
+			cpu.Reset();
+
+			cpu.InjectionMemory( 0b00100001 ); // LD HL (  01 ) imm 16 // 1 step.
+			cpu.InjectionMemory( 0xDE ); // hi
+			cpu.InjectionMemory( 0xAD ); // lo
+
+			cpu.NextStep();
+
+			REQUIRE(cpu.GetRegisterHL().reg_16 == 0xDEAD );
+		}
+	}
+
+	SECTION( "LD r8, (HL)" )
+	{
+		cpu.Reset();
+
+		/*
+		 * A 111
+		 * B 000
+		 * C 001
+		 * D 010
+		 * E 011
+		 * H 100
+		 * L 101
+		 */
+
+		cpu.InjectionMemory( 0b00100001 ); // LD HL(01), imm16 // 1 step.
+		cpu.InjectionMemory( 0xEA ); // imm_hi = 0xEA
+		cpu.InjectionMemory( 0x00 ); // imm_low = 0x00
+
+
+		cpu.InjectionMemory( 0b00111110 ); //LD A, n // 2 step.
+		cpu.InjectionMemory( 0xAA ); //n = 0xAA
+
+		cpu.InjectionMemory( 0b01110111 ); //LD (HL), A (HL) = AA // 3 step.
+		cpu.InjectionMemory( 0b01000110 ); //LD B, (HL) // 4 step.
+
+		cpu.NextStep();
+		cpu.NextStep();
+		cpu.NextStep();
+		cpu.NextStep();
+
+		REQUIRE(cpu.GetRegisterBC().hi == 0xAA);
+	}
+
+
+
 }
 
 
