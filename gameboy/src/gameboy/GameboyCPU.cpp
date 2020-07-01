@@ -19,10 +19,10 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 											  } ),
 						   m16bitArguments(
 								   {
-								   		RefRegister16Bit( mRegisters.BC.reg_16 ),
-								   		RefRegister16Bit( mRegisters.DE.reg_16 ),
-								   		RefRegister16Bit( mRegisters.HL.reg_16 ),
-								   		RefRegister16Bit( mSP.reg_16 ),
+								   		RefRegister16Bit( mRegisters.BC.reg_16 ), //00
+ 								   		RefRegister16Bit( mRegisters.DE.reg_16 ), //01
+								   		RefRegister16Bit( mRegisters.HL.reg_16 ), //10
+								   		RefRegister16Bit( mSP.reg_16 ), // 11
 								   }
 						   		)
 
@@ -98,7 +98,7 @@ void GameboyCPU::pre0b01(BYTE opCode)
 		return;
 	}
 
-	if( origin_arg == 0b110 ) // LD r, (H:L)
+	if( origin_arg == 0b110 ) // LD r, (HL)
 	{
 		loadRegtoMemHL( opCode );
 		return;
@@ -167,7 +167,13 @@ void GameboyCPU::loadMemHLtoReg(BYTE opCode)
 // 0b01rrr110
 void GameboyCPU::loadRegtoMemHL(BYTE opCode)
 {
+	assert( (opCode & 0b00000110) == 0b110 );
 
+	BYTE origin_reg_index = ( (opCode & 0b00111000) >> 3 );
+	assert( origin_reg_index != 0b110 );
+
+	BYTE & ref_byte_origin = m8bitArguments[origin_reg_index].ref;
+	ref_byte_origin = mGameMemory[ mRegisters.HL.reg_16 ];
 }
 
 // LD r, imm8
@@ -210,6 +216,10 @@ void GameboyCPU::load8BitToReg(BYTE &reg_8bit)
 	reg_8bit = immediateValue();
 }
 
+//LD DD, RR (3)
+//0b00dd0001
+//Imm
+//Imm
 void GameboyCPU::loadReg16toImm16(BYTE opCode)
 {
 	BYTE dest_reg_index = ( opCode & 0b00110000 ) >> 4;
