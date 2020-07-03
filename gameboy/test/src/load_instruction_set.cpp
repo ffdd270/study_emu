@@ -98,22 +98,7 @@ TEST_CASE( "CPU Code", "[REG]" )
 			REQUIRE( mem_value == 0xAA );
 		}
 	}
-	
-	SECTION( "LD r16, imm16" )
-	{
-		SECTION( "HL" )
-		{
-			cpu.Reset();
 
-			cpu.InjectionMemory( 0b00100001 ); // LD HL (  01 ) imm 16 // 1 step.
-			cpu.InjectionMemory( 0xDE ); // hi
-			cpu.InjectionMemory( 0xAD ); // lo
-
-			cpu.NextStep();
-
-			REQUIRE(cpu.GetRegisterHL().reg_16 == 0xDEAD );
-		}
-	}
 
 	SECTION( "LD r8, (HL)" )
 	{
@@ -148,6 +133,39 @@ TEST_CASE( "CPU Code", "[REG]" )
 		REQUIRE(cpu.GetRegisterBC().hi == 0xAA);
 	}
 
+
+	SECTION( "LD A, (BC)" )
+	{
+		cpu.Reset();
+
+
+		//cpu.InjectionMemory(  ); // LD A, imm=0xFA
+
+
+		cpu.InjectionMemory( 0b00000001 ); // LD BC, imm16 // 1 Step.
+		cpu.InjectionMemory( 0xDE ); // imm_hi = 0xDE
+		cpu.InjectionMemory( 0xAD ); // imm_lo = 0xAD
+
+
+		cpu.InjectionMemory( 0b00001010 ); // LD A, (BC)
+	}
+
+
+	SECTION( "LD r16, imm16" )
+	{
+		SECTION( "HL" )
+		{
+			cpu.Reset();
+
+			cpu.InjectionMemory( 0b00100001 ); // LD HL (  01 ) imm 16 // 1 step.
+			cpu.InjectionMemory( 0xDE ); // hi
+			cpu.InjectionMemory( 0xAD ); // lo
+
+			cpu.NextStep();
+
+			REQUIRE(cpu.GetRegisterHL().reg_16 == 0xDEAD );
+		}
+	}
 
 
 }
