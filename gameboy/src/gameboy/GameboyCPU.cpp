@@ -25,8 +25,7 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 								   		RefRegister16Bit( mSP.reg_16 ), // 11
 								   }
 						   		),
-						   mPre0b00FuncMap( { nullptr } ),
-						   mPre0b01FuncMap( { nullptr } )
+						   mFuncMap( { nullptr } )
 
 {
 	// 함수 맵 꼭 만들기
@@ -51,36 +50,25 @@ void GameboyCPU::Reset()
 
 void GameboyCPU::NextStep()
 {
-	BYTE opcode = mGameMemory[ mPC.reg_16 ];
+	BYTE opCode = mGameMemory[ mPC.reg_16 ];
 	mPC.reg_16 += 1;
 
-	BYTE check_pre = 0b11000000;
-	BYTE pre_two_bit = (opcode & check_pre) >> 6;
+	auto& func = mFuncMap[ opCode ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
 
-	switch ( pre_two_bit )
+	if( func ==  nullptr )
 	{
-		case 0b00:
-			pre0b00(opcode);
-			break;
-		case 0b01:
-			pre0b01(opcode);
-			break;
-		case 0b10:
-			pre0b10(opcode);
-			break;
-		case 0b11:
-			pre0b11(opcode);
-			break;
+		assert( false );
+		return;
 	}
 
+	func( this, opCode );
 }
-
 
 // PRE 0b00의 콜백 함수.
 #define BIND_FUNC( func_name ) static void bind_##func_name\
 ( GameboyCPU * cpu, BYTE opCode )\
 {\
-	cpu->##func_name\
+	cpu->func_name\
 	( opCode );\
 }\
 
@@ -109,22 +97,24 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	// 0b000110 ~ 0b111110
 	for(BYTE i = 0b000; i <= 0b111; i++)
 	{
-		mPre0b00FuncMap[  ( i << 3 ) | 0b110  ] = BIND_FUNC_CLASS::bind_loadRegToImm8;
+		BYTE opCode = 0b00000000 | ( i << 3 ) | 0b110;
+		mFuncMap[ opCode ] = BIND_FUNC_CLASS::bind_loadRegToImm8;
 	}
 
 
 	// A Load (BC)
 	// 0b001010
-	mPre0b00FuncMap[ 0b001010 ] = BIND_FUNC_CLASS::bind_loadRegAToMemBC;
+	mFuncMap[ 0b00001010 ] = BIND_FUNC_CLASS::bind_loadRegAToMemBC;
 
 	// (BC) Load A
-	mPre0b00FuncMap[ 0b000010 ] = BIND_FUNC_CLASS::bind_loadMemBCToRegA;
+	mFuncMap[ 0b00000010 ] = BIND_FUNC_CLASS::bind_loadMemBCToRegA;
 
 
 	// reg16 load imm16
 	for(BYTE i = 0b00; i <= 0b11; i++)
 	{
-		mPre0b00FuncMap[ ( i << 4 ) | 0b0001 ] = BIND_FUNC_CLASS::bind_loadReg16toImm16;
+		BYTE opCode = 0b00000000 | ( i << 4 ) | 0b0001;
+		mFuncMap[ opCode ] = BIND_FUNC_CLASS::bind_loadReg16toImm16;
 	}
 }
 
@@ -138,69 +128,27 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 		{
 			if ( i == j  ) { continue; } // 같은 인자에 대한 연산은 없음. LD rrr, rrr 같이..
 
-			BYTE opCode = (i << 3) | j;
+			BYTE opCode = 0b01000000 | (i << 3) | j;
 
 			if( i == 0b110 ) // ( HL ) load reg.
 			{
-				mPre0b01FuncMap[ opCode ] = BIND_FUNC_CLASS::bind_loadMemHLToReg;
+				mFuncMap[ opCode ] = BIND_FUNC_CLASS::bind_loadMemHLToReg;
 				continue;
  			}
 
 			if ( j == 0b110 ) // reg load ( HL )
 			{
-				mPre0b01FuncMap[ opCode ] = BIND_FUNC_CLASS::bind_loadRegToMemHL;
+				mFuncMap[ opCode ] = BIND_FUNC_CLASS::bind_loadRegToMemHL;
 				continue;
 			}
 
 			// reg load reg, 0brrryyy ( rrr, yyy != 0b110, rrr != yyy )
-			mPre0b01FuncMap[ opCode ] = BIND_FUNC_CLASS::bind_loadRegToReg;
+			mFuncMap[ opCode ] = BIND_FUNC_CLASS::bind_loadRegToReg;
 		}
 	}
-
 }
 
-
-
-
-void GameboyCPU::pre0b00(BYTE opCode)
-{
-	BYTE func_key = ( opCode & 0b111111 );
-	auto& func = mPre0b00FuncMap[ func_key ];
-
-	if( func ==  nullptr )
-	{
-		assert( false );
-		return;
-	}
-
-	func( this, opCode );
-}
-
-void GameboyCPU::pre0b01(BYTE opCode)
-{
-	BYTE func_key = ( opCode & 0b111111 );
-	auto& func = mPre0b01FuncMap[ func_key ];
-
-	if( func ==  nullptr )
-	{
-		assert( false );
-		return;
-	}
-
-	func( this, opCode );
-}
-
-void GameboyCPU::pre0b10(BYTE opCode)
-{
-
-}
-
-void GameboyCPU::pre0b11(BYTE opCode)
-{
-
-}
-
-// 디버거 코드들oi
+// 디버거 코드들
 
 void GameboyCPU::InjectionMemory(BYTE injection_byte)
 {
@@ -218,6 +166,8 @@ void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
 {
 	mGameMemory[ mem_index ] = value;
 }
+
+// 여기서부터는 명령어들.
 
 
 // LD r, r'. (r'는 밑에서 y로 표기함.

@@ -52,24 +52,10 @@ public:
 	Register GetRegisterPC() { return mPC; }
 
 private:
-	std::array<BindFunctionPointer, 0b111111> mPre0b00FuncMap;
-	std::array<BindFunctionPointer, 0b111111> mPre0b01FuncMap;
+	std::array<BindFunctionPointer, 0xFF> mFuncMap;
 private:
 	void pre0b00GenerateFuncMap();
 	void pre0b01GenerateFuncMap();
-
-private:
-	/*
-	 * 어떻게 명령어를 긁을 것인가?
-	*/
-
-	// nibble은 반 바이트.
-	void pre0b00(BYTE opCode);
-	void pre0b01(BYTE opCode);
-	void pre0b10(BYTE opCode);
-	void pre0b11(BYTE opCode);
-
-
 
 private:
 	// 명령어 구현 부
