@@ -20,10 +20,14 @@ union Register
 };
 
 
+class GameboyCPU;
+
+typedef void(*BindFunctionPointer)(GameboyCPU *, BYTE);
 
 class GameboyCPU
 {
 public:
+	friend class BIND_FUNC_CLASS;
 	GameboyCPU();
 
 	bool Boot();
@@ -46,6 +50,14 @@ public:
 
 	Register GetRegisterSP() { return mSP; }
 	Register GetRegisterPC() { return mPC; }
+
+private:
+	std::array<BindFunctionPointer, 0b111111> mPre0b00FuncMap;
+	std::array<BindFunctionPointer, 0b111111> mPre0b01FuncMap;
+private:
+	void pre0b00GenerateFuncMap();
+	void pre0b01GenerateFuncMap();
+
 private:
 	/*
 	 * 어떻게 명령어를 긁을 것인가?
@@ -59,24 +71,71 @@ private:
 
 
 
-	// 0x4~0x7까진 모두 Load R1, R2
-	void loadR1R2Instructions( BYTE opcode, BYTE first_opcode_nibble, BYTE second_opcode_nibble );
-	// LD r, r'
-	// 0b00rrryyy
-	void loadRegtoReg( BYTE opCode );
+private:
+	// 명령어 구현 부
 
-	// LD r, n
+	// 작명 규칙
+	// void <명령어><dest 인자>to<origin 인자>
+	// Reg = Register 8 bit.
+	// Mem  = memory value
+	// (NN) = NN 레지스터 값 위치에 있는 게임 메모리 값.
+	// Reg16 = Register 16bit.
+	// Imm = 임시값,  코드에 박혀 있는 값.
+	// Imm16 = 16비트 임시값. hi, lo로 잘려서 있음.
+
+
+	// 주석은
+	// <명렁어> <인자> <인자>  <(명령어 길이)>
+
+
+	// 8비트 로드 명령어 집합
+	// LD r, r' (1)
+	// 0b01rrryyy
+	void loadRegToReg(BYTE opCode );
+
+	// LD r, n (2)
 	// 0b00rrr110
 	// 0bnnnnnnnn
-	void loadRegtoImm8( BYTE opCode );
+	void loadRegToImm8(BYTE opCode );
 
-	// LD r, ( HL )
+	// LD r, (IX+d)
+	// 게임보이는 그런 거 없음
+
+	// LD r, (IY+d)
+	// 게임보이는 그런 거 없음
+
+	// LD r, ( HL ) (1)
 	// 0b01rrr110
-	void loadRegtoMemHL( BYTE opCode );
+	void loadRegToMemHL(BYTE opCode );
 
-	// LD (HL), r
+
+	//LD (IX+d), r
+	//게임보이는 그런 거 없음
+
+	//LD (IY+d), r
+	//역시 게임보이는 그런 거 없음
+
+	// LD (HL), r (1)
 	// 0b01110rrr
-	void loadMemHLtoReg( BYTE opCode );
+	// (HL)<-r
+	void loadMemHLToReg(BYTE opCode );
+
+	//LD (IX+d), n
+	//게임보이는 그런 거 없음
+
+	//LD (IY+d), n
+	//게임보이는 그런 거 없음
+
+	//LD A, (BC) (1)
+	// 0b00001010 (0x0A)
+	// A<-(BC)
+	void loadRegAToMemBC(BYTE opCode );
+
+
+	//LD (BC), A (1)
+	// 0b00000010 (0x02)
+	// (BC)<-A
+	void loadMemBCToRegA(BYTE opCode );
 
 
 	//LD DD, RR (3)
@@ -92,13 +151,6 @@ private:
 
 	BYTE immediateValue();
 	WORD immediateValue16();
-
-private:
-	// instruction Set.
-
-	void load8BitToReg( BYTE & reg_8bit );
-
-
 private:
 	BYTE mGameMemory[0xFFFF];
 
