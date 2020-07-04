@@ -27,7 +27,8 @@ typedef void(*BindFunctionPointer)(GameboyCPU *, BYTE);
 class GameboyCPU
 {
 public:
-	friend class BIND_FUNC_CLASS;
+	friend class BIND_FUNCS;
+
 	GameboyCPU();
 
 	bool Boot();
@@ -73,8 +74,8 @@ private:
 	// 주석은
 	// <명렁어> <인자> <인자>  <(명령어 길이)>
 
+	// 여기서부터 로드 명령어 집합
 
-	// 8비트 로드 명령어 집합
 	// LD r, r' (1)
 	// 0b01rrryyy
 	void loadRegToReg(BYTE opCode );
@@ -117,6 +118,18 @@ private:
 	// A<-(BC)
 	void loadRegAToMemBC(BYTE opCode );
 
+
+	//LD A, (DE)
+	// 0b00011010 (0x1A)
+	// A<-(DE)
+	void loadRegAToMemDE(BYTE opCode);
+
+	//LD A, (nn)
+	// 0b00111010 (0x3A)
+	// 0bnnnnnnnn
+	// 0bnnnnnnnn
+	// A<-(nn)
+	void loadRegAToMemNN(BYTE opCode);
 
 	//LD (BC), A (1)
 	// 0b00000010 (0x02)
