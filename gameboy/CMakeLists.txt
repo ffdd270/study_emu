@@ -47,7 +47,8 @@ set( SRC_PATH ${PROJECT_ROOT_PATH}/src )
 set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/GameboyCPU.cpp
 		${SRC_PATH}/gameboy/GameboyCPU.h
-		${SRC_PATH}/gameboy/typedef.h)
+		${SRC_PATH}/gameboy/typedef.h
+		${SRC_PATH}/gameboy/instruction_set/load_instruction.cpp)
 
 add_subdirectory(test)
 add_executable(gameboy src/main.cpp ${ANGELICA_LIB} ${GAMEBOY_SRC} )
