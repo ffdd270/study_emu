@@ -13,8 +13,8 @@ inline void setRegister16( GameboyCPU & cpu_ref ,BYTE register_index, WORD value
 	BYTE lo = 0x00FF & value; // lo byte
 
 	cpu_ref.InjectionMemory( 0b00000001 | ( register_index << 4 ) );
-	cpu_ref.InjectionMemory( hi );
 	cpu_ref.InjectionMemory( lo );
+	cpu_ref.InjectionMemory( hi );
 }
 
 inline void setRegister8( GameboyCPU & cpu_ref, BYTE register_index, BYTE value )
@@ -112,8 +112,8 @@ TEST_CASE( "CPU Code", "[REG]" )
 			// Step.
 
 			cpu.InjectionMemory(0x21); // LD HL, imm16
-			cpu.InjectionMemory( 0xEA ); // imm16.hi = 0xEA;
 			cpu.InjectionMemory( 0x00 ); // imm16.lo = 0x00;
+			cpu.InjectionMemory( 0xEA ); // imm16.hi = 0xEA;
 			// HL = 0xEA00;
 
 			cpu.InjectionMemory(0x70); // LD (HL), B. (HL) = mGameMemory[ (HL) ]
@@ -188,25 +188,6 @@ TEST_CASE( "CPU Code", "[REG]" )
 		REQUIRE( cpu.GetRegisterAF().hi == 0xEA );
 	}
 
-	SECTION( "LD (BC), A" )
-	{
-		cpu.Reset();
-
-
-		setRegister16( cpu, 0b00, 0xEAFA ); // LD BC, imm16 ( 0xEAFA  )
-		// BC = 0xEAFA. 1 Step.
-
-		setRegister8( cpu, 0b111, 0xCF ); // LD A, imm8 ( 0xCF )
-		// A = 0xCF. 2 Step.
-
-		cpu.InjectionMemory( 0b00000010 ); // LD ( BC ), A
-		// ( BC ) = A == ( 0xEAFA ) = 0xCF. 3 Step.
-
-		for ( int i = 0; i < 3; i++ ) {  cpu.NextStep(); }
-
-		REQUIRE( cpu.GetMemoryValue( 0xEAFA ) == 0xCF );
-	}
-
 	SECTION( "LD A, (DE)")
 	{
 		cpu.Reset();
@@ -239,8 +220,8 @@ TEST_CASE( "CPU Code", "[REG]" )
 		// 3 Step.
 
 		cpu.InjectionMemory( 0b00111010 ); // LD A, (nn)
-		cpu.InjectionMemory( 0xF0 ); // imm_hi
 		cpu.InjectionMemory( 0x0D ); // imm_lo
+		cpu.InjectionMemory( 0xF0 ); // imm_hi
 
 		// A = (0xF00D ( 0x42 )  ) 4 Step.
 
@@ -248,6 +229,32 @@ TEST_CASE( "CPU Code", "[REG]" )
 
 		REQUIRE( cpu.GetRegisterAF().hi == 0x42 );
 	}
+
+	SECTION( "LD (BC), A" )
+	{
+		cpu.Reset();
+
+
+		setRegister16( cpu, 0b00, 0xEAFA ); // LD BC, imm16 ( 0xEAFA  )
+		// BC = 0xEAFA. 1 Step.
+
+		setRegister8( cpu, 0b111, 0xCF ); // LD A, imm8 ( 0xCF )
+		// A = 0xCF. 2 Step.
+
+		cpu.InjectionMemory( 0b00000010 ); // LD ( BC ), A
+		// ( BC ) = A == ( 0xEAFA ) = 0xCF. 3 Step.
+
+		for ( int i = 0; i < 3; i++ ) {  cpu.NextStep(); }
+
+		REQUIRE( cpu.GetMemoryValue( 0xEAFA ) == 0xCF );
+	}
+
+
+	SECTION("LD (DE), A")
+	{
+		cpu.Reset();
+	}
+
 
 
 	SECTION( "LD r16, imm16" )
@@ -257,8 +264,8 @@ TEST_CASE( "CPU Code", "[REG]" )
 			cpu.Reset();
 
 			cpu.InjectionMemory( 0b00100001 ); // LD HL (  01 ) imm 16 // 1 step.
-			cpu.InjectionMemory( 0xDE ); // hi
 			cpu.InjectionMemory( 0xAD ); // lo
+			cpu.InjectionMemory( 0xDE ); // hi
 
 			cpu.NextStep();
 

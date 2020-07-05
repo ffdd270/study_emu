@@ -193,8 +193,8 @@ BYTE GameboyCPU::immediateValue()
 
 WORD GameboyCPU::immediateValue16()
 {
-	BYTE value_hi = mGameMemory[mPC.reg_16];
-	BYTE value_lo = mGameMemory[mPC.reg_16 + 1];
+	BYTE value_lo = mGameMemory[mPC.reg_16];
+	BYTE value_hi = mGameMemory[mPC.reg_16 + 1];
 
 	mPC.reg_16 += 2;
 

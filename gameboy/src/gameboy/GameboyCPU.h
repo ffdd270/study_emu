@@ -70,6 +70,8 @@ private:
 	// Imm = 임시값,  코드에 박혀 있는 값.
 	// Imm16 = 16비트 임시값. hi, lo로 잘려서 있음.
 
+	// Z80 Cpu 메뉴얼을 기초로 만들었지만, 0xED등 2바이트 명령어들은 게임보이 CPU에서 지원하지 않아 구현에서 제외.
+
 
 	// 주석은
 	// <명렁어> <인자> <인자>  <(명령어 길이)>
@@ -137,11 +139,35 @@ private:
 	void loadMemBCToRegA(BYTE opCode );
 
 
+	//LD (DE), A (1)
+	// 0b00010010 (0x12)
+	// (DE)<-A
+	void loadMemDEToRegA(BYTE opCode);
+
+	//LD (nn), A(3)
+	// 0b00110010 0x32
+	// 0bnnnnnnnn
+	// 0bnnnnnnnn
+	void loadMemNNToRegA(BYTE opCode);
+
+	/// 여기서부터 16비트 로드 명령어
+
 	//LD DD, RR (3)
 	//0b00dd0001
 	//Imm
 	//Imm
+	// DD <- Imm16
 	void loadReg16toImm16( BYTE opCode );
+
+
+	//LD HL, (nn) (3)
+	//0b00101010 0x2A
+	//0bnnnnnnnn
+	//0bnnnnnnnn
+	// H <- (nn + 1), L <- (nn)
+	void loadRegHLToMemNN16( BYTE opCode );
+
+
 
 
 	/*
