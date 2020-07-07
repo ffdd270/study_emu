@@ -91,6 +91,8 @@ public:
 	BIND_FUNC( loadRegAToMemHLAndDecHL )
 	BIND_FUNC( loadMemBCToRegA )
 	BIND_FUNC( loadReg16toImm16 )
+	BIND_FUNC( loadMemDEToRegA )
+	BIND_FUNC( loadMemHLToRegAAndIncHL )
 };
 
 
@@ -121,6 +123,16 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	// LD A, (nn)
 	// 0b00111010 (0x3A)
 	// mFuncMap[ 0b00111010 ] = BIND_FUNCS::loadRegAToMemNN;
+
+	//LD (DE), A (1)
+	// 0b00010010 (0x12)
+	// (DE)<-A
+	mFuncMap[ 0b00010010 ] = BIND_FUNCS::loadMemDEToRegA;
+
+	//LD (HL+), A ( or LDI HL, A ) (1)
+	// 0b00100010 (0x22)
+	// (HL+)<-A and HL<-HL + 1
+	mFuncMap[ 0b00100010 ] = BIND_FUNCS::loadMemHLToRegAAndIncHL;
 
 	//LDD A,(HL)
 	// 0b00111010 (0x3A) (only on Gameboy CPU. )

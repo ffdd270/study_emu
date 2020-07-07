@@ -143,11 +143,15 @@ private:
 	// (BC)<-A
 	void loadMemBCToRegA(BYTE opCode );
 
-
 	//LD (DE), A (1)
 	// 0b00010010 (0x12)
 	// (DE)<-A
 	void loadMemDEToRegA(BYTE opCode);
+
+	//LD (HL+), A ( or LDI HL, A ) (1)
+	// 0b00100010 (0x22)
+	// (HL+)<-A and HL<-HL + 1
+	void loadMemHLToRegAAndIncHL(BYTE opCode);
 
 	//LD (nn), A(3)
 	// 0b00110010 0x32
@@ -173,10 +177,8 @@ private:
 	void loadRegHLToMemNN16( BYTE opCode );
 
 
-
-
 	/*
-	 * CPU 내부 명령들.
+	 * Util 함수들.
 	*/
 
 	BYTE immediateValue();
