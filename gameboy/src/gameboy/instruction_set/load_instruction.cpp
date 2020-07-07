@@ -74,7 +74,7 @@ void GameboyCPU::loadRegAToMemDE(BYTE opCode)
 
 
 //LD A, (nn)
-// 0b00111010 (0x3A)
+// 0b00111010 (0x3A) (only on CHIP-8)
 // 0bnnnnnnnn
 // 0bnnnnnnnn
 // A<-(nn)
@@ -84,6 +84,16 @@ void GameboyCPU::loadRegAToMemNN(BYTE opCode)
 	WORD imm16 = immediateValue16();
 
 	ref_A = mGameMemory[ imm16 ];
+}
+
+
+//LDD A,(HL)
+// 0b00111010 (0x3A) (only on Gameboy CPU. )
+// A<-(HL) and HL--;
+void GameboyCPU::loadRegAToMemHLAndDecHL( BYTE opCode )
+{
+	mRegisters.AF.hi = mGameMemory[ mRegisters.HL.reg_16 ];
+	mRegisters.HL.reg_16--;
 }
 
 
