@@ -127,11 +127,16 @@ private:
 	void loadRegAToMemDE(BYTE opCode);
 
 	//LD A, (nn)
-	// 0b00111010 (0x3A)
+	// 0b00111010 (0x3A) (only on CHIP-8)
 	// 0bnnnnnnnn
 	// 0bnnnnnnnn
 	// A<-(nn)
 	void loadRegAToMemNN(BYTE opCode);
+
+	//LDD A,(HL)
+	// 0b00111010 (0x3A) (only on Gameboy CPU. )
+	// A<-(HL) and HL--;
+	void loadRegAToMemHLAndDecHL(BYTE opCode);
 
 	//LD (BC), A (1)
 	// 0b00000010 (0x02)
