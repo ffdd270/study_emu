@@ -212,6 +212,7 @@ TEST_CASE( "CPU Code", "[REG]" )
 		REQUIRE( cpu.GetRegisterAF().hi == 0xBA );
 	}
 
+	/* Only on Z80
 	SECTION( "LD A, (nn)" )
 	{
 		cpu.Reset();
@@ -228,6 +229,20 @@ TEST_CASE( "CPU Code", "[REG]" )
 		for( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
 
 		REQUIRE( cpu.GetRegisterAF().hi == 0x42 );
+	}*/
+
+	// A<-(HL) and HL--;
+	SECTION(  "LDD A, (HL)" )
+	{
+		cpu.Reset();
+
+		setMemory3Step( cpu, 0b00, 0xE001, 0x10 );  // HL = 0xE001, B = 0x10, (HL) = B.
+		cpu.InjectionMemory( 0b00111010 ); // LDD A,(HL)
+
+		for( int i = 0; i < 4; i++ ){ cpu.NextStep(); }
+
+		REQUIRE( cpu.GetRegisterAF().hi == 0x10 );
+		REQUIRE( cpu.GetRegisterHL().reg_16 == 0xE000 );
 	}
 
 	SECTION( "LD (BC), A" )
