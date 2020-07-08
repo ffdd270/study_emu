@@ -1,12 +1,13 @@
-#include "lib/GLRenderer.h"
-#include "lib/Window.h"
-#include "lib/typedef.h"
+#include "angelica/GLRenderer.h"
+#include "angelica/Window.h"
+#include "angelica/typedef.h"
 #include "gameboy/GameboyCPU.h"
 #include <iostream>
 
 
 int main()
 {
+
 	Angelica::Window window;
 	Angelica::GLRenderer renderer;
 
@@ -44,5 +45,4 @@ int main()
 
 		window.swapBuffers();
 	}
-
 }

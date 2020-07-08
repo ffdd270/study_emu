@@ -1,4 +1,4 @@
-#include "GameboyCPU.h"
+#include "../GameboyCPU.h"
 #include <cstring>
 #include <cassert>
 
