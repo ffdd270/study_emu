@@ -125,6 +125,18 @@ void GameboyCPU::loadMemHLToRegAAndIncHL(BYTE opCode)
 	mRegisters.HL.reg_16++;
 }
 
+
+//LD (HL-) , A( or LDD HL, A ) (1)
+// 0b00110010 (0x32)
+// HL<-A and HL<-HL - 1
+void GameboyCPU::loadMemHLToRegAAndDecHL(BYTE opCode)
+{
+	BYTE & ref_mem = mGameMemory[ mRegisters.HL.reg_16 ];
+	ref_mem = mRegisters.AF.hi;
+	mRegisters.HL.reg_16--;
+}
+
+
 //LD DD, RR (3)
 //0b00dd0001
 //Imm

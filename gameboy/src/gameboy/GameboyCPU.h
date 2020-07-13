@@ -153,6 +153,11 @@ private:
 	// (HL+)<-A and HL<-HL + 1
 	void loadMemHLToRegAAndIncHL(BYTE opCode);
 
+	//LD (HL-) , A( or LDD HL, A ) (1)
+	// 0b00110010 (0x32)
+	// HL<-A and HL<-HL - 1
+	void loadMemHLToRegAAndDecHL(BYTE opCode);
+
 	//LD (nn), A(3)
 	// 0b00110010 0x32
 	// 0bnnnnnnnn

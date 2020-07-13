@@ -246,7 +246,7 @@ TEST_CASE( "CPU Code", "[REG]" )
 		REQUIRE( cpu.GetMemoryValue( 0xDAFA ) == 0xA0 );
 	}
 
-	// (HL+)<-A and HL<-HL + 1
+	// (HL)<-A and HL<-HL + 1
 	SECTION( "LDI (HL), A" )
 	{
 		cpu.Reset();
@@ -260,6 +260,21 @@ TEST_CASE( "CPU Code", "[REG]" )
 		REQUIRE( cpu.GetMemoryValue( 0xAEAD ) == 0xAD );
 		REQUIRE( cpu.GetRegisterHL().reg_16 == 0xAEAE );
 
+	}
+
+	// (HL)<A and HL<-HL - 1
+	SECTION( "LDD (HL), A" )
+	{
+		cpu.Reset();
+
+		setRegister16( cpu, 0b10, 0xDED1 ); // LD HL, 0xDED1
+		setRegister8( cpu, 0b111, 0xDA ); //LD A, 0xDA
+		cpu.InjectionMemory( 0b00110010 ); //LDD (HL), A
+
+		for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+
+		REQUIRE( cpu.GetMemoryValue( 0xDED1 ) == 0xDA );
+		REQUIRE( cpu.GetRegisterHL().reg_16 == 0xDED0 );
 	}
 
 	// A<-(HL) and HL--;
