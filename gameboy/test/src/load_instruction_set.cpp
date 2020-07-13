@@ -291,6 +291,18 @@ TEST_CASE( "CPU Code", "[REG]" )
 		REQUIRE( cpu.GetRegisterHL().reg_16 == 0xE000 );
 	}
 
+	SECTION( "LDI A, (HL)" )
+	{
+		cpu.Reset();
+
+		setMemory3Step( cpu, 0b00, 0x2FFF, 0x30 );  // HL = 0x2FFF, B = 0x30, (HL) = B.
+		cpu.InjectionMemory( 0b00101010 ); // LDI A, (HL)
+
+		for( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
+
+		REQUIRE( cpu.GetRegisterAF().hi == 0x30 );
+		REQUIRE( cpu.GetRegisterHL().reg_16 == 0x3000 );
+	}
 
 	SECTION( "LD (BC), A" )
 	{
