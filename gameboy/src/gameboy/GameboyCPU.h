@@ -126,6 +126,12 @@ private:
 	// A<-(DE)
 	void loadRegAToMemDE(BYTE opCode);
 
+	//LD A, (HL+)
+	// 0b00101010 (0x2A)
+	// A<-(HL), HL<-HL + 1
+ 	void loadRegAToMemHLAndIncHL(BYTE opCode);
+
+
 	//LD A, (nn)
 	// 0b00111010 (0x3A) (only on CHIP-8)
 	// 0bnnnnnnnn
@@ -153,7 +159,12 @@ private:
 	// (HL+)<-A and HL<-HL + 1
 	void loadMemHLToRegAAndIncHL(BYTE opCode);
 
-	//LD (nn), A(3)
+	//LD (HL-) , A( or LDD HL, A ) (1) - (Only On Gameboy CPU)
+	// 0b00110010 (0x32)
+	// HL<-A and HL<-HL - 1
+	void loadMemHLToRegAAndDecHL(BYTE opCode);
+
+	//LD (nn), A(3) - (Only On Z80)
 	// 0b00110010 0x32
 	// 0bnnnnnnnn
 	// 0bnnnnnnnn
@@ -169,7 +180,7 @@ private:
 	void loadReg16toImm16( BYTE opCode );
 
 
-	//LD HL, (nn) (3)
+	//LD HL, (nn) (3) - (Only On Z80)
 	//0b00101010 0x2A
 	//0bnnnnnnnn
 	//0bnnnnnnnn
