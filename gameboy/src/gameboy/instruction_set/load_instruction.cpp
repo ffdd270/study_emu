@@ -158,4 +158,13 @@ void GameboyCPU::loadReg16toImm16(BYTE opCode)
 	dest_ref_word = immediateValue16();
 }
 
+//LD SP, HL
+// 0b11111001 0xF9
+// SP <- HL
+void GameboyCPU::loadRegSPToRegHL(BYTE opCode)
+{
+	mSP.reg_16 = mRegisters.HL.reg_16;
+}
+
+
 

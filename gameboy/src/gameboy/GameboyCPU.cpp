@@ -31,7 +31,7 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 	// 함수 맵 꼭 만들기
 	pre0b00GenerateFuncMap();
 	pre0b01GenerateFuncMap();
-
+	pre0b11GenerateFuncMap();
 }
 
 
@@ -77,6 +77,8 @@ void GameboyCPU::NextStep()
 class BIND_FUNCS
 {
 public:
+	// pre 0b11
+	BIND_FUNC( loadRegSPToRegHL )
 
 	// pre 0b01
 	BIND_FUNC( loadRegToReg )
@@ -190,6 +192,16 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 		}
 	}
 }
+
+void GameboyCPU::pre0b11GenerateFuncMap()
+{
+	//LD SP, HL
+	// 0b11111001 0xF9
+	// SP <- HL
+	mFuncMap[ 0b11111001 ] = BIND_FUNCS::loadRegSPToRegHL;
+}
+
+
 
 // 디버거 코드들
 

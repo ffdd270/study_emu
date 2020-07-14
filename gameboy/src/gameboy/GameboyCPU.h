@@ -57,6 +57,7 @@ private:
 private:
 	void pre0b00GenerateFuncMap();
 	void pre0b01GenerateFuncMap();
+	void pre0b11GenerateFuncMap();
 
 private:
 	// 명령어 구현 부
@@ -186,6 +187,13 @@ private:
 	//0bnnnnnnnn
 	// H <- (nn + 1), L <- (nn)
 	void loadRegHLToMemNN16( BYTE opCode );
+
+
+	//LD SP, HL
+	// 0b11111001 0xF9
+	// SP <- HL
+	void loadRegSPToRegHL( BYTE opCode );
+
 
 
 	/*

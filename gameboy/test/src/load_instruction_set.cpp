@@ -346,8 +346,24 @@ TEST_CASE( "CPU Code", "[REG]" )
 			REQUIRE(cpu.GetRegisterHL().reg_16 == 0xDEAD );
 		}
 	}
-}
 
+	SECTION( "LD SP, HL" )
+	{
+		cpu.Reset();
+
+		cpu.InjectionMemory(  0b00100001 ); // LD HL ( 01), imm 16
+		cpu.InjectionMemory( 0xA0 ); //lo
+		cpu.InjectionMemory( 0xFA ); //hi
+		//1 step.
+
+		cpu.InjectionMemory( 0b11111001 ); // LD SP, HL
+		//2 Step.
+
+		for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+		REQUIRE( cpu.GetRegisterSP().reg_16 == 0xFAA0 );
+	}
+}
 
 
 
