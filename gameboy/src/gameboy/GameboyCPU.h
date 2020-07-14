@@ -194,7 +194,10 @@ private:
 	// SP <- HL
 	void loadRegSPToRegHL( BYTE opCode );
 
-
+	//PUSH qq
+	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
+	// (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
+	void pushReg16( BYTE opCode );
 
 	/*
 	 * Util 함수들.
