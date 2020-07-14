@@ -346,8 +346,51 @@ TEST_CASE( "CPU Code", "[REG]" )
 			REQUIRE(cpu.GetRegisterHL().reg_16 == 0xDEAD );
 		}
 	}
-}
 
+	SECTION( "LD SP, HL" )
+	{
+		cpu.Reset();
+
+		cpu.InjectionMemory(  0b00100001 ); // LD HL ( 01), imm 16
+		cpu.InjectionMemory( 0xA0 ); //lo
+		cpu.InjectionMemory( 0xFA ); //hi
+		//1 step.
+
+		cpu.InjectionMemory( 0b11111001 ); // LD SP, HL
+		//2 Step.
+
+		for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+		REQUIRE( cpu.GetRegisterSP().reg_16 == 0xFAA0 );
+	}
+
+	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
+	// (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
+	SECTION( "PUSH qq" )
+	{
+		cpu.Reset();
+
+		setRegister16( cpu, 0b00, 0xDE33 ); // BC = 0xDE33
+		// 1 Step.
+
+		setRegister16( cpu, 0b10, 0xE002 ); // HL = 0xE002
+		// 2 Step.
+
+		cpu.InjectionMemory( 0b11111001 ); //LD SP,  HL  ( SP = 0xE002 )
+		// 3 Step.
+
+		cpu.InjectionMemory( 0b11000101 ); // PUSH BC.
+		// 4 Step.
+
+		for( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
+
+		//qqLow = 0x33, qqHigh = 0xDE
+		//즉. (0xE002 - 2) = 0x33, (0xE002 - 1) =  0xDE. HL = 0xE002 - 2
+		REQUIRE( cpu.GetMemoryValue( 0xE001 ) == 0xDE );
+		REQUIRE( cpu.GetMemoryValue( 0xE000 ) == 0x33 );
+		REQUIRE( cpu.GetRegisterSP().reg_16 == 0xE000 );
+	}
+}
 
 
 

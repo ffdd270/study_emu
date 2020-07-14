@@ -158,4 +158,27 @@ void GameboyCPU::loadReg16toImm16(BYTE opCode)
 	dest_ref_word = immediateValue16();
 }
 
+//LD SP, HL
+// 0b11111001 0xF9
+// SP <- HL
+void GameboyCPU::loadRegSPToRegHL(BYTE opCode)
+{
+	mSP.reg_16 = mRegisters.HL.reg_16;
+}
+
+//PUSH qq
+// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
+// (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
+void GameboyCPU::pushReg16(BYTE opCode)
+{
+	BYTE argument =  ( opCode & 0b00110000 ) >> 4;
+	WORD & ref_16 = m16bitArguments[ argument ].ref;
+
+	mGameMemory[ mSP.reg_16 - 2 ] = ref_16 & 0x00FF  ; // low;
+	mGameMemory[ mSP.reg_16 - 1 ] = (ref_16 & 0xFF00) >> 8; // high;
+	
+	mSP.reg_16 -= 2;
+}
+
+
 

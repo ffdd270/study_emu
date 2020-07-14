@@ -57,6 +57,7 @@ private:
 private:
 	void pre0b00GenerateFuncMap();
 	void pre0b01GenerateFuncMap();
+	void pre0b11GenerateFuncMap();
 
 private:
 	// 명령어 구현 부
@@ -187,6 +188,16 @@ private:
 	// H <- (nn + 1), L <- (nn)
 	void loadRegHLToMemNN16( BYTE opCode );
 
+
+	//LD SP, HL
+	// 0b11111001 0xF9
+	// SP <- HL
+	void loadRegSPToRegHL( BYTE opCode );
+
+	//PUSH qq
+	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
+	// (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
+	void pushReg16( BYTE opCode );
 
 	/*
 	 * Util 함수들.
