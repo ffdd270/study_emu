@@ -55,6 +55,7 @@ private:
 private:
 	void pre0b00GenerateFuncMap();
 	void pre0b01GenerateFuncMap();
+	void pre0b10GenerateFuncMap();
 	void pre0b11GenerateFuncMap();
 
 private:
@@ -202,6 +203,22 @@ private:
 	// qqH <- (SP + 1), qqL <- (SP)
 	void popReg16( BYTE opCode );
 
+
+	/*
+	 * 8비트 산술 명령어
+	 */
+
+	//ADD A, r
+	// 0b10000rrr { rrr = 8bitArgument }
+	// A <- A + r
+	// = Flag =
+	// Z = if A is 0
+	// H = if bit 3 carry
+	// C = if bit 7 carry
+	// N = Reset
+	void addRegAToRegister( BYTE opCode );
+
+
 	/*
 	 * Util 함수들.
 	*/
@@ -209,6 +226,15 @@ private:
 
 	BYTE immediateValue();
 	WORD immediateValue16();
+
+
+	// NEED JUST BIT.
+	void setFlagZ( bool flag );
+	void setFlagN( bool flag );
+	void setFlagH( bool flag );
+	void setFlagC( bool flag );
+	void resetFlags();
+
 private:
 	BYTE mGameMemory[0xFFFF];
 
@@ -223,10 +249,10 @@ private:
 
 			Register AF; // Accumulator & Flags. Low 8bit Used by Flag.
 			//  mAF Low Bit ->
-			//  7 = Zero Flag.
-			//  6 = Zero Flag.
-			//  5 = Zero Flag.
-			//  4 = Carry Flag.
+			//  7 = // Z  : Zero Falg.
+			//  6 = // N = SUbtract Flag
+			//  5 = Zero Flag. // H
+			//  4 = Carry Flag. // C
 			//  3-0 = Zero Fill. Not Used..
 		};
 

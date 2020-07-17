@@ -31,6 +31,7 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 	// 함수 맵 꼭 만들기
 	pre0b00GenerateFuncMap();
 	pre0b01GenerateFuncMap();
+	pre0b10GenerateFuncMap();
 	pre0b11GenerateFuncMap();
 }
 
@@ -85,6 +86,8 @@ public:
 	BIND_FUNC( popReg16 )
 
 
+	// pre 0b10
+	BIND_FUNC( addRegAToRegister )
 
 	// pre 0b01
 
@@ -153,7 +156,7 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	mFuncMap[ 0b00110010 ] = BIND_FUNCS::loadMemHLToRegAAndDecHL;
 
 	//LD A, (HL+)
-	//0b00101010 (0x2A) (only on Gameboy CPU. \
+	//0b00101010 (0x2A) (only on Gameboy CPU. )
 	// HL<-A and HL<-HL - 1
 	mFuncMap[ 0b00101010 ] = BIND_FUNCS::loadRegAToMemHLAndIncHL;
 
@@ -201,6 +204,20 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 		}
 	}
 }
+
+
+void GameboyCPU::pre0b10GenerateFuncMap()
+{
+	//ADD A, r
+	// 0b10000rrr { rrr = 8bitArgument }
+	for ( int i = 0; i <= 0b111; i++ )
+	{
+		BYTE opCode = 0b10000000 | i;
+		mFuncMap[ opCode ] = BIND_FUNCS::addRegAToRegister;
+	}
+
+}
+
 
 void GameboyCPU::pre0b11GenerateFuncMap()
 {
@@ -266,4 +283,33 @@ WORD GameboyCPU::immediateValue16()
 
 	WORD value = ( value_hi << 8 ) | value_lo;
 	return value;
+}
+
+void GameboyCPU::setFlagZ(bool flag)
+{
+	BYTE value = flag ? 0b1 : 0b0;
+	mRegisters.AF.lo |= value << 7;
+}
+
+void GameboyCPU::setFlagN(bool flag)
+{
+	BYTE value = flag ? 0b1 : 0b0;
+	mRegisters.AF.lo |= value << 6;
+}
+
+void GameboyCPU::setFlagH(bool flag)
+{
+	BYTE value = flag ? 0b1 : 0b0;
+	mRegisters.AF.lo |= value << 5;
+}
+
+void GameboyCPU::setFlagC(bool flag)
+{
+	BYTE value = flag ? 0b1 : 0b0;
+	mRegisters.AF.lo |= value << 4;
+}
+
+void GameboyCPU::resetFlags()
+{
+	mRegisters.AF.lo = 0;
 }
