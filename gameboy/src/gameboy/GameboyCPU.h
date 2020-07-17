@@ -42,12 +42,10 @@ public:
 	void SetMemoryValue( unsigned int mem_index, BYTE value );
 	BYTE GetMemoryValue( unsigned int mem_index );
 
-	Register GetRegisterAF() { return mRegisters.array[0]; }
-	Register GetRegisterBC() { return mRegisters.array[1]; }
-	Register GetRegisterDE() { return mRegisters.array[2]; }
-	Register GetRegisterHL() { return mRegisters.array[3]; }
-
-
+	Register GetRegisterAF() { return mRegisters.array[3]; }
+	Register GetRegisterBC() { return mRegisters.array[0]; }
+	Register GetRegisterDE() { return mRegisters.array[1]; }
+	Register GetRegisterHL() { return mRegisters.array[2]; }
 
 	Register GetRegisterSP() { return mSP; }
 	Register GetRegisterPC() { return mPC; }
@@ -57,6 +55,7 @@ private:
 private:
 	void pre0b00GenerateFuncMap();
 	void pre0b01GenerateFuncMap();
+	void pre0b10GenerateFuncMap();
 	void pre0b11GenerateFuncMap();
 
 private:
@@ -199,31 +198,62 @@ private:
 	// (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
 	void pushReg16( BYTE opCode );
 
+	//POP qq
+	// 0b11qq0001 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 } }
+	// qqH <- (SP + 1), qqL <- (SP)
+	void popReg16( BYTE opCode );
+
+
+	/*
+	 * 8비트 산술 명령어
+	 */
+
+	//ADD A, r
+	// 0b10000rrr { rrr = 8bitArgument }
+	// A <- A + r
+	// = Flag =
+	// Z = if A is 0
+	// H = if bit 3 carry
+	// C = if bit 7 carry
+	// N = Reset
+	void addRegAToRegister( BYTE opCode );
+
+
 	/*
 	 * Util 함수들.
 	*/
 
+
 	BYTE immediateValue();
 	WORD immediateValue16();
+
+
+	// NEED JUST BIT.
+	void setFlagZ( bool flag );
+	void setFlagN( bool flag );
+	void setFlagH( bool flag );
+	void setFlagC( bool flag );
+	void resetFlags();
+
 private:
 	BYTE mGameMemory[0xFFFF];
 
 
 	union Registers{
+		// 레지스터 영역.
 		struct
 		{
-			// 레지스터 영역.
-			Register AF; // Accumulator & Flags. Low 8bit Used by Flag.
-			//  mAF Low Bit ->
-			//  7 = Zero Flag.
-			//  6 = Zero Flag.
-			//  5 = Zero Flag.
-			//  4 = Carry Flag.
-			//  3-0 = Zero Fill. Not Used..
-
 			Register BC;
 			Register DE;
 			Register HL;
+
+			Register AF; // Accumulator & Flags. Low 8bit Used by Flag.
+			//  mAF Low Bit ->
+			//  7 = // Z  : Zero Falg.
+			//  6 = // N = SUbtract Flag
+			//  5 = Zero Flag. // H
+			//  4 = Carry Flag. // C
+			//  3-0 = Zero Fill. Not Used..
 		};
 
 		Register array[4];

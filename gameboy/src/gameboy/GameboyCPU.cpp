@@ -31,6 +31,7 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 	// 함수 맵 꼭 만들기
 	pre0b00GenerateFuncMap();
 	pre0b01GenerateFuncMap();
+	pre0b10GenerateFuncMap();
 	pre0b11GenerateFuncMap();
 }
 
@@ -78,19 +79,29 @@ class BIND_FUNCS
 {
 public:
 	// pre 0b11
+
+	//load
 	BIND_FUNC( loadRegSPToRegHL )
 	BIND_FUNC( pushReg16 )
+	BIND_FUNC( popReg16 )
+
+
+	// pre 0b10
+	BIND_FUNC( addRegAToRegister )
 
 	// pre 0b01
+
+	//load
 	BIND_FUNC( loadRegToReg )
 	BIND_FUNC( loadRegToMemHL )
 	BIND_FUNC( loadMemHLToReg )
 
 	// pre 0b00
+
+	//load
 	BIND_FUNC( loadRegToImm8 )
 	BIND_FUNC( loadRegAToMemBC )
 	BIND_FUNC( loadRegAToMemDE )
-	// BIND_FUNC( loadRegAToMemNN )
 	BIND_FUNC( loadRegAToMemHLAndIncHL )
 	BIND_FUNC( loadRegAToMemHLAndDecHL )
 	BIND_FUNC( loadMemBCToRegA )
@@ -145,7 +156,7 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	mFuncMap[ 0b00110010 ] = BIND_FUNCS::loadMemHLToRegAAndDecHL;
 
 	//LD A, (HL+)
-	//0b00101010 (0x2A) (only on Gameboy CPU. \
+	//0b00101010 (0x2A) (only on Gameboy CPU. )
 	// HL<-A and HL<-HL - 1
 	mFuncMap[ 0b00101010 ] = BIND_FUNCS::loadRegAToMemHLAndIncHL;
 
@@ -194,20 +205,40 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 	}
 }
 
+
+void GameboyCPU::pre0b10GenerateFuncMap()
+{
+	//ADD A, r
+	// 0b10000rrr { rrr = 8bitArgument }
+	for ( int i = 0; i <= 0b111; i++ )
+	{
+		BYTE opCode = 0b10000000 | i;
+		mFuncMap[ opCode ] = BIND_FUNCS::addRegAToRegister;
+	}
+
+}
+
+
 void GameboyCPU::pre0b11GenerateFuncMap()
 {
 	//LD SP, HL
 	// 0b11111001 0xF9
-	// SP <- HL
 	mFuncMap[ 0b11111001 ] = BIND_FUNCS::loadRegSPToRegHL;
 
 	//PUSH qq
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
-	// (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
 	for ( int i = 0; i <= 0b11; i++ )
 	{
 		BYTE opCode = 0b11000101 | ( i << 4 ); // base = 0b11000101 ,i << 4 == qq.
 		mFuncMap[ opCode ] = BIND_FUNCS::pushReg16;
+	}
+
+	//POP qq
+	// 0b11qq0001 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 } }
+	for ( int i = 0; i <= 0b11; i++ ) // 굳이 PUSH와 합치지는 않았음. 3 클럭 소모 더하고 보기 좋게하는게..
+	{
+		BYTE opCode = 0b11000001 | ( i << 4 ); // base = 0b11000001 ,i << 4 == qq.
+		mFuncMap[ opCode ] = BIND_FUNCS::popReg16;
 	}
 }
 
@@ -252,4 +283,33 @@ WORD GameboyCPU::immediateValue16()
 
 	WORD value = ( value_hi << 8 ) | value_lo;
 	return value;
+}
+
+void GameboyCPU::setFlagZ(bool flag)
+{
+	BYTE value = flag ? 0b1 : 0b0;
+	mRegisters.AF.lo |= value << 7;
+}
+
+void GameboyCPU::setFlagN(bool flag)
+{
+	BYTE value = flag ? 0b1 : 0b0;
+	mRegisters.AF.lo |= value << 6;
+}
+
+void GameboyCPU::setFlagH(bool flag)
+{
+	BYTE value = flag ? 0b1 : 0b0;
+	mRegisters.AF.lo |= value << 5;
+}
+
+void GameboyCPU::setFlagC(bool flag)
+{
+	BYTE value = flag ? 0b1 : 0b0;
+	mRegisters.AF.lo |= value << 4;
+}
+
+void GameboyCPU::resetFlags()
+{
+	mRegisters.AF.lo = 0;
 }

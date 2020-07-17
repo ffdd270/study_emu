@@ -390,6 +390,34 @@ TEST_CASE( "CPU Code", "[REG]" )
 		REQUIRE( cpu.GetMemoryValue( 0xE000 ) == 0x33 );
 		REQUIRE( cpu.GetRegisterSP().reg_16 == 0xE000 );
 	}
+
+	SECTION( "POP qq" )
+	{
+		cpu.Reset();
+
+		setRegister16( cpu, 0b01, 0x1234 ); // DE = 0x1234
+		// 1 Step.
+
+		setRegister16( cpu, 0b10, 0x7652 ); // HL = 0x7652
+		// 2 Step.
+
+		cpu.InjectionMemory( 0b11111001 ); //LD SP, HL
+		// 3 Step.
+
+		cpu.InjectionMemory( 0b11010101 ); // PUSH DE
+		// 4 Step.
+		// (0x7651) = 0x12, (0x7650) = 0x34, SP = 0x7650
+
+		cpu.InjectionMemory( 0b11000001 ); // POP BC.
+		// BC = 0x7652, SP = 0x7652
+		// 5 Step.
+
+		for( int i = 0; i < 5; i++ ) { cpu.NextStep(); }
+
+
+		REQUIRE( cpu.GetRegisterSP().reg_16 == 0x7652 );
+		REQUIRE( cpu.GetRegisterBC().reg_16 == 0x1234 );
+	}
 }
 
 

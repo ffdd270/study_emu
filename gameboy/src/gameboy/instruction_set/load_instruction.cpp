@@ -181,4 +181,18 @@ void GameboyCPU::pushReg16(BYTE opCode)
 }
 
 
+//POP qq
+// 0b11qq0001 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 } }
+// qqH <- (SP + 1), qqL <- (SP)
+void GameboyCPU::popReg16(BYTE opCode)
+{
+	BYTE argument  = ( opCode & 0b00110000 ) >> 4;
+	Register & ref_register = mRegisters.array[ argument ];
+
+	ref_register.lo = mGameMemory[ mSP.reg_16 ];
+	ref_register.hi = mGameMemory[ mSP.reg_16 + 1 ];
+
+	mSP.reg_16 += 2;
+}
+
 
