@@ -50,6 +50,11 @@ public:
 	Register GetRegisterSP() { return mSP; }
 	Register GetRegisterPC() { return mPC; }
 
+	BYTE GetFlagZ() { return ( mRegisters.AF.lo & 0b10000000 ) >> 7;  }
+	BYTE GetFlagN() { return ( mRegisters.AF.lo & 0b01000000 ) >> 6;  }
+	BYTE GetFlagH() { return ( mRegisters.AF.lo & 0b00100000 ) >> 5; }
+	BYTE GetFlagC() { return ( mRegisters.AF.lo & 0b00010000 ) >> 4;  }
+
 private:
 	std::array<BindFunctionPointer, 0xFF> mFuncMap;
 private:
