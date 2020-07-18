@@ -8,7 +8,8 @@ include_directories( lib/
 set(TEST
         src/main.cpp
         src/register.cpp
-        src/load_instruction_set.cpp)
+        src/load_instruction_set.cpp
+        src/arithmetic_instruction_set.cpp src/util.h)
 
 
 add_executable( gb_test
