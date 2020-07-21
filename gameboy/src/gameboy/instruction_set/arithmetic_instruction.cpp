@@ -27,12 +27,12 @@ void GameboyCPU::addRegAToRegister(BYTE opCode)
 		setFlagZ( true );
 	}
 
-	if( mRegisters.AF.hi & 0b100 == 1 )
+	if( ( mRegisters.AF.hi & 0b100 ) == 0b100 )
 	{
 		setFlagH( true );
 	}
 
-	if ( mRegisters.AF.hi & 0b1000000 == 1 )
+	if ( ( mRegisters.AF.hi & 0b1000000 ) == 0b1000000 )
 	{
 		setFlagC( true );
 	}

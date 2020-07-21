@@ -47,6 +47,7 @@ void GameboyCPU::Reset()
 	mPC.reg_16 = 0x1000;
 	mDebugInjectionCount.reg_16 = 0x1000;
 	memset( mGameMemory, 0, sizeof ( mGameMemory ) );
+	resetFlags();
 }
 
 void GameboyCPU::NextStep()
