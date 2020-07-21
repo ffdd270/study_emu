@@ -6,6 +6,38 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
+void NoFlagCheck( GameboyCPU & cpu )
+{
+	REQUIRE( cpu.GetFlagC() == 0 );
+	REQUIRE( cpu.GetFlagH() == 0 );
+	REQUIRE( cpu.GetFlagZ() == 0 );
+	REQUIRE( cpu.GetFlagN() == 0 );
+}
+
+void ZeroFlagCheck( GameboyCPU & cpu )
+{
+	REQUIRE( cpu.GetFlagC() == 0 );
+	REQUIRE( cpu.GetFlagH() == 0 );
+	REQUIRE( cpu.GetFlagZ() == 1 );
+	REQUIRE( cpu.GetFlagN() == 0 );
+}
+
+void CarryAndHalfFlagCheck(GameboyCPU & cpu )
+{
+	REQUIRE( cpu.GetFlagC() == 1 );
+	REQUIRE( cpu.GetFlagH() == 1 );
+	REQUIRE( cpu.GetFlagZ() == 0 );
+	REQUIRE( cpu.GetFlagN() == 0 );
+}
+
+void HalfFlagCheck( GameboyCPU & cpu )
+{
+	REQUIRE( cpu.GetFlagC() == 0 );
+	REQUIRE( cpu.GetFlagH() == 1 );
+	REQUIRE( cpu.GetFlagZ() == 0 );
+	REQUIRE( cpu.GetFlagN() == 0 );
+}
+
 
 TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 {
@@ -35,11 +67,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			REQUIRE( cpu.GetFlagC() == 0 );
-			REQUIRE( cpu.GetFlagZ() == 0 );
-			REQUIRE( cpu.GetFlagH() == 0 );
-			REQUIRE( cpu.GetFlagN() == 0 );
-
+			NoFlagCheck( cpu );
 
 			setRegister8( cpu, 0b10, 0b1000000 ); // D = 0b1000000;
 			// 1 Step.
@@ -54,11 +82,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
 
-			REQUIRE( cpu.GetFlagC() == 1 );
-			REQUIRE( cpu.GetFlagH() == 1 );
-			REQUIRE( cpu.GetFlagZ() == 0 );
-			REQUIRE( cpu.GetFlagN() == 0 );
-
+			CarryAndHalfFlagCheck(cpu);
 
 			setRegister8( cpu, 0b10, ~(static_cast<BYTE>(0b01000100)) + 0b1);
 			// 0b10111011; + 1
@@ -70,11 +94,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 
-			REQUIRE( cpu.GetFlagC() == 0 );
-			REQUIRE( cpu.GetFlagH() == 0 );
-			REQUIRE( cpu.GetFlagZ() == 1 );
-			REQUIRE( cpu.GetFlagN() == 0 );
-
+			ZeroFlagCheck( cpu );
 		}
 	}
 
@@ -82,6 +102,54 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 	// 0b11000110 ( 0xC6 )
 	SECTION("ADD A, imm8")
 	{
-		
+		SECTION("ADD A, 0x24")
+		{
+			cpu.Reset();
+
+			setRegister8( cpu, 0b111, 0x6 );
+			// 1 Step.
+
+			cpu.InjectionMemory( 0xC6 ); // ADD A, imm8
+			cpu.InjectionMemory( 0x24 ); // imm value
+			// 2 Step.
+
+			for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+			// 0x24 + 0x6 = 0x2A
+			REQUIRE( cpu.GetRegisterAF().hi == 0x2A );
+		}
+
+		SECTION("Flags Test")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
+
+			setRegister8( cpu, 0b111, 0x0 );
+			// 1 Step.
+
+			cpu.InjectionMemory( 0xC6 );
+			cpu.InjectionMemory( 0x00 );
+			// 2 Step.
+
+			for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+			ZeroFlagCheck( cpu );
+
+			cpu.InjectionMemory( 0xC6 );
+			cpu.InjectionMemory( 0b00000100 );
+			// 1 Step.
+
+			cpu.NextStep();
+
+			HalfFlagCheck( cpu );
+
+			cpu.InjectionMemory( 0xC6 );
+			cpu.InjectionMemory( 0b01000000 );
+			// 1 Step.
+
+			cpu.NextStep();
+
+			CarryAndHalfFlagCheck( cpu );
+		}
 	}
 }
