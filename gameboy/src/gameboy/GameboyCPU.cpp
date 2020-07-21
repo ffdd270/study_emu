@@ -47,6 +47,7 @@ void GameboyCPU::Reset()
 	mPC.reg_16 = 0x1000;
 	mDebugInjectionCount.reg_16 = 0x1000;
 	memset( mGameMemory, 0, sizeof ( mGameMemory ) );
+	resetFlags();
 }
 
 void GameboyCPU::NextStep()
@@ -81,34 +82,38 @@ public:
 	// pre 0b11
 
 	//load
-	BIND_FUNC( loadRegSPToRegHL )
+	BIND_FUNC( loadRegSPFromRegHL )
 	BIND_FUNC( pushReg16 )
 	BIND_FUNC( popReg16 )
 
+	// arth
+	BIND_FUNC( addRegAFromImm8 )
 
 	// pre 0b10
-	BIND_FUNC( addRegAToRegister )
+
+	// arth
+	BIND_FUNC( addRegAFromRegister )
 
 	// pre 0b01
 
 	//load
-	BIND_FUNC( loadRegToReg )
-	BIND_FUNC( loadRegToMemHL )
-	BIND_FUNC( loadMemHLToReg )
+	BIND_FUNC( loadRegFromReg )
+	BIND_FUNC( loadRegFromMemHL )
+	BIND_FUNC( loadMemHLFromReg )
 
 	// pre 0b00
 
 	//load
-	BIND_FUNC( loadRegToImm8 )
-	BIND_FUNC( loadRegAToMemBC )
-	BIND_FUNC( loadRegAToMemDE )
-	BIND_FUNC( loadRegAToMemHLAndIncHL )
-	BIND_FUNC( loadRegAToMemHLAndDecHL )
-	BIND_FUNC( loadMemBCToRegA )
-	BIND_FUNC( loadReg16toImm16 )
-	BIND_FUNC( loadMemDEToRegA )
-	BIND_FUNC( loadMemHLToRegAAndIncHL )
-	BIND_FUNC( loadMemHLToRegAAndDecHL )
+	BIND_FUNC( loadRegFromImm8 )
+	BIND_FUNC( loadRegAFromMemBC )
+	BIND_FUNC( loadRegAFromMemDE )
+	BIND_FUNC( loadRegAFromMemHLAndIncHL )
+	BIND_FUNC( loadRegAFromMemHLAndDecHL )
+	BIND_FUNC( loadMemBCFromRegA )
+	BIND_FUNC( loadReg16FromImm16 )
+	BIND_FUNC( loadMemDEFromRegA )
+	BIND_FUNC( loadMemHLFromRegAAndIncHL )
+	BIND_FUNC( loadMemHLFromRegAAndDecHL )
 };
 
 
@@ -120,50 +125,50 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	for(BYTE i = 0b000; i <= 0b111; i++)
 	{
 		BYTE opCode = 0b00000000 | ( i << 3 ) | 0b110;
-		mFuncMap[ opCode ] = BIND_FUNCS::loadRegToImm8;
+		mFuncMap[ opCode ] = BIND_FUNCS::loadRegFromImm8;
 	}
 
 
 	// LD A, (BC) : A Load (BC)
 	// 0b001010
-	mFuncMap[ 0b00001010 ] = BIND_FUNCS::loadRegAToMemBC;
+	mFuncMap[ 0b00001010 ] = BIND_FUNCS::loadRegAFromMemBC;
 
 	// LD (BC), A :  (BC) Load A
 	// 0b0000010
-	mFuncMap[ 0b00000010 ] = BIND_FUNCS::loadMemBCToRegA;
+	mFuncMap[ 0b00000010 ] = BIND_FUNCS::loadMemBCFromRegA;
 
 	// LD A, (DE)
 	// 0b00011010 (0x1A)
-	mFuncMap[ 0b00011010 ] = BIND_FUNCS::loadRegAToMemDE;
+	mFuncMap[ 0b00011010 ] = BIND_FUNCS::loadRegAFromMemDE;
 
 	// LD A, (nn) - Only on Z80
 	// 0b00111010 (0x3A)
-	// mFuncMap[ 0b00111010 ] = BIND_FUNCS::loadRegAToMemNN;
+	// mFuncMap[ 0b00111010 ] = BIND_FUNCS::loadRegAFromMemNN;
 
 	//LD (DE), A (1)
 	// 0b00010010 (0x12)
 	// (DE)<-A
-	mFuncMap[ 0b00010010 ] = BIND_FUNCS::loadMemDEToRegA;
+	mFuncMap[ 0b00010010 ] = BIND_FUNCS::loadMemDEFromRegA;
 
 	//LD (HL+), A ( or LDI HL, A ) (1)
 	// 0b00100010 (0x22)
 	// (HL+)<-A and HL<-HL + 1
-	mFuncMap[ 0b00100010 ] = BIND_FUNCS::loadMemHLToRegAAndIncHL;
+	mFuncMap[ 0b00100010 ] = BIND_FUNCS::loadMemHLFromRegAAndIncHL;
 
 	//LD (HL-) , A( or LDD HL, A ) (1)
 	// 0b00110010 (0x32)
 	// HL<-A and HL<-HL - 1
-	mFuncMap[ 0b00110010 ] = BIND_FUNCS::loadMemHLToRegAAndDecHL;
+	mFuncMap[ 0b00110010 ] = BIND_FUNCS::loadMemHLFromRegAAndDecHL;
 
 	//LD A, (HL+)
 	//0b00101010 (0x2A) (only on Gameboy CPU. )
 	// HL<-A and HL<-HL - 1
-	mFuncMap[ 0b00101010 ] = BIND_FUNCS::loadRegAToMemHLAndIncHL;
+	mFuncMap[ 0b00101010 ] = BIND_FUNCS::loadRegAFromMemHLAndIncHL;
 
 	//LD A, (HL-)
 	// 0b00111010 (0x3A) (only on Gameboy CPU. )
 	// A<-(HL) and HL--;
-	mFuncMap[ 0b00111010 ] = BIND_FUNCS::loadRegAToMemHLAndDecHL;
+	mFuncMap[ 0b00111010 ] = BIND_FUNCS::loadRegAFromMemHLAndDecHL;
 
 
 	// LD reg16, imm16 : reg16 load imm16
@@ -171,7 +176,7 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	for(BYTE i = 0b00; i <= 0b11; i++)
 	{
 		BYTE opCode = 0b00000001 | ( i << 4 );
-		mFuncMap[ opCode ] = BIND_FUNCS::loadReg16toImm16;
+		mFuncMap[ opCode ] = BIND_FUNCS::loadReg16FromImm16;
 	}
 }
 
@@ -189,18 +194,18 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 
 			if( i == 0b110 ) // ( HL ) load reg.
 			{
-				mFuncMap[ opCode ] = BIND_FUNCS::loadMemHLToReg;
+				mFuncMap[ opCode ] = BIND_FUNCS::loadMemHLFromReg;
 				continue;
  			}
 
 			if ( j == 0b110 ) // reg load ( HL )
 			{
-				mFuncMap[ opCode ] = BIND_FUNCS::loadRegToMemHL;
+				mFuncMap[ opCode ] = BIND_FUNCS::loadRegFromMemHL;
 				continue;
 			}
 
 			// reg load reg, 0brrryyy ( rrr, yyy != 0b110, rrr != yyy )
-			mFuncMap[ opCode ] = BIND_FUNCS::loadRegToReg;
+			mFuncMap[ opCode ] = BIND_FUNCS::loadRegFromReg;
 		}
 	}
 }
@@ -213,7 +218,7 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 	for ( int i = 0; i <= 0b111; i++ )
 	{
 		BYTE opCode = 0b10000000 | i;
-		mFuncMap[ opCode ] = BIND_FUNCS::addRegAToRegister;
+		mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromRegister;
 	}
 
 }
@@ -223,7 +228,7 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 {
 	//LD SP, HL
 	// 0b11111001 0xF9
-	mFuncMap[ 0b11111001 ] = BIND_FUNCS::loadRegSPToRegHL;
+	mFuncMap[ 0b11111001 ] = BIND_FUNCS::loadRegSPFromRegHL;
 
 	//PUSH qq
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
@@ -240,6 +245,11 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 		BYTE opCode = 0b11000001 | ( i << 4 ); // base = 0b11000001 ,i << 4 == qq.
 		mFuncMap[ opCode ] = BIND_FUNCS::popReg16;
 	}
+
+
+	//ADD A, n
+	// 0b11000110 ( 0xC6 )
+	mFuncMap[ 0b11000110 ] = BIND_FUNCS::addRegAFromImm8;
 }
 
 
@@ -312,4 +322,22 @@ void GameboyCPU::setFlagC(bool flag)
 void GameboyCPU::resetFlags()
 {
 	mRegisters.AF.lo = 0;
+}
+
+void GameboyCPU::setArtihmeticFlags()
+{
+	if( mRegisters.AF.hi == 0 )
+	{
+		setFlagZ( true );
+	}
+
+	if( ( mRegisters.AF.hi & 0b100 ) == 0b100 )
+	{
+		setFlagH( true );
+	}
+
+	if ( ( mRegisters.AF.hi & 0b1000000 ) == 0b1000000 )
+	{
+		setFlagC( true );
+	}
 }
