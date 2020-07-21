@@ -77,4 +77,11 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 		}
 	}
+
+
+	// 0b11000110 ( 0xC6 )
+	SECTION("ADD A, imm8")
+	{
+		
+	}
 }

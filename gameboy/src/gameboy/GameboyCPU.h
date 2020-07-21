@@ -67,7 +67,7 @@ private:
 	// 명령어 구현 부
 
 	// 작명 규칙
-	// void <명령어><dest 인자>to<origin 인자>
+	// void <명령어><dest 인자>From<origin 인자>
 	// Reg = Register 8 bit.
 	// Mem  = memory value
 	// (NN) = NN 레지스터 값 위치에 있는 게임 메모리 값.
@@ -85,12 +85,12 @@ private:
 
 	// LD r, r' (1)
 	// 0b01rrryyy
-	void loadRegToReg(BYTE opCode );
+	void loadRegFromReg(BYTE opCode );
 
 	// LD r, n (2)
 	// 0b00rrr110
 	// 0bnnnnnnnn
-	void loadRegToImm8(BYTE opCode );
+	void loadRegFromImm8(BYTE opCode );
 
 	// LD r, (IX+d)
 	// 게임보이는 그런 거 없음
@@ -100,7 +100,7 @@ private:
 
 	// LD r, ( HL ) (1)
 	// 0b01rrr110
-	void loadRegToMemHL(BYTE opCode );
+	void loadRegFromMemHL(BYTE opCode );
 
 
 	//LD (IX+d), r
@@ -112,7 +112,7 @@ private:
 	// LD (HL), r (1)
 	// 0b01110rrr
 	// (HL)<-r
-	void loadMemHLToReg(BYTE opCode );
+	void loadMemHLFromReg(BYTE opCode );
 
 	//LD (IX+d), n
 	//게임보이는 그런 거 없음
@@ -123,18 +123,18 @@ private:
 	//LD A, (BC) (1)
 	// 0b00001010 (0x0A)
 	// A<-(BC)
-	void loadRegAToMemBC(BYTE opCode );
+	void loadRegAFromMemBC(BYTE opCode );
 
 
 	//LD A, (DE)
 	// 0b00011010 (0x1A)
 	// A<-(DE)
-	void loadRegAToMemDE(BYTE opCode);
+	void loadRegAFromMemDE(BYTE opCode);
 
 	//LD A, (HL+)
 	// 0b00101010 (0x2A)
 	// A<-(HL), HL<-HL + 1
- 	void loadRegAToMemHLAndIncHL(BYTE opCode);
+ 	void loadRegAFromMemHLAndIncHL(BYTE opCode);
 
 
 	//LD A, (nn)
@@ -142,38 +142,38 @@ private:
 	// 0bnnnnnnnn
 	// 0bnnnnnnnn
 	// A<-(nn)
-	void loadRegAToMemNN(BYTE opCode);
+	void loadRegAFromMemNN(BYTE opCode);
 
 	//LDD A,(HL)
 	// 0b00111010 (0x3A) (only on Gameboy CPU. )
 	// A<-(HL) and HL--;
-	void loadRegAToMemHLAndDecHL(BYTE opCode);
+	void loadRegAFromMemHLAndDecHL(BYTE opCode);
 
 	//LD (BC), A (1)
 	// 0b00000010 (0x02)
 	// (BC)<-A
-	void loadMemBCToRegA(BYTE opCode );
+	void loadMemBCFromRegA(BYTE opCode );
 
 	//LD (DE), A (1)
 	// 0b00010010 (0x12)
 	// (DE)<-A
-	void loadMemDEToRegA(BYTE opCode);
+	void loadMemDEFromRegA(BYTE opCode);
 
 	//LD (HL+), A ( or LDI HL, A ) (1)
 	// 0b00100010 (0x22)
 	// (HL+)<-A and HL<-HL + 1
-	void loadMemHLToRegAAndIncHL(BYTE opCode);
+	void loadMemHLFromRegAAndIncHL(BYTE opCode);
 
 	//LD (HL-) , A( or LDD HL, A ) (1) - (Only On Gameboy CPU)
 	// 0b00110010 (0x32)
 	// HL<-A and HL<-HL - 1
-	void loadMemHLToRegAAndDecHL(BYTE opCode);
+	void loadMemHLFromRegAAndDecHL(BYTE opCode);
 
 	//LD (nn), A(3) - (Only On Z80)
 	// 0b00110010 0x32
 	// 0bnnnnnnnn
 	// 0bnnnnnnnn
-	void loadMemNNToRegA(BYTE opCode);
+	void loadMemNNFromRegA(BYTE opCode);
 
 	/// 여기서부터 16비트 로드 명령어
 
@@ -182,7 +182,7 @@ private:
 	//Imm
 	//Imm
 	// DD <- Imm16
-	void loadReg16toImm16( BYTE opCode );
+	void loadReg16FromImm16( BYTE opCode );
 
 
 	//LD HL, (nn) (3) - (Only On Z80)
@@ -190,13 +190,13 @@ private:
 	//0bnnnnnnnn
 	//0bnnnnnnnn
 	// H <- (nn + 1), L <- (nn)
-	void loadRegHLToMemNN16( BYTE opCode );
+	void loadRegHLFromMemNN16( BYTE opCode );
 
 
 	//LD SP, HL
 	// 0b11111001 0xF9
 	// SP <- HL
-	void loadRegSPToRegHL( BYTE opCode );
+	void loadRegSPFromRegHL( BYTE opCode );
 
 	//PUSH qq
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
@@ -221,7 +221,14 @@ private:
 	// H = if bit 3 carry
 	// C = if bit 7 carry
 	// N = Reset
-	void addRegAToRegister( BYTE opCode );
+	void addRegAFromRegister( BYTE opCode );
+
+
+	//ADD A, n
+	// 0b11000110 ( 0xC6 )
+	// imm8
+	// = Flag = ( Same as ADD A, r )
+	void addRegAFromImm8(BYTE opCode);
 
 
 	/*
@@ -234,10 +241,13 @@ private:
 
 
 	// NEED JUST BIT.
+	void setArtihmeticFlags();
+
 	void setFlagZ( bool flag );
 	void setFlagN( bool flag );
 	void setFlagH( bool flag );
 	void setFlagC( bool flag );
+
 	void resetFlags();
 
 private:
@@ -252,7 +262,7 @@ private:
 			Register DE;
 			Register HL;
 
-			Register AF; // Accumulator & Flags. Low 8bit Used by Flag.
+			Register AF; // AccumulaFromr & Flags. Low 8bit Used by Flag.
 			//  mAF Low Bit ->
 			//  7 = // Z  : Zero Falg.
 			//  6 = // N = SUbtract Flag

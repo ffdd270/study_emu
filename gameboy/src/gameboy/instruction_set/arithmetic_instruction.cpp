@@ -14,29 +14,28 @@
 // H = if bit 3 carry
 // C = if bit 7 carry
 // N = Reset
-void GameboyCPU::addRegAToRegister(BYTE opCode)
+void GameboyCPU::addRegAFromRegister(BYTE opCode)
 {
 	BYTE argument = 0b00000111 & opCode;
 	BYTE & register_value = m8bitArguments[ argument ].ref;
 
 	mRegisters.AF.hi += register_value;
 	resetFlags();
-
-	if( mRegisters.AF.hi == 0 )
-	{
-		setFlagZ( true );
-	}
-
-	if( ( mRegisters.AF.hi & 0b100 ) == 0b100 )
-	{
-		setFlagH( true );
-	}
-
-	if ( ( mRegisters.AF.hi & 0b1000000 ) == 0b1000000 )
-	{
-		setFlagC( true );
-	}
+	setArtihmeticFlags();
 }
+
+
+//ADD A, n
+// 0b11000110 ( 0xC6 )
+// imm8
+// = Flag = ( Same as ADD A, r )
+void GameboyCPU::addRegAFromImm8(BYTE opCode)
+{
+	mRegisters.AF.hi += immediateValue();
+	resetFlags();
+	setArtihmeticFlags();
+}
+
 
 
 
