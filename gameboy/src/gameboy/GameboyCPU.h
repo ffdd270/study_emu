@@ -225,11 +225,16 @@ private:
 
 
 	//ADD A, n
+	// A <- A + n
 	// 0b11000110 ( 0xC6 )
 	// imm8
 	// = Flag = ( Same as ADD A, r )
 	void addRegAFromImm8(BYTE opCode);
 
+	//ADD A, (HL)
+	// 0b10000110 ( 0x86 )
+	// = Flag = ( Same as ADD A, r )
+	void addRegAFromMemHL(BYTE opCode);
 
 	/*
 	 * Util 함수들.

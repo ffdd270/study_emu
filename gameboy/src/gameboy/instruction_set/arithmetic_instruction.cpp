@@ -27,6 +27,7 @@ void GameboyCPU::addRegAFromRegister(BYTE opCode)
 
 //ADD A, n
 // 0b11000110 ( 0xC6 )
+// A <- A + n
 // imm8
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromImm8(BYTE opCode)
@@ -36,6 +37,13 @@ void GameboyCPU::addRegAFromImm8(BYTE opCode)
 	setArtihmeticFlags();
 }
 
-
-
+//ADD A, (HL)
+// 0b10000110 ( 0x86 )
+// = Flag = ( Same as ADD A, r )
+void GameboyCPU::addRegAFromMemHL(BYTE opCode)
+{
+	mRegisters.AF.hi += mGameMemory[ mRegisters.HL.reg_16 ];
+	resetFlags();
+	setArtihmeticFlags();
+}
 
