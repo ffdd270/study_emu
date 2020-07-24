@@ -223,7 +223,6 @@ private:
 	// N = Reset
 	void addRegAFromRegister( BYTE opCode );
 
-
 	//ADD A, n
 	// A <- A + n
 	// 0b11000110 ( 0xC6 )
@@ -235,6 +234,30 @@ private:
 	// 0b10000110 ( 0x86 )
 	// = Flag = ( Same as ADD A, r )
 	void addRegAFromMemHL(BYTE opCode);
+
+	//ADC A, r ( Add With Carry. if Carry Set. add + 1 from result value. )
+	// 0b10001rrr (r = m8BitArguments)
+	// = Flag = ( Same as ADD A, r )
+	void addRegAFromRegisterAndCarry(BYTE opCode);
+
+	//ADC A, n ( Add With Carry. if Carry Set. add + 1 from result value. )
+	// 0b11001110 ( 0xCE )
+	// 0bnnnnnnnn
+	// = Flag = ( Same as ADD A, r )
+	void addRegAFromImm8AndCarry(BYTE opCode);
+
+	//ADC A, (HL) (  Add With Carry. if Carry Set. add + 1 from result value. )
+	// 0b10001110 (0x8E)
+	void addRegAFromMemHLAndCarry(BYTE opCode);
+
+
+	/*
+	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
+	 */
+
+	void commonAddRegAFromRegister( BYTE opCode );
+	void commonAddRegAFromImm8(BYTE opCode);
+	void commonAddRegAFromMemHL(BYTE opCode);
 
 	/*
 	 * Util 함수들.

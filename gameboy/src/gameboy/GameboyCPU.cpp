@@ -94,6 +94,7 @@ public:
 	// arth
 	BIND_FUNC( addRegAFromRegister )
 	BIND_FUNC( addRegAFromMemHL )
+	BIND_FUNC( addRegAFromRegisterAndCarry )
 
 
 	// pre 0b01
@@ -215,18 +216,28 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 
 void GameboyCPU::pre0b10GenerateFuncMap()
 {
-	//ADD A, r
-	// 0b10000rrr { rrr = 8bitArgument }
+
 	for ( int i = 0; i <= 0b111; i++ )
 	{
-		BYTE opCode = 0b10000000 | i;
-		mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromRegister;
+		//ADD A, (HL)
+		// 0b10000110 ( 0x86 )
+		if ( i == 0b110 )
+		{
+			mFuncMap[ 0x86 ] = BIND_FUNCS::addRegAFromMemHL;
+		}
+		//ADD A, r
+		// 0b10000rrr { rrr = 8bitArgument }
+		else
+		{
+			BYTE opCode = 0b10000000 | i;
+			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromRegister;
+		}
 	}
 
+	
+	//ADC A, r
+	// 0b10001rrr ( rrr = 8bitArgument }
 
-	//ADD A, (HL)
-	// 0b10000110 ( 0x86 )
-	mFuncMap[ 0x86 ] = BIND_FUNCS::addRegAFromMemHL;
 }
 
 

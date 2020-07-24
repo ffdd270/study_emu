@@ -219,4 +219,9 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			CarryAndHalfFlagCheck( cpu );
 		}
 	}
+
+	SECTION("ADC A, s")
+	{
+
+	}
 }
