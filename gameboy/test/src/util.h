@@ -32,7 +32,7 @@ inline void setMemory3Step(GameboyCPU & cpu_ref, BYTE reg8_index, WORD mem_addr,
 	setRegister16(  cpu_ref, 0b10, mem_addr ); // LD HL(10), imm16( mem_addr )
 	//HL = mem_addr. 1 Step.
 
-	setRegister8( cpu_ref, reg8_index, value ); // LD E, 0xBA
+	setRegister8( cpu_ref, reg8_index, value ); // LD reg8_index, 0xBA
 	//reg8_index = value. 2 Step.
 
 	cpu_ref.InjectionMemory( 0b01110000 | reg8_index ); // LD (HL), reg8_index
