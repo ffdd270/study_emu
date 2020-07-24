@@ -194,8 +194,29 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.InjectionMemory( 0x86 ); // ADD A, (HL)/
 			for ( int i = 0; i < 5; i++ ) { cpu.NextStep(); }
 
-			ZeroFlagCheck( cpu )
-			
+			ZeroFlagCheck( cpu );
+
+			setMemory3Step( cpu, 0, 0xF0F0, 0b00000100 );
+			// HL = 0xF0F0;
+			// B = 0x0;
+			// 0xF0F0 = 0b00000100;
+			// 3 Step.
+
+			cpu.InjectionMemory( 0x86 ); // ADD A, (HL)/
+			for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
+
+			HalfFlagCheck( cpu );
+
+			setMemory3Step( cpu, 0, 0xD0D0, 0b01000000 );
+			// HL = 0xD0D0;
+			// B = 0x0;
+			// 0xD0D0 = 0b01000000;
+			// 3 Step.
+
+			cpu.InjectionMemory( 0x86 );
+			for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
+
+			CarryAndHalfFlagCheck( cpu );
 		}
 	}
 }
