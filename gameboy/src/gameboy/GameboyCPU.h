@@ -248,6 +248,7 @@ private:
 
 	//ADC A, (HL) (  Add With Carry. if Carry Set. add + 1 from result value. )
 	// 0b10001110 (0x8E)
+	// = Flag = ( Same as ADD A, r )
 	void addRegAFromMemHLAndCarry(BYTE opCode);
 
 
@@ -258,6 +259,9 @@ private:
 	void commonAddRegAFromRegister( BYTE opCode );
 	void commonAddRegAFromImm8(BYTE opCode);
 	void commonAddRegAFromMemHL(BYTE opCode);
+
+	void commonArithmeticFlagInit();
+	void commonCarryInstruction();
 
 	/*
 	 * Util 함수들.

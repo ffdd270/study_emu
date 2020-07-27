@@ -4,6 +4,21 @@
 
 #include "../GameboyCPU.h"
 
+
+void GameboyCPU::commonCarryInstruction()
+{
+	if( GetFlagC() )
+	{
+		mRegisters.AF.hi += 1;
+	}
+}
+
+void GameboyCPU::commonArithmeticFlagInit()
+{
+	resetFlags();
+	setArtihmeticFlags();
+}
+
 void GameboyCPU::commonAddRegAFromRegister(BYTE opCode)
 {
 	BYTE argument = 0b00000111 & opCode;
@@ -35,8 +50,7 @@ void GameboyCPU::commonAddRegAFromMemHL(BYTE opCode)
 void GameboyCPU::addRegAFromRegister(BYTE opCode)
 {
 	commonAddRegAFromRegister( opCode );
-	resetFlags();
-	setArtihmeticFlags();
+	commonArithmeticFlagInit();
 }
 
 
@@ -48,8 +62,7 @@ void GameboyCPU::addRegAFromRegister(BYTE opCode)
 void GameboyCPU::addRegAFromImm8(BYTE opCode)
 {
 	commonAddRegAFromImm8( opCode );
-	resetFlags();
-	setArtihmeticFlags();
+	commonArithmeticFlagInit();
 }
 
 //ADD A, (HL)
@@ -58,8 +71,7 @@ void GameboyCPU::addRegAFromImm8(BYTE opCode)
 void GameboyCPU::addRegAFromMemHL(BYTE opCode)
 {
 	commonAddRegAFromMemHL( opCode );
-	resetFlags();
-	setArtihmeticFlags();
+	commonArithmeticFlagInit();
 }
 
 //ADC A, r ( Add With Carry. if Carry Set. add + 1 from result value. )
@@ -68,11 +80,25 @@ void GameboyCPU::addRegAFromMemHL(BYTE opCode)
 void GameboyCPU::addRegAFromRegisterAndCarry(BYTE opCode)
 {
 	commonAddRegAFromRegister( opCode );
-	if( GetFlagC() )
-	{
-		mRegisters.AF.hi += 1;
-	}
-	resetFlags();
-	setArtihmeticFlags();
+	commonCarryInstruction();
+	commonArithmeticFlagInit();
 }
 
+//ADC A, n ( Add With Carry. if Carry Set. add + 1 from result value. )
+// 0b11001110 ( 0xCE )
+// 0bnnnnnnnn
+// = Flag = ( Same as ADD A, r )
+void GameboyCPU::addRegAFromImm8AndCarry(BYTE opCode)
+{
+	commonAddRegAFromImm8( opCode );
+	commonCarryInstruction();
+	commonArithmeticFlagInit();
+}
+
+
+void GameboyCPU::addRegAFromMemHLAndCarry(BYTE opCode)
+{
+	commonAddRegAFromMemHL( opCode );
+	commonCarryInstruction();
+	commonArithmeticFlagInit();
+}
