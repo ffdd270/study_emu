@@ -95,7 +95,9 @@ void GameboyCPU::addRegAFromImm8AndCarry(BYTE opCode)
 	commonArithmeticFlagInit();
 }
 
-
+//ADC A, (HL) (  Add With Carry. if Carry Set. add + 1 from result value. )
+// 0b10001110 (0x8E)
+// = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromMemHLAndCarry(BYTE opCode)
 {
 	commonAddRegAFromMemHL( opCode );
