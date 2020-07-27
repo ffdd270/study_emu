@@ -4,6 +4,24 @@
 
 #include "../GameboyCPU.h"
 
+void GameboyCPU::commonAddRegAFromRegister(BYTE opCode)
+{
+	BYTE argument = 0b00000111 & opCode;
+	BYTE & register_value = m8bitArguments[ argument ].ref;
+	mRegisters.AF.hi += register_value;
+}
+
+
+void GameboyCPU::commonAddRegAFromImm8(BYTE opCode)
+{
+	mRegisters.AF.hi += immediateValue();
+}
+
+void GameboyCPU::commonAddRegAFromMemHL(BYTE opCode)
+{
+	mRegisters.AF.hi += mGameMemory[ mRegisters.HL.reg_16 ];
+}
+
 
 
 //ADD A, r
@@ -16,10 +34,7 @@
 // N = Reset
 void GameboyCPU::addRegAFromRegister(BYTE opCode)
 {
-	BYTE argument = 0b00000111 & opCode;
-	BYTE & register_value = m8bitArguments[ argument ].ref;
-
-	mRegisters.AF.hi += register_value;
+	commonAddRegAFromRegister( opCode );
 	resetFlags();
 	setArtihmeticFlags();
 }
@@ -32,7 +47,7 @@ void GameboyCPU::addRegAFromRegister(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromImm8(BYTE opCode)
 {
-	mRegisters.AF.hi += immediateValue();
+	commonAddRegAFromImm8( opCode );
 	resetFlags();
 	setArtihmeticFlags();
 }
@@ -42,7 +57,21 @@ void GameboyCPU::addRegAFromImm8(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromMemHL(BYTE opCode)
 {
-	mRegisters.AF.hi += mGameMemory[ mRegisters.HL.reg_16 ];
+	commonAddRegAFromMemHL( opCode );
+	resetFlags();
+	setArtihmeticFlags();
+}
+
+//ADC A, r ( Add With Carry. if Carry Set. add + 1 from result value. )
+// 0b10001rrr (r = m8BitArguments)
+// = Flag = ( Same as ADD A, r )
+void GameboyCPU::addRegAFromRegisterAndCarry(BYTE opCode)
+{
+	commonAddRegAFromRegister( opCode );
+	if( GetFlagC() )
+	{
+		mRegisters.AF.hi += 1;
+	}
 	resetFlags();
 	setArtihmeticFlags();
 }
