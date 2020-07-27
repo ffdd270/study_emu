@@ -279,4 +279,35 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			CarryAndHalfFlagCheck( cpu );
 		}
 	}
+
+	// 0b10001110
+	SECTION("ADC A, (HL)")
+	{
+		SECTION("ADD TEST")
+		{
+			cpu.Reset();
+			setMemory3Step( cpu, 0b0, 0x0765, 0b10000000 );
+			// HL = 0x765, B = 0xA,  (0x765) = 0x80 ( Carry )
+
+			setRegister8( cpu, 0b111, 0xB );
+			// A = 0xB
+
+			cpu.InjectionMemory( 0b10001110 ); // A = 0x80 + 0xB
+
+			for( int i = 0; i < 5; i++ ) { cpu.NextStep(); }
+
+			REQUIRE( cpu.GetRegisterAF().hi == 0x8B );
+			REQUIRE( cpu.GetFlagC() == 1 );
+
+			setMemory3Step( cpu, 0b0, 0x765, 2 );
+			// HL = 0x765, B = 2, (0x765) = 2.
+
+			cpu.InjectionMemory( 0b10001110 ); // A = 0x8B + 2 + ( Carry )
+
+			for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
+			REQUIRE( cpu.GetRegisterAF().hi == 0x8E );
+		}
+
+
+	}
 }

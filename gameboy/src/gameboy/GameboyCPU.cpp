@@ -88,6 +88,7 @@ public:
 
 	// arth
 	BIND_FUNC( addRegAFromImm8 )
+	BIND_FUNC( addRegAFromImm8AndCarry )
 
 	// pre 0b10
 
@@ -95,6 +96,7 @@ public:
 	BIND_FUNC( addRegAFromRegister )
 	BIND_FUNC( addRegAFromMemHL )
 	BIND_FUNC( addRegAFromRegisterAndCarry )
+	BIND_FUNC( addRegAFromMemHLAndCarry )
 
 
 	// pre 0b01
@@ -243,7 +245,7 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		// 0b10001110
 		if( i == 0b110 )
 		{
-
+			mFuncMap[ 0b10001110 ] = BIND_FUNCS::addRegAFromMemHLAndCarry;
 		}
 		else
 		{
