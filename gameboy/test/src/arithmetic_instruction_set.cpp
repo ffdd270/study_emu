@@ -69,11 +69,11 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			NoFlagCheck( cpu );
 
-			setRegister8( cpu, 0b10, 0b1000000 ); // D = 0b1000000;
+			setRegister8( cpu, 0b10, 0b10000000 ); // D = 0b10000000;
 			// 1 Step.
 			// Carry Flags Test.
 
-			setRegister8( cpu, 0b111, 0b100 ); // A = 0b100;
+			setRegister8( cpu, 0b111, 0b1000 ); // A = 0b100;
 			// 2 Step.
 			// H Flags Test.
 
@@ -84,7 +84,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			CarryAndHalfFlagCheck(cpu);
 
-			setRegister8( cpu, 0b10, ~(static_cast<BYTE>(0b01000100)) + 0b1);
+			setRegister8( cpu, 0b10, ~(static_cast<BYTE>(0b10001000)) + 0b1);
 			// 0b10111011; + 1
 			// 1 Step.
 
@@ -136,7 +136,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			ZeroFlagCheck( cpu );
 
 			cpu.InjectionMemory( 0xC6 );
-			cpu.InjectionMemory( 0b00000100 );
+			cpu.InjectionMemory( 0b00001000 );
 			// 1 Step.
 
 			cpu.NextStep();
@@ -144,7 +144,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			HalfFlagCheck( cpu );
 
 			cpu.InjectionMemory( 0xC6 );
-			cpu.InjectionMemory( 0b01000000 );
+			cpu.InjectionMemory( 0b10000000 );
 			// 1 Step.
 
 			cpu.NextStep();
@@ -196,7 +196,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			ZeroFlagCheck( cpu );
 
-			setMemory3Step( cpu, 0, 0xF0F0, 0b00000100 );
+			setMemory3Step( cpu, 0, 0xF0F0, 0b00001000 );
 			// HL = 0xF0F0;
 			// B = 0x0;
 			// 0xF0F0 = 0b00000100;
@@ -207,7 +207,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			HalfFlagCheck( cpu );
 
-			setMemory3Step( cpu, 0, 0xD0D0, 0b01000000 );
+			setMemory3Step( cpu, 0, 0xD0D0, 0b10000000 );
 			// HL = 0xD0D0;
 			// B = 0x0;
 			// 0xD0D0 = 0b01000000;
@@ -220,8 +220,63 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		}
 	}
 
+	// 0b10001rrr (r = m8BitArguments)
 	SECTION("ADC A, s")
 	{
+		SECTION( "Add Test" )
+		{
+			cpu.Reset();
 
+			setRegister8(cpu, 0b10, 0b10000000);   // D = 0b10000000
+			// 1 Step.
+
+			setRegister8(cpu, 0b111, 0x00);  // A = 0x00
+			// 2 Step.
+
+			cpu.InjectionMemory(0b10000010); // ADD A, D
+			// 3 Step. A = 0 + 0b10000000 ;
+
+			for ( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+			// Carry.
+			REQUIRE( cpu.GetFlagC() == 1 );
+			int prv_value = cpu.GetRegisterAF().hi;
+
+			setRegister8( cpu, 0b11, 0xA ); // E = A
+			// 1 Step.
+
+			cpu.InjectionMemory( 0b10001011 ); // ADC A, E
+			// 2 Step. A = 0b10000000 + 0xA + Carry;
+
+			for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+			REQUIRE( ( prv_value + 0xA + 1 ) == cpu.GetRegisterAF().hi );
+		}
+
+		SECTION("Flag Test.")
+		{
+			cpu.Reset();
+			BYTE ADC_A_D = 0b10001010;
+
+			NoFlagCheck( cpu );
+
+			setRegister8( cpu, 0b10, 0 ); // D = 0;
+			setRegister8( cpu, 0b111, 0 ); // A = 0;
+			cpu.InjectionMemory( ADC_A_D ); // ADC A, D
+
+			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+			ZeroFlagCheck( cpu );
+
+			setRegister8( cpu, 0b10, 0b00001000 ); // D = Half;
+			cpu.InjectionMemory( ADC_A_D ); // ADC A, D.A = 0b1000
+
+			for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+			HalfFlagCheck( cpu );
+
+			setRegister8( cpu, 0b10, 0b10000000 ); // D = Carry;
+			cpu.InjectionMemory( ADC_A_D );
+			for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+			CarryAndHalfFlagCheck( cpu );
+		}
 	}
 }
