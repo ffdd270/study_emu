@@ -90,13 +90,19 @@ public:
 	BIND_FUNC( addRegAFromImm8 )
 	BIND_FUNC( addRegAFromImm8AndCarry )
 
+	BIND_FUNC( subRegAFromImm8 )
+
 	// pre 0b10
 
 	// arth
 	BIND_FUNC( addRegAFromRegister )
 	BIND_FUNC( addRegAFromMemHL )
+
 	BIND_FUNC( addRegAFromRegisterAndCarry )
 	BIND_FUNC( addRegAFromMemHLAndCarry )
+
+	BIND_FUNC( subRegAFromRegister )
+	BIND_FUNC( subRegAFromMemHL )
 
 
 	// pre 0b01
@@ -237,8 +243,6 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 	}
 
 
-	//ADC A, r
-	// 0b10001rrr ( rrr = 8bitArgument }
 	for ( int i = 0; i <= 0b111; i++ )
 	{
 		//ADC A, (HL)
@@ -247,10 +251,30 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		{
 			mFuncMap[ 0b10001110 ] = BIND_FUNCS::addRegAFromMemHLAndCarry;
 		}
+		//ADC A, r
+		// 0b10001rrr ( rrr = 8bitArgument }
 		else
 		{
 			BYTE opCode = 0b10001000 | i;
 			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromRegisterAndCarry;
+		}
+	}
+
+	for ( int i = 0; i <= 0b111; i++ )
+	{
+		BYTE opCode = 0b10010000 | i;
+
+		//SUB (HL)
+		// 0b10010110 (0x96)
+		if( i == 0b110 )
+		{
+			mFuncMap[ opCode ] = BIND_FUNCS::subRegAFromMemHL;
+		}
+		//SUB r
+		// 0b10010rrr { r = m8BitArguments }
+		else
+		{
+			mFuncMap[ opCode ] = BIND_FUNCS::subRegAFromRegister;
 		}
 	}
 
@@ -286,6 +310,10 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//ADC A, n ( Add With Carry. if Carry Set. add + 1 from result value. )
 	// 0b11001110 ( 0xCE )
 	mFuncMap[ 0b11001110 ] = BIND_FUNCS::addRegAFromImm8AndCarry;
+
+	//SUB n
+	// 0b11010110 (0xD6)
+	mFuncMap[ 0b11010110 ] = BIND_FUNCS::subRegAFromImm8;
 }
 
 
