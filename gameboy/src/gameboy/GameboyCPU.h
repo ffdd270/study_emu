@@ -50,10 +50,10 @@ public:
 	Register GetRegisterSP() { return mSP; }
 	Register GetRegisterPC() { return mPC; }
 
-	BYTE GetFlagZ() { return ( mRegisters.AF.lo & 0b10000000 ) >> 7;  }
-	BYTE GetFlagN() { return ( mRegisters.AF.lo & 0b01000000 ) >> 6;  }
+	BYTE GetFlagZ() { return ( mRegisters.AF.lo & 0b10000000 ) >> 7; }
+	BYTE GetFlagN() { return ( mRegisters.AF.lo & 0b01000000 ) >> 6; }
 	BYTE GetFlagH() { return ( mRegisters.AF.lo & 0b00100000 ) >> 5; }
-	BYTE GetFlagC() { return ( mRegisters.AF.lo & 0b00010000 ) >> 4;  }
+	BYTE GetFlagC() { return ( mRegisters.AF.lo & 0b00010000 ) >> 4; }
 
 private:
 	std::array<BindFunctionPointer, 0xFF> mFuncMap;
@@ -252,6 +252,24 @@ private:
 	void addRegAFromMemHLAndCarry(BYTE opCode);
 
 
+	//SUB r
+	// 0b10010rrr { r = m8BitArguments }
+	// = Flag = ( Same as ADD A, r )
+	void subRegAFromRegister(BYTE opCode);
+
+	//SUB n
+	// 0b11010110 (0xD6)
+	// 0bnnnnnnnn
+	// = Flag = ( Same as ADD A, r )
+	void subRegAFromImm8(BYTE opCode);
+
+
+	//SUB (HL)
+	// 0b10010110 (0x96)
+	// = Flag = ( Same as ADD A, r)
+	void subRegAFromMemHL(BYTE opCode);
+
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
@@ -259,6 +277,10 @@ private:
 	void commonAddRegAFromRegister( BYTE opCode );
 	void commonAddRegAFromImm8(BYTE opCode);
 	void commonAddRegAFromMemHL(BYTE opCode);
+
+	void commonSubRegAFromRegister(BYTE opCode);
+	void commonSubRegAFromImm8(BYTE opCode);
+	void commonSubRegAFromMemHL(BYTE opCode);
 
 	void commonArithmeticFlagInit();
 	void commonCarryInstruction();
@@ -273,7 +295,7 @@ private:
 
 
 	// NEED JUST BIT.
-	void setArtihmeticFlags();
+	void setArithmeticFlags();
 
 	void setFlagZ( bool flag );
 	void setFlagN( bool flag );
