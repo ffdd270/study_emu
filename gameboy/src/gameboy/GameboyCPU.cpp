@@ -279,10 +279,13 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 		mFuncMap[ opCode ] = BIND_FUNCS::popReg16;
 	}
 
-
 	//ADD A, n
 	// 0b11000110 ( 0xC6 )
 	mFuncMap[ 0b11000110 ] = BIND_FUNCS::addRegAFromImm8;
+
+	//ADC A, n ( Add With Carry. if Carry Set. add + 1 from result value. )
+	// 0b11001110 ( 0xCE )
+	mFuncMap[ 0b11001110 ] = BIND_FUNCS::addRegAFromImm8AndCarry;
 }
 
 
@@ -357,7 +360,7 @@ void GameboyCPU::resetFlags()
 	mRegisters.AF.lo = 0;
 }
 
-void GameboyCPU::setArtihmeticFlags()
+void GameboyCPU::setArithmeticFlags()
 {
 	if( mRegisters.AF.hi == 0 )
 	{

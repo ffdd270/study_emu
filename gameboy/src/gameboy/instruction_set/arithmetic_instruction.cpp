@@ -16,7 +16,7 @@ void GameboyCPU::commonCarryInstruction()
 void GameboyCPU::commonArithmeticFlagInit()
 {
 	resetFlags();
-	setArtihmeticFlags();
+	setArithmeticFlags();
 }
 
 void GameboyCPU::commonAddRegAFromRegister(BYTE opCode)
