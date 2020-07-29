@@ -372,6 +372,28 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			MemHLFlagTest( cpu );
 		}
+	}
+
+
+	// 0b10010rrr { r = m8BitArguments }
+	SECTION("SUB r")
+	{
+		SECTION("SUB TEST")
+		{
+			cpu.Reset();
+
+			setRegister8( cpu, 0b111,  0xA );
+			setRegister8( cpu, 0, 0xA );
+			// 2 Step.
+
+			cpu.InjectionMemory( 0b10010000 ); // SUB B
+			// 3 Step.
+
+			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+
+			REQUIRE( cpu.GetRegisterAF().hi == 0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
 
 	}
 }
