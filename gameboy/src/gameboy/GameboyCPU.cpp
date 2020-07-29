@@ -387,21 +387,3 @@ void GameboyCPU::resetFlags()
 {
 	mRegisters.AF.lo = 0;
 }
-
-void GameboyCPU::setArithmeticFlags()
-{
-	if( mRegisters.AF.hi == 0 )
-	{
-		setFlagZ( true );
-	}
-
-	if( ( mRegisters.AF.hi & 0b1000 ) == 0b1000 )
-	{
-		setFlagH( true );
-	}
-
-	if ( ( mRegisters.AF.hi & 0b10000000 ) == 0b10000000 )
-	{
-		setFlagC( true );
-	}
-}

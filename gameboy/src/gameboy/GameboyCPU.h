@@ -274,16 +274,18 @@ private:
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
 
-	void commonAddRegAFromRegister( BYTE opCode );
-	void commonAddRegAFromImm8(BYTE opCode);
-	void commonAddRegAFromMemHL(BYTE opCode);
+	void commonAddRegAFromRegister( BYTE opCode, BYTE carry);
+	void commonAddRegAFromImm8(BYTE opCode, BYTE carry );
+	void commonAddRegAFromMemHL(BYTE opCode, BYTE carry);
 
-	void commonSubRegAFromRegister(BYTE opCode);
-	void commonSubRegAFromImm8(BYTE opCode);
-	void commonSubRegAFromMemHL(BYTE opCode);
+	void commonSubRegAFromRegister(BYTE opCode, BYTE carry);
+	void commonSubRegAFromImm8(BYTE opCode, BYTE carry);
+	void commonSubRegAFromMemHL(BYTE opCode, BYTE carry);
 
-	void commonArithmeticFlagInit();
+	void commonAddSetFlag( BYTE origin_value, BYTE add_value, BYTE carry );
+	void commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry );
 	void commonCarryInstruction();
+
 
 	/*
 	 * Util 함수들.
@@ -292,10 +294,6 @@ private:
 
 	BYTE immediateValue();
 	WORD immediateValue16();
-
-
-	// NEED JUST BIT.
-	void setArithmeticFlags();
 
 	void setFlagZ( bool flag );
 	void setFlagN( bool flag );
