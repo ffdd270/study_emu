@@ -4,6 +4,24 @@
 
 #include "../GameboyCPU.h"
 
+void GameboyCPU::commonAddSetFlag(BYTE origin_value, BYTE add_value, BYTE carry)
+{
+	setFlagZ( static_cast<BYTE>( origin_value + add_value + carry ) == 0 );
+	setFlagH( ( ( origin_value & 0x0f ) + ( add_value & 0x0f ) + ( carry & 0x0f ) ) > 0x0f  );
+	uint16_t result = static_cast<uint16_t>(origin_value) +
+			static_cast<uint16_t>(add_value) + static_cast<uint16_t>(carry);
+
+	setFlagC( result > 0xff ); // 올림 당함 !
+}
+
+void GameboyCPU::commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry )
+{
+	setFlagZ( ( origin_value - sub_value - carry ) == 0 );
+	setFlagH( ( origin_value & 0x0f ) < ( ( sub_value & 0x0f ) + ( carry & 0x0f ) ) );
+
+	uint16_t sub_value_sum = static_cast<uint16_t>(sub_value) + static_cast<uint16_t>( carry );
+	setFlagC(  origin_value < sub_value_sum ); // 내림 당함!
+}
 
 void GameboyCPU::commonCarryInstruction()
 {
@@ -13,45 +31,63 @@ void GameboyCPU::commonCarryInstruction()
 	}
 }
 
-void GameboyCPU::commonArithmeticFlagInit()
+void GameboyCPU::commonAddRegAFromRegister(BYTE opCode, BYTE carry)
 {
+	BYTE argument = 0b00000111 & opCode;
+	BYTE & register_value = m8bitArguments[ argument ].ref;
+
 	resetFlags();
-	setArithmeticFlags();
+
+	commonAddSetFlag( mRegisters.AF.hi, register_value, carry);
+	mRegisters.AF.hi +=  ( register_value + carry );
 }
 
-void GameboyCPU::commonAddRegAFromRegister(BYTE opCode)
+void GameboyCPU::commonAddRegAFromImm8(BYTE opCode, BYTE carry)
+{
+	BYTE imm_value = immediateValue();
+
+	resetFlags();
+
+	commonAddSetFlag( mRegisters.AF.hi, imm_value, carry);
+	mRegisters.AF.hi += (imm_value + carry);
+}
+
+void GameboyCPU::commonAddRegAFromMemHL(BYTE opCode, BYTE carry)
+{
+	BYTE mem_value = mGameMemory[ mRegisters.HL.reg_16 ];
+
+	resetFlags();
+
+	commonAddSetFlag( mRegisters.AF.hi, mem_value, carry );
+	mRegisters.AF.hi += ( mem_value + carry );
+}
+
+
+void GameboyCPU::commonSubRegAFromRegister(BYTE opCode, BYTE carry)
 {
 	BYTE argument = 0b00000111 & opCode;
 	BYTE & register_value = m8bitArguments[ argument ].ref;
-	mRegisters.AF.hi += register_value;
+
+	resetFlags();
+
+	commonSubSetFlag( mRegisters.AF.hi, register_value, carry );
+	mRegisters.AF.hi -= ( register_value + carry );
 }
 
-void GameboyCPU::commonAddRegAFromImm8(BYTE opCode)
+void GameboyCPU::commonSubRegAFromImm8(BYTE opCode, BYTE carry)
 {
-	mRegisters.AF.hi += immediateValue();
+	BYTE imm_value = immediateValue();
+
+	commonSubSetFlag( mRegisters.AF.hi, imm_value, carry );
+	mRegisters.AF.hi -= ( imm_value + carry );
 }
 
-void GameboyCPU::commonAddRegAFromMemHL(BYTE opCode)
+void GameboyCPU::commonSubRegAFromMemHL(BYTE opCode, BYTE carry)
 {
-	mRegisters.AF.hi += mGameMemory[ mRegisters.HL.reg_16 ];
-}
+	BYTE mem_value = mGameMemory[ mRegisters.HL.reg_16 ];
 
-
-void GameboyCPU::commonSubRegAFromRegister(BYTE opCode)
-{
-	BYTE argument = 0b00000111 & opCode;
-	BYTE & register_value = m8bitArguments[ argument ].ref;
-	mRegisters.AF.hi -= register_value;
-}
-
-void GameboyCPU::commonSubRegAFromImm8(BYTE opCode)
-{
-	mRegisters.AF.hi -= immediateValue();
-}
-
-void GameboyCPU::commonSubRegAFromMemHL(BYTE opCode)
-{
-	mRegisters.AF.hi -= mGameMemory[ mRegisters.HL.reg_16 ];
+	commonSubSetFlag( mRegisters.AF.hi, mem_value, carry );
+	mRegisters.AF.hi -= ( mem_value + carry );
 }
 
 
@@ -66,8 +102,7 @@ void GameboyCPU::commonSubRegAFromMemHL(BYTE opCode)
 // N = Reset
 void GameboyCPU::addRegAFromRegister(BYTE opCode)
 {
-	commonAddRegAFromRegister( opCode );
-	commonArithmeticFlagInit();
+	commonAddRegAFromRegister( opCode, 0 );
 }
 
 
@@ -78,8 +113,8 @@ void GameboyCPU::addRegAFromRegister(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromImm8(BYTE opCode)
 {
-	commonAddRegAFromImm8( opCode );
-	commonArithmeticFlagInit();
+	commonAddRegAFromImm8( opCode, 0 );
+
 }
 
 //ADD A, (HL)
@@ -87,8 +122,7 @@ void GameboyCPU::addRegAFromImm8(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromMemHL(BYTE opCode)
 {
-	commonAddRegAFromMemHL( opCode );
-	commonArithmeticFlagInit();
+	commonAddRegAFromMemHL(opCode, 0);
 }
 
 //ADC A, r ( Add With Carry. if Carry Set. add + 1 from result value. )
@@ -96,9 +130,7 @@ void GameboyCPU::addRegAFromMemHL(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromRegisterAndCarry(BYTE opCode)
 {
-	commonAddRegAFromRegister( opCode );
-	commonCarryInstruction();
-	commonArithmeticFlagInit();
+	commonAddRegAFromRegister( opCode, GetFlagC() );
 }
 
 //ADC A, n ( Add With Carry. if Carry Set. add + 1 from result value. )
@@ -107,9 +139,7 @@ void GameboyCPU::addRegAFromRegisterAndCarry(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromImm8AndCarry(BYTE opCode)
 {
-	commonAddRegAFromImm8( opCode );
-	commonCarryInstruction();
-	commonArithmeticFlagInit();
+	commonAddRegAFromImm8( opCode, GetFlagC() );
 }
 
 //ADC A, (HL) (  Add With Carry. if Carry Set. add + 1 from result value. )
@@ -117,9 +147,7 @@ void GameboyCPU::addRegAFromImm8AndCarry(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::addRegAFromMemHLAndCarry(BYTE opCode)
 {
-	commonAddRegAFromMemHL( opCode );
-	commonCarryInstruction();
-	commonArithmeticFlagInit();
+	commonAddRegAFromMemHL( opCode,GetFlagC() );
 }
 
 
@@ -128,8 +156,7 @@ void GameboyCPU::addRegAFromMemHLAndCarry(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::subRegAFromRegister(BYTE opCode)
 {
-	commonSubRegAFromRegister( opCode );
-	commonArithmeticFlagInit();
+	commonSubRegAFromRegister( opCode, GetFlagC() );
 }
 
 //SUB n
@@ -138,8 +165,7 @@ void GameboyCPU::subRegAFromRegister(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::subRegAFromImm8(BYTE opCode)
 {
-	commonSubRegAFromImm8( opCode );
-	commonArithmeticFlagInit();
+	commonSubRegAFromImm8( opCode, GetFlagC() );
 }
 
 //SUB (HL)
@@ -147,6 +173,5 @@ void GameboyCPU::subRegAFromImm8(BYTE opCode)
 // = Flag = ( Same as ADD A, r)
 void GameboyCPU::subRegAFromMemHL(BYTE opCode)
 {
-	commonSubRegAFromMemHL( opCode );
-	commonArithmeticFlagInit();
+	commonSubRegAFromMemHL( opCode, GetFlagC() );
 }
