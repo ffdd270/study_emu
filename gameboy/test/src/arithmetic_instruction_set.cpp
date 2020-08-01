@@ -17,6 +17,16 @@ void subN( GameboyCPU & cpu, BYTE a_value, BYTE n )
 	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 }
 
+// 0b10010110 (0x96)
+void subHL(  GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+{
+	setMemory3Step( cpu, 0b100, mem_hl_address, n );
+	setRegister8( cpu, 0b111, a_value );
+	cpu.InjectionMemory( 0x96 ); // SUB (HL)
+
+	for( int i = 0; i < 5; i++ ) { cpu.NextStep(); }
+}
+
 
 void NoFlagCheck( GameboyCPU & cpu )
 {
@@ -470,6 +480,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 	{
 		SECTION( "SUB TEST" )
 		{
+			cpu.Reset();
 			subN( cpu, 0x30, 0x28 );
 			REQUIRE( cpu.GetRegisterAF().hi == 0x8 );
 
@@ -479,6 +490,12 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 		SECTION( "FLAG TEST" )
 		{
+			cpu.Reset();
+
+			subN( cpu, 0x35, 0x31 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x4 );
+			NoFlagCheck( cpu );
+
 			subN( cpu, 0x31, 0x31 ); // Z Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
@@ -489,6 +506,36 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			subN( cpu, 0x2A, 0x30 ); // C Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == ( 0xff - 5 ) );
+			REQUIRE( cpu.GetFlagC() == 1 );
+		}
+	}
+
+	SECTION( "SUB (HL)")
+	{
+		SECTION( "SUB TEST" )
+		{
+			cpu.Reset();
+			subHL( cpu, 0xff, 0x3000, 0xfe );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x1 );
+		}
+
+		SECTION( "FLAG TEST" )
+		{
+			cpu.Reset();
+			subHL( cpu, 0xfb, 0x3000, 0xea ); // NO FLAG.
+			REQUIRE( cpu.GetRegisterAF().hi == 0x11 );
+			NoFlagCheck( cpu );
+
+			subHL( cpu, 0xff, 0x3530, 0xff ); // Z FLAG.
+			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+
+			subHL( cpu, 0x3a, 0x4567, 0x2b ); // H FLAG.
+			REQUIRE( cpu.GetRegisterAF().hi == 0xf );
+			REQUIRE( cpu.GetFlagH() == 1 );
+
+			subHL( cpu, 0x3b, 0x4252, 0x3c ); // C Flag.
+			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
 			REQUIRE( cpu.GetFlagC() == 1 );
 		}
 	}
