@@ -14,6 +14,9 @@ void GameboyCPU::commonAddSetFlag(BYTE origin_value, BYTE add_value, BYTE carry)
 	setFlagC( result > 0xff ); // 올림 당함 !
 }
 
+// Z - > 결과값 0.
+// H -> 하위 4비트 연산 결과가 음수.
+// C - > 연산 결과가 음수.
 void GameboyCPU::commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry )
 {
 	setFlagZ( ( origin_value - sub_value - carry ) == 0 );
@@ -156,7 +159,7 @@ void GameboyCPU::addRegAFromMemHLAndCarry(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::subRegAFromRegister(BYTE opCode)
 {
-	commonSubRegAFromRegister( opCode, GetFlagC() );
+	commonSubRegAFromRegister( opCode, 0 );
 }
 
 //SUB n
@@ -165,7 +168,7 @@ void GameboyCPU::subRegAFromRegister(BYTE opCode)
 // = Flag = ( Same as ADD A, r )
 void GameboyCPU::subRegAFromImm8(BYTE opCode)
 {
-	commonSubRegAFromImm8( opCode, GetFlagC() );
+	commonSubRegAFromImm8( opCode, 0 );
 }
 
 //SUB (HL)
@@ -173,5 +176,5 @@ void GameboyCPU::subRegAFromImm8(BYTE opCode)
 // = Flag = ( Same as ADD A, r)
 void GameboyCPU::subRegAFromMemHL(BYTE opCode)
 {
-	commonSubRegAFromMemHL( opCode, GetFlagC() );
+	commonSubRegAFromMemHL( opCode, 0 );
 }
