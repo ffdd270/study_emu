@@ -6,6 +6,18 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
+
+// 0b11010110 (0xD6)
+void subN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	setRegister8( cpu, 0b111, a_value );
+	cpu.InjectionMemory( 0xD6 );
+	cpu.InjectionMemory( n );
+
+	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+}
+
+
 void NoFlagCheck( GameboyCPU & cpu )
 {
 	REQUIRE( cpu.GetFlagC() == 0 );
@@ -451,6 +463,33 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
+	}
 
+	// 0b11010110 (0xD6)
+	SECTION( "SUB N" )
+	{
+		SECTION( "SUB TEST" )
+		{
+			subN( cpu, 0x30, 0x28 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x8 );
+
+			subN( cpu, 0x30, 0x31 ); // underflow test.
+			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
+		}
+
+		SECTION( "FLAG TEST" )
+		{
+			subN( cpu, 0x31, 0x31 ); // Z Flag.
+			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+
+			subN( cpu, 0x38, 0x2A ); // H Flag.
+			REQUIRE( cpu.GetRegisterAF().hi == 0xE );
+			REQUIRE( cpu.GetFlagH() == 1 );
+
+			subN( cpu, 0x2A, 0x30 ); // C Flag.
+			REQUIRE( cpu.GetRegisterAF().hi == ( 0xff - 5 ) );
+			REQUIRE( cpu.GetFlagC() == 1 );
+		}
 	}
 }
