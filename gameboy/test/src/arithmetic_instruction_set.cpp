@@ -417,5 +417,40 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
 
+		SECTION("FLAG TEST")
+		{
+			cpu.Reset();
+
+			setRegister8( cpu, 0b111, 0xA8 );
+			setRegister8( cpu, 0b0, 0x99 );
+			cpu.InjectionMemory( 0b10010000 ); // SUB B
+			// 3 Step.
+
+			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+
+			REQUIRE( cpu.GetRegisterAF().hi == 0xF );
+			REQUIRE( cpu.GetFlagH() == 1 );
+
+			setRegister8( cpu, 0b111, 0xA0 );
+			setRegister8( cpu, 0b10, 0xA1 );
+			cpu.InjectionMemory( 0b10010010 ); // SUB D
+			// 3 Step.
+
+			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+
+			REQUIRE( cpu.GetRegisterAF().hi == 0xff ); // Underflow.
+			REQUIRE( cpu.GetFlagC() == 1 );
+			REQUIRE( cpu.GetFlagH() == 1 );
+
+			setRegister8( cpu, 0b111, 0xB0 );
+			setRegister8( cpu, 0b11, 0xB0 );
+			cpu.InjectionMemory( 0b10010011 ); // SUB E
+
+			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+
+			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
+
 	}
 }
