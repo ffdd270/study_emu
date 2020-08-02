@@ -254,20 +254,39 @@ private:
 
 	//SUB r
 	// 0b10010rrr { r = m8BitArguments }
-	// = Flag = ( Same as ADD A, r )
+	// = Flag =
+	// Z -> 결과값 0.
+	// H -> 하위 4비트 연산 결과가 음수.
+	// C -> 연산 결과가 음수.
 	void subRegAFromRegister(BYTE opCode);
 
 	//SUB n
 	// 0b11010110 (0xD6)
 	// 0bnnnnnnnn
-	// = Flag = ( Same as ADD A, r )
+	// = Flag = ( Same as SUB r )
 	void subRegAFromImm8(BYTE opCode);
 
 
 	//SUB (HL)
 	// 0b10010110 (0x96)
-	// = Flag = ( Same as ADD A, r)
+	// = Flag = ( Same as SUB r )
 	void subRegAFromMemHL(BYTE opCode);
+
+
+	//SBC A, r
+	// 0b10011rrr { r = m8BitArguments }
+	// = Flag = ( Same as SUB r )
+	void subRegAFromRegisterAndCarry(BYTE opCode);
+
+	//SBC A, n
+	// 0b11011110 (0xDE)
+	// = Flag = ( Same as SUB r )
+	void subRegAFromImm8AndCarry(BYTE opCode);
+
+	//SBC A, (HL)
+	// 0b10011110 (0x9E)
+	// = Flag = ( Same as SBC A, (HL)
+	void subRegAFromMemHLAndCarry(BYTE opCode);
 
 
 	/*
