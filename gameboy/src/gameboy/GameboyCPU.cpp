@@ -91,6 +91,7 @@ public:
 	BIND_FUNC( addRegAFromImm8AndCarry )
 
 	BIND_FUNC( subRegAFromImm8 )
+	BIND_FUNC( subRegAFromImm8AndCarry )
 
 	// pre 0b10
 
@@ -104,6 +105,8 @@ public:
 	BIND_FUNC( subRegAFromRegister )
 	BIND_FUNC( subRegAFromMemHL )
 
+	BIND_FUNC( subRegAFromRegisterAndCarry )
+	BIND_FUNC( subRegAFromMemHLAndCarry )
 
 	// pre 0b01
 
@@ -278,6 +281,24 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		}
 	}
 
+	for ( int i = 0; i <= 0b111; i++ )
+	{
+		BYTE opCode = 0b10011000 | i;
+
+		//SBC A, (HL)
+		// 0b10011110 (0x9E)
+		if ( i == 0b110 )
+		{
+			mFuncMap[ opCode ] = BIND_FUNCS::subRegAFromMemHLAndCarry;
+		}
+		//SBC A, r
+		// 0b10011rrr { r = m8BitArguments }
+		else
+		{
+			mFuncMap[ opCode ] = BIND_FUNCS::subRegAFromRegisterAndCarry;
+		}
+	}
+
 }
 
 
@@ -314,6 +335,10 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//SUB n
 	// 0b11010110 (0xD6)
 	mFuncMap[ 0b11010110 ] = BIND_FUNCS::subRegAFromImm8;
+
+	//SBC A, n
+	// 0b11011110 (0xDE)
+	mFuncMap[ 0b11011110 ] = BIND_FUNCS::subRegAFromImm8AndCarry;
 }
 
 
@@ -359,26 +384,33 @@ WORD GameboyCPU::immediateValue16()
 	return value;
 }
 
+#define SET_BIT_ZERO( value, bit_pos ) value & ( 0xFF ^ ( 0b1 << bit_pos ) )
+
+
 void GameboyCPU::setFlagZ(bool flag)
 {
+	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 7 );
 	BYTE value = flag ? 0b1 : 0b0;
 	mRegisters.AF.lo |= value << 7;
 }
 
 void GameboyCPU::setFlagN(bool flag)
 {
+	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 6 );
 	BYTE value = flag ? 0b1 : 0b0;
 	mRegisters.AF.lo |= value << 6;
 }
 
 void GameboyCPU::setFlagH(bool flag)
 {
+	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 5 );
 	BYTE value = flag ? 0b1 : 0b0;
 	mRegisters.AF.lo |= value << 5;
 }
 
 void GameboyCPU::setFlagC(bool flag)
 {
+	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 4 );
 	BYTE value = flag ? 0b1 : 0b0;
 	mRegisters.AF.lo |= value << 4;
 }

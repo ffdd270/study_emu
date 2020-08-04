@@ -178,3 +178,28 @@ void GameboyCPU::subRegAFromMemHL(BYTE opCode)
 {
 	commonSubRegAFromMemHL( opCode, 0 );
 }
+
+//SBC A, r
+// 0b10011rrr { r = m8BitArguments }
+// = Flag = ( Same as SUB r )
+void GameboyCPU::subRegAFromRegisterAndCarry(BYTE opCode)
+{
+	commonSubRegAFromRegister( opCode, GetFlagC() );
+}
+
+//SBC A, n
+// 0b11011110 (0xDE)
+// = Flag = ( Same as SUB r )
+void GameboyCPU::subRegAFromImm8AndCarry(BYTE opCode)
+{
+	commonSubRegAFromImm8( opCode, GetFlagC() );
+}
+
+//SBC A, (HL)
+// 0b10011110 (0x9E)
+// = Flag = ( Same as SBC A, (HL)
+void GameboyCPU::subRegAFromMemHLAndCarry(BYTE opCode)
+{
+	commonSubRegAFromMemHL( opCode, GetFlagC() );
+}
+

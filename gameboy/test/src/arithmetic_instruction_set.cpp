@@ -6,25 +6,61 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
-
-// 0b11010110 (0xD6)
-void subN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+void baseSubN( GameboyCPU & cpu, BYTE opCode, BYTE a_value, BYTE n )
 {
 	setRegister8( cpu, 0b111, a_value );
-	cpu.InjectionMemory( 0xD6 );
+	cpu.InjectionMemory( opCode );
 	cpu.InjectionMemory( n );
 
 	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 }
 
+void baseSubR( GameboyCPU & cpu, BYTE base_opcode, BYTE a_value, BYTE register_index, BYTE n )
+{
+	setRegister8( cpu, 0b111, a_value );
+	setRegister8( cpu, register_index, n );
+	cpu.InjectionMemory( ( base_opcode | register_index )  );
+
+	for ( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+}
+
+void baseSubHL( GameboyCPU & cpu, BYTE opCode, BYTE a_value, WORD mem_hl_address, BYTE n )
+{
+	setMemory3Step( cpu, 0b0, mem_hl_address, n );
+	setRegister8( cpu, 0b111, a_value );
+	cpu.InjectionMemory( opCode );
+
+	for( int i = 0; i < 5; i++ )
+	{
+		cpu.NextStep();
+	}
+}
+
+// 0b11010110 (0xD6)
+void subN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseSubN( cpu, 0xD6, a_value, n );
+}
+
 // 0b10010110 (0x96)
 void subHL(  GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
-	setMemory3Step( cpu, 0b100, mem_hl_address, n );
-	setRegister8( cpu, 0b111, a_value );
-	cpu.InjectionMemory( 0x96 ); // SUB (HL)
+	baseSubHL( cpu, 0x96, a_value, mem_hl_address, n );
+}
 
-	for( int i = 0; i < 5; i++ ) { cpu.NextStep(); }
+void subNC( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseSubN( cpu, 0xDE, a_value, n );
+}
+
+void subRC(  GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseSubR( cpu, 0b10011000, a_value, 0b10, n ); // SBC A, D
+}
+
+void subHLC( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+{
+	baseSubHL( cpu, 0x9E, a_value, mem_hl_address, n );
 }
 
 
@@ -537,6 +573,91 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			subHL( cpu, 0x3b, 0x4252, 0x3c ); // C Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
 			REQUIRE( cpu.GetFlagC() == 1 );
+		}
+	}
+
+	SECTION( "SBC A, reg" )
+	{
+		SECTION( "SUB TEST" )
+		{
+			cpu.Reset();
+
+			subRC( cpu, 0x30, 0x31 );
+			// Carry.
+			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
+			REQUIRE( cpu.GetFlagC() == 1 );
+			REQUIRE( cpu.GetFlagH() == 1 );
+
+			subRC( cpu, 0x1A, 0x19 );
+			// With Carry SUB .
+			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
+	}
+
+	SECTION( "SBC A, n" )
+	{
+		SECTION("SUB TEST")
+		{
+			cpu.Reset();
+
+			subNC( cpu, 0x30, 0x31 );
+			// Carry.
+			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
+			REQUIRE( cpu.GetFlagC() == 1 );
+
+			subNC( cpu, 0x06, 0x05 );
+			// With Carry SUB.  -1 plus.
+			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
+
+
+		SECTION("FLAG TEST")
+		{
+			cpu.Reset();
+
+			subNC( cpu, 0x41, 0x45 ); // Underflow 4.
+			REQUIRE( cpu.GetRegisterAF().hi == ( 0xff - 3 ) );
+			REQUIRE( cpu.GetFlagC() == 1 );
+			REQUIRE( cpu.GetFlagH() == 1 );
+
+			subNC( cpu, 0x53, 0x43 );
+			// With Carry.
+			REQUIRE( cpu.GetRegisterAF().hi == 0xF );
+			REQUIRE( cpu.GetFlagH() == 1 );
+			REQUIRE( cpu.GetFlagC() == 0 );
+
+			subNC( cpu, 0x42, 0x42 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
+	}
+
+	SECTION("SBC A, (HL)")
+	{
+		SECTION("SUB TEST")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
+
+			subHLC( cpu, 0xf0, 0xf0f0, 0xf1 );
+			// Carry .
+			REQUIRE( cpu.GetRegisterHL().reg_16 == 0xf0f0 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
+			REQUIRE( cpu.GetFlagC() == 1 );
+			REQUIRE( cpu.GetFlagH() == 1 );
+
+			subHLC( cpu, 0x32, 0xf2f2, 0x30 );
+			//With Carry.
+			REQUIRE( cpu.GetRegisterHL().reg_16 == 0xf2f2 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x1 );
+			NoFlagCheck( cpu );
+
+			subHLC( cpu, 0x31, 0xfefe, 0x2 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x2f );
+			REQUIRE( cpu.GetFlagH() == 1 );
+			REQUIRE( cpu.GetFlagC() == 0 );
 		}
 	}
 }
