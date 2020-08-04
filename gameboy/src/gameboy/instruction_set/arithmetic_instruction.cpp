@@ -26,11 +26,12 @@ void GameboyCPU::commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry
 	setFlagC(  origin_value < sub_value_sum ); // 내림 당함!
 }
 
-void GameboyCPU::commonCarryInstruction()
+void GameboyCPU::commonAndSetFlag()
 {
-	if( GetFlagC() )
+	resetFlags();
+	if( mRegisters.AF.hi == 0 )
 	{
-		mRegisters.AF.hi += 1;
+		setFlagZ( true );
 	}
 }
 
@@ -203,3 +204,34 @@ void GameboyCPU::subRegAFromMemHLAndCarry(BYTE opCode)
 	commonSubRegAFromMemHL( opCode, GetFlagC() );
 }
 
+//AND r
+// 0b10100rrr
+// = Flag =
+// Z = if 0 set 0.
+// else = reset.
+void GameboyCPU::andRegAFromRegister(BYTE opCode)
+{
+	BYTE argument = 0b00000111 & opCode;
+	BYTE & register_value = m8bitArguments[ argument ].ref;
+
+	mRegisters.AF.hi = mRegisters.AF.hi & register_value;
+	commonAndSetFlag();
+}
+
+//AND n
+// 0b11100110 (0xE6)
+// = Flag = Same as AND r
+void GameboyCPU::andRegAFromImm8(BYTE opCode)
+{
+	mRegisters.AF.hi = mRegisters.AF.hi & immediateValue();
+	commonAndSetFlag();
+}
+
+//AND (HL)
+// 0b10100110 (0xA6)
+// = Flag = Same as AND (HL)
+void GameboyCPU::andRegAFromMemHL(BYTE opCode)
+{
+	mRegisters.AF.hi = mRegisters.AF.hi & mGameMemory[ mRegisters.HL.reg_16 ];
+	commonAndSetFlag();
+}

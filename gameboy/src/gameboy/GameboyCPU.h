@@ -288,6 +288,22 @@ private:
 	// = Flag = ( Same as SBC A, (HL)
 	void subRegAFromMemHLAndCarry(BYTE opCode);
 
+	//AND r
+	// 0b10100rrr
+	// = Flag =
+	// Z = if 0 set 0.
+	// else = reset.
+	void andRegAFromRegister(BYTE opCode);
+
+	//AND n
+	// 0b11100110 (0xE6)
+	// = Flag = Same as AND r
+	void andRegAFromImm8( BYTE opCode );
+
+	//AND (HL)
+	// 0b10100110 (0xA6)
+	// = Flag = Same as AND (HL)
+	void andRegAFromMemHL( BYTE opCode );
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
@@ -303,9 +319,7 @@ private:
 
 	void commonAddSetFlag( BYTE origin_value, BYTE add_value, BYTE carry );
 	void commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry );
-	void commonCarryInstruction();
-
-
+	void commonAndSetFlag();
 	/*
 	 * Util 함수들.
 	*/
