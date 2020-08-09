@@ -93,6 +93,8 @@ public:
 	BIND_FUNC( subRegAFromImm8 )
 	BIND_FUNC( subRegAFromImm8AndCarry )
 
+	BIND_FUNC( andRegAFromImm8 )
+
 	// pre 0b10
 
 	// arth
@@ -108,6 +110,8 @@ public:
 	BIND_FUNC( subRegAFromRegisterAndCarry )
 	BIND_FUNC( subRegAFromMemHLAndCarry )
 
+	BIND_FUNC( andRegAFromRegister )
+	BIND_FUNC( andRegAFromMemHL )
 	// pre 0b01
 
 	//load
@@ -299,6 +303,24 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		}
 	}
 
+
+	for( int i = 0; i <= 0b111; i++ )
+	{
+		BYTE opCode = 0b1010000 | i;
+
+		//AND (HL)
+		// 0b10100110 (0xA6)
+		if(  i == 0b110 )
+		{
+			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromMemHL;
+		}
+		//AND r
+		// 0b10100rrr
+		else
+		{
+			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromImm8;
+		}
+	}
 }
 
 
@@ -339,6 +361,10 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//SBC A, n
 	// 0b11011110 (0xDE)
 	mFuncMap[ 0b11011110 ] = BIND_FUNCS::subRegAFromImm8AndCarry;
+
+	//AND n
+	// 0b11100110 (0xE6)
+	mFuncMap[ 0b11100110 ] = BIND_FUNCS::andRegAFromImm8;
 }
 
 
