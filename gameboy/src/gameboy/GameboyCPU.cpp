@@ -306,19 +306,19 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 
 	for( int i = 0; i <= 0b111; i++ )
 	{
-		BYTE opCode = 0b1010000 | i;
+		BYTE opCode = 0b10100000 | i;
 
 		//AND (HL)
 		// 0b10100110 (0xA6)
-		if(  i == 0b110 )
+		if( i == 0b110 )
 		{
-			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromMemHL;
+			mFuncMap[ opCode ] = BIND_FUNCS::andRegAFromMemHL;
 		}
 		//AND r
 		// 0b10100rrr
 		else
 		{
-			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromImm8;
+			mFuncMap[ opCode ] = BIND_FUNCS::andRegAFromRegister;
 		}
 	}
 }
