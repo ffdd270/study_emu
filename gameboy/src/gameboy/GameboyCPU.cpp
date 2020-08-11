@@ -52,10 +52,10 @@ void GameboyCPU::Reset()
 
 void GameboyCPU::NextStep()
 {
-	BYTE opCode = mGameMemory[ mPC.reg_16 ];
+	BYTE op_code = mGameMemory[ mPC.reg_16 ];
 	mPC.reg_16 += 1;
 
-	auto& func = mFuncMap[ opCode ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
+	auto& func = mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
 
 	if( func ==  nullptr )
 	{
@@ -63,15 +63,15 @@ void GameboyCPU::NextStep()
 		return;
 	}
 
-	func( this, opCode );
+	func( this, op_code );
 }
 
 // PRE 0b00의 콜백 함수.
 #define BIND_FUNC( func_name ) static void func_name\
-( GameboyCPU * cpu, BYTE opCode )\
+( GameboyCPU * cpu, BYTE op_code )\
 {\
 	cpu->func_name\
-	( opCode );\
+	( op_code );\
 }\
 
 
@@ -95,6 +95,8 @@ public:
 
 	BIND_FUNC( andRegAFromImm8 )
 
+	BIND_FUNC( orRegAFromImm8 )
+
 	// pre 0b10
 
 	// arth
@@ -112,6 +114,9 @@ public:
 
 	BIND_FUNC( andRegAFromRegister )
 	BIND_FUNC( andRegAFromMemHL )
+
+	BIND_FUNC( orRegAFromRegister )
+	BIND_FUNC( orRegAFromMemHL )
 	// pre 0b01
 
 	//load
@@ -142,8 +147,8 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	// 0b000110 ~ 0b111110
 	for(BYTE i = 0b000; i <= 0b111; i++)
 	{
-		BYTE opCode = 0b00000000 | ( i << 3 ) | 0b110;
-		mFuncMap[ opCode ] = BIND_FUNCS::loadRegFromImm8;
+		BYTE op_code = 0b00000000 | ( i << 3 ) | 0b110;
+		mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromImm8;
 	}
 
 
@@ -193,8 +198,8 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	// 0b00rr0001
 	for(BYTE i = 0b00; i <= 0b11; i++)
 	{
-		BYTE opCode = 0b00000001 | ( i << 4 );
-		mFuncMap[ opCode ] = BIND_FUNCS::loadReg16FromImm16;
+		BYTE op_code = 0b00000001 | ( i << 4 );
+		mFuncMap[ op_code ] = BIND_FUNCS::loadReg16FromImm16;
 	}
 }
 
@@ -208,22 +213,22 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 		{
 			if ( i == j  ) { continue; } // 같은 인자에 대한 연산은 없음. LD rrr, rrr 같이..
 
-			BYTE opCode = 0b01000000 | (i << 3) | j;
+			BYTE op_code = 0b01000000 | (i << 3) | j;
 
 			if( i == 0b110 ) // ( HL ) load reg.
 			{
-				mFuncMap[ opCode ] = BIND_FUNCS::loadMemHLFromReg;
+				mFuncMap[ op_code ] = BIND_FUNCS::loadMemHLFromReg;
 				continue;
  			}
 
 			if ( j == 0b110 ) // reg load ( HL )
 			{
-				mFuncMap[ opCode ] = BIND_FUNCS::loadRegFromMemHL;
+				mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromMemHL;
 				continue;
 			}
 
 			// reg load reg, 0brrryyy ( rrr, yyy != 0b110, rrr != yyy )
-			mFuncMap[ opCode ] = BIND_FUNCS::loadRegFromReg;
+			mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromReg;
 		}
 	}
 }
@@ -244,8 +249,8 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		// 0b10000rrr { rrr = 8bitArgument }
 		else
 		{
-			BYTE opCode = 0b10000000 | i;
-			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromRegister;
+			BYTE op_code = 0b10000000 | i;
+			mFuncMap[ op_code ] = BIND_FUNCS::addRegAFromRegister;
 		}
 	}
 
@@ -262,64 +267,83 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		// 0b10001rrr ( rrr = 8bitArgument }
 		else
 		{
-			BYTE opCode = 0b10001000 | i;
-			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromRegisterAndCarry;
+			BYTE op_code = 0b10001000 | i;
+			mFuncMap[ op_code ] = BIND_FUNCS::addRegAFromRegisterAndCarry;
 		}
 	}
 
 	for ( int i = 0; i <= 0b111; i++ )
 	{
-		BYTE opCode = 0b10010000 | i;
+		BYTE op_code = 0b10010000 | i;
 
 		//SUB (HL)
 		// 0b10010110 (0x96)
 		if( i == 0b110 )
 		{
-			mFuncMap[ opCode ] = BIND_FUNCS::subRegAFromMemHL;
+			mFuncMap[ op_code ] = BIND_FUNCS::subRegAFromMemHL;
 		}
 		//SUB r
 		// 0b10010rrr { r = m8BitArguments }
 		else
 		{
-			mFuncMap[ opCode ] = BIND_FUNCS::subRegAFromRegister;
+			mFuncMap[ op_code ] = BIND_FUNCS::subRegAFromRegister;
 		}
 	}
 
 	for ( int i = 0; i <= 0b111; i++ )
 	{
-		BYTE opCode = 0b10011000 | i;
+		BYTE op_code = 0b10011000 | i;
 
 		//SBC A, (HL)
 		// 0b10011110 (0x9E)
 		if ( i == 0b110 )
 		{
-			mFuncMap[ opCode ] = BIND_FUNCS::subRegAFromMemHLAndCarry;
+			mFuncMap[ op_code ] = BIND_FUNCS::subRegAFromMemHLAndCarry;
 		}
 		//SBC A, r
 		// 0b10011rrr { r = m8BitArguments }
 		else
 		{
-			mFuncMap[ opCode ] = BIND_FUNCS::subRegAFromRegisterAndCarry;
+			mFuncMap[ op_code ] = BIND_FUNCS::subRegAFromRegisterAndCarry;
 		}
 	}
 
 
 	for( int i = 0; i <= 0b111; i++ )
 	{
-		BYTE opCode = 0b1010000 | i;
+		BYTE op_code = 0b10100000 | i;
 
 		//AND (HL)
 		// 0b10100110 (0xA6)
-		if(  i == 0b110 )
+		if( i == 0b110 )
 		{
-			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromMemHL;
+			mFuncMap[ op_code ] = BIND_FUNCS::andRegAFromMemHL;
 		}
 		//AND r
 		// 0b10100rrr
 		else
 		{
-			mFuncMap[ opCode ] = BIND_FUNCS::addRegAFromImm8;
+			mFuncMap[ op_code ] = BIND_FUNCS::andRegAFromRegister;
 		}
+	}
+
+	for ( int i = 0; i <= 0b111; i++ )
+	{
+		BYTE op_code = 0b10110000 | i;
+
+		//OR (HL)
+		// 0b10110110 ( 0xB6 )
+		if( i == 0b110 )
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::orRegAFromMemHL;
+		}
+		//OR r
+		// 0b10110rrr
+		else
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::orRegAFromRegister;
+		}
+
 	}
 }
 
@@ -334,16 +358,16 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
 	for ( int i = 0; i <= 0b11; i++ )
 	{
-		BYTE opCode = 0b11000101 | ( i << 4 ); // base = 0b11000101 ,i << 4 == qq.
-		mFuncMap[ opCode ] = BIND_FUNCS::pushReg16;
+		BYTE op_code = 0b11000101 | ( i << 4 ); // base = 0b11000101 ,i << 4 == qq.
+		mFuncMap[ op_code ] = BIND_FUNCS::pushReg16;
 	}
 
 	//POP qq
 	// 0b11qq0001 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 } }
 	for ( int i = 0; i <= 0b11; i++ ) // 굳이 PUSH와 합치지는 않았음. 3 클럭 소모 더하고 보기 좋게하는게..
 	{
-		BYTE opCode = 0b11000001 | ( i << 4 ); // base = 0b11000001 ,i << 4 == qq.
-		mFuncMap[ opCode ] = BIND_FUNCS::popReg16;
+		BYTE op_code = 0b11000001 | ( i << 4 ); // base = 0b11000001 ,i << 4 == qq.
+		mFuncMap[ op_code ] = BIND_FUNCS::popReg16;
 	}
 
 	//ADD A, n
@@ -365,6 +389,10 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//AND n
 	// 0b11100110 (0xE6)
 	mFuncMap[ 0b11100110 ] = BIND_FUNCS::andRegAFromImm8;
+
+	//OR n
+	// 0b11110110 (0xF6)
+	mFuncMap[ 0b11110110 ] = BIND_FUNCS::orRegAFromImm8;
 }
 
 
