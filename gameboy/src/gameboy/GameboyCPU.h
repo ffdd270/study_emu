@@ -305,6 +305,22 @@ private:
 	// = Flag = Same as AND (HL)
 	void andRegAFromMemHL( BYTE opCode );
 
+
+	//OR r
+	// 0b10110rrr { r = m8BitArguments }
+	// = Flag = Same as AND r
+	void orRegAFromRegister(BYTE opCode);
+
+	//OR n
+	// 0b11110110 ( 0xF6 )
+	// = Flag = Same as AND r
+	void orRegAFromImm8(BYTE opCode);
+
+	//OR (HL)
+	// 0b10110110 ( 0xB6 )
+	// = Flag = Same as AND r
+	void orRegAFromMemHL(BYTE opCode);
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
@@ -319,7 +335,7 @@ private:
 
 	void commonAddSetFlag( BYTE origin_value, BYTE add_value, BYTE carry );
 	void commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry );
-	void commonAndSetFlag();
+	void commonBitSetFlag();
 	/*
 	 * Util 함수들.
 	*/
