@@ -335,13 +335,13 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		// 0b10110110 ( 0xB6 )
 		if( i == 0b110 )
 		{
-			mFuncMap[ op_code ] = BIND_FUNCS::andRegAFromMemHL;
+			mFuncMap[ op_code ] = BIND_FUNCS::orRegAFromMemHL;
 		}
 		//OR r
 		// 0b10110rrr
 		else
 		{
-			mFuncMap[ op_code ] = BIND_FUNCS::andRegAFromRegister;
+			mFuncMap[ op_code ] = BIND_FUNCS::orRegAFromRegister;
 		}
 
 	}
@@ -389,6 +389,10 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//AND n
 	// 0b11100110 (0xE6)
 	mFuncMap[ 0b11100110 ] = BIND_FUNCS::andRegAFromImm8;
+
+	//OR n
+	// 0b11110110 (0xF6)
+	mFuncMap[ 0b11110110 ] = BIND_FUNCS::orRegAFromImm8;
 }
 
 

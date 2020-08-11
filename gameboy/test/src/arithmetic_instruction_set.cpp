@@ -79,6 +79,24 @@ void andR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 	baseOpCodeReg8( cpu, 0b10100000, a_value, 0b10, n );
 }
 
+void orN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseOpCodeN( cpu, 0xF6, a_value, n );
+}
+
+
+void orHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+{
+	baseOpCodeHL( cpu, 0xB6, a_value, mem_hl_address, n );
+}
+
+
+void orR( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseOpCodeReg8( cpu, 0b10110000, a_value, 0b10, n );
+}
+
+
 
 void NoFlagCheck( GameboyCPU & cpu )
 {
@@ -730,4 +748,68 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
 	}
+
+	SECTION("OR r")
+	{
+		SECTION("OR TEST")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
+
+			orR( cpu, 0x3f, 0x21 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x3f );
+			NoFlagCheck( cpu );
+
+			orR( cpu, 0x21, 0x24 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x25 );
+			NoFlagCheck( cpu );
+
+			orR( cpu, 0, 0 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
+	}
+
+	SECTION("OR n")
+	{
+		SECTION("OR TEST")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
+
+			orN( cpu, 0x56, 0x72 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x76 );
+			NoFlagCheck( cpu );
+
+			orN( cpu, 0x52, 0x59 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x5B );
+			NoFlagCheck( cpu );
+
+			orN( cpu, 0, 0 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
+	}
+
+	SECTION("OR (HL)")
+	{
+		SECTION("OR TEST")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
+
+			orHL( cpu, 0x56, 0x30f0, 0x72 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x76 );
+			NoFlagCheck( cpu );
+
+			orHL( cpu, 0x52, 0x3f21, 0x59 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x5B );
+			NoFlagCheck( cpu );
+
+			orHL( cpu, 0, 0x241f, 0 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
+	}
+
 }
