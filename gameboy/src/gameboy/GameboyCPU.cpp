@@ -97,6 +97,8 @@ public:
 
 	BIND_FUNC( orRegAFromImm8 )
 
+	BIND_FUNC( xorRegAFromMemHL )
+
 	// pre 0b10
 
 	// arth
@@ -117,6 +119,9 @@ public:
 
 	BIND_FUNC( orRegAFromRegister )
 	BIND_FUNC( orRegAFromMemHL )
+
+	BIND_FUNC( xorRegAFromRegister )
+	BIND_FUNC( xorRegAFromImm8 )
 	// pre 0b01
 
 	//load
@@ -345,6 +350,25 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		}
 
 	}
+
+
+	for ( int i = 0; i <= 0b111; i++ )
+	{
+		BYTE op_code = 0b10101000 | i;
+
+		//XOR (HL)
+		// 0b10101110 ( 0xAE )
+		if( i == 0b110 )
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::xorRegAFromMemHL;
+		}
+		//XOR r
+		// 0b10101rrr { r = m8BitArguments }
+		else
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::xorRegAFromRegister;
+		}
+	}
 }
 
 
@@ -393,6 +417,10 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//OR n
 	// 0b11110110 (0xF6)
 	mFuncMap[ 0b11110110 ] = BIND_FUNCS::orRegAFromImm8;
+
+	//XOR n
+	// 0b11101110 ( 0xEE )
+	mFuncMap[ 0b11101110 ] = BIND_FUNCS::xorRegAFromImm8;
 }
 
 

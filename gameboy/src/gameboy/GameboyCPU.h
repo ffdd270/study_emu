@@ -285,7 +285,7 @@ private:
 
 	//SBC A, (HL)
 	// 0b10011110 (0x9E)
-	// = Flag = ( Same as SBC A, (HL)
+	// = Flag = ( Same as SUB r )
 	void subRegAFromMemHLAndCarry(BYTE opCode);
 
 	//AND r
@@ -302,7 +302,7 @@ private:
 
 	//AND (HL)
 	// 0b10100110 (0xA6)
-	// = Flag = Same as AND (HL)
+	// = Flag = Same as AND r
 	void andRegAFromMemHL( BYTE opCode );
 
 
@@ -320,6 +320,25 @@ private:
 	// 0b10110110 ( 0xB6 )
 	// = Flag = Same as AND r
 	void orRegAFromMemHL(BYTE opCode);
+
+	//XOR r
+	// 0b10101rrr { r = m8BitArguments }
+	// = Flag =
+	// Z = if 0 set 0.
+	// else = reset.
+	void xorRegAFromRegister( BYTE opCode );
+
+	//XOR n
+	// 0b11101110 ( 0xEE )
+	// = Flag = Same as XOR r
+	void xorRegAFromImm8( BYTE opCode );
+
+	//XOR (HL)
+	// 0b10101110 ( 0xAE )
+	// = Flag = Same as XOR r
+	void xorRegAFromMemHL( BYTE opCode );
+
+
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
