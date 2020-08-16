@@ -84,7 +84,6 @@ void orN( GameboyCPU & cpu, BYTE a_value, BYTE n )
 	baseOpCodeN( cpu, 0xF6, a_value, n );
 }
 
-
 void orHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
 	baseOpCodeHL( cpu, 0xB6, a_value, mem_hl_address, n );
@@ -95,6 +94,7 @@ void orR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	baseOpCodeReg8( cpu, 0b10110000, a_value, 0b10, n );
 }
+
 
 
 
@@ -812,4 +812,18 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		}
 	}
 
+	SECTION("XOR r")
+	{
+
+	}
+
+	SECTION("XOR n")
+	{
+
+	}
+
+	SECTION("XOR HL")
+	{
+
+	}
 }
