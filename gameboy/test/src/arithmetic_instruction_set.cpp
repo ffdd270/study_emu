@@ -95,8 +95,20 @@ void orR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 	baseOpCodeReg8( cpu, 0b10110000, a_value, 0b10, n );
 }
 
+void xorN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseOpCodeN( cpu, 0xEE, a_value, n );
+}
 
+void xorHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+{
+	baseOpCodeHL( cpu, 0xAE, a_value, mem_hl_address, n );
+}
 
+void xorR( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseOpCodeReg8( cpu, 0b10101000, a_value, 0b10, n );
+}
 
 void NoFlagCheck( GameboyCPU & cpu )
 {
@@ -814,16 +826,64 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 	SECTION("XOR r")
 	{
+		SECTION("XOR TEST")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
 
+			xorR( cpu, 0x31, 0x93 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xA2 );
+			NoFlagCheck( cpu );
+
+			xorR( cpu, 0x52, 0x59 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xB );
+			NoFlagCheck( cpu );
+
+			xorR( cpu, 0, 0 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
 	}
 
 	SECTION("XOR n")
 	{
+		SECTION("XOR TEST")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
 
+			xorN( cpu, 0x21, 0x9 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x28 );
+			NoFlagCheck( cpu );
+
+			xorN( cpu, 0x42, 0x93 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xD1 );
+			NoFlagCheck( cpu );
+
+			xorN( cpu, 0, 0 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
 	}
 
 	SECTION("XOR HL")
 	{
+		SECTION("XOR TEST")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
 
+			xorHL( cpu, 0x82, 0xf2f2, 0x51 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xD3 );
+			NoFlagCheck( cpu );
+
+			xorHL( cpu, 0x49, 0xa2a2, 0x90 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xD9 );
+			NoFlagCheck( cpu );
+
+			xorHL( cpu, 0, 0x8080,0 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0 );
+			REQUIRE( cpu.GetFlagZ() == 1 );
+		}
 	}
 }
