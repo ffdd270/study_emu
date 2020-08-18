@@ -92,12 +92,10 @@ public:
 
 	BIND_FUNC( subRegAFromImm8 )
 	BIND_FUNC( subRegAFromImm8AndCarry )
-
 	BIND_FUNC( andRegAFromImm8 )
-
 	BIND_FUNC( orRegAFromImm8 )
-
-	BIND_FUNC( xorRegAFromMemHL )
+	BIND_FUNC( xorRegAFromImm8 )
+	BIND_FUNC( cpRegAFromImm8 )
 
 	// pre 0b10
 
@@ -121,7 +119,10 @@ public:
 	BIND_FUNC( orRegAFromMemHL )
 
 	BIND_FUNC( xorRegAFromRegister )
-	BIND_FUNC( xorRegAFromImm8 )
+	BIND_FUNC( xorRegAFromMemHL )
+
+	BIND_FUNC( cpRegAFromRegister )
+	BIND_FUNC( cpRegAFromMemHL )
 	// pre 0b01
 
 	//load
@@ -369,6 +370,24 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 			mFuncMap[ op_code ] = BIND_FUNCS::xorRegAFromRegister;
 		}
 	}
+
+	for ( int i = 0; i <= 0b111; i++ )
+	{
+		BYTE op_code = 0b10101000 | i;
+
+		//CP (HL)
+		// 0b10111110 ( 0xBE )
+		if( i == 0b110 )
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::cpRegAFromMemHL;
+		}
+		//CP r
+		// 0b10111rrr { r = m8BitArguemnts }
+		else
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::cpRegAFromRegister;
+		}
+	}
 }
 
 
@@ -421,6 +440,10 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//XOR n
 	// 0b11101110 ( 0xEE )
 	mFuncMap[ 0b11101110 ] = BIND_FUNCS::xorRegAFromImm8;
+
+	//CP n
+	// 0b11111110 (0xFE)
+	mFuncMap[ 0b11111110 ] = BIND_FUNCS::cpRegAFromImm8;
 }
 
 

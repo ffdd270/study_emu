@@ -298,4 +298,35 @@ void GameboyCPU::xorRegAFromMemHL(BYTE opCode)
 	commonBitSetFlag();
 }
 
+//CP r
+// Compare N. Sub A - n, but result is only flag. a is not changed.
+// 0b10111rrr { r = m8BitArguemnts }
+// = Flag = Same as SUB r
+void GameboyCPU::cpRegAFromRegister(BYTE opCode)
+{
+	BYTE a_reg_value = mRegisters.AF.hi;
+	subRegAFromRegister( opCode );
+	mRegisters.AF.hi = a_reg_value;
+}
+
+//CP n
+// 0b11111110 (0xFE)
+// = Flag = Same as SUB r
+void GameboyCPU::cpRegAFromImm8(BYTE opCode)
+{
+	BYTE a_reg_value = mRegisters.AF.hi;
+	subRegAFromImm8( opCode );
+	mRegisters.AF.hi = a_reg_value;
+}
+
+//CP (HL)
+// 0b10111110 (0xBE)
+// = Flag = Same as SUB r
+void GameboyCPU::cpRegAFromMemHL(BYTE opCode)
+{
+	BYTE a_reg_value = mRegisters.AF.hi;
+	subRegAFromMemHL( opCode );
+	mRegisters.AF.hi = a_reg_value;
+}
+
 
