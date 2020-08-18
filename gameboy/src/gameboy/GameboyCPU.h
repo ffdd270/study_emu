@@ -338,8 +338,21 @@ private:
 	// = Flag = Same as XOR r
 	void xorRegAFromMemHL( BYTE opCode );
 
+	//CP r
+	// Compare N. Sub A - n, but result is only flag. a is not changed.
+	// 0b10111rrr { r = m8BitArguemnts }
+	// = Flag = Same as SUB r
+	void cpRegAFromRegister( BYTE opCode );
 
+	//CP n
+	// 0b11111110 (0xFE)
+	// = Flag = Same as SUB r
+	void cpRegAFromImm8( BYTE opCode );
 
+	//CP (HL)
+	// 0b10111110 (0xBE)
+	// = Flag = Same as SUB r
+	void cpRegAFromMemHL( BYTE opCode );
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
