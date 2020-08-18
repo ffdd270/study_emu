@@ -373,7 +373,7 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 
 	for ( int i = 0; i <= 0b111; i++ )
 	{
-		BYTE op_code = 0b10101000 | i;
+		BYTE op_code = 0b10111000 | i;
 
 		//CP (HL)
 		// 0b10111110 ( 0xBE )

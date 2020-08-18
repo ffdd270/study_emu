@@ -17,6 +17,7 @@ void GameboyCPU::commonAddSetFlag(BYTE origin_value, BYTE add_value, BYTE carry)
 // Z - > 결과값 0.
 // H -> 하위 4비트 연산 결과가 음수.
 // C - > 연산 결과가 음수.
+// N -> Set.
 void GameboyCPU::commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry )
 {
 	setFlagZ( ( origin_value - sub_value - carry ) == 0 );
@@ -24,6 +25,7 @@ void GameboyCPU::commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry
 
 	uint16_t sub_value_sum = static_cast<uint16_t>(sub_value) + static_cast<uint16_t>( carry );
 	setFlagC(  origin_value < sub_value_sum ); // 내림 당함!
+	setFlagN( true );
 }
 
 void GameboyCPU::commonBitSetFlag()
