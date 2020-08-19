@@ -110,6 +110,33 @@ void xorR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 	baseOpCodeReg8( cpu, 0b10101000, a_value, 0b10, n );
 }
 
+void cpN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseOpCodeN( cpu,  0xFE, a_value, n );
+}
+
+void cpHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+{
+	baseOpCodeHL( cpu, 0xBE, a_value, mem_hl_address, n );
+}
+
+void cpR( GameboyCPU & cpu, BYTE a_value, BYTE n )
+{
+	baseOpCodeReg8( cpu, 0b10111000, a_value, 0b10,  n );
+}
+
+inline void check_flags( GameboyCPU & cpu, bool z, bool h, bool n, bool c )
+{
+	BYTE result[4] = { cpu.GetFlagZ(), cpu.GetFlagH(), cpu.GetFlagN(), cpu.GetFlagC() };
+
+	REQUIRE( result[0] == z );
+	REQUIRE( result[1] == h );
+	REQUIRE( result[2] == n );
+	REQUIRE( result[3] == c );
+}
+
+
+
 void NoFlagCheck( GameboyCPU & cpu )
 {
 	REQUIRE( cpu.GetFlagC() == 0 );
@@ -576,19 +603,19 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			subN( cpu, 0x35, 0x31 );
 			REQUIRE( cpu.GetRegisterAF().hi == 0x4 );
-			NoFlagCheck( cpu );
+			check_flags( cpu, false, false, true, false );
 
 			subN( cpu, 0x31, 0x31 ); // Z Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
-			REQUIRE( cpu.GetFlagZ() == 1 );
+			check_flags( cpu, true, false, true, false );
 
 			subN( cpu, 0x38, 0x2A ); // H Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xE );
-			REQUIRE( cpu.GetFlagH() == 1 );
+			check_flags( cpu, false, true, true, false );
 
 			subN( cpu, 0x2A, 0x30 ); // C Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == ( 0xff - 5 ) );
-			REQUIRE( cpu.GetFlagC() == 1 );
+			check_flags( cpu, false, false, true, true );
 		}
 	}
 
@@ -606,19 +633,19 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			subHL( cpu, 0xfb, 0x3000, 0xea ); // NO FLAG.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x11 );
-			NoFlagCheck( cpu );
+			check_flags( cpu, false, false, true, false );
 
 			subHL( cpu, 0xff, 0x3530, 0xff ); // Z FLAG.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
-			REQUIRE( cpu.GetFlagZ() == 1 );
+			check_flags( cpu, true, false, true, false );
 
 			subHL( cpu, 0x3a, 0x4567, 0x2b ); // H FLAG.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xf );
-			REQUIRE( cpu.GetFlagH() == 1 );
+			check_flags( cpu, false, true, true, false );
 
 			subHL( cpu, 0x3b, 0x4252, 0x3c ); // C Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
-			REQUIRE( cpu.GetFlagC() == 1 );
+			check_flags( cpu, false, true, true, true );
 		}
 	}
 
@@ -691,19 +718,17 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			// Carry .
 			REQUIRE( cpu.GetRegisterHL().reg_16 == 0xf0f0 );
 			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
-			REQUIRE( cpu.GetFlagC() == 1 );
-			REQUIRE( cpu.GetFlagH() == 1 );
+			check_flags( cpu, false, true, true, true );
 
 			subHLC( cpu, 0x32, 0xf2f2, 0x30 );
 			//With Carry.
 			REQUIRE( cpu.GetRegisterHL().reg_16 == 0xf2f2 );
 			REQUIRE( cpu.GetRegisterAF().hi == 0x1 );
-			NoFlagCheck( cpu );
+			check_flags( cpu, false, false, true, false );
 
 			subHLC( cpu, 0x31, 0xfefe, 0x2 );
 			REQUIRE( cpu.GetRegisterAF().hi == 0x2f );
-			REQUIRE( cpu.GetFlagH() == 1 );
-			REQUIRE( cpu.GetFlagC() == 0 );
+			check_flags( cpu, false, true, true, false );
 		}
 	}
 
@@ -886,4 +911,86 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
 	}
+
+	SECTION("CP")
+	{
+		SECTION("N")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
+
+			cpN( cpu, 0x84, 0x32 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x84 );
+			check_flags( cpu, false, false, true, false );
+
+			cpN( cpu, 0x93, 0x86 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x93 );
+			check_flags( cpu, false, true, true, false ); // H = set.
+
+			cpN( cpu, 0x82, 0x91 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, false, false,true, true ); // C = Set.
+
+			cpN( cpu, 0x82, 0x82 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, true, false, true, false );
+
+			cpN( cpu, 0xFE, 0xFF );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
+			check_flags( cpu, false, true, true, true );
+		}
+
+		SECTION("R")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
+
+			cpR( cpu, 0x84, 0x32 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x84 );
+			check_flags( cpu, false, false, true, false );
+
+			cpR( cpu, 0x93, 0x86 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x93 );
+			check_flags( cpu, false, true, true, false ); // H = set.
+
+			cpR( cpu, 0x82, 0x91 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, false, false,true, true ); // C = Set.
+
+			cpR( cpu, 0x82, 0x82 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, true, false, true, false );
+
+			cpR( cpu, 0xFE, 0xFF );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
+			check_flags( cpu, false, true, true, true );
+		}
+
+		SECTION("HL")
+		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
+
+			cpHL( cpu, 0x84, 0xf3f3, 0x32 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x84 );
+			check_flags( cpu, false, false, true, false );
+
+			cpHL( cpu, 0x93, 0x4920, 0x86 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x93 );
+			check_flags( cpu, false, true, true, false ); // H = set.
+
+			cpHL( cpu, 0x82, 0x3920, 0x91 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, false, false,true, true ); // C = Set.
+
+			cpHL( cpu, 0x82, 0x3921, 0x82 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, true, false, true, false );
+
+			cpHL( cpu, 0xFE, 0x3940, 0xFF );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
+			check_flags( cpu, false, true, true, true );
+		}
+	}
+
 }
