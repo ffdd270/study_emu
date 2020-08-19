@@ -331,4 +331,18 @@ void GameboyCPU::cpRegAFromMemHL(BYTE opCode)
 	mRegisters.AF.hi = a_reg_value;
 }
 
+void GameboyCPU::incRegister(BYTE opCode)
+{
+	BYTE argument = 0b00000111 & opCode;
+	BYTE & register_value = m8bitArguments[ argument ].ref;
+	commonAddSetFlag( register_value, 1, 0 );
+	register_value++;
+}
+
+void GameboyCPU::incMemHL(BYTE opCode)
+{
+	commonAddSetFlag( mGameMemory[mRegisters.HL.reg_16], 1, 0 );
+	mGameMemory[ mRegisters.HL.reg_16 ]++;
+}
+
 
