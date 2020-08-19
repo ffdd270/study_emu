@@ -912,10 +912,9 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		}
 	}
 
-
-	SECTION("CP N")
+	SECTION("CP")
 	{
-		SECTION("CP TEST")
+		SECTION("N")
 		{
 			cpu.Reset();
 			NoFlagCheck( cpu );
@@ -939,23 +938,59 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpN( cpu, 0xFE, 0xFF );
 			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
 			check_flags( cpu, false, true, true, true );
-
 		}
-	}
 
-	SECTION("CP R")
-	{
-		SECTION("CP TEST")
+		SECTION("R")
 		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
 
+			cpR( cpu, 0x84, 0x32 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x84 );
+			check_flags( cpu, false, false, true, false );
+
+			cpR( cpu, 0x93, 0x86 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x93 );
+			check_flags( cpu, false, true, true, false ); // H = set.
+
+			cpR( cpu, 0x82, 0x91 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, false, false,true, true ); // C = Set.
+
+			cpR( cpu, 0x82, 0x82 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, true, false, true, false );
+
+			cpR( cpu, 0xFE, 0xFF );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
+			check_flags( cpu, false, true, true, true );
 		}
-	}
 
-	SECTION("CP HL")
-	{
-		SECTION("CP TEST")
+		SECTION("HL")
 		{
+			cpu.Reset();
+			NoFlagCheck( cpu );
 
+			cpHL( cpu, 0x84, 0xf3f3, 0x32 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x84 );
+			check_flags( cpu, false, false, true, false );
+
+			cpHL( cpu, 0x93, 0x4920, 0x86 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x93 );
+			check_flags( cpu, false, true, true, false ); // H = set.
+
+			cpHL( cpu, 0x82, 0x3920, 0x91 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, false, false,true, true ); // C = Set.
+
+			cpHL( cpu, 0x82, 0x3921, 0x82 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
+			check_flags( cpu, true, false, true, false );
+
+			cpHL( cpu, 0xFE, 0x3940, 0xFF );
+			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
+			check_flags( cpu, false, true, true, true );
 		}
 	}
+
 }
