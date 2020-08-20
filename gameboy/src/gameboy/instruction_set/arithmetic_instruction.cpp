@@ -12,6 +12,7 @@ void GameboyCPU::commonAddSetFlag(BYTE origin_value, BYTE add_value, BYTE carry)
 			static_cast<uint16_t>(add_value) + static_cast<uint16_t>(carry);
 
 	setFlagC( result > 0xff ); // 올림 당함 !
+	setFlagN( false );
 }
 
 // Z - > 결과값 0.
@@ -333,7 +334,7 @@ void GameboyCPU::cpRegAFromMemHL(BYTE opCode)
 
 void GameboyCPU::incRegister(BYTE opCode)
 {
-	BYTE argument = 0b00000111 & opCode;
+	BYTE argument = (0b00111000 & opCode) >> 3;
 	BYTE & register_value = m8bitArguments[ argument ].ref;
 	commonAddSetFlag( register_value, 1, 0 );
 	register_value++;
