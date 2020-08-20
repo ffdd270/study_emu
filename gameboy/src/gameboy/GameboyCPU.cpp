@@ -143,6 +143,10 @@ public:
 	BIND_FUNC( loadMemDEFromRegA )
 	BIND_FUNC( loadMemHLFromRegAAndIncHL )
 	BIND_FUNC( loadMemHLFromRegAAndDecHL )
+
+	//arth
+	BIND_FUNC( incRegister )
+	BIND_FUNC( incMemHL )
 };
 
 
@@ -206,6 +210,21 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	{
 		BYTE op_code = 0b00000001 | ( i << 4 );
 		mFuncMap[ op_code ] = BIND_FUNCS::loadReg16FromImm16;
+	}
+
+	// INC r
+	for( BYTE i = 0b00; i <= 0b111; i++)
+	{
+		BYTE op_code = 0b00000100 | (i << 3);
+
+		if ( i == 0b110 )
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::incMemHL;
+		}
+		else
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::incRegister;
+		}
 	}
 }
 
@@ -524,3 +543,4 @@ void GameboyCPU::resetFlags()
 {
 	mRegisters.AF.lo = 0;
 }
+

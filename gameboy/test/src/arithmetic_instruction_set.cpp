@@ -125,6 +125,23 @@ void cpR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 	baseOpCodeReg8( cpu, 0b10111000, a_value, 0b10,  n );
 }
 
+void incR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
+{
+	setRegister8( cpu, reg_index, reg_value );
+	cpu.InjectionMemory( 0b00000100 | (reg_index << 3)  );
+
+	for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+}
+
+void incHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
+{
+	setMemory3Step( cpu, 0b10, mem_hl_address, set_value );
+	cpu.InjectionMemory( 0x34 );
+
+	for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
+}
+
+
 inline void check_flags( GameboyCPU & cpu, bool z, bool h, bool n, bool c )
 {
 	BYTE result[4] = { cpu.GetFlagZ(), cpu.GetFlagH(), cpu.GetFlagN(), cpu.GetFlagC() };
@@ -993,4 +1010,40 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		}
 	}
 
+	SECTION("INC")
+	{
+		SECTION("REGISTER")
+		{
+			cpu.Reset();
+
+			incR( cpu, 0, 0x3 );
+			REQUIRE( cpu.GetRegisterBC().hi == 0x4 );
+			check_flags( cpu, false, false, false, false );
+
+			incR( cpu, 0, 0x0f );
+			REQUIRE( cpu.GetRegisterBC().hi == 0x10 );
+			check_flags( cpu, false, true, false, false );
+
+			incR( cpu, 0, 0xff );
+			REQUIRE( cpu.GetRegisterBC().hi == 0x0 );
+			check_flags( cpu, true, true, false, true );
+		}
+
+		SECTION("MEM HL")
+		{
+			cpu.Reset();
+
+			incHL( cpu, 0x3000, 0x3 );
+			REQUIRE( cpu.GetMemoryValue( 0x3000 ) == 0x4 );
+			check_flags( cpu, false, false, false, false );
+
+			incHL( cpu, 0x3040, 0x0f );
+			REQUIRE( cpu.GetMemoryValue( 0x3040 ) == 0x10 );
+			check_flags( cpu, false, true, false, false );
+
+			incHL( cpu, 0x3422, 0xff );
+			REQUIRE( cpu.GetMemoryValue( 0x3422 ) == 0x0 );
+			check_flags( cpu, true, true, false, true );
+		}
+	}
 }
