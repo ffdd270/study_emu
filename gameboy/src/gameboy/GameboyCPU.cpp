@@ -47,6 +47,12 @@ void GameboyCPU::Reset()
 	mPC.reg_16 = 0x1000;
 	mDebugInjectionCount.reg_16 = 0x1000;
 	memset( mGameMemory, 0, sizeof ( mGameMemory ) );
+
+	for( Register & ref_register : mRegisters.array )
+	{
+		ref_register.reg_16 = 0xffff;
+	}
+
 	resetFlags();
 }
 
@@ -147,6 +153,9 @@ public:
 	//arth
 	BIND_FUNC( incRegister )
 	BIND_FUNC( incMemHL )
+
+	BIND_FUNC( decRegister )
+	BIND_FUNC( decMemHL )
 };
 
 
@@ -224,6 +233,22 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 		else
 		{
 			mFuncMap[ op_code ] = BIND_FUNCS::incRegister;
+		}
+	}
+
+
+	// DEC Instruction
+	for( BYTE i = 0b00; i <= 0b111; i++)
+	{
+		BYTE op_code = 0b00000101 | (i << 3);
+
+		if ( i == 0b110 )
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::decMemHL;
+		}
+		else
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::decRegister;
 		}
 	}
 }

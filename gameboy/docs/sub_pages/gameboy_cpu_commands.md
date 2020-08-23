@@ -1,6 +1,6 @@
 # Gameboy CPU Commands Overview
 
-[Gameboy (LR35902) OPCODES](https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html)
+[Gameboy (LR35902) op_codeS](https://www.pastraiser.com/cpu/gameboy/gameboy_op_codes.html)
 
 # 들어가기 전
 
@@ -71,7 +71,7 @@ r1, r2 = A,B,C,D,E,H,L,(HL)
 
 ### 명령어들
 
-| 명령 | 매개변수 | 클럭 | OpCodes |
+| 명령 | 매개변수 | 클럭 | op_codes |
 | ---- | -------- | ---- | ------- |
 | LD   | (HL),E   | 8    | 73      |
 | LD   | L,D      | 4    | 6A      |
@@ -137,7 +137,7 @@ Load Register 순서 ⇒ B, C, D, E, H, L, (HL), A
 
 여기서 (HL)은 HL의 값이 아닌, 메모리 주소상 (HL)에 있는 값을 불러오는 것이다. 
 
-- 여기서부터 opcode는 따로 적지 않고, 그냥 위 사이트를 참고하자. 
+- 여기서부터 op_code는 따로 적지 않고, 그냥 위 사이트를 참고하자. 
 
 ## LD A,n 
 
