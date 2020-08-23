@@ -5,10 +5,10 @@
 
 // LD r, r'. (r'는 밑에서 y로 표기함.
 // binary : 0b01rrryyy
-void GameboyCPU::loadRegFromReg(BYTE opCode)
+void GameboyCPU::loadRegFromReg(BYTE op_code)
 {
-	BYTE dest_reg_index = (0b00111000 & opCode) >> 3;
-	BYTE origin_reg_index = (0b00000111 & opCode);
+	BYTE dest_reg_index = (0b00111000 & op_code) >> 3;
+	BYTE origin_reg_index = (0b00000111 & op_code);
 
 	BYTE &ref_byte_dest = m8bitArguments[dest_reg_index].ref;
 	BYTE &ref_byte_origin = m8bitArguments[origin_reg_index].ref;
@@ -20,9 +20,9 @@ void GameboyCPU::loadRegFromReg(BYTE opCode)
 // LD r, imm8
 // 0b00rrr110
 // 0bnnnnnnnn
-void GameboyCPU::loadRegFromImm8(BYTE opCode)
+void GameboyCPU::loadRegFromImm8(BYTE op_code)
 {
-	BYTE dest_reg_index = (0b00111000 & opCode) >> 3;
+	BYTE dest_reg_index = (0b00111000 & op_code) >> 3;
 	assert(dest_reg_index != 0b110); // 110과 같으면 오류
 
 	BYTE & ref_byte_dest = m8bitArguments[dest_reg_index].ref;
@@ -32,11 +32,11 @@ void GameboyCPU::loadRegFromImm8(BYTE opCode)
 
 // LD r, ( HL )
 // 0b01rrr110
-void GameboyCPU::loadRegFromMemHL(BYTE opCode)
+void GameboyCPU::loadRegFromMemHL(BYTE op_code)
 {
-	assert( (opCode & 0b00000110) == 0b110 );
+	assert( (op_code & 0b00000110u) == 0b110 );
 
-	BYTE origin_reg_index = ( (opCode & 0b00111000) >> 3 );
+	BYTE origin_reg_index = ( (op_code & 0b00111000u) >> 3u );
 	assert( origin_reg_index != 0b110 );
 
 	BYTE & ref_byte_origin = m8bitArguments[origin_reg_index].ref;
@@ -45,9 +45,9 @@ void GameboyCPU::loadRegFromMemHL(BYTE opCode)
 
 // LD (HL), r
 // 0b01110rrr
-void GameboyCPU::loadMemHLFromReg(BYTE opCode)
+void GameboyCPU::loadMemHLFromReg(BYTE op_code)
 {
-	BYTE origin_reg_index = (0b00000111 & opCode);
+	BYTE origin_reg_index = (0b00000111u & op_code);
 
 	BYTE &ref_byte_dest = m8bitArguments[origin_reg_index].ref;
 	mGameMemory[ mRegisters.HL.reg_16 ] = ref_byte_dest;
@@ -57,7 +57,7 @@ void GameboyCPU::loadMemHLFromReg(BYTE opCode)
 //LD A, (BC) (1)
 // 0b00001010 (0x0A)
 // A<-(BC)
-void GameboyCPU::loadRegAFromMemBC(BYTE opCode)
+void GameboyCPU::loadRegAFromMemBC(BYTE op_code)
 {
 	BYTE & ref_A = mRegisters.AF.hi;
 	ref_A = mGameMemory[ mRegisters.BC.reg_16 ];
@@ -66,7 +66,7 @@ void GameboyCPU::loadRegAFromMemBC(BYTE opCode)
 //LD A, (DE)
 // 0b00011010 1A
 // A<-(DE)
-void GameboyCPU::loadRegAFromMemDE(BYTE opCode)
+void GameboyCPU::loadRegAFromMemDE(BYTE op_code)
 {
 	BYTE & ref_A = mRegisters.AF.hi;
 	ref_A = mGameMemory[ mRegisters.DE.reg_16 ];
@@ -78,7 +78,7 @@ void GameboyCPU::loadRegAFromMemDE(BYTE opCode)
 // 0bnnnnnnnn
 // 0bnnnnnnnn
 // A<-(nn)
-void GameboyCPU::loadRegAFromMemNN(BYTE opCode)
+void GameboyCPU::loadRegAFromMemNN(BYTE op_code)
 {
 	BYTE & ref_A = mRegisters.AF.hi;
 	WORD imm16 = immediateValue16();
@@ -90,7 +90,7 @@ void GameboyCPU::loadRegAFromMemNN(BYTE opCode)
 //LDD A,(HL)
 // 0b00111010 (0x3A) (only on Gameboy CPU. )
 // A<-(HL) and HL--;
-void GameboyCPU::loadRegAFromMemHLAndDecHL( BYTE opCode )
+void GameboyCPU::loadRegAFromMemHLAndDecHL( BYTE op_code )
 {
 	mRegisters.AF.hi = mGameMemory[ mRegisters.HL.reg_16 ];
 	mRegisters.HL.reg_16--;
@@ -100,7 +100,7 @@ void GameboyCPU::loadRegAFromMemHLAndDecHL( BYTE opCode )
 //LD (BC), A (1)
 // 0b00000010 (0x02)
 // (BC)<-A
-void GameboyCPU::loadMemBCFromRegA(BYTE opCode)
+void GameboyCPU::loadMemBCFromRegA(BYTE op_code)
 {
 	BYTE & ref_mem = mGameMemory[ mRegisters.BC.reg_16 ];
 	ref_mem = mRegisters.AF.hi;
@@ -109,7 +109,7 @@ void GameboyCPU::loadMemBCFromRegA(BYTE opCode)
 //LD (DE), A (1)
 // 0b00010010 (0x12)
 // (DE)<-A
-void GameboyCPU::loadMemDEFromRegA(BYTE opCode)
+void GameboyCPU::loadMemDEFromRegA(BYTE op_code)
 {
 	BYTE & ref_mem = mGameMemory[ mRegisters.DE.reg_16 ];
 	ref_mem = mRegisters.AF.hi;
@@ -118,7 +118,7 @@ void GameboyCPU::loadMemDEFromRegA(BYTE opCode)
 //LD (HL+), A ( or LDI HL, A ) (1)
 // 0b00100010 (0x22)
 // (HL+)<-A and HL<-HL + 1
-void GameboyCPU::loadMemHLFromRegAAndIncHL(BYTE opCode)
+void GameboyCPU::loadMemHLFromRegAAndIncHL(BYTE op_code)
 {
 	BYTE & ref_mem = mGameMemory[ mRegisters.HL.reg_16 ];
 	ref_mem = mRegisters.AF.hi;
@@ -128,7 +128,7 @@ void GameboyCPU::loadMemHLFromRegAAndIncHL(BYTE opCode)
 //LD A, (HL+)
 // 0b00101010 (0x2A)
 // A<-(HL), HL<-HL + 1
-void GameboyCPU::loadRegAFromMemHLAndIncHL(BYTE opCode)
+void GameboyCPU::loadRegAFromMemHLAndIncHL(BYTE op_code)
 {
 	mRegisters.AF.hi = mGameMemory[ mRegisters.HL.reg_16 ];
 	mRegisters.HL.reg_16++;
@@ -138,7 +138,7 @@ void GameboyCPU::loadRegAFromMemHLAndIncHL(BYTE opCode)
 //LD (HL-) , A( or LDD HL, A ) (1)
 // 0b00110010 (0x32)
 // HL<-A and HL<-HL - 1
-void GameboyCPU::loadMemHLFromRegAAndDecHL(BYTE opCode)
+void GameboyCPU::loadMemHLFromRegAAndDecHL(BYTE op_code)
 {
 	BYTE & ref_mem = mGameMemory[ mRegisters.HL.reg_16 ];
 	ref_mem = mRegisters.AF.hi;
@@ -150,9 +150,9 @@ void GameboyCPU::loadMemHLFromRegAAndDecHL(BYTE opCode)
 //0b00dd0001
 //Imm
 //Imm
-void GameboyCPU::loadReg16FromImm16(BYTE opCode)
+void GameboyCPU::loadReg16FromImm16(BYTE op_code)
 {
-	BYTE dest_reg_index = ( opCode & 0b00110000 ) >> 4;
+	BYTE dest_reg_index = ( op_code & 0b00110000 ) >> 4;
 	WORD & dest_ref_word = m16bitArguments[ dest_reg_index ].ref;
 
 	dest_ref_word = immediateValue16();
@@ -161,7 +161,7 @@ void GameboyCPU::loadReg16FromImm16(BYTE opCode)
 //LD SP, HL
 // 0b11111001 0xF9
 // SP <- HL
-void GameboyCPU::loadRegSPFromRegHL(BYTE opCode)
+void GameboyCPU::loadRegSPFromRegHL(BYTE op_code)
 {
 	mSP.reg_16 = mRegisters.HL.reg_16;
 }
@@ -169,9 +169,9 @@ void GameboyCPU::loadRegSPFromRegHL(BYTE opCode)
 //PUSH qq
 // 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
 // (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
-void GameboyCPU::pushReg16(BYTE opCode)
+void GameboyCPU::pushReg16(BYTE op_code)
 {
-	BYTE argument =  ( opCode & 0b00110000 ) >> 4;
+	BYTE argument =  ( op_code & 0b00110000 ) >> 4;
 	WORD & ref_16 = m16bitArguments[ argument ].ref;
 
 	mGameMemory[ mSP.reg_16 - 2 ] = ref_16 & 0x00FF  ; // low;
@@ -184,9 +184,9 @@ void GameboyCPU::pushReg16(BYTE opCode)
 //POP qq
 // 0b11qq0001 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 } }
 // qqH <- (SP + 1), qqL <- (SP)
-void GameboyCPU::popReg16(BYTE opCode)
+void GameboyCPU::popReg16(BYTE op_code)
 {
-	BYTE argument  = ( opCode & 0b00110000 ) >> 4;
+	BYTE argument  = ( op_code & 0b00110000 ) >> 4;
 	Register & ref_register = mRegisters.array[ argument ];
 
 	ref_register.lo = mGameMemory[ mSP.reg_16 ];

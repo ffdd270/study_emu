@@ -85,12 +85,12 @@ private:
 
 	// LD r, r' (1)
 	// 0b01rrryyy
-	void loadRegFromReg(BYTE opCode );
+	void loadRegFromReg(BYTE op_code );
 
 	// LD r, n (2)
 	// 0b00rrr110
 	// 0bnnnnnnnn
-	void loadRegFromImm8(BYTE opCode );
+	void loadRegFromImm8(BYTE op_code );
 
 	// LD r, (IX+d)
 	// 게임보이는 그런 거 없음
@@ -100,7 +100,7 @@ private:
 
 	// LD r, ( HL ) (1)
 	// 0b01rrr110
-	void loadRegFromMemHL(BYTE opCode );
+	void loadRegFromMemHL(BYTE op_code );
 
 
 	//LD (IX+d), r
@@ -112,7 +112,7 @@ private:
 	// LD (HL), r (1)
 	// 0b01110rrr
 	// (HL)<-r
-	void loadMemHLFromReg(BYTE opCode );
+	void loadMemHLFromReg(BYTE op_code );
 
 	//LD (IX+d), n
 	//게임보이는 그런 거 없음
@@ -123,18 +123,18 @@ private:
 	//LD A, (BC) (1)
 	// 0b00001010 (0x0A)
 	// A<-(BC)
-	void loadRegAFromMemBC(BYTE opCode );
+	void loadRegAFromMemBC(BYTE op_code );
 
 
 	//LD A, (DE)
 	// 0b00011010 (0x1A)
 	// A<-(DE)
-	void loadRegAFromMemDE(BYTE opCode);
+	void loadRegAFromMemDE(BYTE op_code);
 
 	//LD A, (HL+)
 	// 0b00101010 (0x2A)
 	// A<-(HL), HL<-HL + 1
- 	void loadRegAFromMemHLAndIncHL(BYTE opCode);
+ 	void loadRegAFromMemHLAndIncHL(BYTE op_code);
 
 
 	//LD A, (nn)
@@ -142,38 +142,38 @@ private:
 	// 0bnnnnnnnn
 	// 0bnnnnnnnn
 	// A<-(nn)
-	void loadRegAFromMemNN(BYTE opCode);
+	void loadRegAFromMemNN(BYTE op_code);
 
 	//LDD A,(HL)
 	// 0b00111010 (0x3A) (only on Gameboy CPU. )
 	// A<-(HL) and HL--;
-	void loadRegAFromMemHLAndDecHL(BYTE opCode);
+	void loadRegAFromMemHLAndDecHL(BYTE op_code);
 
 	//LD (BC), A (1)
 	// 0b00000010 (0x02)
 	// (BC)<-A
-	void loadMemBCFromRegA(BYTE opCode );
+	void loadMemBCFromRegA(BYTE op_code );
 
 	//LD (DE), A (1)
 	// 0b00010010 (0x12)
 	// (DE)<-A
-	void loadMemDEFromRegA(BYTE opCode);
+	void loadMemDEFromRegA(BYTE op_code);
 
 	//LD (HL+), A ( or LDI HL, A ) (1)
 	// 0b00100010 (0x22)
 	// (HL+)<-A and HL<-HL + 1
-	void loadMemHLFromRegAAndIncHL(BYTE opCode);
+	void loadMemHLFromRegAAndIncHL(BYTE op_code);
 
 	//LD (HL-) , A( or LDD HL, A ) (1) - (Only On Gameboy CPU)
 	// 0b00110010 (0x32)
 	// HL<-A and HL<-HL - 1
-	void loadMemHLFromRegAAndDecHL(BYTE opCode);
+	void loadMemHLFromRegAAndDecHL(BYTE op_code);
 
 	//LD (nn), A(3) - (Only On Z80)
 	// 0b00110010 0x32
 	// 0bnnnnnnnn
 	// 0bnnnnnnnn
-	void loadMemNNFromRegA(BYTE opCode);
+	void loadMemNNFromRegA(BYTE op_code);
 
 	/// 여기서부터 16비트 로드 명령어
 
@@ -182,7 +182,7 @@ private:
 	//Imm
 	//Imm
 	// DD <- Imm16
-	void loadReg16FromImm16( BYTE opCode );
+	void loadReg16FromImm16( BYTE op_code );
 
 
 	//LD HL, (nn) (3) - (Only On Z80)
@@ -190,23 +190,23 @@ private:
 	//0bnnnnnnnn
 	//0bnnnnnnnn
 	// H <- (nn + 1), L <- (nn)
-	void loadRegHLFromMemNN16( BYTE opCode );
+	void loadRegHLFromMemNN16( BYTE op_code );
 
 
 	//LD SP, HL
 	// 0b11111001 0xF9
 	// SP <- HL
-	void loadRegSPFromRegHL( BYTE opCode );
+	void loadRegSPFromRegHL( BYTE op_code );
 
 	//PUSH qq
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
 	// (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
-	void pushReg16( BYTE opCode );
+	void pushReg16( BYTE op_code );
 
 	//POP qq
 	// 0b11qq0001 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 } }
 	// qqH <- (SP + 1), qqL <- (SP)
-	void popReg16( BYTE opCode );
+	void popReg16( BYTE op_code );
 
 
 	/*
@@ -221,35 +221,35 @@ private:
 	// H = if bit 3 carry
 	// C = if bit 7 carry
 	// N = Reset
-	void addRegAFromRegister( BYTE opCode );
+	void addRegAFromRegister( BYTE op_code );
 
 	//ADD A, n
 	// A <- A + n
 	// 0b11000110 ( 0xC6 )
 	// imm8
 	// = Flag = ( Same as ADD A, r )
-	void addRegAFromImm8(BYTE opCode);
+	void addRegAFromImm8(BYTE op_code);
 
 	//ADD A, (HL)
 	// 0b10000110 ( 0x86 )
 	// = Flag = ( Same as ADD A, r )
-	void addRegAFromMemHL(BYTE opCode);
+	void addRegAFromMemHL(BYTE op_code);
 
 	//ADC A, r ( Add With Carry. if Carry Set. add + 1 from result value. )
 	// 0b10001rrr (r = m8BitArguments)
 	// = Flag = ( Same as ADD A, r )
-	void addRegAFromRegisterAndCarry(BYTE opCode);
+	void addRegAFromRegisterAndCarry(BYTE op_code);
 
 	//ADC A, n ( Add With Carry. if Carry Set. add + 1 from result value. )
 	// 0b11001110 ( 0xCE )
 	// 0bnnnnnnnn
 	// = Flag = ( Same as ADD A, r )
-	void addRegAFromImm8AndCarry(BYTE opCode);
+	void addRegAFromImm8AndCarry(BYTE op_code);
 
 	//ADC A, (HL) (  Add With Carry. if Carry Set. add + 1 from result value. )
 	// 0b10001110 (0x8E)
 	// = Flag = ( Same as ADD A, r )
-	void addRegAFromMemHLAndCarry(BYTE opCode);
+	void addRegAFromMemHLAndCarry(BYTE op_code);
 
 
 	//SUB r
@@ -258,123 +258,133 @@ private:
 	// Z -> 결과값 0.
 	// H -> 하위 4비트 연산 결과가 음수.
 	// C -> 연산 결과가 음수.
-	void subRegAFromRegister(BYTE opCode);
+	void subRegAFromRegister(BYTE op_code);
 
 	//SUB n
 	// 0b11010110 (0xD6)
 	// 0bnnnnnnnn
 	// = Flag = ( Same as SUB r )
-	void subRegAFromImm8(BYTE opCode);
+	void subRegAFromImm8(BYTE op_code);
 
 
 	//SUB (HL)
 	// 0b10010110 (0x96)
 	// = Flag = ( Same as SUB r )
-	void subRegAFromMemHL(BYTE opCode);
+	void subRegAFromMemHL(BYTE op_code);
 
 
 	//SBC A, r
 	// 0b10011rrr { r = m8BitArguments }
 	// = Flag = ( Same as SUB r )
-	void subRegAFromRegisterAndCarry(BYTE opCode);
+	void subRegAFromRegisterAndCarry(BYTE op_code);
 
 	//SBC A, n
 	// 0b11011110 (0xDE)
 	// = Flag = ( Same as SUB r )
-	void subRegAFromImm8AndCarry(BYTE opCode);
+	void subRegAFromImm8AndCarry(BYTE op_code);
 
 	//SBC A, (HL)
 	// 0b10011110 (0x9E)
 	// = Flag = ( Same as SUB r )
-	void subRegAFromMemHLAndCarry(BYTE opCode);
+	void subRegAFromMemHLAndCarry(BYTE op_code);
 
 	//AND r
 	// 0b10100rrr
 	// = Flag =
 	// Z = if 0 set 0.
 	// else = reset.
-	void andRegAFromRegister(BYTE opCode);
+	void andRegAFromRegister(BYTE op_code);
 
 	//AND n
 	// 0b11100110 (0xE6)
 	// = Flag = Same as AND r
-	void andRegAFromImm8( BYTE opCode );
+	void andRegAFromImm8( BYTE op_code );
 
 	//AND (HL)
 	// 0b10100110 (0xA6)
 	// = Flag = Same as AND r
-	void andRegAFromMemHL( BYTE opCode );
+	void andRegAFromMemHL( BYTE op_code );
 
 
 	//OR r
 	// 0b10110rrr { r = m8BitArguments }
 	// = Flag = Same as AND r
-	void orRegAFromRegister(BYTE opCode);
+	void orRegAFromRegister(BYTE op_code);
 
 	//OR n
 	// 0b11110110 ( 0xF6 )
 	// = Flag = Same as AND r
-	void orRegAFromImm8(BYTE opCode);
+	void orRegAFromImm8(BYTE op_code);
 
 	//OR (HL)
 	// 0b10110110 ( 0xB6 )
 	// = Flag = Same as AND r
-	void orRegAFromMemHL(BYTE opCode);
+	void orRegAFromMemHL(BYTE op_code);
 
 	//XOR r
 	// 0b10101rrr { r = m8BitArguments }
 	// = Flag =
 	// Z = if 0 set 0.
 	// else = reset.
-	void xorRegAFromRegister( BYTE opCode );
+	void xorRegAFromRegister( BYTE op_code );
 
 	//XOR n
 	// 0b11101110 ( 0xEE )
 	// = Flag = Same as XOR r
-	void xorRegAFromImm8( BYTE opCode );
+	void xorRegAFromImm8( BYTE op_code );
 
 	//XOR (HL)
 	// 0b10101110 ( 0xAE )
 	// = Flag = Same as XOR r
-	void xorRegAFromMemHL( BYTE opCode );
+	void xorRegAFromMemHL( BYTE op_code );
 
 	//CP r
 	// Compare N. Sub A - n, but result is only flag. a is not changed.
 	// 0b10111rrr { r = m8BitArguemnts }
 	// = Flag = Same as SUB r
-	void cpRegAFromRegister( BYTE opCode );
+	void cpRegAFromRegister( BYTE op_code );
 
 	//CP n
 	// 0b11111110 (0xFE)
 	// = Flag = Same as SUB r
-	void cpRegAFromImm8( BYTE opCode );
+	void cpRegAFromImm8( BYTE op_code );
 
 	//CP (HL)
 	// 0b10111110 (0xBE)
 	// = Flag = Same as SUB r
-	void cpRegAFromMemHL( BYTE opCode );
+	void cpRegAFromMemHL( BYTE op_code );
 
 	//INC r
 	// 0b00rrr100 { r = m8BitArguments }
 	// = Flag = Same as ADD instruction
-	void incRegister(BYTE opCode);
+	void incRegister(BYTE op_code);
 
 	//INC (HL)
 	// 0b00110100 ( 0x34 )
 	// = Flag = Same as ADD instruction
-	void incMemHL(BYTE opCode);
+	void incMemHL(BYTE op_code);
+
+	//DEC r
+	// 0b00rrr101 { r = m8BitArguments }
+	// = Flag = Same as Sub Instruction
+	void decRegister(BYTE op_code);
+
+	//DEC (HL)
+	// 0b00110101 (0x35)
+	// = Flag = Same as Sub Instruction
+	void decMemHL(BYTE op_code);
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
 
-	void commonAddRegAFromRegister( BYTE opCode, BYTE carry);
-	void commonAddRegAFromImm8(BYTE opCode, BYTE carry );
-	void commonAddRegAFromMemHL(BYTE opCode, BYTE carry);
+	void commonAddRegAFromRegister( BYTE op_code, BYTE carry);
+	void commonAddRegAFromImm8(BYTE op_code, BYTE carry );
+	void commonAddRegAFromMemHL(BYTE op_code, BYTE carry);
 
-	void commonSubRegAFromRegister(BYTE opCode, BYTE carry);
-	void commonSubRegAFromImm8(BYTE opCode, BYTE carry);
-	void commonSubRegAFromMemHL(BYTE opCode, BYTE carry);
+	void commonSubRegAFromRegister(BYTE op_code, BYTE carry);
+	void commonSubRegAFromImm8(BYTE op_code, BYTE carry);
+	void commonSubRegAFromMemHL(BYTE op_code, BYTE carry);
 
 	void commonAddSetFlag( BYTE origin_value, BYTE add_value, BYTE carry );
 	void commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry );

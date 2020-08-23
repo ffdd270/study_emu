@@ -6,29 +6,29 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
-void baseOpCodeN(GameboyCPU & cpu, BYTE opCode, BYTE a_value, BYTE n )
+void base_op_code_n(GameboyCPU & cpu, BYTE op_code, BYTE a_value, BYTE n )
 {
 	setRegister8( cpu, 0b111, a_value );
-	cpu.InjectionMemory( opCode );
+	cpu.InjectionMemory( op_code );
 	cpu.InjectionMemory( n );
 
 	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 }
 
-void baseOpCodeReg8(GameboyCPU & cpu, BYTE base_opcode, BYTE a_value, BYTE register_index, BYTE n )
+void base_op_code_reg8(GameboyCPU & cpu, BYTE base_op_code, BYTE a_value, BYTE register_index, BYTE n )
 {
 	setRegister8( cpu, 0b111, a_value );
 	setRegister8( cpu, register_index, n );
-	cpu.InjectionMemory( ( base_opcode | register_index )  );
+	cpu.InjectionMemory( ( base_op_code | register_index )  );
 
 	for ( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
 }
 
-void baseOpCodeHL(GameboyCPU & cpu, BYTE opCode, BYTE a_value, WORD mem_hl_address, BYTE n )
+void base_op_code_hl(GameboyCPU & cpu, BYTE op_code, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
 	setMemory3Step( cpu, 0b0, mem_hl_address, n );
 	setRegister8( cpu, 0b111, a_value );
-	cpu.InjectionMemory( opCode );
+	cpu.InjectionMemory( op_code );
 
 	for( int i = 0; i < 5; i++ )
 	{
@@ -39,96 +39,96 @@ void baseOpCodeHL(GameboyCPU & cpu, BYTE opCode, BYTE a_value, WORD mem_hl_addre
 // 0b11010110 (0xD6)
 void subN( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeN(cpu, 0xD6, a_value, n);
+	base_op_code_n(cpu, 0xD6, a_value, n);
 }
 
 // 0b10010110 (0x96)
 void subHL(  GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
-	baseOpCodeHL(cpu, 0x96, a_value, mem_hl_address, n);
+	base_op_code_hl(cpu, 0x96, a_value, mem_hl_address, n);
 }
 
 void subNC( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeN(cpu, 0xDE, a_value, n);
+	base_op_code_n(cpu, 0xDE, a_value, n);
 }
 
 void subRC(  GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeReg8(cpu, 0b10011000, a_value, 0b10, n); // SBC A, D
+	base_op_code_reg8(cpu, 0b10011000, a_value, 0b10, n); // SBC A, D
 }
 
 void subHLC( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
-	baseOpCodeHL(cpu, 0x9E, a_value, mem_hl_address, n);
+	base_op_code_hl(cpu, 0x9E, a_value, mem_hl_address, n);
 }
 
 void andN( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeN( cpu, 0xE6, a_value, n );
+	base_op_code_n(cpu, 0xE6, a_value, n);
 }
-
 
 void andHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
-	baseOpCodeHL( cpu, 0xA6, a_value, mem_hl_address, n );
+	base_op_code_hl(cpu, 0xA6, a_value, mem_hl_address, n);
 }
 
 void andR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeReg8( cpu, 0b10100000, a_value, 0b10, n );
+	base_op_code_reg8(cpu, 0b10100000, a_value, 0b10, n);
 }
 
 void orN( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeN( cpu, 0xF6, a_value, n );
+	base_op_code_n(cpu, 0xF6, a_value, n);
 }
 
 void orHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
-	baseOpCodeHL( cpu, 0xB6, a_value, mem_hl_address, n );
+	base_op_code_hl(cpu, 0xB6, a_value, mem_hl_address, n);
 }
 
 
 void orR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeReg8( cpu, 0b10110000, a_value, 0b10, n );
+	base_op_code_reg8(cpu, 0b10110000, a_value, 0b10, n);
 }
 
 void xorN( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeN( cpu, 0xEE, a_value, n );
+	base_op_code_n(cpu, 0xEE, a_value, n);
 }
 
 void xorHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
-	baseOpCodeHL( cpu, 0xAE, a_value, mem_hl_address, n );
+	base_op_code_hl(cpu, 0xAE, a_value, mem_hl_address, n);
 }
 
 void xorR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeReg8( cpu, 0b10101000, a_value, 0b10, n );
+	base_op_code_reg8(cpu, 0b10101000, a_value, 0b10, n);
 }
 
 void cpN( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeN( cpu,  0xFE, a_value, n );
+	base_op_code_n(cpu, 0xFE, a_value, n);
 }
 
 void cpHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
-	baseOpCodeHL( cpu, 0xBE, a_value, mem_hl_address, n );
+	base_op_code_hl(cpu, 0xBE, a_value, mem_hl_address, n);
 }
 
 void cpR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	baseOpCodeReg8( cpu, 0b10111000, a_value, 0b10,  n );
+	base_op_code_reg8(cpu, 0b10111000, a_value, 0b10, n);
 }
 
 void incR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
 {
+	BYTE base_op_code = 0b00000100u;
 	setRegister8( cpu, reg_index, reg_value );
-	cpu.InjectionMemory( 0b00000100 | (reg_index << 3)  );
+	cpu.InjectionMemory( base_op_code | static_cast<BYTE>( reg_index << 3u )  );
 
 	for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 }
@@ -141,18 +141,32 @@ void incHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
 	for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
 }
 
+void decR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
+{
+	BYTE base_op_code = 0b00000101u;
+	setRegister8( cpu, reg_index, reg_value );
+	cpu.InjectionMemory( base_op_code | static_cast<BYTE>( reg_index << 3u ) );
+
+	for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+}
+
+void decHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
+{
+	setMemory3Step( cpu, 0b10, mem_hl_address, set_value );
+	cpu.InjectionMemory( 0x35 );
+
+	for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
+}
 
 inline void check_flags( GameboyCPU & cpu, bool z, bool h, bool n, bool c )
 {
 	BYTE result[4] = { cpu.GetFlagZ(), cpu.GetFlagH(), cpu.GetFlagN(), cpu.GetFlagC() };
 
-	REQUIRE( result[0] == z );
-	REQUIRE( result[1] == h );
-	REQUIRE( result[2] == n );
-	REQUIRE( result[3] == c );
+	REQUIRE( ( result[0] == 1 ) == z );
+	REQUIRE( ( result[1] == 1 ) == h );
+	REQUIRE( ( result[2] == 1 ) == n );
+	REQUIRE( ( result[3] == 1 ) == c );
 }
-
-
 
 void NoFlagCheck( GameboyCPU & cpu )
 {
@@ -1020,12 +1034,12 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetRegisterBC().hi == 0x4 );
 			check_flags( cpu, false, false, false, false );
 
-			incR( cpu, 0, 0x0f );
-			REQUIRE( cpu.GetRegisterBC().hi == 0x10 );
+			incR( cpu, 1, 0x0f );
+			REQUIRE( cpu.GetRegisterBC().lo == 0x10 );
 			check_flags( cpu, false, true, false, false );
 
-			incR( cpu, 0, 0xff );
-			REQUIRE( cpu.GetRegisterBC().hi == 0x0 );
+			incR( cpu, 2, 0xff );
+			REQUIRE( cpu.GetRegisterDE().hi == 0x0 );
 			check_flags( cpu, true, true, false, true );
 		}
 
@@ -1044,6 +1058,43 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			incHL( cpu, 0x3422, 0xff );
 			REQUIRE( cpu.GetMemoryValue( 0x3422 ) == 0x0 );
 			check_flags( cpu, true, true, false, true );
+		}
+	}
+
+	SECTION("DEC")
+	{
+		SECTION("REGISTER")
+		{
+			cpu.Reset();
+
+			decR( cpu, 0, 0x3 );
+			REQUIRE( cpu.GetRegisterBC().hi == 0x2 );
+			check_flags( cpu, false, false, true, false );
+
+			decR( cpu, 1, 0x10 );
+			REQUIRE( cpu.GetRegisterBC().lo == 0x0f );
+			check_flags( cpu, false, true, true, false );
+
+			decR( cpu, 2, 0x00 );
+			REQUIRE( cpu.GetRegisterDE().hi == 0xff );
+			check_flags( cpu, false, true, true, true );
+		}
+
+		SECTION("HL")
+		{
+			cpu.Reset();
+
+			decHL( cpu, 0x3000, 0x3 );
+			REQUIRE( cpu.GetMemoryValue( 0x3000 ) == 0x2 );
+			check_flags( cpu, false, false, true, false );
+
+			decHL( cpu, 0x3001, 0x10 );
+			REQUIRE( cpu.GetMemoryValue( 0x3001 ) == 0x0f );
+			check_flags( cpu, false, true, true, false );
+
+			decHL( cpu, 0x3002, 0x00 );
+			REQUIRE( cpu.GetMemoryValue( 0x3002 ) == 0xff );
+			check_flags( cpu, false, true, true, true );
 		}
 	}
 }
