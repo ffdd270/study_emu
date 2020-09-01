@@ -360,19 +360,35 @@ private:
 	void incRegister(BYTE op_code);
 
 	//INC (HL)
+	// (HL)++
 	// 0b00110100 ( 0x34 )
 	// = Flag = Same as ADD instruction
 	void incMemHL(BYTE op_code);
 
 	//DEC r
+	// r--
 	// 0b00rrr101 { r = m8BitArguments }
 	// = Flag = Same as Sub Instruction
 	void decRegister(BYTE op_code);
 
 	//DEC (HL)
+	// (HL)--
 	// 0b00110101 (0x35)
 	// = Flag = Same as Sub Instruction
 	void decMemHL(BYTE op_code);
+
+	// General-Purpose Arithmetic and CPU Control Groups.
+
+	//DAA ( Decimal Adjust Accumulator )
+	// A -> Translate To BCD, After Arithmetic Instruction.
+	// 0b00100111 ( 0x27 )
+	// Flag
+	// H = 0
+	// C = 이전 연산 결과 유지.
+	// DAA의 특징은..
+	// 0x15 + 0x27 != 3C, = 42.
+	// 마치 정수 연산처럼 작용한다.
+	void decimalAdjustRegisterA(BYTE op_code);
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
