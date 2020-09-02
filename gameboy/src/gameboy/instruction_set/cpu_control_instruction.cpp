@@ -39,7 +39,7 @@ void GameboyCPU::decimalAdjustRegisterA( BYTE op_code )
 
 		if( reg_a > 0x99u )
 		{
-			adjust_value |= 0x66u;
+			adjust_value |= 0x60u;
 		}
 
 		reg_a += adjust_value;
