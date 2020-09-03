@@ -103,8 +103,6 @@ public:
 	BIND_FUNC( xorRegAFromImm8 )
 	BIND_FUNC( cpRegAFromImm8 )
 
-	// cpu control
-	BIND_FUNC( decimalAdjustRegisterA )
 
 	// pre 0b10
 
@@ -159,6 +157,10 @@ public:
 
 	BIND_FUNC( decRegister )
 	BIND_FUNC( decMemHL )
+
+	// cpu control
+	BIND_FUNC( decimalAdjustRegisterA )
+	BIND_FUNC( complementRegister )
 };
 
 
@@ -257,6 +259,7 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 
 	// DAA Instruction
 	mFuncMap[ 0x27 ] = BIND_FUNCS::decimalAdjustRegisterA;
+	mFuncMap[ 0x2F ] = BIND_FUNCS::complementRegister;
 }
 
 void GameboyCPU::pre0b01GenerateFuncMap()

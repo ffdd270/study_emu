@@ -50,3 +50,9 @@ void GameboyCPU::decimalAdjustRegisterA( BYTE op_code )
 	setFlagZ( reg_a == 0 );
 }
 
+void GameboyCPU::complementRegister(BYTE op_code)
+{
+	mRegisters.AF.hi = ~mRegisters.AF.hi;
+}
+
+
