@@ -211,4 +211,10 @@ inline void daa( GameboyCPU & cpu )
 
 }
 
+inline void cpl( GameboyCPU & cpu )
+{
+	cpu.InjectionMemory(0x2F );
+	cpu.NextStep();
+}
+
 #endif //GAMEBOY_UTIL_H

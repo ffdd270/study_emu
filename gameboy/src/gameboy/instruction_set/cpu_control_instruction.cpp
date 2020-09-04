@@ -53,6 +53,10 @@ void GameboyCPU::decimalAdjustRegisterA( BYTE op_code )
 void GameboyCPU::complementRegister(BYTE op_code)
 {
 	mRegisters.AF.hi = ~mRegisters.AF.hi;
+
+	setFlagH( true );
+	setFlagN(  true );
 }
+
 
 
