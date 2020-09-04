@@ -161,6 +161,7 @@ public:
 	// cpu control
 	BIND_FUNC( decimalAdjustRegisterA )
 	BIND_FUNC( complementRegister )
+	BIND_FUNC( complementCarryFlag )
 };
 
 
@@ -260,6 +261,7 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	// DAA Instruction
 	mFuncMap[ 0x27 ] = BIND_FUNCS::decimalAdjustRegisterA;
 	mFuncMap[ 0x2F ] = BIND_FUNCS::complementRegister;
+	mFuncMap[ 0x3F ] = BIND_FUNCS::complementCarryFlag;
 }
 
 void GameboyCPU::pre0b01GenerateFuncMap()

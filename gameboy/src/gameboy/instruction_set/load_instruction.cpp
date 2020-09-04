@@ -195,4 +195,11 @@ void GameboyCPU::popReg16(BYTE op_code)
 	mSP.reg_16 += 2;
 }
 
+void GameboyCPU::complementCarryFlag(BYTE op_code)
+{
+	setFlagH( GetFlagC() );
+	setFlagC( !GetFlagC() );
+	setFlagN( false );
+}
+
 
