@@ -393,6 +393,8 @@ private:
 	//CPL (complement register)
 	// A -> ~A
 	// 0x2F
+	// H = Set
+	// N = Set
 	void complementRegister( BYTE op_code );
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..

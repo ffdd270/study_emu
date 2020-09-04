@@ -6,6 +6,12 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
+inline void setRegAndStep( GameboyCPU & cpu, BYTE byte )
+{
+	setRegister8( cpu,  0b111, byte );
+	cpu.NextStep();
+}
+
 TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 {
 	GameboyCPU cpu;
@@ -36,6 +42,21 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 
 			REQUIRE( cpu.GetFlagC() == true );
 			REQUIRE( cpu.GetRegisterAF().hi == 0x1 );
+		}
+	}
+
+
+	SECTION("CPL Test")
+	{
+		SECTION("NOT A?")
+		{
+			BYTE origin_value = 0b010101010;
+			setRegAndStep( cpu, origin_value);
+			cpl( cpu );
+
+			REQUIRE( cpu.GetRegisterAF().hi == static_cast<BYTE>(~origin_value) );
+			REQUIRE( cpu.GetFlagH() );
+			REQUIRE( cpu.GetFlagN() );
 		}
 	}
 
