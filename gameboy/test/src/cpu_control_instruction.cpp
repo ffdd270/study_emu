@@ -60,4 +60,17 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 		}
 	}
 
+	SECTION("CCF Test")
+	{
+		SECTION("Set Flag, and CCF, and Check Carry Flag")
+		{
+			subHL( cpu, 0x99, 0x3000, 0xA0 ); // Carry.
+			REQUIRE( cpu.GetFlagC() );
+
+			ccf( cpu );
+			REQUIRE( cpu.GetFlagC() == false );
+			REQUIRE( cpu.GetFlagN() == false );
+			REQUIRE( cpu.GetFlagH() == true ); // copy of previous carry.
+		}
+	}
 }
