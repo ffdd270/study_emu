@@ -404,6 +404,13 @@ private:
 	// C = Not C
 	void complementCarryFlag( BYTE op_code );
 
+	//SCF ( Set Carry Flag )
+	// CF -> true
+	// 0x37
+	// H = Reset
+	// N = Reset
+	// C = Set
+	void setCarryFlag( BYTE op_code );
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..

@@ -202,4 +202,11 @@ void GameboyCPU::complementCarryFlag(BYTE op_code)
 	setFlagN( false );
 }
 
+void GameboyCPU::setCarryFlag(BYTE op_code)
+{
+	setFlagH( false );
+	setFlagC( true );
+	setFlagN( false );
+}
+
 
