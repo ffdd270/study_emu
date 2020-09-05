@@ -223,4 +223,10 @@ inline void ccf( GameboyCPU & cpu )
 	cpu.NextStep();
 }
 
+inline void scf( GameboyCPU &  cpu )
+{
+	cpu.InjectionMemory( 0x37 );
+	cpu.NextStep();
+}
+
 #endif //GAMEBOY_UTIL_H
