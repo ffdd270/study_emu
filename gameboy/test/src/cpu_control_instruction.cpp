@@ -73,4 +73,15 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 			REQUIRE( cpu.GetFlagH() == true ); // copy of previous carry.
 		}
 	}
+
+	SECTION("SCF Test")
+	{
+		SECTION("Set Flag.")
+		{
+			cpu.Reset();
+
+			scf( cpu );
+			REQUIRE( cpu.GetFlagC() == true );
+		}
+	}
 }
