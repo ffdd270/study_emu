@@ -80,8 +80,17 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 		{
 			cpu.Reset();
 
+			REQUIRE( cpu.GetFlagC() == false );
 			scf( cpu );
 			REQUIRE( cpu.GetFlagC() == true );
 		}
+	}
+
+	SECTION("NOP Test") // 테스트가 생각나면 다시..
+	{
+		cpu.Reset();
+
+		cpu.InjectionMemory( 0x00 );
+		cpu.NextStep();
 	}
 }

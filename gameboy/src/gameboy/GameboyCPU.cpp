@@ -61,6 +61,11 @@ void GameboyCPU::NextStep()
 	BYTE op_code = mGameMemory[ mPC.reg_16 ];
 	mPC.reg_16 += 1;
 
+	if ( op_code == 0x00 ) // NOP
+	{
+		return;
+	}
+
 	auto& func = mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
 
 	if( func ==  nullptr )
