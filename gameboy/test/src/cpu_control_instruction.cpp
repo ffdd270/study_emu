@@ -6,7 +6,7 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
-inline void setRegAndStep( GameboyCPU & cpu, BYTE byte )
+inline void setRegAAndStep(GameboyCPU & cpu, BYTE byte )
 {
 	setRegister8( cpu,  0b111, byte );
 	cpu.NextStep();
@@ -51,7 +51,7 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 		SECTION("NOT A?")
 		{
 			BYTE origin_value = 0b010101010;
-			setRegAndStep( cpu, origin_value);
+			setRegAAndStep(cpu, origin_value);
 			cpl( cpu );
 
 			REQUIRE( cpu.GetRegisterAF().hi == static_cast<BYTE>(~origin_value) );
@@ -80,8 +80,30 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 		{
 			cpu.Reset();
 
+			REQUIRE( cpu.GetFlagC() == false );
 			scf( cpu );
 			REQUIRE( cpu.GetFlagC() == true );
 		}
+	}
+
+	SECTION("NOP Test") // 테스트가 생각나면 다시..
+	{
+		cpu.Reset();
+
+		cpu.InjectionMemory( 0x00 );
+		cpu.NextStep();
+	}
+
+	SECTION("HALT Test")
+	{
+		setRegAAndStep(cpu, 0x30);
+		REQUIRE( cpu.GetRegisterAF().hi == 0x30 );
+
+		cpu.InjectionMemory( 0x76 );
+		cpu.NextStep();
+		REQUIRE( cpu.IsHalted() );
+
+		addAtoHL( cpu,  0x3434, 0x21, 0x42 ); // No Effect.
+		REQUIRE( cpu.GetRegisterAF().hi == 0x30 );
 	}
 }

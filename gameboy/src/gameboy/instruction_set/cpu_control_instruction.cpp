@@ -59,4 +59,7 @@ void GameboyCPU::complementRegister(BYTE op_code)
 }
 
 
-
+void GameboyCPU::halt(BYTE op_code)
+{
+	mHalted = true;
+}
