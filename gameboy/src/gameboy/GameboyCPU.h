@@ -50,10 +50,12 @@ public:
 	Register GetRegisterSP() { return mSP; }
 	Register GetRegisterPC() { return mPC; }
 
-	BYTE GetFlagZ() { return ( mRegisters.AF.lo & 0b10000000 ) >> 7; }
-	BYTE GetFlagN() { return ( mRegisters.AF.lo & 0b01000000 ) >> 6; }
-	BYTE GetFlagH() { return ( mRegisters.AF.lo & 0b00100000 ) >> 5; }
-	BYTE GetFlagC() { return ( mRegisters.AF.lo & 0b00010000 ) >> 4; }
+	[[nodiscard]] BYTE GetFlagZ() const { return ( mRegisters.AF.lo & 0b10000000u ) >> 7u; }
+	[[nodiscard]] BYTE GetFlagN() const { return ( mRegisters.AF.lo & 0b01000000u ) >> 6u; }
+	[[nodiscard]] BYTE GetFlagH() const { return ( mRegisters.AF.lo & 0b00100000u ) >> 5u; }
+	[[nodiscard]] BYTE GetFlagC() const { return ( mRegisters.AF.lo & 0b00010000u ) >> 4u; }
+
+	[[nodiscard]] bool IsHalted() const { return mHalted; }
 
 private:
 	std::array<BindFunctionPointer, 0xFF> mFuncMap;
@@ -412,6 +414,11 @@ private:
 	// C = Set
 	void setCarryFlag( BYTE op_code );
 
+	//HALT
+	// Halt -> true.
+	// 0x76
+	void halt( BYTE op_code );
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
@@ -446,6 +453,7 @@ private:
 private:
 	BYTE mGameMemory[0xFFFF];
 
+	bool mHalted;
 
 	union Registers{
 		// 레지스터 영역.

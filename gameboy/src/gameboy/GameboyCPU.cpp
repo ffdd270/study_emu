@@ -33,6 +33,8 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 	pre0b01GenerateFuncMap();
 	pre0b10GenerateFuncMap();
 	pre0b11GenerateFuncMap();
+
+	Reset();
 }
 
 
@@ -53,11 +55,17 @@ void GameboyCPU::Reset()
 		ref_register.reg_16 = 0xffff;
 	}
 
+	mHalted = false;
 	resetFlags();
 }
 
 void GameboyCPU::NextStep()
 {
+	if( mHalted )
+	{
+		return;
+	}
+
 	BYTE op_code = mGameMemory[ mPC.reg_16 ];
 	mPC.reg_16 += 1;
 
@@ -137,10 +145,14 @@ public:
 	BIND_FUNC( cpRegAFromMemHL )
 	// pre 0b01
 
+
 	//load
 	BIND_FUNC( loadRegFromReg )
 	BIND_FUNC( loadRegFromMemHL )
 	BIND_FUNC( loadMemHLFromReg )
+
+	//cpu instruction
+	BIND_FUNC( halt )
 
 	// pre 0b00
 
@@ -299,6 +311,8 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 			mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromReg;
 		}
 	}
+
+	mFuncMap[ 0x76 ] = BIND_FUNCS::halt;
 }
 
 
