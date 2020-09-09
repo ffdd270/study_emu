@@ -63,3 +63,14 @@ void GameboyCPU::halt(BYTE op_code)
 {
 	mHalted = true;
 }
+
+
+void GameboyCPU::disableInterrupt(BYTE op_code)
+{
+	mInturruptEnable = false;
+}
+
+void GameboyCPU::enableInterrupt(BYTE op_code)
+{
+	mInturruptEnable = true;
+}

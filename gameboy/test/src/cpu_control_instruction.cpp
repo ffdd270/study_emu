@@ -106,4 +106,25 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 		addAtoHL( cpu,  0x3434, 0x21, 0x42 ); // No Effect.
 		REQUIRE( cpu.GetRegisterAF().hi == 0x30 );
 	}
+
+
+	 // TODO : 인터럽트 테스트는 나중에... 유무만 확인하자.
+	SECTION("DI Test")
+	{
+		cpu.InjectionMemory( 0xF3 );
+		cpu.NextStep();
+		REQUIRE( cpu.IsInterrupt() == false );
+	}
+
+	SECTION("EI Test")
+	{
+		cpu.InjectionMemory( 0xF3 );
+		cpu.NextStep();
+		REQUIRE( cpu.IsInterrupt() == false );
+
+		cpu.InjectionMemory( 0xFB );
+		cpu.NextStep();
+		REQUIRE( cpu.IsInterrupt() == true );
+	}
+
 }
