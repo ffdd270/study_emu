@@ -115,4 +115,16 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 		cpu.NextStep();
 		REQUIRE( cpu.IsInterrupt() == false );
 	}
+
+	SECTION("EI Test")
+	{
+		cpu.InjectionMemory( 0xF3 );
+		cpu.NextStep();
+		REQUIRE( cpu.IsInterrupt() == false );
+
+		cpu.InjectionMemory( 0xFB );
+		cpu.NextStep();
+		REQUIRE( cpu.IsInterrupt() == true );
+	}
+
 }

@@ -422,17 +422,15 @@ private:
 
 
 	//DI
-	/*
-	 * CPU가 명령어 'DI'를 실행할 때 마스크 가능한 인터럽트는 'EI'명령어에 의해 다시 활성화 될 때까지 비활성화됩니다.
-	 * CPU가 인터럽트 요청 (INT) 신호에 응답하지 않습니다.
-	 */
+	// Desc
+	// CPU가 명령어 'DI'를 실행할 때 마스크 가능한 인터럽트는 'EI'명령어에 의해 다시 활성화 될 때까지 비활성화됩니다.
+	// CPU가 인터럽트 요청 (INT) 신호에 응답하지 않습니다.
 	// 0xf3 ( pre 0b11 )
 	void disableInterrupt( BYTE op_code );
 
 	//EI
-	/*
-	 * CPU가 EI RETI 명령어를 실행하면, RETI 명렁을 실행할 때 마스크 가능한 인터럽트가 활성화 됩니다.
-	 */
+	// Desc
+	// CPU가 EI RETI 명령어를 실행하면, RETI 명렁을 실행할 때 마스크 가능한 인터럽트가 활성화 됩니다.
 	// 0xfb ( pre 0b11 )
 	void enableInterrupt( BYTE op_code );
 

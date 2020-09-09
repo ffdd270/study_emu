@@ -120,7 +120,7 @@ public:
 
 	// cpu control
 	BIND_FUNC( disableInterrupt )
-
+	BIND_FUNC( enableInterrupt )
 
 	// pre 0b10
 
@@ -527,6 +527,7 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	mFuncMap[ 0b11111110 ] = BIND_FUNCS::cpRegAFromImm8;
 
 	mFuncMap[ 0xF3 ] = BIND_FUNCS::disableInterrupt;
+	mFuncMap[ 0xFB ] = BIND_FUNCS::enableInterrupt;
 }
 
 
