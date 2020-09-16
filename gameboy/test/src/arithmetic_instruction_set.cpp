@@ -974,4 +974,24 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			check_flags( cpu, false, false, false, false );
 		}
 	}
+
+
+	SECTION( "DEC ss" )
+	{
+		SECTION("ss = BC")
+		{
+			decReg16( cpu, 0x0000, 0b00 );
+			REQUIRE( cpu.GetRegisterBC().reg_16 == 0xffff );
+			check_flags( cpu, false, false, false, false );
+
+			decReg16( cpu, 0x1000, 0b00 );
+			REQUIRE( cpu.GetRegisterBC().reg_16 == 0x0fff );
+			check_flags( cpu, false, false, false, false );
+
+			decReg16( cpu, 0x00ff, 0b00 );
+			REQUIRE( cpu.GetRegisterBC().reg_16 == 0x00fe );
+			check_flags( cpu, false, false, false, false );
+		}
+	}
+
 }

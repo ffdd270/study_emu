@@ -254,4 +254,14 @@ inline void incReg16( GameboyCPU & cpu, WORD set_reg_value, BYTE reg_index )
 	for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 }
 
+inline void decReg16( GameboyCPU & cpu, WORD set_reg_value, BYTE reg_index )
+{
+	BYTE base_op_code = 0b00001011u | static_cast<BYTE>( reg_index << 4u );
+
+	setRegister16( cpu, reg_index , set_reg_value );
+	cpu.InjectionMemory( base_op_code );
+
+	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+}
+
 #endif //GAMEBOY_UTIL_H
