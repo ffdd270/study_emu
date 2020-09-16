@@ -243,4 +243,15 @@ inline void addHLFromReg16( GameboyCPU & cpu, WORD hl_value, WORD reg_value, BYT
 	for ( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
 }
 
+// 0b00rr0011 { r = m16BitArugments ]
+inline void incReg16( GameboyCPU & cpu, WORD set_reg_value, BYTE reg_index )
+{
+	BYTE base_op_code = 0b00000011u | static_cast<BYTE>(  reg_index << 4u );
+
+	setRegister16( cpu, reg_index, set_reg_value );
+	cpu.InjectionMemory( base_op_code );
+
+	for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+}
+
 #endif //GAMEBOY_UTIL_H
