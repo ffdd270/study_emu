@@ -229,4 +229,18 @@ inline void scf( GameboyCPU &  cpu )
 	cpu.NextStep();
 }
 
+// reg_index
+// 0 => BC, 1 => DE, 2 => HL, 3 => SP
+inline void addHLFromReg16( GameboyCPU & cpu, WORD hl_value, WORD reg_value, BYTE reg_index )
+{
+	// 0b00rr1001
+	BYTE base_op_code = 0b00001001u | static_cast<BYTE>( reg_index << 4u );
+
+	setRegister16( cpu, 0b10, hl_value );  // Set HL
+	setRegister16( cpu, reg_index, reg_value );
+	cpu.InjectionMemory( base_op_code );
+
+	for ( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+}
+
 #endif //GAMEBOY_UTIL_H

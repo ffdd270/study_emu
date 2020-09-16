@@ -369,5 +369,7 @@ void GameboyCPU::addMemHLFromReg16(BYTE op_code)
 
 	setFlagH( (reg_16 & 0x0fffu) + (hl & 0xfffu) > 0x0fffu );
 	setFlagC( reg_16 > 0xffffu - hl );
+	setFlagN( false );
+
 	hl += reg_16;
 }
