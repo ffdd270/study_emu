@@ -390,9 +390,14 @@ private:
 	void addHLFromReg16(BYTE op_code);
 
 	// INC ss
-	// 0b00rr0011 { r = m16BitArugments ]
+	// 0b00rr0011 { r = m16BitArguments ]
 	// No Bit Effect.
 	void incReg16( BYTE op_code );
+
+	// DEC ss
+	// 0b00rr1011 { r = m16BitArguments }
+	// No Bit Effect
+	void decReg16( BYTE op_code );
 
 	// General-Purpose Arithmetic and CPU Control Groups.
 

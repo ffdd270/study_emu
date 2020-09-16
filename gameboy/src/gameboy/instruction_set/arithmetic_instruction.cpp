@@ -380,3 +380,10 @@ void GameboyCPU::incReg16(BYTE op_code)
 	WORD & reg_16 = m16bitArguments[ argument ].ref;
 	reg_16++;
 }
+
+void GameboyCPU::decReg16(BYTE op_code)
+{
+	BYTE argument = ( 0b00110000u & op_code ) >> 4u;
+	WORD & reg_16 = m16bitArguments[ argument ].ref;
+	reg_16--;
+}
