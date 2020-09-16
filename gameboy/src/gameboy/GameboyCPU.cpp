@@ -180,6 +180,8 @@ public:
 	BIND_FUNC( decRegister )
 	BIND_FUNC( decMemHL )
 
+	BIND_FUNC( addMemHLFromReg16 )
+
 	// cpu control
 	BIND_FUNC( decimalAdjustRegisterA )
 	BIND_FUNC( complementRegister )
@@ -286,6 +288,12 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	mFuncMap[ 0x2F ] = BIND_FUNCS::complementRegister;
 	mFuncMap[ 0x3F ] = BIND_FUNCS::complementCarryFlag;
 	mFuncMap[ 0x37 ] = BIND_FUNCS::setCarryFlag;
+
+	for( uint32_t i = 0; i <= 0b11; i++ )
+	{
+		BYTE op_code = 0b00001001u | ( i << 4u );
+		mFuncMap[ op_code ] = BIND_FUNCS::addMemHLFromReg16;
+	}
 }
 
 void GameboyCPU::pre0b01GenerateFuncMap()

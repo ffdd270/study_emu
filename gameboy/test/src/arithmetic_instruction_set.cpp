@@ -931,4 +931,29 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			check_flags( cpu, false, true, true, true );
 		}
 	}
+
+	SECTION( "ADD HL, ss" )
+	{
+		// 0b00rr1001 { r = m16BitArguments }
+		SECTION("ss = BC")
+		{
+			addHLFromReg16( cpu, 0x3000, 0x4000, 0b00 );
+			REQUIRE( cpu.GetRegisterHL().reg_16 == 0x7000 );
+			check_flags( cpu, false, false, false, false );
+
+			///Half?
+			addHLFromReg16( cpu, 0x0fff, 0x0001, 0b00);
+			REQUIRE( cpu.GetRegisterHL().reg_16 == 0x1000 );
+			check_flags( cpu, false, true, false, false );
+
+			//Carry?
+			addHLFromReg16( cpu, 0xf000, 0x1000, 0b00);
+			REQUIRE( cpu.GetRegisterHL().reg_16 == 0x0000 );
+			check_flags( cpu, false, false, false, true );
+
+			// Carry and Half?
+			addHLFromReg16( cpu, 0xffff, 0xffff, 0b00 );
+			check_flags( cpu, false, true, false, true );
+		}
+	}
 }

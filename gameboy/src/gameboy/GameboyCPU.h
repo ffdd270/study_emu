@@ -211,7 +211,6 @@ private:
 	// qqH <- (SP + 1), qqL <- (SP)
 	void popReg16( BYTE op_code );
 
-
 	/*
 	 * 8비트 산술 명령어
 	 */
@@ -379,6 +378,16 @@ private:
 	// 0b00110101 (0x35)
 	// = Flag = Same as Sub Instruction
 	void decMemHL(BYTE op_code);
+
+	/*
+	 * 16비트 산술 명령어.
+	 */
+
+	//ADD (HL) reg16
+	// 0b00rr1001 { r = m16BitArguments }
+	// C => Carry?
+	// H => Bit 11 Carry?  ( Result More than Half ? )
+	void addMemHLFromReg16(BYTE op_code);
 
 	// General-Purpose Arithmetic and CPU Control Groups.
 
