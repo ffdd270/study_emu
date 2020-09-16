@@ -387,7 +387,7 @@ private:
 	// 0b00rr1001 { r = m16BitArguments }
 	// C => Carry?
 	// H => Bit 11 Carry?  ( Result More than Half ? )
-	void addMemHLFromReg16(BYTE op_code);
+	void addHLFromReg16(BYTE op_code);
 
 	// General-Purpose Arithmetic and CPU Control Groups.
 
