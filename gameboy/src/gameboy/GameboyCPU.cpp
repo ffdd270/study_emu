@@ -180,7 +180,8 @@ public:
 	BIND_FUNC( decRegister )
 	BIND_FUNC( decMemHL )
 
-	BIND_FUNC(addHLFromReg16 )
+	BIND_FUNC( addHLFromReg16 )
+	BIND_FUNC( incReg16 )
 
 	// cpu control
 	BIND_FUNC( decimalAdjustRegisterA )
@@ -293,6 +294,12 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	{
 		BYTE op_code = 0b00001001u | ( i << 4u );
 		mFuncMap[ op_code ] = BIND_FUNCS::addHLFromReg16;
+	}
+
+	for ( uint32_t i = 0; i <= 0b11; i++ )
+	{
+		BYTE op_code = 0b00000011u | ( i << 4u );
+		mFuncMap[ op_code ] = BIND_FUNCS::incReg16;
 	}
 }
 
