@@ -117,7 +117,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		 * L 101
 		 */
 
-		setRegister16(  cpu, 0b10, 0xEA00 ); // LD HL(10), imm16( 0xEA00 )  // 1 step.
+		setRegister16(  cpu, Register16BitIndex::HL, 0xEA00 ); // LD HL(10), imm16( 0xEA00 )  // 1 step.
 
 		cpu.InjectionMemory( 0b00111110 ); //LD A, n // 2 step.
 		cpu.InjectionMemory( 0xAA ); //n = 0xAA
@@ -138,7 +138,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister16(  cpu, 0b10, 0xDEAD ); // LD HL(10), imm16( 0xDEAD )
+		setRegister16(  cpu, Register16BitIndex::HL, 0xDEAD ); // LD HL(10), imm16( 0xDEAD )
 		// HL = 0xDEAD. 1 Step.
 
 		cpu.InjectionMemory( 0b00001110 ); // LD B, imm8
@@ -165,16 +165,16 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister8( cpu, 0b11, 0xBA ); // LD E, 0xBA
+		setRegister8( cpu, Register8BitIndex::E, 0xBA ); // LD E, 0xBA
 		//E = 0xBA. 1 Step.
 
-		setRegister16(  cpu, 0b10, 0xFAFA ); // LD HL(10), imm16( 0xFAFA )
+		setRegister16(  cpu, Register16BitIndex::HL, 0xFAFA ); // LD HL(10), imm16( 0xFAFA )
 		//HL = 0xFAFA. 2 Step.
 
 		cpu.InjectionMemory( 0b01110011 ); // LD (HL), E
 		//(0xFAFA) = 0xBA. 3 Step.
 
-		setRegister16( cpu, 0b01, 0xFAFA ); // LD DE, imm16 ( 0xFAFA )
+		setRegister16( cpu, Register16BitIndex::DE, 0xFAFA ); // LD DE, imm16 ( 0xFAFA )
 		//DE = 0xFAFA. 4  Step.
 
 		cpu.InjectionMemory( 0b00011010 ); // LD A, ( DE )
@@ -190,7 +190,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setMemory3Step(cpu, 0b11, 0xF00D, 0x42);
+		setMemory3Step(cpu, Register8BitIndex::E, 0xF00D, 0x42);
 		// 3 Step.
 
 		cpu.InjectionMemory( 0b00111010 ); // LD A, (nn)
@@ -210,8 +210,8 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister16( cpu, 0b01, 0xDAFA ); // LD DE, 0xDAFA
-		setRegister8( cpu, 0b111, 0xA0 ); // LD A, 0xA0
+		setRegister16( cpu, Register16BitIndex::DE, 0xDAFA ); // LD DE, 0xDAFA
+		setRegister8( cpu, Register8BitIndex::A, 0xA0 ); // LD A, 0xA0
 		cpu.InjectionMemory( 0b00010010 ); //LD (DE), A
 
 		for( int i = 0 ; i < 3; i++ ) { cpu.NextStep(); }
@@ -224,8 +224,8 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister16( cpu, 0b10, 0xAEAD ); // LD HL, 0xAEAD
-		setRegister8(cpu, 0b111, 0xAD ); // LD A, 0xAD
+		setRegister16( cpu, Register16BitIndex::HL, 0xAEAD ); // LD HL, 0xAEAD
+		setRegister8(cpu, Register8BitIndex::A, 0xAD ); // LD A, 0xAD
 		cpu.InjectionMemory( 0b00100010 ); //LDI (HL), A
 
 		for ( int i = 0 ; i < 3; i++ ) { cpu.NextStep(); }
@@ -240,8 +240,8 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister16( cpu, 0b10, 0xDED1 ); // LD HL, 0xDED1
-		setRegister8( cpu, 0b111, 0xDA ); //LD A, 0xDA
+		setRegister16( cpu, Register16BitIndex::HL, 0xDED1 ); // LD HL, 0xDED1
+		setRegister8( cpu, Register8BitIndex::A, 0xDA ); //LD A, 0xDA
 		cpu.InjectionMemory( 0b00110010 ); //LDD (HL), A
 
 		for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
@@ -255,7 +255,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setMemory3Step( cpu, 0b00, 0xE001, 0x10 );  // HL = 0xE001, B = 0x10, (HL) = B.
+		setMemory3Step( cpu, Register8BitIndex::B, 0xE001, 0x10 );  // HL = 0xE001, B = 0x10, (HL) = B.
 		cpu.InjectionMemory( 0b00111010 ); // LDD A,(HL)
 
 		for( int i = 0; i < 4; i++ ){ cpu.NextStep(); }
@@ -268,7 +268,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setMemory3Step( cpu, 0b00, 0x2FFF, 0x30 );  // HL = 0x2FFF, B = 0x30, (HL) = B.
+		setMemory3Step( cpu, Register8BitIndex::B, 0x2FFF, 0x30 );  // HL = 0x2FFF, B = 0x30, (HL) = B.
 		cpu.InjectionMemory( 0b00101010 ); // LDI A, (HL)
 
 		for( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
@@ -282,10 +282,10 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		cpu.Reset();
 
 
-		setRegister16( cpu, 0b00, 0xEAFA ); // LD BC, imm16 ( 0xEAFA  )
+		setRegister16( cpu, Register16BitIndex::BC, 0xEAFA ); // LD BC, imm16 ( 0xEAFA  )
 		// BC = 0xEAFA. 1 Step.
 
-		setRegister8( cpu, 0b111, 0xCF ); // LD A, imm8 ( 0xCF )
+		setRegister8( cpu, Register8BitIndex::A, 0xCF ); // LD A, imm8 ( 0xCF )
 		// A = 0xCF. 2 Step.
 
 		cpu.InjectionMemory( 0b00000010 ); // LD ( BC ), A
@@ -343,10 +343,10 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister16( cpu, 0b00, 0xDE33 ); // BC = 0xDE33
+		setRegister16( cpu, Register16BitIndex::BC, 0xDE33 ); // BC = 0xDE33
 		// 1 Step.
 
-		setRegister16( cpu, 0b10, 0xE002 ); // HL = 0xE002
+		setRegister16( cpu, Register16BitIndex::HL, 0xE002 ); // HL = 0xE002
 		// 2 Step.
 
 		cpu.InjectionMemory( 0b11111001 ); //LD SP,  HL  ( SP = 0xE002 )
@@ -368,10 +368,10 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister16( cpu, 0b01, 0x1234 ); // DE = 0x1234
+		setRegister16( cpu, Register16BitIndex::DE, 0x1234 ); // DE = 0x1234
 		// 1 Step.
 
-		setRegister16( cpu, 0b10, 0x7652 ); // HL = 0x7652
+		setRegister16( cpu, Register16BitIndex::HL, 0x7652 ); // HL = 0x7652
 		// 2 Step.
 
 		cpu.InjectionMemory( 0b11111001 ); //LD SP, HL

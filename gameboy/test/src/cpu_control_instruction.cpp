@@ -8,7 +8,7 @@
 
 inline void setRegAAndStep(GameboyCPU & cpu, BYTE byte )
 {
-	setRegister8( cpu,  0b111, byte );
+	setRegister8( cpu,  Register8BitIndex::A, byte );
 	cpu.NextStep();
 }
 
