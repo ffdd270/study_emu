@@ -294,30 +294,45 @@ inline void decReg16( GameboyCPU & cpu, WORD set_reg_value, BYTE reg_index )
 	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 }
 
-inline void rlcRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
+inline void rotateRegisterExecute( GameboyCPU & cpu, BYTE op_code, BYTE set_reg_value, BYTE reg_index )
 {
-	BYTE prefixOpCode = 0xCB;
-	BYTE opCode = reg_index; // 0b00000111라서 그냥 넣으면 된다..
-
 	setRegister8( cpu, reg_index, set_reg_value );
 
-	cpu.InjectionMemory( prefixOpCode );
-	cpu.InjectionMemory( opCode );
+	cpu.InjectionMemory( 0xCB );
+	cpu.InjectionMemory( op_code );
 
 	for( int i = 0; i < 2; i++) { cpu.NextStep(); }
 }
 
-inline void rlcMemoryHL(  GameboyCPU & cpu, BYTE set_value, WORD mem_address )
+inline void rotateMemoryExecute(  GameboyCPU & cpu, BYTE op_code, BYTE set_value, WORD mem_address )
 {
-	BYTE prefixOpCode = 0xCB;
-	BYTE opCode = 0b110;
-
 	setMemory3Step( cpu, Register8BitIndex::D, mem_address, set_value );
 
-	cpu.InjectionMemory( prefixOpCode );
-	cpu.InjectionMemory( opCode );
+	cpu.InjectionMemory( 0xCB ); // Prefix
+	cpu.InjectionMemory( op_code );
 
-	for( int i = 0; i < 5; i++) { cpu.NextStep(); }
-
+	for( int i = 0; i < 4; i++) { cpu.NextStep(); }
 }
+
+
+inline void rlcRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
+{
+	rotateRegisterExecute( cpu, reg_index, set_reg_value, reg_index );
+}
+
+inline void rlcMemoryHL(  GameboyCPU & cpu, BYTE set_value, WORD mem_address )
+{
+	rotateMemoryExecute( cpu, 0b110, set_value, mem_address );
+}
+
+inline void rrcRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
+{
+	rotateRegisterExecute( cpu, 0b1000u | reg_index,  set_reg_value, reg_index );
+}
+
+inline void rrcMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
+{
+	rotateMemoryExecute( cpu, 0b1000u | 0b110u,  set_value, mem_address );
+}
+
 #endif //GAMEBOY_UTIL_H
