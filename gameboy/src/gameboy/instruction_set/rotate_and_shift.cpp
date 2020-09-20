@@ -6,6 +6,12 @@
 #include <cstring>
 #include <cassert>
 
+void GameboyCPU::commonRotateSetFlag(const BYTE & result_value)
+{
+	setFlagZ( result_value == 0u );
+	setFlagH( false );
+	setFlagN( false );
+}
 
 void GameboyCPU::rotateLeftThroughCarry(BYTE op_code)
 {
@@ -15,9 +21,7 @@ void GameboyCPU::rotateLeftThroughCarry(BYTE op_code)
 	ref_value <<= 1u;
 	ref_value = ref_value | static_cast<BYTE>( GetFlagC() );
 
-	setFlagZ( ref_value == 0u );
-	setFlagH( false );
-	setFlagN( false );
+	commonRotateSetFlag( ref_value );
 }
 
 void GameboyCPU::rotateRightThroughCarry(BYTE op_code)
@@ -28,7 +32,15 @@ void GameboyCPU::rotateRightThroughCarry(BYTE op_code)
 	ref_value >>= 1u;
 	ref_value = ref_value | static_cast<BYTE>( static_cast<BYTE>( GetFlagC() ) << 7u );
 
-	setFlagZ( ref_value == 0u );
-	setFlagH( false );
-	setFlagN( false );
+	commonRotateSetFlag( ref_value );
+}
+
+void GameboyCPU::rotateLeft(BYTE op_code)
+{
+	BYTE & ref_value = get8BitArgumentValue( ( 0b00000111u ) & op_code );
+
+	setFlagC( ((ref_value & 0b10000000u) >> 7u) == 1 );
+	ref_value <<= 1u;
+
+	commonRotateSetFlag( ref_value );
 }

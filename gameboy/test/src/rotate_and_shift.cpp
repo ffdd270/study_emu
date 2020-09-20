@@ -58,4 +58,16 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 		}
 	}
 
+	SECTION( "RL m" )
+	{
+		SECTION("RL A")
+		{
+
+		}
+
+		SECTION("RL (HL)")
+		{
+
+		}
+	}
 }

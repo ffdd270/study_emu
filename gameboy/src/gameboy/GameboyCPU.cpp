@@ -204,6 +204,8 @@ public:
 	// Prefix 0xcb
 	BIND_FUNC( rotateLeftThroughCarry );
 	BIND_FUNC( rotateRightThroughCarry );
+
+	BIND_FUNC( rotateLeft );
 };
 
 
@@ -580,6 +582,12 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 	{
 		mPrefixCBFuncMap[ 0b1000u | i ] = BIND_FUNCS::rotateRightThroughCarry;
 	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b10000u | i ] = BIND_FUNCS::rotateLeft;
+	}
+
 }
 
 

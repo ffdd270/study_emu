@@ -463,16 +463,20 @@ private:
 	//RLC
 	// Desc
 	// Rotate Left. Carry is Bit7, Bit0 is Carry.
-	// 0xcb, 0x00000rrr { r = m8BitRegisters }
-	// (HL) 0xcb, 0x06
+	// 0xcb, 0x00000rrr { r = m8BitRegisters } ( HL = 0b110 )
 	void rotateLeftThroughCarry( BYTE op_code );
 
 	//RRC
 	// Decs
 	// Rotate Right. Carry is Bit0, Bit7 is Carry.
-	// 0xcb, 0b00001rrr { r = m8BitRegisters }
+	// 0xcb, 0b00001rrr { r = m8BitRegisters } ( HL = 0b110 )
 	void rotateRightThroughCarry( BYTE op_code );
 
+	//RL
+	// Desc
+	// Rotate Left. Carry is Bit7.
+	// 0xcb, 0b00010rrr { r = m8BitRegisters }
+	void rotateLeft( BYTE op_code );
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
@@ -490,6 +494,8 @@ private:
 	void commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry );
 
 	void commonBitSetFlag();
+
+	void commonRotateSetFlag( const BYTE & result_value );
 	/*
 	 * Util 함수들.
 	*/
