@@ -34,6 +34,7 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 	pre0b01GenerateFuncMap();
 	pre0b10GenerateFuncMap();
 	pre0b11GenerateFuncMap();
+	pre0xCBGenerateFuncMap();
 
 	Reset();
 }
@@ -76,7 +77,16 @@ void GameboyCPU::NextStep()
 		return;
 	}
 
-	auto& func = mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
+	bool isPreFixInstruction = false;
+
+	if ( op_code == 0xCB ) // prefix
+	{
+		isPreFixInstruction = true;
+		op_code = mGameMemory[ mPC.reg_16 ];
+		mPC.reg_16 += 1;
+	}
+
+	auto& func = (isPreFixInstruction) ? mPrefixCBFuncMap[ op_code ] : mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
 
 	if( func ==  nullptr )
 	{
@@ -190,6 +200,12 @@ public:
 	BIND_FUNC( complementRegister )
 	BIND_FUNC( complementCarryFlag )
 	BIND_FUNC( setCarryFlag )
+
+	// Prefix 0xcb
+	BIND_FUNC( rotateLeftThroughCarry );
+	BIND_FUNC( rotateRightThroughCarry );
+
+	BIND_FUNC( rotateLeft );
 };
 
 
@@ -555,6 +571,26 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 
 
 
+void GameboyCPU::pre0xCBGenerateFuncMap()
+{
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ i ] = BIND_FUNCS::rotateLeftThroughCarry; // 0b0 | i
+	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b1000u | i ] = BIND_FUNCS::rotateRightThroughCarry;
+	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b10000u | i ] = BIND_FUNCS::rotateLeft;
+	}
+
+}
+
+
 // 디버거 코드들
 
 void GameboyCPU::InjectionMemory(BYTE injection_byte)
@@ -632,3 +668,7 @@ void GameboyCPU::resetFlags()
 	mRegisters.AF.lo = 0;
 }
 
+BYTE &GameboyCPU::get8BitArgumentValue(BYTE param)
+{
+	return ( param == 0b110 ) ? mGameMemory[ mRegisters.HL.reg_16 ] : m8bitArguments[ param ].ref;
+}

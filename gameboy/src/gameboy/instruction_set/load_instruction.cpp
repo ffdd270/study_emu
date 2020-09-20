@@ -209,4 +209,3 @@ void GameboyCPU::setCarryFlag(BYTE op_code)
 	setFlagN( false );
 }
 
-
