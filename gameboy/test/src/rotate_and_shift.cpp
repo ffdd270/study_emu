@@ -62,12 +62,26 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 	{
 		SECTION("RL A")
 		{
+			rlRegister( cpu, 0b10001000, 0b111 );
+			check_flags( cpu, false, false, false, true );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b00010000 );
 
+
+			rlRegister( cpu, 0b01000100, 0b111 );
+			check_flags( cpu, false, false, false, false );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b10001000 );
 		}
 
 		SECTION("RL (HL)")
 		{
+			rlMemoryHL( cpu, 0b10001000, 0x342 );
+			check_flags( cpu, false, false, false, true );
+			REQUIRE( cpu.GetMemoryValue( 0x342 ) == 0b00010000 );
 
+
+			rlMemoryHL( cpu, 0b01000100, 0x342 );
+			check_flags( cpu, false, false, false, false );
+			REQUIRE( cpu.GetMemoryValue( 0x342 ) == 0b10001000 );
 		}
 	}
 }
