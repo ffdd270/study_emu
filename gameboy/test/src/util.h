@@ -8,6 +8,15 @@
 
 #include "GameboyCPU.h"
 
+inline void check_flags( GameboyCPU & cpu, bool z, bool h, bool n, bool c )
+{
+	BYTE result[4] = { cpu.GetFlagZ(), cpu.GetFlagH(), cpu.GetFlagN(), cpu.GetFlagC() };
+
+	REQUIRE( ( result[0] == 1 ) == z );
+	REQUIRE( ( result[1] == 1 ) == h );
+	REQUIRE( ( result[2] == 1 ) == n );
+	REQUIRE( ( result[3] == 1 ) == c );
+}
 
 inline void setRegister16( GameboyCPU & cpu_ref ,BYTE register_index, WORD value )
 {
@@ -264,4 +273,30 @@ inline void decReg16( GameboyCPU & cpu, WORD set_reg_value, BYTE reg_index )
 	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 }
 
+inline void rlcRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
+{
+	BYTE prefixOpCode = 0xCB;
+	BYTE opCode = reg_index; // 0b00000111라서 그냥 넣으면 된다..
+
+	setRegister8( cpu, reg_index, set_reg_value );
+
+	cpu.InjectionMemory( prefixOpCode );
+	cpu.InjectionMemory( opCode );
+
+	for( int i = 0; i < 2; i++) { cpu.NextStep(); }
+}
+
+inline void rlcMemoryHL(  GameboyCPU & cpu, BYTE set_value, WORD mem_address )
+{
+	BYTE prefixOpCode = 0xCB;
+	BYTE opCode = 0b110;
+
+	setMemory3Step( cpu, 0b10, mem_address, set_value );
+
+	cpu.InjectionMemory( prefixOpCode );
+	cpu.InjectionMemory( opCode );
+
+	for( int i = 0; i < 5; i++) { cpu.NextStep(); }
+
+}
 #endif //GAMEBOY_UTIL_H

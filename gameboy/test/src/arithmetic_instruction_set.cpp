@@ -6,15 +6,6 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
-inline void check_flags( GameboyCPU & cpu, bool z, bool h, bool n, bool c )
-{
-	BYTE result[4] = { cpu.GetFlagZ(), cpu.GetFlagH(), cpu.GetFlagN(), cpu.GetFlagC() };
-
-	REQUIRE( ( result[0] == 1 ) == z );
-	REQUIRE( ( result[1] == 1 ) == h );
-	REQUIRE( ( result[2] == 1 ) == n );
-	REQUIRE( ( result[3] == 1 ) == c );
-}
 
 void NoFlagCheck( GameboyCPU & cpu )
 {
