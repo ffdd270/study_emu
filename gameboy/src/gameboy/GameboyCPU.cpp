@@ -203,6 +203,7 @@ public:
 
 	// Prefix 0xcb
 	BIND_FUNC( rotateLeftThroughCarry );
+	BIND_FUNC( rotateRightThroughCarry );
 };
 
 
@@ -574,6 +575,11 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 	{
 		mPrefixCBFuncMap[ i ] = BIND_FUNCS::rotateLeftThroughCarry; // 0b0 | i
 	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b1000u | i ] = BIND_FUNCS::rotateRightThroughCarry;
+	}
 }
 
 
@@ -654,3 +660,7 @@ void GameboyCPU::resetFlags()
 	mRegisters.AF.lo = 0;
 }
 
+BYTE &GameboyCPU::get8BitArgumentValue(BYTE param)
+{
+	return ( param == 0b110 ) ? mGameMemory[ mRegisters.HL.reg_16 ] : m8bitArguments[ param ].ref;
+}

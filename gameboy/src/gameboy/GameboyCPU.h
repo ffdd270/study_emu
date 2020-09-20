@@ -467,6 +467,12 @@ private:
 	// (HL) 0xcb, 0x06
 	void rotateLeftThroughCarry( BYTE op_code );
 
+	//RRC
+	// Decs
+	// Rotate Right. Carry is Bit0, Bit7 is Carry.
+	// 0xcb, 0b00001rrr { r = m8BitRegisters }
+	void rotateRightThroughCarry( BYTE op_code );
+
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
@@ -503,6 +509,8 @@ private:
 	BYTE mGameMemory[0xFFFF];
 
 	bool mHalted;
+
+	BYTE& get8BitArgumentValue( BYTE param );
 
 	union Registers{
 		// 레지스터 영역.
