@@ -60,12 +60,14 @@ public:
 
 private:
 	std::array<BindFunctionPointer, 0xFF> mFuncMap;
+	std::array<BindFunctionPointer, 0xFF> mPrefixCBFuncMap;
 private:
 	void pre0b00GenerateFuncMap();
 	void pre0b01GenerateFuncMap();
 	void pre0b10GenerateFuncMap();
 	void pre0b11GenerateFuncMap();
 
+	void pre0xCBGenerateFuncMap();
 private:
 	// 명령어 구현 부
 
@@ -452,6 +454,18 @@ private:
 	// CPU가 EI RETI 명령어를 실행하면, RETI 명렁을 실행할 때 마스크 가능한 인터럽트가 활성화 됩니다.
 	// 0xfb ( pre 0b11 )
 	void enableInterrupt( BYTE op_code );
+
+	// Prefix CB
+	// 0xcb
+	// 0xnn (여기가 command.)
+
+
+	//RLC
+	// Desc
+	// Rotate Left. Carry is Bit7, Bit0 is Carry.
+	// 0xcb, 0x00000rrr { r = m8BitRegisters }
+	// (HL) 0xcb, 0x06
+	void rotateLeftThroughCarry( BYTE op_code );
 
 
 	/*
