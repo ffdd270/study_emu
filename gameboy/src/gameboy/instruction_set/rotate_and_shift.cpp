@@ -38,13 +38,25 @@ void GameboyCPU::rotateRightThroughCarry(BYTE op_code)
 void GameboyCPU::rotateLeft(BYTE op_code)
 {
 	BYTE & ref_value = get8BitArgumentValue( ( 0b00000111u ) & op_code );
-
-	bool flag_c = GetFlagC();
+	BYTE flag_value = static_cast<BYTE>(GetFlagC());
 
 	setFlagC( ((ref_value & 0b10000000u) >> 7u) == 1 );
 
 	ref_value <<= 1u;
-	ref_value |= static_cast<BYTE>( flag_c );
+	ref_value |= flag_value;
+
+	commonRotateSetFlag( ref_value );
+}
+
+void GameboyCPU::rotateRight(BYTE op_code)
+{
+	BYTE &ref_value = get8BitArgumentValue((0b00000111u) & op_code);
+	BYTE flag_value = static_cast<BYTE>( GetFlagC());
+
+	setFlagC((ref_value & 1u) == 1);
+
+	ref_value >>= 1u;
+	ref_value |= static_cast<BYTE>(flag_value << 7u);
 
 	commonRotateSetFlag( ref_value );
 }

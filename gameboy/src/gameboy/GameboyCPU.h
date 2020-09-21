@@ -478,6 +478,12 @@ private:
 	// 0xcb, 0b00010rrr { r = m8BitRegisters }
 	void rotateLeft( BYTE op_code );
 
+	//RR
+	// Desc
+	// Bit7 is Carry. Carry is Bit0. and Rotate Right.
+	// 0xcb, 0b00011rrr
+	void rotateRight( BYTE op_code );
+
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
