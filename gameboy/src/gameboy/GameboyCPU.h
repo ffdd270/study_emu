@@ -474,9 +474,23 @@ private:
 
 	//RL
 	// Desc
-	// Rotate Left. Carry is Bit7.
+	// Bit0 is Carry. Carry is Bit7. and Rotate Left.
 	// 0xcb, 0b00010rrr { r = m8BitRegisters }
 	void rotateLeft( BYTE op_code );
+
+	//RR
+	// Desc
+	// Bit7 is Carry. Carry is Bit0. and Rotate Right.
+	// 0xcb, 0b00011rrr
+	void rotateRight( BYTE op_code );
+
+	//SLA
+	// Desc
+	// Carry is Bit7. Shift Left.
+	// 0xcb, 0b00100rrr { r = m8BitRegisters }
+	void shiftLeftAccumulator( BYTE op_code );  //왜 Accumulator?
+
+
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
@@ -495,7 +509,7 @@ private:
 
 	void commonBitSetFlag();
 
-	void commonRotateSetFlag( const BYTE & result_value );
+	void commonRotateAndShiftFlags(const BYTE & result_value );
 	/*
 	 * Util 함수들.
 	*/

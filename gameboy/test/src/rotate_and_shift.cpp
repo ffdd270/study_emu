@@ -69,7 +69,7 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 
 			rlRegister( cpu, 0b01000100, 0b111 );
 			check_flags( cpu, false, false, false, false );
-			REQUIRE( cpu.GetRegisterAF().hi == 0b10001000 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b10001001 ); // 캐리라서 1 올라감.
 		}
 
 		SECTION("RL (HL)")
@@ -80,6 +80,59 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 
 
 			rlMemoryHL( cpu, 0b01000100, 0x342 );
+			check_flags( cpu, false, false, false, false );
+			REQUIRE( cpu.GetMemoryValue( 0x342 ) == 0b10001001 ); // 캐리라서 1..
+		}
+	}
+
+	SECTION("RR m")
+	{
+		SECTION("RR A")
+		{
+			rrRegister( cpu, 0b00010001, 0b111 );
+			check_flags(  cpu, false, false, false, true );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b00001000 );
+
+			rrRegister( cpu, 0b00100010, 0b111 );
+			check_flags(  cpu, false, false, false, false );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b10010001 );
+		}
+
+
+		SECTION("RR (HL)")
+		{
+			rrMemoryHL( cpu, 0b00010001, 0xf0f0 );
+			check_flags(  cpu, false, false, false, true );
+			REQUIRE( cpu.GetMemoryValue( 0xf0f0 ) == 0b00001000 );
+
+			rrMemoryHL( cpu, 0b00100010, 0xf0f0 );
+			check_flags(  cpu, false, false, false, false );
+			REQUIRE( cpu.GetMemoryValue( 0xf0f0 ) == 0b10010001 );
+		}
+	}
+
+	SECTION("SLA m")
+	{
+		SECTION("SLA A")
+		{
+			slaRegister( cpu, 0b10001000, 0b111 );
+			check_flags( cpu, false, false, false, true );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b00010000 );
+
+
+			slaRegister( cpu, 0b01000100, 0b111 );
+			check_flags( cpu, false, false, false, false );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b10001000 );
+		}
+
+		SECTION("SLA (HL)")
+		{
+			slaMemoryHL( cpu, 0b10001000, 0x342 );
+			check_flags( cpu, false, false, false, true );
+			REQUIRE( cpu.GetMemoryValue( 0x342 ) == 0b00010000 );
+
+
+			slaMemoryHL( cpu, 0b01000100, 0x342 );
 			check_flags( cpu, false, false, false, false );
 			REQUIRE( cpu.GetMemoryValue( 0x342 ) == 0b10001000 );
 		}
