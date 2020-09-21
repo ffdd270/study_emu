@@ -7,6 +7,7 @@
 
 
 #include "GameboyCPU.h"
+#include "catch.hpp"
 
 
 enum Register8BitIndex

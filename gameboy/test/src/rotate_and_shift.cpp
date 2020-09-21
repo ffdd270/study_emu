@@ -69,7 +69,7 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 
 			rlRegister( cpu, 0b01000100, 0b111 );
 			check_flags( cpu, false, false, false, false );
-			REQUIRE( cpu.GetRegisterAF().hi == 0b10001000 );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b10001001 ); // 캐리라서 1 올라감.
 		}
 
 		SECTION("RL (HL)")
@@ -81,7 +81,7 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 
 			rlMemoryHL( cpu, 0b01000100, 0x342 );
 			check_flags( cpu, false, false, false, false );
-			REQUIRE( cpu.GetMemoryValue( 0x342 ) == 0b10001000 );
+			REQUIRE( cpu.GetMemoryValue( 0x342 ) == 0b10001001 ); // 캐리라서 1..
 		}
 	}
 }
