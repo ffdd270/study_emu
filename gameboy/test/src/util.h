@@ -295,7 +295,7 @@ inline void decReg16( GameboyCPU & cpu, WORD set_reg_value, BYTE reg_index )
 	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 }
 
-inline void rotateRegisterExecute( GameboyCPU & cpu, BYTE op_code, BYTE set_reg_value, BYTE reg_index )
+inline void rotateAndShiftRegisterExecute(GameboyCPU & cpu, BYTE op_code, BYTE set_reg_value, BYTE reg_index )
 {
 	setRegister8( cpu, reg_index, set_reg_value );
 
@@ -305,7 +305,7 @@ inline void rotateRegisterExecute( GameboyCPU & cpu, BYTE op_code, BYTE set_reg_
 	for( int i = 0; i < 2; i++) { cpu.NextStep(); }
 }
 
-inline void rotateMemoryExecute(  GameboyCPU & cpu, BYTE op_code, BYTE set_value, WORD mem_address )
+inline void rotateAndShiftMemoryExecute(GameboyCPU & cpu, BYTE op_code, BYTE set_value, WORD mem_address )
 {
 	setMemory3Step( cpu, Register8BitIndex::D, mem_address, set_value );
 
@@ -318,43 +318,52 @@ inline void rotateMemoryExecute(  GameboyCPU & cpu, BYTE op_code, BYTE set_value
 
 inline void rlcRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
 {
-	rotateRegisterExecute( cpu, reg_index, set_reg_value, reg_index );
+	rotateAndShiftRegisterExecute(cpu, reg_index, set_reg_value, reg_index);
 }
 
 inline void rlcMemoryHL(  GameboyCPU & cpu, BYTE set_value, WORD mem_address )
 {
-	rotateMemoryExecute( cpu, 0b110, set_value, mem_address );
+	rotateAndShiftMemoryExecute(cpu, 0b110, set_value, mem_address);
 }
 
 inline void rrcRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
 {
-	rotateRegisterExecute( cpu, 0b1000u | reg_index,  set_reg_value, reg_index );
+	rotateAndShiftRegisterExecute(cpu, 0b1000u | reg_index, set_reg_value, reg_index);
 }
 
 inline void rrcMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
 {
-	rotateMemoryExecute( cpu, 0b1000u | 0b110u,  set_value, mem_address );
+	rotateAndShiftMemoryExecute(cpu, 0b1000u | 0b110u, set_value, mem_address);
 }
 
 inline void rlRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
 {
-	rotateRegisterExecute( cpu, 0b10000u | reg_index,  set_reg_value, reg_index );
+	rotateAndShiftRegisterExecute(cpu, 0b10000u | reg_index, set_reg_value, reg_index);
 }
 
 inline void rlMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address)
 {
-	rotateMemoryExecute( cpu, 0b10000u | 0b110u,  set_value, mem_address );
+	rotateAndShiftMemoryExecute(cpu, 0b10000u | 0b110u, set_value, mem_address);
 }
 
 inline void rrRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
 {
-	rotateRegisterExecute( cpu, 0b11000u | reg_index,  set_reg_value, reg_index );
+	rotateAndShiftRegisterExecute(cpu, 0b11000u | reg_index, set_reg_value, reg_index);
 }
 
 inline void rrMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address)
 {
-	rotateMemoryExecute( cpu, 0b11000u | 0b110u,  set_value, mem_address );
+	rotateAndShiftMemoryExecute(cpu, 0b11000u | 0b110u, set_value, mem_address);
 }
 
+inline void slaRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
+{
+	rotateAndShiftRegisterExecute(cpu, 0b100000u | reg_index, set_reg_value, reg_index);
+}
+
+inline void slaMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
+{
+	rotateAndShiftMemoryExecute(cpu, 0b100000u | 0b110u, set_value, mem_address);
+}
 
 #endif //GAMEBOY_UTIL_H
