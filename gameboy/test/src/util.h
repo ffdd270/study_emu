@@ -346,5 +346,15 @@ inline void rlMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address)
 	rotateMemoryExecute( cpu, 0b10000u | 0b110u,  set_value, mem_address );
 }
 
+inline void rrRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
+{
+	rotateRegisterExecute( cpu, 0b11000u | reg_index,  set_reg_value, reg_index );
+}
+
+inline void rrMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address)
+{
+	rotateMemoryExecute( cpu, 0b11000u | 0b110u,  set_value, mem_address );
+}
+
 
 #endif //GAMEBOY_UTIL_H
