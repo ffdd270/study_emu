@@ -91,4 +91,3 @@ void GameboyCPU::shiftRightLogical(BYTE op_code)
 	ref_value >>= 1u;
 	commonRotateAndShiftFlags(ref_value);
 }
-
