@@ -366,4 +366,14 @@ inline void slaMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
 	rotateAndShiftMemoryExecute(cpu, 0b100000u | 0b110u, set_value, mem_address);
 }
 
+inline void sraRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
+{
+	rotateAndShiftRegisterExecute(cpu, 0b101000u | reg_index, set_reg_value, reg_index);
+}
+
+inline void sraMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
+{
+	rotateAndShiftMemoryExecute(cpu, 0b101000u | 0b110u, set_value, mem_address);
+}
+
 #endif //GAMEBOY_UTIL_H
