@@ -452,7 +452,13 @@ private:
 	// Desc
 	// Carry is Bit0, Shift Right, Bit7 retain Origin Value.
 	// 0xcb, 0b00101rrr { r = m8BitRegisters }
-	void shiftRightArithmetic(BYTE op_code );
+	void shiftRightArithmetic(BYTE op_code);
+
+	//SRL
+	// Desc
+	// Carry is Bit0. Shift Right.
+	// 0xcb, 0b00110rrr { r = m8BitRegisters }
+	void shiftRightLogical(BYTE op_code);
 
 
 	/*
