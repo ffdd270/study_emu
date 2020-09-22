@@ -61,7 +61,7 @@ void GameboyCPU::rotateRight(BYTE op_code)
 	commonRotateAndShiftFlags(ref_value);
 }
 
-void GameboyCPU::shiftLeftAccumulator(BYTE op_code)
+void GameboyCPU::shiftLeftArithmetic(BYTE op_code)
 {
 	BYTE &ref_value = get8BitArgumentValue((0b00000111u) & op_code);
 
@@ -72,7 +72,7 @@ void GameboyCPU::shiftLeftAccumulator(BYTE op_code)
 }
 
 
-void GameboyCPU::shiftRightAccumulator(BYTE op_code)
+void GameboyCPU::shiftRightArithmetic(BYTE op_code)
 {
 	BYTE &ref_value = get8BitArgumentValue( (0b00000111u)  & op_code );
 
