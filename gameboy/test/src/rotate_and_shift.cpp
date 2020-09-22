@@ -137,4 +137,59 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 			REQUIRE( cpu.GetMemoryValue( 0x342 ) == 0b10001000 );
 		}
 	}
+
+	SECTION("SRA m")
+	{
+		SECTION("SRA A")
+		{
+			sraRegister( cpu, 0b00010001, 0b111 );
+			check_flags( cpu, false, false, false, true );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b00001000 );
+
+
+			sraRegister( cpu, 0b10001000, 0b111 );
+			check_flags( cpu, false, false, false, false );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b11000100 ); // SRA는 이전값을 유지해준다.
+		}
+
+
+		SECTION("SRA (HL)")
+		{
+			sraMemoryHL( cpu, 0b00010001, 0x3030 );
+			check_flags( cpu, false, false, false, true );
+			REQUIRE( cpu.GetMemoryValue(0x3030) == 0b00001000 );
+
+
+			sraMemoryHL( cpu, 0b10001000, 0x3030 );
+			check_flags( cpu, false, false, false, false );
+			REQUIRE( cpu.GetMemoryValue(0x3030) == 0b11000100 ); // SRA는 이전값을 유지해준다.
+		}
+	}
+
+	SECTION("SRL m")
+	{
+		SECTION("SRL A")
+		{
+			srlRegister( cpu, 0b00010001, 0b111 );
+			check_flags( cpu, false, false, false, true );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b00001000 );
+
+
+			srlRegister( cpu, 0b10001000, 0b111 );
+			check_flags( cpu, false, false, false, false );
+			REQUIRE( cpu.GetRegisterAF().hi == 0b01000100 ); // SRA는 이전값을 유지해준다.
+		}
+
+		SECTION("SRL (HL)")
+		{
+			srlMemoryHL( cpu, 0b00010001, 0x3030 );
+			check_flags( cpu, false, false, false, true );
+			REQUIRE( cpu.GetMemoryValue(0x3030) == 0b00001000 );
+
+
+			srlMemoryHL( cpu, 0b10001000, 0x3030 );
+			check_flags( cpu, false, false, false, false );
+			REQUIRE( cpu.GetMemoryValue(0x3030) == 0b01000100 ); // SRA는 이전값을 유지해준다.
+		}
+	}
 }

@@ -26,8 +26,8 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 								   }
 						   		),
 						   mFuncMap( { nullptr } ),
-						   mInturruptEnable(true )
-
+						   mInturruptEnable( true ),
+						   mPrefixCBFuncMap( { nullptr })
 {
 	// 함수 맵 꼭 만들기
 	pre0b00GenerateFuncMap();
@@ -37,13 +37,6 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 	pre0xCBGenerateFuncMap();
 
 	Reset();
-}
-
-
-bool GameboyCPU::Boot()
-{
-	Reset();
-	return true;
 }
 
 void GameboyCPU::Reset()
@@ -208,7 +201,9 @@ public:
 	BIND_FUNC( rotateLeft );
 	BIND_FUNC( rotateRight );
 
-	BIND_FUNC( shiftLeftAccumulator );
+	BIND_FUNC( shiftLeftArithmetic );
+	BIND_FUNC( shiftRightArithmetic );
+	BIND_FUNC( shiftRightLogical );
 };
 
 
@@ -219,7 +214,7 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	// 0b000110 ~ 0b111110
 	for(BYTE i = 0b000; i <= 0b111; i++)
 	{
-		BYTE op_code = 0b00000000 | ( i << 3 ) | 0b110;
+		BYTE op_code = 0b00000000u | static_cast<BYTE>( i << 3u ) | 0b110u;
 		mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromImm8;
 	}
 
@@ -270,14 +265,14 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	// 0b00rr0001
 	for(BYTE i = 0b00; i <= 0b11; i++)
 	{
-		BYTE op_code = 0b00000001 | ( i << 4 );
+		BYTE op_code = 0b00000001u | static_cast<BYTE>( i << 4u );
 		mFuncMap[ op_code ] = BIND_FUNCS::loadReg16FromImm16;
 	}
 
 	// INC r
 	for( BYTE i = 0b00; i <= 0b111; i++)
 	{
-		BYTE op_code = 0b00000100 | (i << 3);
+		BYTE op_code = 0b00000100u | static_cast<BYTE>( i << 3u );
 
 		if ( i == 0b110 )
 		{
@@ -293,7 +288,7 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	// DEC Instruction
 	for( BYTE i = 0b00; i <= 0b111; i++)
 	{
-		BYTE op_code = 0b00000101 | (i << 3);
+		BYTE op_code = 0b00000101u | static_cast<BYTE>(i << 3u);
 
 		if ( i == 0b110 )
 		{
@@ -340,7 +335,7 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 		{
 			if ( i == j  ) { continue; } // 같은 인자에 대한 연산은 없음. LD rrr, rrr 같이..
 
-			BYTE op_code = 0b01000000 | (i << 3) | j;
+			BYTE op_code = 0b01000000u | static_cast<BYTE>(i << 3u) | j;
 
 			if( i == 0b110 ) // ( HL ) load reg.
 			{
@@ -366,7 +361,7 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 void GameboyCPU::pre0b10GenerateFuncMap()
 {
 
-	for ( int i = 0; i <= 0b111; i++ )
+	for ( BYTE i = 0; i <= 0b111; i++ )
 	{
 		//ADD A, (HL)
 		// 0b10000110 ( 0x86 )
@@ -378,13 +373,13 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		// 0b10000rrr { rrr = 8bitArgument }
 		else
 		{
-			BYTE op_code = 0b10000000 | i;
+			BYTE op_code = 0b10000000u | i;
 			mFuncMap[ op_code ] = BIND_FUNCS::addRegAFromRegister;
 		}
 	}
 
 
-	for ( int i = 0; i <= 0b111; i++ )
+	for ( BYTE i = 0; i <= 0b111; i++ )
 	{
 		//ADC A, (HL)
 		// 0b10001110
@@ -396,14 +391,14 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		// 0b10001rrr ( rrr = 8bitArgument }
 		else
 		{
-			BYTE op_code = 0b10001000 | i;
+			BYTE op_code = 0b10001000u | i;
 			mFuncMap[ op_code ] = BIND_FUNCS::addRegAFromRegisterAndCarry;
 		}
 	}
 
-	for ( int i = 0; i <= 0b111; i++ )
+	for ( BYTE i = 0; i <= 0b111; i++ )
 	{
-		BYTE op_code = 0b10010000 | i;
+		BYTE op_code = 0b10010000u | i;
 
 		//SUB (HL)
 		// 0b10010110 (0x96)
@@ -419,9 +414,9 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		}
 	}
 
-	for ( int i = 0; i <= 0b111; i++ )
+	for ( BYTE i = 0; i <= 0b111; i++ )
 	{
-		BYTE op_code = 0b10011000 | i;
+		BYTE op_code = 0b10011000u | i;
 
 		//SBC A, (HL)
 		// 0b10011110 (0x9E)
@@ -438,9 +433,9 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 	}
 
 
-	for( int i = 0; i <= 0b111; i++ )
+	for( BYTE i = 0; i <= 0b111; i++ )
 	{
-		BYTE op_code = 0b10100000 | i;
+		BYTE op_code = 0b10100000u | i;
 
 		//AND (HL)
 		// 0b10100110 (0xA6)
@@ -456,9 +451,9 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		}
 	}
 
-	for ( int i = 0; i <= 0b111; i++ )
+	for ( BYTE i = 0; i <= 0b111; i++ )
 	{
-		BYTE op_code = 0b10110000 | i;
+		BYTE op_code = 0b10110000u | i;
 
 		//OR (HL)
 		// 0b10110110 ( 0xB6 )
@@ -476,9 +471,9 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 	}
 
 
-	for ( int i = 0; i <= 0b111; i++ )
+	for ( BYTE i = 0; i <= 0b111; i++ )
 	{
-		BYTE op_code = 0b10101000 | i;
+		BYTE op_code = 0b10101000u | i;
 
 		//XOR (HL)
 		// 0b10101110 ( 0xAE )
@@ -494,9 +489,9 @@ void GameboyCPU::pre0b10GenerateFuncMap()
 		}
 	}
 
-	for ( int i = 0; i <= 0b111; i++ )
+	for ( BYTE i = 0; i <= 0b111; i++ )
 	{
-		BYTE op_code = 0b10111000 | i;
+		BYTE op_code = 0b10111000u | i;
 
 		//CP (HL)
 		// 0b10111110 ( 0xBE )
@@ -522,17 +517,17 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 
 	//PUSH qq
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
-	for ( int i = 0; i <= 0b11; i++ )
+	for ( BYTE i = 0; i <= 0b11; i++ )
 	{
-		BYTE op_code = 0b11000101 | ( i << 4 ); // base = 0b11000101 ,i << 4 == qq.
+		BYTE op_code = 0b11000101u | static_cast<BYTE>( i << 4u ); // base = 0b11000101 ,i << 4 == qq.
 		mFuncMap[ op_code ] = BIND_FUNCS::pushReg16;
 	}
 
 	//POP qq
 	// 0b11qq0001 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 } }
-	for ( int i = 0; i <= 0b11; i++ ) // 굳이 PUSH와 합치지는 않았음. 3 클럭 소모 더하고 보기 좋게하는게..
+	for ( BYTE i = 0; i <= 0b11; i++ ) // 굳이 PUSH와 합치지는 않았음. 3 클럭 소모 더하고 보기 좋게하는게..
 	{
-		BYTE op_code = 0b11000001 | ( i << 4 ); // base = 0b11000001 ,i << 4 == qq.
+		BYTE op_code = 0b11000001u | static_cast<BYTE>( i << 4u ); // base = 0b11000001 ,i << 4 == qq.
 		mFuncMap[ op_code ] = BIND_FUNCS::popReg16;
 	}
 
@@ -598,7 +593,17 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 
 	for ( BYTE i = 0b0; i <= 0b111; i++ )
 	{
-		mPrefixCBFuncMap[ 0b100000u | i ] = BIND_FUNCS::shiftLeftAccumulator;
+		mPrefixCBFuncMap[ 0b100000u | i ] = BIND_FUNCS::shiftLeftArithmetic;
+	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b101000u | i ] = BIND_FUNCS::shiftRightArithmetic;
+	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b110000u | i ] = BIND_FUNCS::shiftRightLogical;
 	}
 }
 
@@ -640,39 +645,39 @@ WORD GameboyCPU::immediateValue16()
 
 	mPC.reg_16 += 2;
 
-	WORD value = ( value_hi << 8 ) | value_lo;
+	WORD value = static_cast<WORD>( value_hi << 8u ) | value_lo;
 	return value;
 }
 
-#define SET_BIT_ZERO( value, bit_pos ) value & ( 0xFF ^ ( 0b1 << bit_pos ) )
+#define SET_BIT_ZERO( value, bit_pos ) value & ( 0xFFu ^ ( 0b1u << bit_pos ) )
 
 
 void GameboyCPU::setFlagZ(bool flag)
 {
-	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 7 );
+	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 7u );
 	BYTE value = flag ? 0b1 : 0b0;
-	mRegisters.AF.lo |= value << 7;
+	mRegisters.AF.lo |= static_cast<BYTE>(value << 7u);
 }
 
 void GameboyCPU::setFlagN(bool flag)
 {
-	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 6 );
+	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 6u );
 	BYTE value = flag ? 0b1 : 0b0;
-	mRegisters.AF.lo |= value << 6;
+	mRegisters.AF.lo |= static_cast<BYTE>(value << 6u);
 }
 
 void GameboyCPU::setFlagH(bool flag)
 {
-	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 5 );
+	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 5u );
 	BYTE value = flag ? 0b1 : 0b0;
-	mRegisters.AF.lo |= value << 5;
+	mRegisters.AF.lo |= static_cast<BYTE>(value << 5u);
 }
 
 void GameboyCPU::setFlagC(bool flag)
 {
-	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 4 );
+	mRegisters.AF.lo = SET_BIT_ZERO( mRegisters.AF.lo, 4u );
 	BYTE value = flag ? 0b1 : 0b0;
-	mRegisters.AF.lo |= value << 4;
+	mRegisters.AF.lo |= static_cast<BYTE>(value << 4u);
 }
 
 void GameboyCPU::resetFlags()

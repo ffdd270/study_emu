@@ -61,12 +61,33 @@ void GameboyCPU::rotateRight(BYTE op_code)
 	commonRotateAndShiftFlags(ref_value);
 }
 
-void GameboyCPU::shiftLeftAccumulator(BYTE op_code)
+void GameboyCPU::shiftLeftArithmetic(BYTE op_code)
 {
 	BYTE &ref_value = get8BitArgumentValue((0b00000111u) & op_code);
 
 	setFlagC(((ref_value & 0b10000000u) >> 7u) == 1);
 	ref_value <<= 1u;
 
+	commonRotateAndShiftFlags(ref_value);
+}
+
+
+void GameboyCPU::shiftRightArithmetic(BYTE op_code)
+{
+	BYTE &ref_value = get8BitArgumentValue( (0b00000111u)  & op_code );
+
+	setFlagC( (ref_value & 1u) == 1 );
+	ref_value >>= 1u;
+	// Origin Value Contains in Bit7.
+	ref_value |= ( ( ref_value & 0b01000000u ) << 1u );
+
+	commonRotateAndShiftFlags(ref_value);
+}
+
+void GameboyCPU::shiftRightLogical(BYTE op_code)
+{
+	BYTE &ref_value = get8BitArgumentValue( (0b00000111u) & op_code );
+	setFlagC( (ref_value & 1u) == 1 );
+	ref_value >>= 1u;
 	commonRotateAndShiftFlags(ref_value);
 }

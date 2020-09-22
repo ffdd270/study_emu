@@ -31,7 +31,6 @@ public:
 
 	GameboyCPU();
 
-	bool Boot();
 	void Reset();
 
 	void NextStep();
@@ -97,33 +96,15 @@ private:
 	// 0bnnnnnnnn
 	void loadRegFromImm8(BYTE op_code );
 
-	// LD r, (IX+d)
-	// 게임보이는 그런 거 없음
-
-	// LD r, (IY+d)
-	// 게임보이는 그런 거 없음
-
 	// LD r, ( HL ) (1)
 	// 0b01rrr110
 	void loadRegFromMemHL(BYTE op_code );
 
 
-	//LD (IX+d), r
-	//게임보이는 그런 거 없음
-
-	//LD (IY+d), r
-	//역시 게임보이는 그런 거 없음
-
 	// LD (HL), r (1)
 	// 0b01110rrr
 	// (HL)<-r
 	void loadMemHLFromReg(BYTE op_code );
-
-	//LD (IX+d), n
-	//게임보이는 그런 거 없음
-
-	//LD (IY+d), n
-	//게임보이는 그런 거 없음
 
 	//LD A, (BC) (1)
 	// 0b00001010 (0x0A)
@@ -140,14 +121,6 @@ private:
 	// 0b00101010 (0x2A)
 	// A<-(HL), HL<-HL + 1
  	void loadRegAFromMemHLAndIncHL(BYTE op_code);
-
-
-	//LD A, (nn)
-	// 0b00111010 (0x3A) (only on CHIP-8)
-	// 0bnnnnnnnn
-	// 0bnnnnnnnn
-	// A<-(nn)
-	void loadRegAFromMemNN(BYTE op_code);
 
 	//LDD A,(HL)
 	// 0b00111010 (0x3A) (only on Gameboy CPU. )
@@ -174,12 +147,6 @@ private:
 	// HL<-A and HL<-HL - 1
 	void loadMemHLFromRegAAndDecHL(BYTE op_code);
 
-	//LD (nn), A(3) - (Only On Z80)
-	// 0b00110010 0x32
-	// 0bnnnnnnnn
-	// 0bnnnnnnnn
-	void loadMemNNFromRegA(BYTE op_code);
-
 	/// 여기서부터 16비트 로드 명령어
 
 	//LD DD, RR (3)
@@ -188,15 +155,6 @@ private:
 	//Imm
 	// DD <- Imm16
 	void loadReg16FromImm16( BYTE op_code );
-
-
-	//LD HL, (nn) (3) - (Only On Z80)
-	//0b00101010 0x2A
-	//0bnnnnnnnn
-	//0bnnnnnnnn
-	// H <- (nn + 1), L <- (nn)
-	void loadRegHLFromMemNN16( BYTE op_code );
-
 
 	//LD SP, HL
 	// 0b11111001 0xF9
@@ -488,8 +446,19 @@ private:
 	// Desc
 	// Carry is Bit7. Shift Left.
 	// 0xcb, 0b00100rrr { r = m8BitRegisters }
-	void shiftLeftAccumulator( BYTE op_code );  //왜 Accumulator?
+	void shiftLeftArithmetic(BYTE op_code);  //왜 Accumulator?
 
+	//SRA
+	// Desc
+	// Carry is Bit0, Shift Right, Bit7 retain Origin Value.
+	// 0xcb, 0b00101rrr { r = m8BitRegisters }
+	void shiftRightArithmetic(BYTE op_code);
+
+	//SRL
+	// Desc
+	// Carry is Bit0. Shift Right.
+	// 0xcb, 0b00110rrr { r = m8BitRegisters }
+	void shiftRightLogical(BYTE op_code);
 
 
 	/*
