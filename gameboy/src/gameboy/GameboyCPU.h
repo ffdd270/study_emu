@@ -490,6 +490,11 @@ private:
 	// 0xcb, 0b00100rrr { r = m8BitRegisters }
 	void shiftLeftAccumulator( BYTE op_code );  //왜 Accumulator?
 
+	//SRA
+	// Desc
+	// Carry is Bit0, Shift Right, Bit7 retain Origin Value.
+	// 0xcb, 0b00101rrr { r = m8BitRegisters }
+	void shiftRightAccumulator( BYTE op_code );
 
 
 	/*

@@ -209,6 +209,7 @@ public:
 	BIND_FUNC( rotateRight );
 
 	BIND_FUNC( shiftLeftAccumulator );
+	BIND_FUNC( shiftRightAccumulator );
 };
 
 
@@ -600,6 +601,12 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 	{
 		mPrefixCBFuncMap[ 0b100000u | i ] = BIND_FUNCS::shiftLeftAccumulator;
 	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b101000u | i ] = BIND_FUNCS::shiftRightAccumulator;
+	}
+
 }
 
 
