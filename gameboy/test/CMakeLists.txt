@@ -9,7 +9,7 @@ set(TEST
         src/main.cpp
         src/register.cpp
         src/load_instruction_set.cpp
-        src/arithmetic_instruction_set.cpp src/util.h src/cpu_control_instruction.cpp src/rotate_and_shift.cpp)
+        src/arithmetic_instruction_set.cpp src/util.h src/cpu_control_instruction.cpp src/rotate_and_shift.cpp src/bit_set_reset_test.cpp)
 
 
 add_executable( gb_test

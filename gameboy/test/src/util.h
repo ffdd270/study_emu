@@ -10,7 +10,7 @@
 #include "catch.hpp"
 
 
-enum Register8BitIndex
+enum Param8BitIndex
 {
 	B = 0b000,
 	C = 0b001,
@@ -18,7 +18,7 @@ enum Register8BitIndex
 	E = 0b011,
 	H = 0b100,
 	L = 0b101,
-	//(HL) = 0b110
+	MEM_HL = 0b110,
 	A = 0b111
 };
 
@@ -56,6 +56,12 @@ inline void setRegister8( GameboyCPU & cpu_ref, BYTE register_index, BYTE value 
 	cpu_ref.InjectionMemory( value ); // imm
 }
 
+inline void callSetRegister8( GameboyCPU & cpu_ref, BYTE register_index, BYTE value )
+{
+	setRegister8( cpu_ref, register_index, value );
+	cpu_ref.NextStep();
+}
+
 // 3 clock.
 inline void setMemory3Step(GameboyCPU & cpu_ref, BYTE reg8_index, WORD mem_addr, BYTE value )
 {
@@ -70,11 +76,18 @@ inline void setMemory3Step(GameboyCPU & cpu_ref, BYTE reg8_index, WORD mem_addr,
 	//(HL) = value  3 Step.
 }
 
+inline void callSetMemory3Step(GameboyCPU & cpu_ref, BYTE reg8_index, WORD mem_addr, BYTE value )
+{
+	setMemory3Step( cpu_ref, reg8_index, mem_addr, value );
+	for( int i = 0; i < 3; i++ ) { cpu_ref.NextStep(); }
+}
+
+
 
 
 inline void base_op_code_n(GameboyCPU & cpu, BYTE op_code, BYTE a_value, BYTE n )
 {
-	setRegister8( cpu, Register8BitIndex::A, a_value );
+	setRegister8(cpu, Param8BitIndex::A, a_value );
 	cpu.InjectionMemory( op_code );
 	cpu.InjectionMemory( n );
 
@@ -83,7 +96,7 @@ inline void base_op_code_n(GameboyCPU & cpu, BYTE op_code, BYTE a_value, BYTE n 
 
 inline void base_op_code_reg8(GameboyCPU & cpu, BYTE base_op_code, BYTE a_value, BYTE register_index, BYTE n )
 {
-	setRegister8( cpu, Register8BitIndex::A, a_value );
+	setRegister8(cpu, Param8BitIndex::A, a_value );
 	setRegister8( cpu, register_index, n );
 	cpu.InjectionMemory( ( base_op_code | register_index )  );
 
@@ -92,8 +105,8 @@ inline void base_op_code_reg8(GameboyCPU & cpu, BYTE base_op_code, BYTE a_value,
 
 inline void base_op_code_hl(GameboyCPU & cpu, BYTE op_code, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
-	setMemory3Step( cpu, Register8BitIndex::B, mem_hl_address, n );
-	setRegister8( cpu, Register8BitIndex::A, a_value );
+	setMemory3Step(cpu, Param8BitIndex::B, mem_hl_address, n );
+	setRegister8(cpu, Param8BitIndex::A, a_value );
 	cpu.InjectionMemory( op_code );
 
 	for( int i = 0; i < 5; i++ )
@@ -121,7 +134,7 @@ inline void subNC( GameboyCPU & cpu, BYTE a_value, BYTE n )
 
 inline void subRC(  GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10011000, a_value, Register8BitIndex::D, n); // SBC A, D
+	base_op_code_reg8(cpu, 0b10011000, a_value, Param8BitIndex::D, n); // SBC A, D
 }
 
 inline void subHLC( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
@@ -141,7 +154,7 @@ inline void andHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 
 inline void andR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10100000, a_value, Register8BitIndex::D, n);
+	base_op_code_reg8(cpu, 0b10100000, a_value, Param8BitIndex::D, n);
 }
 
 inline void orN( GameboyCPU & cpu, BYTE a_value, BYTE n )
@@ -156,7 +169,7 @@ inline void orHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 
 inline void orR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10110000, a_value, Register8BitIndex::D, n);
+	base_op_code_reg8(cpu, 0b10110000, a_value, Param8BitIndex::D, n);
 }
 
 inline void xorN( GameboyCPU & cpu, BYTE a_value, BYTE n )
@@ -171,7 +184,7 @@ inline void xorHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 
 inline void xorR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10101000, a_value, Register8BitIndex::D, n);
+	base_op_code_reg8(cpu, 0b10101000, a_value, Param8BitIndex::D, n);
 }
 
 inline void cpN( GameboyCPU & cpu, BYTE a_value, BYTE n )
@@ -186,7 +199,7 @@ inline void cpHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 
 inline void cpR( GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10111000, a_value, Register8BitIndex::D, n);
+	base_op_code_reg8(cpu, 0b10111000, a_value, Param8BitIndex::D, n);
 }
 
 inline void incR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
@@ -200,7 +213,7 @@ inline void incR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
 
 inline void incHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
 {
-	setMemory3Step( cpu, Register8BitIndex::D, mem_hl_address, set_value );
+	setMemory3Step(cpu, Param8BitIndex::D, mem_hl_address, set_value );
 	cpu.InjectionMemory( 0x34 );
 
 	for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
@@ -217,7 +230,7 @@ inline void decR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
 
 inline void decHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
 {
-	setMemory3Step( cpu, Register8BitIndex::D, mem_hl_address, set_value );
+	setMemory3Step(cpu, Param8BitIndex::D, mem_hl_address, set_value );
 	cpu.InjectionMemory( 0x35 );
 
 	for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
@@ -227,7 +240,7 @@ inline void addAtoHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE mem_hl_set_val
 {
 	setMemory3Step( cpu, 0, mem_hl_address, mem_hl_set_value );
 
-	setRegister8( cpu, Register8BitIndex::A, a_set_value );
+	setRegister8(cpu, Param8BitIndex::A, a_set_value );
 
 	cpu.InjectionMemory( 0x86 ); // ADD A, (HL)/
 
@@ -307,7 +320,7 @@ inline void rotateAndShiftRegisterExecute(GameboyCPU & cpu, BYTE op_code, BYTE s
 
 inline void rotateAndShiftMemoryExecute(GameboyCPU & cpu, BYTE op_code, BYTE set_value, WORD mem_address )
 {
-	setMemory3Step( cpu, Register8BitIndex::D, mem_address, set_value );
+	setMemory3Step(cpu, Param8BitIndex::D, mem_address, set_value );
 
 	cpu.InjectionMemory( 0xCB ); // Prefix
 	cpu.InjectionMemory( op_code );
@@ -385,4 +398,20 @@ inline void srlMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
 {
 	rotateAndShiftMemoryExecute(cpu, 0b110000u | 0b110u, set_value, mem_address);
 }
+
+inline BYTE bitTest( GameboyCPU & cpu, Param8BitIndex index, BYTE test_index )
+{
+	BYTE value_index = static_cast<BYTE>( index );
+	BYTE op_code = static_cast<BYTE>( 0b01u << 6u ) |
+				   static_cast<BYTE>( test_index << 3u );
+
+	op_code |= static_cast<BYTE>( value_index );
+
+	cpu.InjectionMemory( 0xCB );
+	cpu.InjectionMemory( op_code );
+	cpu.NextStep();
+
+	return cpu.GetFlagZ();
+}
+
 #endif //GAMEBOY_UTIL_H
