@@ -460,6 +460,13 @@ private:
 	// 0xcb, 0b00110rrr { r = m8BitRegisters }
 	void shiftRightLogical(BYTE op_code);
 
+	// BIT Set, Reset, Test Instruction set.
+
+	//BIT
+	// Desc
+	// Z is Bit B in Register R ( or (HL) )
+	// 0xcb, 0b01bbbrrr { b = B. bit position }, { r = m8BitRegisters }
+	void bitTest(BYTE op_code);
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..

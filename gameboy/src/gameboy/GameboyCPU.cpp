@@ -162,6 +162,9 @@ public:
 	//cpu instruction
 	BIND_FUNC( halt )
 
+	//bit instruction
+	BIND_FUNC( bitTest )
+
 	// pre 0b00
 
 	//load
@@ -604,6 +607,15 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 	for ( BYTE i = 0b0; i <= 0b111; i++ )
 	{
 		mPrefixCBFuncMap[ 0b110000u | i ] = BIND_FUNCS::shiftRightLogical;
+	}
+
+	for ( BYTE bit_pos = 0b0; bit_pos <= 0b111; bit_pos++ )
+	{
+		for ( BYTE register_pos = 0b0; register_pos <= 0b111; register_pos++ )
+		{
+			BYTE base_op_code = 0b01u << 6u;
+			mPrefixCBFuncMap[ base_op_code | bit_pos << 3u | register_pos ] = BIND_FUNCS::bitTest;
+		}
 	}
 }
 
