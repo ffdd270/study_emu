@@ -42,6 +42,8 @@ public:
 	void SetMemoryValue( unsigned int mem_index, BYTE value );
 	BYTE GetMemoryValue( unsigned int mem_index );
 
+
+	BYTE GetRegisterValueBy8BitIndex( BYTE index ) const {  return m8bitArguments[index].ref; }
 	Register GetRegisterAF() { return mRegisters.array[3]; }
 	Register GetRegisterBC() { return mRegisters.array[0]; }
 	Register GetRegisterDE() { return mRegisters.array[1]; }

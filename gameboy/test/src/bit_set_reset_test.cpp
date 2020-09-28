@@ -36,4 +36,20 @@ TEST_CASE( "BIT SET RESET TEST", "[BIT SET RESET TEST]" )
 		}
 	}
 
+
+	SECTION("SET B, R")
+	{
+		SECTION("SET 4, A")
+		{
+			callSetRegister8( cpu, Param8BitIndex::A, 0b0 );
+			REQUIRE( 0b00010000 == setBitByRegister( cpu, Param8BitIndex::A, 4 ) );
+		}
+
+		SECTION("SET 7, (HL)")
+		{
+			callSetMemory3Step( cpu, Param8BitIndex::D, 0x2460, 0b0 );
+			REQUIRE( 0b10000000 == setBitByMemory( cpu, 0x2460, 7 ) );
+		}
+	}
+
 }

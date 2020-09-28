@@ -414,4 +414,40 @@ inline BYTE bitTest( GameboyCPU & cpu, Param8BitIndex index, BYTE test_index )
 	return cpu.GetFlagZ();
 }
 
+
+inline BYTE setBitByRegister( GameboyCPU & cpu, Param8BitIndex index, BYTE set_index_pos )
+{
+	REQUIRE( index != Param8BitIndex::MEM_HL );
+
+	BYTE value_index = static_cast<BYTE>( index );
+	BYTE op_code = static_cast<BYTE>( 0b11u << 6u ) |
+				   static_cast<BYTE>( set_index_pos << 3u );
+
+	op_code |= static_cast<BYTE>( value_index );
+
+	cpu.InjectionMemory( 0xCB );
+	cpu.InjectionMemory( op_code );
+	cpu.NextStep();
+
+	return cpu.GetRegisterValueBy8BitIndex( index );
+}
+
+
+// set and return result
+inline BYTE setBitByMemory( GameboyCPU & cpu, WORD mem_address , BYTE set_index_pos )
+{
+	BYTE value_index = static_cast<BYTE>( 0b110 ); // MemHL
+	BYTE op_code = static_cast<BYTE>( 0b11u << 6u ) |
+				   static_cast<BYTE>( set_index_pos << 3u );
+
+	op_code |= static_cast<BYTE>( value_index );
+
+	cpu.InjectionMemory( 0xCB );
+	cpu.InjectionMemory( op_code );
+	cpu.NextStep();
+
+	return cpu.GetMemoryValue( mem_address );
+}
+
+
 #endif //GAMEBOY_UTIL_H
