@@ -15,3 +15,11 @@ void GameboyCPU::bitTest(BYTE op_code)
 	setFlagH( true );
 	setFlagN( false );
 }
+
+void GameboyCPU::setBit(BYTE op_code)
+{
+	BYTE bit_position = ( op_code & 0b00111000u ) >> 3u;
+	BYTE & reg_value = get8BitArgumentValue(  op_code & 0b00000111u );
+
+	reg_value |= 0b1u << bit_position;
+}
