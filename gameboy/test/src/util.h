@@ -438,5 +438,20 @@ inline BYTE setBitByMemory( GameboyCPU & cpu, WORD mem_address , BYTE set_index_
 	return cpu.GetMemoryValue( mem_address );
 }
 
+inline BYTE resetBitByRegister( GameboyCPU & cpu, Param8BitIndex index, BYTE set_index_pos )
+{
+	REQUIRE( index != Param8BitIndex::MEM_HL );
+
+	bitInstructionExecute( cpu, 0b10u, index, set_index_pos );
+
+	return cpu.GetRegisterValueBy8BitIndex( index );
+}
+
+inline BYTE resetBitByMemory( GameboyCPU & cpu, WORD mem_address , BYTE set_index_pos )
+{
+	bitInstructionExecute( cpu, 0b10u, 0b110u, set_index_pos );
+
+	return cpu.GetMemoryValue( mem_address );
+}
 
 #endif //GAMEBOY_UTIL_H
