@@ -473,7 +473,14 @@ private:
 	//SET
 	// Desc
 	// BIT B in Register R set as 1.
+	// 0xcb, 0b11bbbrrr { b = B. bit position }, { r = m8BitRegisters }
 	void setBit(BYTE op_code);
+
+	//RES
+	// Desc
+	// BIT B in Register R reset( 0 )
+	// 0xcb, 0b10bbbrrr { b = B. bit position }, { r = m8BitRegisters }
+	void resetBit(BYTE op_code);
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
