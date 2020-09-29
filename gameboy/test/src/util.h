@@ -399,17 +399,22 @@ inline void srlMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
 	rotateAndShiftMemoryExecute(cpu, 0b110000u | 0b110u, set_value, mem_address);
 }
 
-inline BYTE bitTest( GameboyCPU & cpu, Param8BitIndex index, BYTE test_index )
+inline void bitInstructionExecute( GameboyCPU & cpu, BYTE pre_op_code, BYTE index, BYTE bit_pos )
 {
 	BYTE value_index = static_cast<BYTE>( index );
-	BYTE op_code = static_cast<BYTE>( 0b01u << 6u ) |
-				   static_cast<BYTE>( test_index << 3u );
+	BYTE op_code = static_cast<BYTE>( pre_op_code << 6u ) |
+				   static_cast<BYTE>( bit_pos << 3u );
 
 	op_code |= static_cast<BYTE>( value_index );
 
 	cpu.InjectionMemory( 0xCB );
 	cpu.InjectionMemory( op_code );
 	cpu.NextStep();
+}
+
+inline BYTE bitTest( GameboyCPU & cpu, Param8BitIndex index, BYTE test_index )
+{
+	bitInstructionExecute( cpu, 0b01u, index, test_index );
 
 	return cpu.GetFlagZ();
 }
@@ -419,15 +424,7 @@ inline BYTE setBitByRegister( GameboyCPU & cpu, Param8BitIndex index, BYTE set_i
 {
 	REQUIRE( index != Param8BitIndex::MEM_HL );
 
-	BYTE value_index = static_cast<BYTE>( index );
-	BYTE op_code = static_cast<BYTE>( 0b11u << 6u ) |
-				   static_cast<BYTE>( set_index_pos << 3u );
-
-	op_code |= static_cast<BYTE>( value_index );
-
-	cpu.InjectionMemory( 0xCB );
-	cpu.InjectionMemory( op_code );
-	cpu.NextStep();
+	bitInstructionExecute( cpu, 0b11u, index, set_index_pos );
 
 	return cpu.GetRegisterValueBy8BitIndex( index );
 }
@@ -436,18 +433,25 @@ inline BYTE setBitByRegister( GameboyCPU & cpu, Param8BitIndex index, BYTE set_i
 // set and return result
 inline BYTE setBitByMemory( GameboyCPU & cpu, WORD mem_address , BYTE set_index_pos )
 {
-	BYTE value_index = static_cast<BYTE>( 0b110 ); // MemHL
-	BYTE op_code = static_cast<BYTE>( 0b11u << 6u ) |
-				   static_cast<BYTE>( set_index_pos << 3u );
-
-	op_code |= static_cast<BYTE>( value_index );
-
-	cpu.InjectionMemory( 0xCB );
-	cpu.InjectionMemory( op_code );
-	cpu.NextStep();
+	bitInstructionExecute( cpu, 0b11u, 0b110, set_index_pos );
 
 	return cpu.GetMemoryValue( mem_address );
 }
 
+inline BYTE resetBitByRegister( GameboyCPU & cpu, Param8BitIndex index, BYTE set_index_pos )
+{
+	REQUIRE( index != Param8BitIndex::MEM_HL );
+
+	bitInstructionExecute( cpu, 0b10u, index, set_index_pos );
+
+	return cpu.GetRegisterValueBy8BitIndex( index );
+}
+
+inline BYTE resetBitByMemory( GameboyCPU & cpu, WORD mem_address , BYTE set_index_pos )
+{
+	bitInstructionExecute( cpu, 0b10u, 0b110u, set_index_pos );
+
+	return cpu.GetMemoryValue( mem_address );
+}
 
 #endif //GAMEBOY_UTIL_H
