@@ -456,6 +456,12 @@ private:
 	// 0xcb, 0b00101rrr { r = m8BitRegisters }
 	void shiftRightArithmetic(BYTE op_code);
 
+	// SWAP
+	// Desc
+	// All Flag Reset, Z Flag set if result is zero. Change Low 4 Bit <-> High 4 Bit.
+	// 0xcb, 0b00110rrr { r = m8BitRegisters }
+	void swapLowAndHigh(BYTE op_code);
+
 	//SRL
 	// Desc
 	// Carry is Bit0. Shift Right.

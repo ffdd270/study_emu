@@ -208,6 +208,7 @@ public:
 
 	BIND_FUNC( shiftLeftArithmetic );
 	BIND_FUNC( shiftRightArithmetic );
+	BIND_FUNC( swapLowAndHigh );
 	BIND_FUNC( shiftRightLogical );
 };
 
@@ -604,6 +605,11 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 	for ( BYTE i = 0b0; i <= 0b111; i++ )
 	{
 		mPrefixCBFuncMap[ 0b101000u | i ] = BIND_FUNCS::shiftRightArithmetic;
+	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b110000u | i ] = BIND_FUNCS::swapLowAndHigh;
 	}
 
 	for ( BYTE i = 0b0; i <= 0b111; i++ )
