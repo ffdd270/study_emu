@@ -488,6 +488,18 @@ private:
 	// 0xcb, 0b10bbbrrr { b = B. bit position }, { r = m8BitRegisters }
 	void resetBit(BYTE op_code);
 
+	//Jump Group.
+
+	// Instruction sets.
+	// JP C, word => 0xda
+	// JP NC, word => 0xd2
+	// JP Z, word => 0xca
+	// JP NZ, word  => 0xc2
+	// Desc
+	// If Condition Check Pass, JP to word.
+	void jumpToWordIfCondition(BYTE op_code);
+
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */

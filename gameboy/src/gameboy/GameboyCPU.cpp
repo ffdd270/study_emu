@@ -125,6 +125,9 @@ public:
 	BIND_FUNC( disableInterrupt )
 	BIND_FUNC( enableInterrupt )
 
+	// jump
+	BIND_FUNC( jumpToWordIfCondition )
+
 	// pre 0b10
 
 	// arth
@@ -571,6 +574,14 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 
 	mFuncMap[ 0xF3 ] = BIND_FUNCS::disableInterrupt;
 	mFuncMap[ 0xFB ] = BIND_FUNCS::enableInterrupt;
+
+	//JP Groups.
+
+	//If condition JP Groups.
+	mFuncMap[ 0xDA ] = BIND_FUNCS::jumpToWordIfCondition; // JP C, WORD
+	mFuncMap[ 0xD2 ] = BIND_FUNCS::jumpToWordIfCondition; // JP NC, WORD
+	mFuncMap[ 0xCA ] = BIND_FUNCS::jumpToWordIfCondition; // JP Z, WORD
+	mFuncMap[ 0xC2 ] = BIND_FUNCS::jumpToWordIfCondition; // JP NZ, WORD
 }
 
 
