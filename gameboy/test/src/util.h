@@ -464,4 +464,37 @@ inline BYTE resetBitByMemory( GameboyCPU & cpu, WORD mem_address , BYTE set_inde
 	return cpu.GetMemoryValue( mem_address );
 }
 
+inline void basicJump( GameboyCPU & cpu, BYTE op_code, WORD jp_mem_address )
+{
+	cpu.InjectionMemory( op_code ); // JP C, WORD
+	cpu.InjectionMemory( static_cast<BYTE>( jp_mem_address & 0x00FFu ) );// Lo
+	cpu.InjectionMemory( static_cast<BYTE>( static_cast<WORD>( jp_mem_address & 0xFF00u ) >> 8u ) ); //Hi.
+
+	cpu.NextStep();
+}
+
+inline WORD jumpToWordIfCarry( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump( cpu, 0xDA, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
+}
+
+inline WORD jumpToWordIfNotCarry( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump( cpu, 0xD2, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
+}
+
+inline WORD jumpToWordIfZero( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump( cpu, 0xCA, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
+}
+
+inline WORD jumpToWordNotIfZero( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump( cpu, 0xC2, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
+}
+
 #endif //GAMEBOY_UTIL_H
