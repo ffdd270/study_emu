@@ -177,7 +177,7 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 
 			srlRegister( cpu, 0b10001000, 0b111 );
 			check_flags( cpu, false, false, false, false );
-			REQUIRE( cpu.GetRegisterAF().hi == 0b01000100 ); // SRA는 이전값을 유지해준다.
+			REQUIRE( cpu.GetRegisterAF().hi == 0b01000100 );
 		}
 
 		SECTION("SRL (HL)")
@@ -189,7 +189,7 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 
 			srlMemoryHL( cpu, 0b10001000, 0x3030 );
 			check_flags( cpu, false, false, false, false );
-			REQUIRE( cpu.GetMemoryValue(0x3030) == 0b01000100 ); // SRA는 이전값을 유지해준다.
+			REQUIRE( cpu.GetMemoryValue(0x3030) == 0b01000100 );
 		}
 	}
 }
