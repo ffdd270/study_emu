@@ -419,7 +419,7 @@ private:
 	// 0xcb
 	// 0xnn (여기가 command.)
 
-
+	// BIT Shift, Rotate, SWAP Group.
 	//RLC
 	// Desc
 	// Rotate Left. Carry is Bit7, Bit0 is Carry.
@@ -459,7 +459,7 @@ private:
 	//SRL
 	// Desc
 	// Carry is Bit0. Shift Right.
-	// 0xcb, 0b00110rrr { r = m8BitRegisters }
+	// 0xcb, 0b00111rrr { r = m8BitRegisters }
 	void shiftRightLogical(BYTE op_code);
 
 	// BIT Set, Reset, Test Instruction set. ( Still 0xCB )

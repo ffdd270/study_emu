@@ -608,7 +608,7 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 
 	for ( BYTE i = 0b0; i <= 0b111; i++ )
 	{
-		mPrefixCBFuncMap[ 0b110000u | i ] = BIND_FUNCS::shiftRightLogical;
+		mPrefixCBFuncMap[ 0b111000u | i ] = BIND_FUNCS::shiftRightLogical;
 	}
 
 	for ( BYTE bit_pos = 0b0; bit_pos <= 0b111; bit_pos++ )
