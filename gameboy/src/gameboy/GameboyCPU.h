@@ -419,7 +419,7 @@ private:
 	// 0xcb
 	// 0xnn (여기가 command.)
 
-
+	// BIT Shift, Rotate, SWAP Group.
 	//RLC
 	// Desc
 	// Rotate Left. Carry is Bit7, Bit0 is Carry.
@@ -456,10 +456,16 @@ private:
 	// 0xcb, 0b00101rrr { r = m8BitRegisters }
 	void shiftRightArithmetic(BYTE op_code);
 
+	// SWAP
+	// Desc
+	// All Flag Reset, Z Flag set if result is zero. Change Low 4 Bit <-> High 4 Bit.
+	// 0xcb, 0b00110rrr { r = m8BitRegisters }
+	void swapLowAndHigh(BYTE op_code);
+
 	//SRL
 	// Desc
 	// Carry is Bit0. Shift Right.
-	// 0xcb, 0b00110rrr { r = m8BitRegisters }
+	// 0xcb, 0b00111rrr { r = m8BitRegisters }
 	void shiftRightLogical(BYTE op_code);
 
 	// BIT Set, Reset, Test Instruction set. ( Still 0xCB )
@@ -481,6 +487,18 @@ private:
 	// BIT B in Register R reset( 0 )
 	// 0xcb, 0b10bbbrrr { b = B. bit position }, { r = m8BitRegisters }
 	void resetBit(BYTE op_code);
+
+	//Jump Group.
+
+	// Instruction sets.
+	// JP C, word => 0xda
+	// JP NC, word => 0xd2
+	// JP Z, word => 0xca
+	// JP NZ, word  => 0xc2
+	// Desc
+	// If Condition Check Pass, JP to word.
+	void jumpToWordIfCondition(BYTE op_code);
+
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..

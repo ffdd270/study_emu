@@ -84,6 +84,19 @@ void GameboyCPU::shiftRightArithmetic(BYTE op_code)
 	commonRotateAndShiftFlags(ref_value);
 }
 
+void GameboyCPU::swapLowAndHigh(BYTE op_code)
+{
+	BYTE &ref_value = get8BitArgumentValue((0b00000111u) & op_code);
+
+	ref_value = ( ref_value << 4 ) | ( ref_value >> 4);
+
+	setFlagC(false);
+	setFlagN(false);
+	setFlagH(false);
+	setFlagZ( ref_value == 0 );
+}
+
+
 void GameboyCPU::shiftRightLogical(BYTE op_code)
 {
 	BYTE &ref_value = get8BitArgumentValue( (0b00000111u) & op_code );

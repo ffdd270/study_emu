@@ -125,6 +125,9 @@ public:
 	BIND_FUNC( disableInterrupt )
 	BIND_FUNC( enableInterrupt )
 
+	// jump
+	BIND_FUNC( jumpToWordIfCondition )
+
 	// pre 0b10
 
 	// arth
@@ -208,6 +211,7 @@ public:
 
 	BIND_FUNC( shiftLeftArithmetic );
 	BIND_FUNC( shiftRightArithmetic );
+	BIND_FUNC( swapLowAndHigh );
 	BIND_FUNC( shiftRightLogical );
 };
 
@@ -570,6 +574,14 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 
 	mFuncMap[ 0xF3 ] = BIND_FUNCS::disableInterrupt;
 	mFuncMap[ 0xFB ] = BIND_FUNCS::enableInterrupt;
+
+	//JP Groups.
+
+	//If condition JP Groups.
+	mFuncMap[ 0xDA ] = BIND_FUNCS::jumpToWordIfCondition; // JP C, WORD
+	mFuncMap[ 0xD2 ] = BIND_FUNCS::jumpToWordIfCondition; // JP NC, WORD
+	mFuncMap[ 0xCA ] = BIND_FUNCS::jumpToWordIfCondition; // JP Z, WORD
+	mFuncMap[ 0xC2 ] = BIND_FUNCS::jumpToWordIfCondition; // JP NZ, WORD
 }
 
 
@@ -608,7 +620,12 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 
 	for ( BYTE i = 0b0; i <= 0b111; i++ )
 	{
-		mPrefixCBFuncMap[ 0b110000u | i ] = BIND_FUNCS::shiftRightLogical;
+		mPrefixCBFuncMap[ 0b110000u | i ] = BIND_FUNCS::swapLowAndHigh;
+	}
+
+	for ( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mPrefixCBFuncMap[ 0b111000u | i ] = BIND_FUNCS::shiftRightLogical;
 	}
 
 	for ( BYTE bit_pos = 0b0; bit_pos <= 0b111; bit_pos++ )

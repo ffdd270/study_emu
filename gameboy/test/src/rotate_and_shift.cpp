@@ -166,6 +166,31 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 		}
 	}
 
+	SECTION("SWAP m")
+	{
+		SECTION("SWAP B")
+		 {
+			swapRegister( cpu, 0b00101000u, Param8BitIndex::B );
+			check_flags( cpu,  false, false, false, false );
+			REQUIRE( cpu.GetRegisterBC().hi == 0b10000010u );
+
+			swapRegister( cpu, 0b0, Param8BitIndex::B );
+			check_flags( cpu,  true, false, false, false );
+			REQUIRE( cpu.GetRegisterBC().hi == 0 );
+		}
+
+		SECTION("SWAP (HL)")
+		{
+			swapMemoryHL( cpu, 0b00101000u, 0x3024 );
+			check_flags( cpu,  false, false, false, false );
+			REQUIRE( cpu.GetMemoryValue(0x3024) == 0b10000010u );
+
+			swapMemoryHL( cpu, 0b0, 0x3024 );
+			check_flags( cpu,  true, false, false, false );
+			REQUIRE( cpu.GetMemoryValue(0x3024) == 0 );
+		}
+	}
+
 	SECTION("SRL m")
 	{
 		SECTION("SRL A")
@@ -177,7 +202,7 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 
 			srlRegister( cpu, 0b10001000, 0b111 );
 			check_flags( cpu, false, false, false, false );
-			REQUIRE( cpu.GetRegisterAF().hi == 0b01000100 ); // SRA는 이전값을 유지해준다.
+			REQUIRE( cpu.GetRegisterAF().hi == 0b01000100 );
 		}
 
 		SECTION("SRL (HL)")
@@ -189,7 +214,7 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 
 			srlMemoryHL( cpu, 0b10001000, 0x3030 );
 			check_flags( cpu, false, false, false, false );
-			REQUIRE( cpu.GetMemoryValue(0x3030) == 0b01000100 ); // SRA는 이전값을 유지해준다.
+			REQUIRE( cpu.GetMemoryValue(0x3030) == 0b01000100 );
 		}
 	}
 }

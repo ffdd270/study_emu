@@ -389,14 +389,24 @@ inline void sraMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
 	rotateAndShiftMemoryExecute(cpu, 0b101000u | 0b110u, set_value, mem_address);
 }
 
+inline void swapRegister( GameboyCPU & cpu, BYTE set_value, Param8BitIndex reg_index )
+{
+	rotateAndShiftRegisterExecute( cpu, 0b110000u | reg_index, set_value, reg_index );
+}
+
+inline void swapMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
+{
+	rotateAndShiftMemoryExecute( cpu, 0b110000u | 0b110u, set_value, mem_address );
+}
+
 inline void srlRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
 {
-	rotateAndShiftRegisterExecute(cpu, 0b110000u | reg_index, set_reg_value, reg_index);
+	rotateAndShiftRegisterExecute(cpu, 0b111000u | reg_index, set_reg_value, reg_index);
 }
 
 inline void srlMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
 {
-	rotateAndShiftMemoryExecute(cpu, 0b110000u | 0b110u, set_value, mem_address);
+	rotateAndShiftMemoryExecute(cpu, 0b111000u | 0b110u, set_value, mem_address);
 }
 
 inline void bitInstructionExecute( GameboyCPU & cpu, BYTE pre_op_code, BYTE index, BYTE bit_pos )
@@ -452,6 +462,39 @@ inline BYTE resetBitByMemory( GameboyCPU & cpu, WORD mem_address , BYTE set_inde
 	bitInstructionExecute( cpu, 0b10u, 0b110u, set_index_pos );
 
 	return cpu.GetMemoryValue( mem_address );
+}
+
+inline void basicJump( GameboyCPU & cpu, BYTE op_code, WORD jp_mem_address )
+{
+	cpu.InjectionMemory( op_code ); // JP C, WORD
+	cpu.InjectionMemory( static_cast<BYTE>( jp_mem_address & 0x00FFu ) );// Lo
+	cpu.InjectionMemory( static_cast<BYTE>( static_cast<WORD>( jp_mem_address & 0xFF00u ) >> 8u ) ); //Hi.
+
+	cpu.NextStep();
+}
+
+inline WORD jumpToWordIfCarry( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump( cpu, 0xDA, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
+}
+
+inline WORD jumpToWordIfNotCarry( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump( cpu, 0xD2, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
+}
+
+inline WORD jumpToWordIfZero( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump( cpu, 0xCA, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
+}
+
+inline WORD jumpToWordNotIfZero( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump( cpu, 0xC2, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
 }
 
 #endif //GAMEBOY_UTIL_H
