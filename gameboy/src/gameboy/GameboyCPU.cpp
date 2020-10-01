@@ -128,6 +128,7 @@ public:
 	// jump
 	BIND_FUNC( jumpToWordIfCondition )
 	BIND_FUNC( jumpToWord )
+	BIND_FUNC( jumpToHL )
 
 	// pre 0b10
 	// arth
@@ -584,6 +585,7 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	mFuncMap[ 0xC2 ] = BIND_FUNCS::jumpToWordIfCondition; // JP NZ, WORD
 
 	mFuncMap[ 0xC3 ] = BIND_FUNCS::jumpToWord;
+	mFuncMap[ 0xE9 ] = BIND_FUNCS::jumpToHL;
 }
 
 

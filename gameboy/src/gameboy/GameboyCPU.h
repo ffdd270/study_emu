@@ -505,6 +505,12 @@ private:
 	// 0xC3
 	void jumpToWord(BYTE op_code);
 
+	//JP (HL)
+	// Desc
+	// PC is HL. Not (HL) (Memory.)
+	// 0xE9
+	void jumpToHL(BYTE op_code);
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */

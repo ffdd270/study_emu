@@ -26,3 +26,8 @@ void GameboyCPU::jumpToWord(BYTE op_code)
 {
 	mPC.reg_16 = immediateValue16();
 }
+
+void GameboyCPU::jumpToHL(BYTE op_code)
+{
+	mPC.reg_16 = mRegisters.HL.reg_16;
+}
