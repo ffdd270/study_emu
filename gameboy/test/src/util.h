@@ -497,4 +497,10 @@ inline WORD jumpToWordNotIfZero( GameboyCPU & cpu, WORD jp_mem_address )
 	return cpu.GetRegisterPC().reg_16;
 }
 
+inline WORD jumpToWord( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	basicJump(  cpu, 0xC3, jp_mem_address );
+	return cpu.GetRegisterPC().reg_16;
+}
+
 #endif //GAMEBOY_UTIL_H
