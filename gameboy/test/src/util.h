@@ -503,4 +503,14 @@ inline WORD jumpToWord( GameboyCPU & cpu, WORD jp_mem_address )
 	return cpu.GetRegisterPC().reg_16;
 }
 
+inline WORD jumpToHL( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	setRegister16( cpu, Param8BitIndex::D, jp_mem_address );  // Call 1.
+	cpu.InjectionMemory( 0xE9 );
+
+	for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+	return cpu.GetRegisterPC().reg_16;
+}
+
 #endif //GAMEBOY_UTIL_H
