@@ -55,7 +55,7 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/instruction_set/cpu_control_instruction.cpp
 		${SRC_PATH}/gameboy/instruction_set/rotate_and_shift.cpp
 		${SRC_PATH}/gameboy/instruction_set/bit_set_reset_test.cpp
-		${SRC_PATH}/gameboy/instruction_set/jump.cpp)
+		${SRC_PATH}/gameboy/instruction_set/jump_group.cpp)
 
 add_subdirectory(test)
 add_executable(gameboy src/main.cpp ${ANGELICA_LIB} ${GAMEBOY_SRC} )

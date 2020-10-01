@@ -21,3 +21,8 @@ void GameboyCPU::jumpToWordIfCondition(BYTE op_code)
 	}
 }
 
+
+void GameboyCPU::jumpToWord(BYTE op_code)
+{
+	mPC.reg_16 = immediateValue16();
+}
