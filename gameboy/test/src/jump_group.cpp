@@ -77,4 +77,13 @@ TEST_CASE("JUMP CODE POINT", "[JUMP]")
 		}
 	}
 
+	SECTION("JP WORD")
+	{
+		REQUIRE( 0x3000 == jumpToWord( cpu, 0x3000 ) );
+	}
+
+	SECTION("JP HL")
+	{
+		REQUIRE( 0x4242 == jumpToHL( cpu, 0x4242 ) );
+	}
 }
