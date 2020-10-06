@@ -130,6 +130,9 @@ public:
 	BIND_FUNC( jumpToWord )
 	BIND_FUNC( jumpToHL )
 
+	//call and ret
+	BIND_FUNC( callWord )
+
 	// pre 0b10
 	// arth
 	BIND_FUNC( addRegAFromRegister )
@@ -586,6 +589,9 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 
 	mFuncMap[ 0xC3 ] = BIND_FUNCS::jumpToWord;
 	mFuncMap[ 0xE9 ] = BIND_FUNCS::jumpToHL;
+
+	// CALL
+	mFuncMap[ 0xCD ] = BIND_FUNCS::callWord;
 }
 
 

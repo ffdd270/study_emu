@@ -3,7 +3,7 @@
 //
 // Jump Group.
 
-#include <GameboyCPU.h>
+#include "../GameboyCPU.h"
 
 void GameboyCPU::jumpToWordIfCondition(BYTE op_code)
 {
