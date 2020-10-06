@@ -513,4 +513,26 @@ inline WORD jumpToHL( GameboyCPU & cpu, WORD jp_mem_address )
 	return cpu.GetRegisterPC().reg_16;
 }
 
+struct CallResult
+{
+	WORD reg_16_pc;
+	WORD reg_16_sp;
+
+	CallResult( WORD reg_16_pc, WORD reg_16_sp ) : reg_16_pc( reg_16_pc ), reg_16_sp( reg_16_sp )
+	{
+
+	}
+};
+
+inline CallResult callWord( GameboyCPU & cpu, WORD jp_mem_address )
+{
+	cpu.InjectionMemory( 0xCD );
+	cpu.InjectionMemory( ( jp_mem_address & 0x00ffu ) ); // LO;
+	cpu.InjectionMemory( ( jp_mem_address & 0xff00u ) >> 8u ); // HI
+
+	cpu.NextStep();
+
+	return CallResult( cpu.GetRegisterPC().reg_16, cpu.GetRegisterSP().reg_16 );
+}
+
 #endif //GAMEBOY_UTIL_H
