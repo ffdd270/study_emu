@@ -3,7 +3,7 @@
 //
 // General-Purpose Arithmetic and CPU Control Groups
 
-#include <GameboyCPU.h>
+#include "../GameboyCPU.h"
 
 
 // 계산 결과를 demical끼리 계산으로 변경한다.
