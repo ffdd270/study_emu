@@ -8,6 +8,7 @@
 
 #include "typedef.h"
 #include <array>
+#include <vector>
 
 union Register
 {
@@ -510,6 +511,15 @@ private:
 	// PC is HL. Not (HL) (Memory.)
 	// 0xE9
 	void jumpToHL(BYTE op_code);
+
+	//CALL nn
+	// Desc
+	// (SP - 1) = PC High
+	// (SP - 2) = PC Low.
+	// PC = WORD
+	// if RET Instruction, POP CallStack and set PC by Poped Value
+	void callWord(BYTE op_code);
+
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
