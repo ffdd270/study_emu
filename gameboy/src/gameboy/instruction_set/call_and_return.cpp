@@ -15,8 +15,8 @@ void GameboyCPU::callIfCondition(BYTE op_code)
 	BYTE check_condition_param = (op_code & 0b00011000u) >> 3u;
 	BYTE check_condition = (check_condition_param & 0b10u) == 0b10u ? GetFlagC() : GetFlagZ();
 
-	// 0b01이면 Flag, 0b10이면 Not Flag.
-	bool result_condition = (check_condition_param & 0b01u) == 1u ? check_condition == true : check_condition == false;
+	// 0b00이면 Flag, 0b01이면 Not Flag.
+	bool result_condition = (check_condition_param & 0b01u) == 1u ? check_condition == false : check_condition == true;
 
 	if (result_condition)
 	{
