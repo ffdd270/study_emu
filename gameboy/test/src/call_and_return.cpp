@@ -112,5 +112,18 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 				check_call(cpu, CallCheckCondition::NZ, false); // NOT OK.
 			}
 		}
+
+		SECTION("RET")
+		{
+			WORD before_sp = cpu.GetRegisterSP().reg_16;
+			WORD before_pc = cpu.GetRegisterPC().reg_16;
+
+			callWord( cpu, 0x3242 );
+			cpu.SetInjectionCount( 0x3242 );
+			WORD ret_pc = returnInstruction( cpu );
+
+			REQUIRE( ret_pc == before_pc + 1 ); // PC는 1늘었을테니..
+			REQUIRE( before_sp == cpu.GetRegisterSP().reg_16 );
+		}
 	}
 }

@@ -556,5 +556,12 @@ inline CallResult callIfCondition( GameboyCPU & cpu, CallCheckCondition check_co
 	return CallResult( cpu.GetRegisterPC().reg_16, cpu.GetRegisterSP().reg_16 );
 }
 
+inline WORD returnInstruction( GameboyCPU & cpu )
+{
+	cpu.InjectionMemory(0xC9);
+	cpu.NextStep();
+
+	return cpu.GetRegisterPC().reg_16;
+}
 
 #endif //GAMEBOY_UTIL_H

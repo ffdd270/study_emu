@@ -40,6 +40,8 @@ public:
 
 	// 게임 보이 디버거 함수들
 	void InjectionMemory(BYTE injection_byte);
+	void SetInjectionCount(WORD injection_address) { mDebugInjectionCount.reg_16 = injection_address; }
+
 	void SetMemoryValue( unsigned int mem_index, BYTE value );
 	BYTE GetMemoryValue( unsigned int mem_index );
 
