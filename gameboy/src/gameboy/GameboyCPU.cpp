@@ -132,6 +132,7 @@ public:
 
 	//call and ret
 	BIND_FUNC( callWord )
+	BIND_FUNC( callIfCondition )
 
 	// pre 0b10
 	// arth
@@ -592,6 +593,11 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 
 	// CALL
 	mFuncMap[ 0xCD ] = BIND_FUNCS::callWord;
+
+	for ( BYTE i = 0b0; i <= 0b11; i++ )
+	{
+		mFuncMap[ 0b11000100u | static_cast<BYTE>(i << 3u) ] = BIND_FUNCS::callIfCondition; // 0b110cc100
+	}
 }
 
 
@@ -709,6 +715,14 @@ WORD GameboyCPU::immediateValue16()
 
 	WORD value = static_cast<WORD>( value_hi << 8u ) | value_lo;
 	return value;
+}
+
+void GameboyCPU::setWORDToStack(WORD value)
+{
+	mGameMemory[ mSP.reg_16 - 1 ] = static_cast<BYTE>((value & 0xff00u) >> 8u); // HI
+	mGameMemory[ mSP.reg_16 - 2 ] = static_cast<BYTE>(value & 0x00ffu); //LO
+
+	mSP.reg_16 = mSP.reg_16 - 2;
 }
 
 #define SET_BIT_ZERO( value, bit_pos ) value & ( 0xFFu ^ ( 0b1u << bit_pos ) )
