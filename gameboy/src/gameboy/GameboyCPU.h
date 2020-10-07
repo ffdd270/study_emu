@@ -541,6 +541,17 @@ private:
 	// 0xC9
 	void returnInstruction(BYTE op_code);
 
+
+	//RET cc
+	// Param
+	// cc = { 00 = NZ, 01 = Z, 10 = NC, 11 = C }
+	// Desc
+	// if cc was true, RET.
+	// Op Code
+	// 0b110cc000
+	void returnIfCondition(BYTE op_code);
+
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
@@ -569,6 +580,8 @@ private:
 
 	void setWORDToStack( WORD value );
 	WORD getWORDFromStack();
+
+	bool getIfConditionResult( BYTE op_code ) const;
 
 	void setFlagZ( bool flag );
 	void setFlagN( bool flag );
