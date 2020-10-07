@@ -6,10 +6,22 @@
 
 void GameboyCPU::callWord(BYTE op_code)
 {
-	mGameMemory[ mSP.reg_16 - 1 ] = mPC.hi;
-	mGameMemory[ mSP.reg_16 - 2 ] = mPC.lo;
-
+	setWORDToStack( mPC.reg_16 );
 	mPC.reg_16 = immediateValue16();
-	mSP.reg_16 = mSP.reg_16 - 2;
+}
+
+void GameboyCPU::callIfCondition(BYTE op_code)
+{
+	BYTE check_condition_param = (op_code & 0b00011000u) >> 3u;
+	BYTE check_condition = (check_condition_param & 0b10u) == 0b10u ? GetFlagC() : GetFlagZ();
+
+	// 0b00이면 Flag, 0b01이면 Not Flag.
+	bool result_condition = (check_condition_param & 0b01u) == 1u ? check_condition == false : check_condition == true;
+
+	if (result_condition)
+	{
+		setWORDToStack( mPC.reg_16 );
+		mPC.reg_16 = immediateValue16();
+	}
 }
 

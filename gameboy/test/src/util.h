@@ -535,4 +535,26 @@ inline CallResult callWord( GameboyCPU & cpu, WORD jp_mem_address )
 	return CallResult( cpu.GetRegisterPC().reg_16, cpu.GetRegisterSP().reg_16 );
 }
 
+enum class CallCheckCondition
+{
+	Z = 0,
+	NZ = 1,
+	C = 0b10,
+	NC = 0b11,
+};
+
+inline CallResult callIfCondition( GameboyCPU & cpu, CallCheckCondition check_condition,  WORD jp_mem_address )
+{
+	BYTE check_condition_opcode = static_cast<BYTE>(check_condition);
+
+	cpu.InjectionMemory( 0b11000100u | static_cast<BYTE>( check_condition_opcode << 3u ) );
+	cpu.InjectionMemory( ( jp_mem_address & 0x00ffu ) ); // LO;
+	cpu.InjectionMemory( ( jp_mem_address & 0xff00u ) >> 8u ); // HI
+
+	cpu.NextStep();
+
+	return CallResult( cpu.GetRegisterPC().reg_16, cpu.GetRegisterSP().reg_16 );
+}
+
+
 #endif //GAMEBOY_UTIL_H

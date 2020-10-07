@@ -518,8 +518,18 @@ private:
 	// (SP - 2) = PC Low.
 	// PC = WORD
 	// if RET Instruction, POP CallStack and set PC by Poped Value
+	// Op Code
+	// 0xCD, 0xWordHI, 0xWordLow
 	void callWord(BYTE op_code);
 
+	//CALL cc, nn
+	// Param
+	// cc = { 00 = NZ, 01 = Z, 10 = NC, 11 = C }
+	// Desc
+	// if cc was true, CALL nn.
+	// Op Code
+	// 0b110cc100, 0xWordHI, 0xWordLow
+	void callIfCondition(BYTE op_code);
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
@@ -546,6 +556,8 @@ private:
 
 	BYTE immediateValue();
 	WORD immediateValue16();
+
+	void setWORDToStack( WORD value );
 
 	void setFlagZ( bool flag );
 	void setFlagN( bool flag );
