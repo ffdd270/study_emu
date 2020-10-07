@@ -25,3 +25,8 @@ void GameboyCPU::callIfCondition(BYTE op_code)
 	}
 }
 
+void GameboyCPU::returnInstruction(BYTE op_code)
+{
+	mPC.reg_16 = getWORDFromStack();
+}
+

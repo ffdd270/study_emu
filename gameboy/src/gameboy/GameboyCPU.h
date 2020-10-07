@@ -531,6 +531,14 @@ private:
 	// 0b110cc100, 0xWordHI, 0xWordLow
 	void callIfCondition(BYTE op_code);
 
+	//RET
+	// Desc
+	// PC = WORD { hi = (SP - 2) lo = (SP - 1) }
+	// SP = SP + 2
+	// Op Code
+	// 0xC9
+	void returnInstruction(BYTE op_code);
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
@@ -558,6 +566,7 @@ private:
 	WORD immediateValue16();
 
 	void setWORDToStack( WORD value );
+	WORD getWORDFromStack();
 
 	void setFlagZ( bool flag );
 	void setFlagN( bool flag );

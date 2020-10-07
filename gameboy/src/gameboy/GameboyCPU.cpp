@@ -134,6 +134,8 @@ public:
 	BIND_FUNC( callWord )
 	BIND_FUNC( callIfCondition )
 
+	BIND_FUNC( returnInstruction )
+
 	// pre 0b10
 	// arth
 	BIND_FUNC( addRegAFromRegister )
@@ -598,6 +600,9 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	{
 		mFuncMap[ 0b11000100u | static_cast<BYTE>(i << 3u) ] = BIND_FUNCS::callIfCondition; // 0b110cc100
 	}
+
+	// RET
+	mFuncMap[ 0xC9 ] = BIND_FUNCS::returnInstruction;
 }
 
 
@@ -723,6 +728,18 @@ void GameboyCPU::setWORDToStack(WORD value)
 	mGameMemory[ mSP.reg_16 - 2 ] = static_cast<BYTE>(value & 0x00ffu); //LO
 
 	mSP.reg_16 = mSP.reg_16 - 2;
+}
+
+WORD GameboyCPU::getWORDFromStack()
+{
+	BYTE hi = mGameMemory[ mSP.reg_16 + 1 ];
+	BYTE lo = mGameMemory[ mSP.reg_16 ];
+
+	mSP.reg_16 = mSP.reg_16 + 2;
+
+	WORD word = static_cast<WORD>(hi << 8u) | lo;
+
+	return word;
 }
 
 #define SET_BIT_ZERO( value, bit_pos ) value & ( 0xFFu ^ ( 0b1u << bit_pos ) )
