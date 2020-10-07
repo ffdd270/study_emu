@@ -40,6 +40,8 @@ public:
 
 	// 게임 보이 디버거 함수들
 	void InjectionMemory(BYTE injection_byte);
+	void SetInjectionCount(WORD injection_address) { mDebugInjectionCount.reg_16 = injection_address; }
+
 	void SetMemoryValue( unsigned int mem_index, BYTE value );
 	BYTE GetMemoryValue( unsigned int mem_index );
 
@@ -517,7 +519,7 @@ private:
 	// (SP - 1) = PC High
 	// (SP - 2) = PC Low.
 	// PC = WORD
-	// if RET Instruction, POP CallStack and set PC by Poped Value
+	// SP = SP - 2
 	// Op Code
 	// 0xCD, 0xWordHI, 0xWordLow
 	void callWord(BYTE op_code);
@@ -530,6 +532,25 @@ private:
 	// Op Code
 	// 0b110cc100, 0xWordHI, 0xWordLow
 	void callIfCondition(BYTE op_code);
+
+	//RET
+	// Desc
+	// PC = WORD { hi = (SP - 2) lo = (SP - 1) }
+	// SP = SP + 2
+	// Op Code
+	// 0xC9
+	void returnInstruction(BYTE op_code);
+
+
+	//RET cc
+	// Param
+	// cc = { 00 = NZ, 01 = Z, 10 = NC, 11 = C }
+	// Desc
+	// if cc was true, RET.
+	// Op Code
+	// 0b110cc000
+	void returnIfCondition(BYTE op_code);
+
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
@@ -558,6 +579,9 @@ private:
 	WORD immediateValue16();
 
 	void setWORDToStack( WORD value );
+	WORD getWORDFromStack();
+
+	bool getIfConditionResult( BYTE op_code ) const;
 
 	void setFlagZ( bool flag );
 	void setFlagN( bool flag );

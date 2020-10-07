@@ -7,7 +7,7 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
-void check_call( GameboyCPU & cpu, CallCheckCondition check_condition, bool jp_ok  )
+void check_call(GameboyCPU & cpu, CheckCondition check_condition, bool jp_ok  )
 {
 	WORD before_sp = cpu.GetRegisterSP().reg_16;
 	WORD before_pc = cpu.GetRegisterPC().reg_16;
@@ -21,6 +21,19 @@ void check_call( GameboyCPU & cpu, CallCheckCondition check_condition, bool jp_o
 						  static_cast<WORD>( cpu.GetMemoryValue( result.reg_16_sp ) ); // lo.
 
 	REQUIRE( ( saved_pc_value == ( before_pc + 1 ) ) == jp_ok ); // 한 스텝 진행했으니까..
+}
+
+void check_condition_ret(GameboyCPU & cpu, CheckCondition check_condition, bool rtn_ok, BYTE a_value )
+{
+	WORD before_sp = cpu.GetRegisterSP().reg_16;
+	WORD before_pc = cpu.GetRegisterPC().reg_16;
+
+	callWord( cpu, 0x5260 );
+	cpu.SetInjectionCount( 0x5260 );
+	subN(cpu, a_value, 1);
+
+	REQUIRE( ( returnIfCondition( cpu, check_condition ) == before_pc + 1 ) == rtn_ok );
+	REQUIRE( ( before_sp == cpu.GetRegisterSP().reg_16 ) == rtn_ok );
 }
 
 TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
@@ -51,14 +64,14 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 			{
 				subN(cpu, 0, 1);
 				check_flags(cpu, false, true, true, true);
-				check_call(cpu, CallCheckCondition::C, true); // OK.
+				check_call(cpu, CheckCondition::C, true); // OK.
 			}
 
 			SECTION("NOT OK")
 			{
 				subN(cpu, 2, 1);
 				check_flags(cpu, false, false, true, false);
-				check_call(cpu, CallCheckCondition::C, false); // NOT OK.
+				check_call(cpu, CheckCondition::C, false); // NOT OK.
 			}
 		}
 
@@ -68,14 +81,14 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 			{
 				subN(cpu, 2, 1);
 				check_flags(cpu, false, false, true, false);
-				check_call(cpu, CallCheckCondition::NC, true); // OK.
+				check_call(cpu, CheckCondition::NC, true); // OK.
 			}
 
 			SECTION("NOT OK")
 			{
 				subN(cpu, 0, 1);
 				check_flags(cpu, false, true, true, true);
-				check_call(cpu, CallCheckCondition::NC, false); // NOT OK.
+				check_call(cpu, CheckCondition::NC, false); // NOT OK.
 			}
 		}
 
@@ -85,14 +98,14 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 			{
 				subN(cpu, 1, 1);
 				check_flags(cpu, true, false, true, false);
-				check_call(cpu, CallCheckCondition::Z, true); // OK.
+				check_call(cpu, CheckCondition::Z, true); // OK.
 			}
 
 			SECTION("NOT OK")
 			{
 				subN(cpu, 2, 1);
 				check_flags(cpu, false, false, true, false);
-				check_call(cpu, CallCheckCondition::Z, false); // NOT OK.
+				check_call(cpu, CheckCondition::Z, false); // NOT OK.
 			}
 		}
 
@@ -102,14 +115,91 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 			{
 				subN(cpu, 2, 1);
 				check_flags(cpu, false, false, true, false);
-				check_call(cpu, CallCheckCondition::NZ, true); //  OK.
+				check_call(cpu, CheckCondition::NZ, true); //  OK.
 			}
 
 			SECTION("NOT OK")
 			{
 				subN(cpu, 1, 1);
 				check_flags(cpu, true, false, true, false);
-				check_call(cpu, CallCheckCondition::NZ, false); // NOT OK.
+				check_call(cpu, CheckCondition::NZ, false); // NOT OK.
+			}
+		}
+
+		SECTION("RET")
+		{
+			WORD before_sp = cpu.GetRegisterSP().reg_16;
+			WORD before_pc = cpu.GetRegisterPC().reg_16;
+
+			callWord( cpu, 0x3242 );
+			cpu.SetInjectionCount( 0x3242 );
+			WORD ret_pc = returnInstruction( cpu );
+
+			REQUIRE( ret_pc == before_pc + 1 ); // PC는 1늘었을테니..
+			REQUIRE( before_sp == cpu.GetRegisterSP().reg_16 );
+		}
+
+
+		SECTION("RET cc")
+		{
+			SECTION("cc = C")
+			{
+				SECTION("OK")
+				{
+					check_condition_ret( cpu, CheckCondition::C, true, 0 );
+					check_flags(cpu, false, true, true, true);
+				}
+
+				SECTION("NOT OK")
+				{
+					check_condition_ret( cpu, CheckCondition::C, false, 2 );
+					check_flags(cpu, false, false, true, false);
+				}
+			}
+
+			SECTION("cc = NC")
+			{
+				SECTION("OK")
+				{
+					check_condition_ret( cpu, CheckCondition::NC, true, 2 );
+					check_flags(cpu, false, false, true, false);
+				}
+
+				SECTION("NOT OK")
+				{
+					check_condition_ret( cpu, CheckCondition::NC, false, 0 );
+					check_flags(cpu, false, true, true, true);
+				}
+			}
+
+			SECTION("cc = Z")
+			{
+				SECTION("OK")
+				{
+					check_condition_ret( cpu, CheckCondition::Z, true, 1 );
+					check_flags(cpu, true, false, true, false);
+				}
+
+				SECTION("NOT OK")
+				{
+					check_condition_ret( cpu, CheckCondition::Z, false, 0 );
+					check_flags(cpu, false, true, true, true);
+				}
+			}
+
+			SECTION("cc = NZ")
+			{
+				SECTION("OK")
+				{
+					check_condition_ret( cpu, CheckCondition::NZ, true, 0 );
+					check_flags(cpu, false, true, true, true);
+				}
+
+				SECTION("NOT OK")
+				{
+					check_condition_ret( cpu, CheckCondition::NZ, false, 1 );
+					check_flags(cpu, true, false, true, false);
+				}
 			}
 		}
 	}
