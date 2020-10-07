@@ -535,7 +535,7 @@ inline CallResult callWord( GameboyCPU & cpu, WORD jp_mem_address )
 	return CallResult( cpu.GetRegisterPC().reg_16, cpu.GetRegisterSP().reg_16 );
 }
 
-enum class CallCheckCondition
+enum class CheckCondition
 {
 	Z = 0,
 	NZ = 1,
@@ -543,7 +543,7 @@ enum class CallCheckCondition
 	NC = 0b11,
 };
 
-inline CallResult callIfCondition( GameboyCPU & cpu, CallCheckCondition check_condition,  WORD jp_mem_address )
+inline CallResult callIfCondition(GameboyCPU & cpu, CheckCondition check_condition, WORD jp_mem_address )
 {
 	BYTE check_condition_opcode = static_cast<BYTE>(check_condition);
 
@@ -559,6 +559,15 @@ inline CallResult callIfCondition( GameboyCPU & cpu, CallCheckCondition check_co
 inline WORD returnInstruction( GameboyCPU & cpu )
 {
 	cpu.InjectionMemory(0xC9);
+	cpu.NextStep();
+
+	return cpu.GetRegisterPC().reg_16;
+}
+
+inline WORD returnIfCondition( GameboyCPU & cpu, CheckCondition check_condition )
+{
+	BYTE check_condition_opcode = static_cast<BYTE>(check_condition);
+	cpu.InjectionMemory( 0b11000000u | static_cast<BYTE>( check_condition_opcode << 3u ) );
 	cpu.NextStep();
 
 	return cpu.GetRegisterPC().reg_16;

@@ -42,6 +42,7 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 void GameboyCPU::Reset()
 {
 	mPC.reg_16 = 0x1000;
+	mSP.reg_16 = 0x8000;
 	mDebugInjectionCount.reg_16 = 0x1000;
 	memset( mGameMemory, 0, sizeof ( mGameMemory ) );
 
