@@ -517,7 +517,7 @@ private:
 	// (SP - 1) = PC High
 	// (SP - 2) = PC Low.
 	// PC = WORD
-	// if RET Instruction, POP CallStack and set PC by Poped Value
+	// SP = SP - 2
 	// Op Code
 	// 0xCD, 0xWordHI, 0xWordLow
 	void callWord(BYTE op_code);
