@@ -32,3 +32,8 @@ void GameboyCPU::returnIfCondition(BYTE op_code)
 	}
 }
 
+void GameboyCPU::returnFromInterrupt(BYTE op_code)
+{
+	mInturruptEnable = true;
+	mPC.reg_16 = getWORDFromStack();
+}
