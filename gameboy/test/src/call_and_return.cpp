@@ -203,4 +203,17 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 			}
 		}
 	}
+
+	SECTION("RETI")
+	{
+		WORD before_pc = cpu.GetRegisterPC().reg_16;
+
+		callWord( cpu, 0x2460 );
+		cpu.SetInjectionCount( 0x2460 );
+		cpu.InjectionMemory( 0xD9 ); //RETI
+		cpu.NextStep();
+
+		REQUIRE(before_pc + 1 == cpu.GetRegisterPC().reg_16);
+		REQUIRE(cpu.IsInterruptEnable());
+	}
 }

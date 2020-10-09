@@ -35,7 +35,7 @@ public:
 	void Reset();
 
 	void NextStep();
-	[[nodiscard]] bool IsInterrupt() const { return  mInturruptEnable; }
+	[[nodiscard]] bool IsInterruptEnable() const { return  mInturruptEnable; }
 
 
 	// 게임 보이 디버거 함수들
