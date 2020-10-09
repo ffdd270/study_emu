@@ -35,7 +35,7 @@ public:
 	void Reset();
 
 	void NextStep();
-	[[nodiscard]] bool IsInterrupt() const { return  mInturruptEnable; }
+	[[nodiscard]] bool IsInterruptEnable() const { return  mInturruptEnable; }
 
 
 	// 게임 보이 디버거 함수들
@@ -551,6 +551,14 @@ private:
 	// 0b110cc000
 	void returnIfCondition(BYTE op_code);
 
+	//RETI
+	// Desc
+	// Return From Interrupt.
+	// EI = true
+	// PC = RET Instruction
+	// Op Code
+	// 0xD9
+	void returnFromInterrupt(BYTE op_code);
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..

@@ -28,7 +28,7 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 
 		SECTION("SUB A to HL as DAA")
 		{
-			subHL( cpu, 0x99, 0x3000, 0xA0 );
+			call_subHL(cpu, 0x99, 0x3000, 0xA0);
 			daa( cpu );
 
 			REQUIRE( cpu.GetFlagC() == true );
@@ -64,7 +64,7 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 	{
 		SECTION("Set Flag, and CCF, and Check Carry Flag")
 		{
-			subHL( cpu, 0x99, 0x3000, 0xA0 ); // Carry.
+			call_subHL(cpu, 0x99, 0x3000, 0xA0); // Carry.
 			REQUIRE( cpu.GetFlagC() );
 
 			ccf( cpu );
@@ -113,18 +113,18 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 	{
 		cpu.InjectionMemory( 0xF3 );
 		cpu.NextStep();
-		REQUIRE( cpu.IsInterrupt() == false );
+		REQUIRE(cpu.IsInterruptEnable() == false );
 	}
 
 	SECTION("EI Test")
 	{
 		cpu.InjectionMemory( 0xF3 );
 		cpu.NextStep();
-		REQUIRE( cpu.IsInterrupt() == false );
+		REQUIRE(cpu.IsInterruptEnable() == false );
 
 		cpu.InjectionMemory( 0xFB );
 		cpu.NextStep();
-		REQUIRE( cpu.IsInterrupt() == true );
+		REQUIRE(cpu.IsInterruptEnable() == true );
 	}
 
 }
