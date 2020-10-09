@@ -446,10 +446,10 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "SUB TEST" )
 		{
 			cpu.Reset();
-			subN( cpu, 0x30, 0x28 );
+			call_subN(cpu, 0x30, 0x28);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x8 );
 
-			subN( cpu, 0x30, 0x31 ); // underflow test.
+			call_subN(cpu, 0x30, 0x31); // underflow test.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
 		}
 
@@ -457,19 +457,19 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			subN( cpu, 0x35, 0x31 );
+			call_subN(cpu, 0x35, 0x31);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x4 );
 			check_flags( cpu, false, false, true, false );
 
-			subN( cpu, 0x31, 0x31 ); // Z Flag.
+			call_subN(cpu, 0x31, 0x31); // Z Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
 			check_flags( cpu, true, false, true, false );
 
-			subN( cpu, 0x38, 0x2A ); // H Flag.
+			call_subN(cpu, 0x38, 0x2A); // H Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xE );
 			check_flags( cpu, false, true, true, false );
 
-			subN( cpu, 0x2A, 0x30 ); // C Flag.
+			call_subN(cpu, 0x2A, 0x30); // C Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == ( 0xff - 5 ) );
 			check_flags( cpu, false, false, true, true );
 		}
@@ -480,26 +480,26 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "SUB TEST" )
 		{
 			cpu.Reset();
-			subHL( cpu, 0xff, 0x3000, 0xfe );
+			call_subHL(cpu, 0xff, 0x3000, 0xfe);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x1 );
 		}
 
 		SECTION( "FLAG TEST" )
 		{
 			cpu.Reset();
-			subHL( cpu, 0xfb, 0x3000, 0xea ); // NO FLAG.
+			call_subHL(cpu, 0xfb, 0x3000, 0xea); // NO FLAG.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x11 );
 			check_flags( cpu, false, false, true, false );
 
-			subHL( cpu, 0xff, 0x3530, 0xff ); // Z FLAG.
+			call_subHL(cpu, 0xff, 0x3530, 0xff); // Z FLAG.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
 			check_flags( cpu, true, false, true, false );
 
-			subHL( cpu, 0x3a, 0x4567, 0x2b ); // H FLAG.
+			call_subHL(cpu, 0x3a, 0x4567, 0x2b); // H FLAG.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xf );
 			check_flags( cpu, false, true, true, false );
 
-			subHL( cpu, 0x3b, 0x4252, 0x3c ); // C Flag.
+			call_subHL(cpu, 0x3b, 0x4252, 0x3c); // C Flag.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
 			check_flags( cpu, false, true, true, true );
 		}
@@ -511,13 +511,13 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			subRC( cpu, 0x30, 0x31 );
+			call_subRC(cpu, 0x30, 0x31);
 			// Carry.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
 			REQUIRE( cpu.GetFlagC() == 1 );
 			REQUIRE( cpu.GetFlagH() == 1 );
 
-			subRC( cpu, 0x1A, 0x19 );
+			call_subRC(cpu, 0x1A, 0x19);
 			// With Carry SUB .
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
@@ -530,12 +530,12 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			subNC( cpu, 0x30, 0x31 );
+			call_subNC(cpu, 0x30, 0x31);
 			// Carry.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
 			REQUIRE( cpu.GetFlagC() == 1 );
 
-			subNC( cpu, 0x06, 0x05 );
+			call_subNC(cpu, 0x06, 0x05);
 			// With Carry SUB.  -1 plus.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
@@ -546,18 +546,18 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			subNC( cpu, 0x41, 0x45 ); // Underflow 4.
+			call_subNC(cpu, 0x41, 0x45); // Underflow 4.
 			REQUIRE( cpu.GetRegisterAF().hi == ( 0xff - 3 ) );
 			REQUIRE( cpu.GetFlagC() == 1 );
 			REQUIRE( cpu.GetFlagH() == 1 );
 
-			subNC( cpu, 0x53, 0x43 );
+			call_subNC(cpu, 0x53, 0x43);
 			// With Carry.
 			REQUIRE( cpu.GetRegisterAF().hi == 0xF );
 			REQUIRE( cpu.GetFlagH() == 1 );
 			REQUIRE( cpu.GetFlagC() == 0 );
 
-			subNC( cpu, 0x42, 0x42 );
+			call_subNC(cpu, 0x42, 0x42);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -570,19 +570,19 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			subHLC( cpu, 0xf0, 0xf0f0, 0xf1 );
+			call_subHLC(cpu, 0xf0, 0xf0f0, 0xf1);
 			// Carry .
 			REQUIRE( cpu.GetRegisterHL().reg_16 == 0xf0f0 );
 			REQUIRE( cpu.GetRegisterAF().hi == 0xff );
 			check_flags( cpu, false, true, true, true );
 
-			subHLC( cpu, 0x32, 0xf2f2, 0x30 );
+			call_subHLC(cpu, 0x32, 0xf2f2, 0x30);
 			//With Carry.
 			REQUIRE( cpu.GetRegisterHL().reg_16 == 0xf2f2 );
 			REQUIRE( cpu.GetRegisterAF().hi == 0x1 );
 			check_flags( cpu, false, false, true, false );
 
-			subHLC( cpu, 0x31, 0xfefe, 0x2 );
+			call_subHLC(cpu, 0x31, 0xfefe, 0x2);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x2f );
 			check_flags( cpu, false, true, true, false );
 		}
@@ -595,13 +595,13 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			andR( cpu, 0xff, 0x22 );
+			call_andR(cpu, 0xff, 0x22);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x22 );
 
-			andR( cpu, 0x33, 0xff );
+			call_andR(cpu, 0x33, 0xff);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x33 );
 
-			andR( cpu, 0xff, 0x00 );
+			call_andR(cpu, 0xff, 0x00);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x00 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -614,11 +614,11 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			andN( cpu, 0x80, 0xf0 );
+			call_andN(cpu, 0x80, 0xf0);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x80 );
 			REQUIRE( cpu.GetFlagZ() == 0 );
 
-			andN( cpu, 0x22, 0x11 );
+			call_andN(cpu, 0x22, 0x11);
 			REQUIRE( cpu.GetRegisterAF().hi == 0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -632,11 +632,11 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			andHL( cpu, 0x2f, 0x3030, 0xf2 );
+			call_andHL(cpu, 0x2f, 0x3030, 0xf2);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x22 );
 			REQUIRE( cpu.GetFlagZ() == 0 );
 
-			andHL( cpu, 0x3f, 0x4040, 0x00 );
+			call_andHL(cpu, 0x3f, 0x4040, 0x00);
 			REQUIRE( cpu.GetRegisterAF().hi == 0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -649,15 +649,15 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			orR( cpu, 0x3f, 0x21 );
+			call_orR(cpu, 0x3f, 0x21);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x3f );
 			NoFlagCheck( cpu );
 
-			orR( cpu, 0x21, 0x24 );
+			call_orR(cpu, 0x21, 0x24);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x25 );
 			NoFlagCheck( cpu );
 
-			orR( cpu, 0, 0 );
+			call_orR(cpu, 0, 0);
 			REQUIRE( cpu.GetRegisterAF().hi == 0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -670,15 +670,15 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			orN( cpu, 0x56, 0x72 );
+			call_orN(cpu, 0x56, 0x72);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x76 );
 			NoFlagCheck( cpu );
 
-			orN( cpu, 0x52, 0x59 );
+			call_orN(cpu, 0x52, 0x59);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x5B );
 			NoFlagCheck( cpu );
 
-			orN( cpu, 0, 0 );
+			call_orN(cpu, 0, 0);
 			REQUIRE( cpu.GetRegisterAF().hi == 0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -691,15 +691,15 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			orHL( cpu, 0x56, 0x30f0, 0x72 );
+			call_orHL(cpu, 0x56, 0x30f0, 0x72);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x76 );
 			NoFlagCheck( cpu );
 
-			orHL( cpu, 0x52, 0x3f21, 0x59 );
+			call_orHL(cpu, 0x52, 0x3f21, 0x59);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x5B );
 			NoFlagCheck( cpu );
 
-			orHL( cpu, 0, 0x241f, 0 );
+			call_orHL(cpu, 0, 0x241f, 0);
 			REQUIRE( cpu.GetRegisterAF().hi == 0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -712,15 +712,15 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			xorR( cpu, 0x31, 0x93 );
+			call_xorR(cpu, 0x31, 0x93);
 			REQUIRE( cpu.GetRegisterAF().hi == 0xA2 );
 			NoFlagCheck( cpu );
 
-			xorR( cpu, 0x52, 0x59 );
+			call_xorR(cpu, 0x52, 0x59);
 			REQUIRE( cpu.GetRegisterAF().hi == 0xB );
 			NoFlagCheck( cpu );
 
-			xorR( cpu, 0, 0 );
+			call_xorR(cpu, 0, 0);
 			REQUIRE( cpu.GetRegisterAF().hi == 0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -733,15 +733,15 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			xorN( cpu, 0x21, 0x9 );
+			call_xorN(cpu, 0x21, 0x9);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x28 );
 			NoFlagCheck( cpu );
 
-			xorN( cpu, 0x42, 0x93 );
+			call_xorN(cpu, 0x42, 0x93);
 			REQUIRE( cpu.GetRegisterAF().hi == 0xD1 );
 			NoFlagCheck( cpu );
 
-			xorN( cpu, 0, 0 );
+			call_xorN(cpu, 0, 0);
 			REQUIRE( cpu.GetRegisterAF().hi == 0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -754,15 +754,15 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			xorHL( cpu, 0x82, 0xf2f2, 0x51 );
+			call_xorHL(cpu, 0x82, 0xf2f2, 0x51);
 			REQUIRE( cpu.GetRegisterAF().hi == 0xD3 );
 			NoFlagCheck( cpu );
 
-			xorHL( cpu, 0x49, 0xa2a2, 0x90 );
+			call_xorHL(cpu, 0x49, 0xa2a2, 0x90);
 			REQUIRE( cpu.GetRegisterAF().hi == 0xD9 );
 			NoFlagCheck( cpu );
 
-			xorHL( cpu, 0, 0x8080,0 );
+			call_xorHL(cpu, 0, 0x8080, 0);
 			REQUIRE( cpu.GetRegisterAF().hi == 0 );
 			REQUIRE( cpu.GetFlagZ() == 1 );
 		}
@@ -775,23 +775,23 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			cpN( cpu, 0x84, 0x32 );
+			call_cpN(cpu, 0x84, 0x32);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x84 );
 			check_flags( cpu, false, false, true, false );
 
-			cpN( cpu, 0x93, 0x86 );
+			call_cpN(cpu, 0x93, 0x86);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x93 );
 			check_flags( cpu, false, true, true, false ); // H = set.
 
-			cpN( cpu, 0x82, 0x91 );
+			call_cpN(cpu, 0x82, 0x91);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
 			check_flags( cpu, false, false,true, true ); // C = Set.
 
-			cpN( cpu, 0x82, 0x82 );
+			call_cpN(cpu, 0x82, 0x82);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
 			check_flags( cpu, true, false, true, false );
 
-			cpN( cpu, 0xFE, 0xFF );
+			call_cpN(cpu, 0xFE, 0xFF);
 			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
 			check_flags( cpu, false, true, true, true );
 		}
@@ -801,23 +801,23 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			cpR( cpu, 0x84, 0x32 );
+			call_cpR(cpu, 0x84, 0x32);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x84 );
 			check_flags( cpu, false, false, true, false );
 
-			cpR( cpu, 0x93, 0x86 );
+			call_cpR(cpu, 0x93, 0x86);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x93 );
 			check_flags( cpu, false, true, true, false ); // H = set.
 
-			cpR( cpu, 0x82, 0x91 );
+			call_cpR(cpu, 0x82, 0x91);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
 			check_flags( cpu, false, false,true, true ); // C = Set.
 
-			cpR( cpu, 0x82, 0x82 );
+			call_cpR(cpu, 0x82, 0x82);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
 			check_flags( cpu, true, false, true, false );
 
-			cpR( cpu, 0xFE, 0xFF );
+			call_cpR(cpu, 0xFE, 0xFF);
 			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
 			check_flags( cpu, false, true, true, true );
 		}
@@ -827,23 +827,23 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			cpHL( cpu, 0x84, 0xf3f3, 0x32 );
+			call_cpHL(cpu, 0x84, 0xf3f3, 0x32);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x84 );
 			check_flags( cpu, false, false, true, false );
 
-			cpHL( cpu, 0x93, 0x4920, 0x86 );
+			call_cpHL(cpu, 0x93, 0x4920, 0x86);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x93 );
 			check_flags( cpu, false, true, true, false ); // H = set.
 
-			cpHL( cpu, 0x82, 0x3920, 0x91 );
+			call_cpHL(cpu, 0x82, 0x3920, 0x91);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
 			check_flags( cpu, false, false,true, true ); // C = Set.
 
-			cpHL( cpu, 0x82, 0x3921, 0x82 );
+			call_cpHL(cpu, 0x82, 0x3921, 0x82);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x82 );
 			check_flags( cpu, true, false, true, false );
 
-			cpHL( cpu, 0xFE, 0x3940, 0xFF );
+			call_cpHL(cpu, 0xFE, 0x3940, 0xFF);
 			REQUIRE( cpu.GetRegisterAF().hi == 0xFE );
 			check_flags( cpu, false, true, true, true );
 		}

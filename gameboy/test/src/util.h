@@ -85,119 +85,128 @@ inline void callSetMemory3Step(GameboyCPU & cpu_ref, BYTE reg8_index, WORD mem_a
 
 
 
-inline void base_op_code_n(GameboyCPU & cpu, BYTE op_code, BYTE a_value, BYTE n )
+inline void base_op_code_n(GameboyCPU & cpu, BYTE op_code, BYTE a_value, BYTE n, bool only_injection = false )
 {
 	setRegister8(cpu, Param8BitIndex::A, a_value );
 	cpu.InjectionMemory( op_code );
 	cpu.InjectionMemory( n );
 
-	for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+	if(!only_injection)
+	{
+		for ( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+	}
 }
 
-inline void base_op_code_reg8(GameboyCPU & cpu, BYTE base_op_code, BYTE a_value, BYTE register_index, BYTE n )
+inline void base_op_code_reg8(GameboyCPU & cpu, BYTE base_op_code, BYTE a_value, BYTE register_index, BYTE n, bool only_injection = false )
 {
 	setRegister8(cpu, Param8BitIndex::A, a_value );
 	setRegister8( cpu, register_index, n );
 	cpu.InjectionMemory( ( base_op_code | register_index )  );
 
-	for ( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+	if(!only_injection)
+	{
+		for (int i = 0; i < 3; i++) { cpu.NextStep(); }
+	}
 }
 
-inline void base_op_code_hl(GameboyCPU & cpu, BYTE op_code, BYTE a_value, WORD mem_hl_address, BYTE n )
+inline void base_op_code_hl(GameboyCPU & cpu, BYTE op_code, BYTE a_value, WORD mem_hl_address, BYTE n, bool only_injection = false )
 {
 	setMemory3Step(cpu, Param8BitIndex::B, mem_hl_address, n );
 	setRegister8(cpu, Param8BitIndex::A, a_value );
 	cpu.InjectionMemory( op_code );
 
-	for( int i = 0; i < 5; i++ )
+	if(!only_injection)
 	{
-		cpu.NextStep();
+		for (int i = 0; i < 5; i++)
+		{
+			cpu.NextStep();
+		}
 	}
 }
 
 // 0b11010110 (0xD6)
-inline void subN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_subN(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_n(cpu, 0xD6, a_value, n);
 }
 
 // 0b10010110 (0x96)
-inline void subHL(  GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+inline void call_subHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
 	base_op_code_hl(cpu, 0x96, a_value, mem_hl_address, n);
 }
 
-inline void subNC( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_subNC(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_n(cpu, 0xDE, a_value, n);
 }
 
-inline void subRC(  GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_subRC(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_reg8(cpu, 0b10011000, a_value, Param8BitIndex::D, n); // SBC A, D
 }
 
-inline void subHLC( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+inline void call_subHLC(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
 	base_op_code_hl(cpu, 0x9E, a_value, mem_hl_address, n);
 }
 
-inline void andN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_andN(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_n(cpu, 0xE6, a_value, n);
 }
 
-inline void andHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+inline void call_andHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
 	base_op_code_hl(cpu, 0xA6, a_value, mem_hl_address, n);
 }
 
-inline void andR( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_andR(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_reg8(cpu, 0b10100000, a_value, Param8BitIndex::D, n);
 }
 
-inline void orN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_orN(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_n(cpu, 0xF6, a_value, n);
 }
 
-inline void orHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+inline void call_orHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
 	base_op_code_hl(cpu, 0xB6, a_value, mem_hl_address, n);
 }
 
-inline void orR( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_orR(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_reg8(cpu, 0b10110000, a_value, Param8BitIndex::D, n);
 }
 
-inline void xorN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_xorN(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_n(cpu, 0xEE, a_value, n);
 }
 
-inline void xorHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+inline void call_xorHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
 	base_op_code_hl(cpu, 0xAE, a_value, mem_hl_address, n);
 }
 
-inline void xorR( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_xorR(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_reg8(cpu, 0b10101000, a_value, Param8BitIndex::D, n);
 }
 
-inline void cpN( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_cpN(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_n(cpu, 0xFE, a_value, n);
 }
 
-inline void cpHL( GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
+inline void call_cpHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {
 	base_op_code_hl(cpu, 0xBE, a_value, mem_hl_address, n);
 }
 
-inline void cpR( GameboyCPU & cpu, BYTE a_value, BYTE n )
+inline void call_cpR(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
 	base_op_code_reg8(cpu, 0b10111000, a_value, Param8BitIndex::D, n);
 }

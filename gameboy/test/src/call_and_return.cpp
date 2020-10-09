@@ -30,7 +30,7 @@ void check_condition_ret(GameboyCPU & cpu, CheckCondition check_condition, bool 
 
 	callWord( cpu, 0x5260 );
 	cpu.SetInjectionCount( 0x5260 );
-	subN(cpu, a_value, 1);
+	call_subN(cpu, a_value, 1);
 
 	REQUIRE( ( returnIfCondition( cpu, check_condition ) == before_pc + 1 ) == rtn_ok );
 	REQUIRE( ( before_sp == cpu.GetRegisterSP().reg_16 ) == rtn_ok );
@@ -62,14 +62,14 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 		{
 			SECTION("OK")
 			{
-				subN(cpu, 0, 1);
+				call_subN(cpu, 0, 1);
 				check_flags(cpu, false, true, true, true);
 				check_call(cpu, CheckCondition::C, true); // OK.
 			}
 
 			SECTION("NOT OK")
 			{
-				subN(cpu, 2, 1);
+				call_subN(cpu, 2, 1);
 				check_flags(cpu, false, false, true, false);
 				check_call(cpu, CheckCondition::C, false); // NOT OK.
 			}
@@ -79,14 +79,14 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 		{
 			SECTION("OK")
 			{
-				subN(cpu, 2, 1);
+				call_subN(cpu, 2, 1);
 				check_flags(cpu, false, false, true, false);
 				check_call(cpu, CheckCondition::NC, true); // OK.
 			}
 
 			SECTION("NOT OK")
 			{
-				subN(cpu, 0, 1);
+				call_subN(cpu, 0, 1);
 				check_flags(cpu, false, true, true, true);
 				check_call(cpu, CheckCondition::NC, false); // NOT OK.
 			}
@@ -96,14 +96,14 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 		{
 			SECTION("OK")
 			{
-				subN(cpu, 1, 1);
+				call_subN(cpu, 1, 1);
 				check_flags(cpu, true, false, true, false);
 				check_call(cpu, CheckCondition::Z, true); // OK.
 			}
 
 			SECTION("NOT OK")
 			{
-				subN(cpu, 2, 1);
+				call_subN(cpu, 2, 1);
 				check_flags(cpu, false, false, true, false);
 				check_call(cpu, CheckCondition::Z, false); // NOT OK.
 			}
@@ -113,14 +113,14 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 		{
 			SECTION("OK")
 			{
-				subN(cpu, 2, 1);
+				call_subN(cpu, 2, 1);
 				check_flags(cpu, false, false, true, false);
 				check_call(cpu, CheckCondition::NZ, true); //  OK.
 			}
 
 			SECTION("NOT OK")
 			{
-				subN(cpu, 1, 1);
+				call_subN(cpu, 1, 1);
 				check_flags(cpu, true, false, true, false);
 				check_call(cpu, CheckCondition::NZ, false); // NOT OK.
 			}
