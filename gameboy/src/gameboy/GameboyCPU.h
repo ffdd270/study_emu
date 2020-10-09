@@ -560,6 +560,15 @@ private:
 	// 0xD9
 	void returnFromInterrupt(BYTE op_code);
 
+	//RST p
+	// Desc
+	// RESTART from P, Current PC push to Stack.
+	// Param
+	// ppp = { 000 = 00h, 001 = 08h, 010 = 10h, 011 = 18h, 100 = 20h, 101 = 28h, 110 = 30h, 111 = 38h }
+	// Op Code
+	// 0b11ppp111
+	void restartFromParam(BYTE op_code);
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */

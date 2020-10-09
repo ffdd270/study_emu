@@ -138,6 +138,7 @@ public:
 	BIND_FUNC( returnInstruction )
 	BIND_FUNC( returnIfCondition )
 	BIND_FUNC( returnFromInterrupt )
+	BIND_FUNC( restartFromParam )
 
 	// pre 0b10
 	// arth
@@ -614,6 +615,11 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	}
 
 	mFuncMap[ 0xD9 ] = BIND_FUNCS::returnFromInterrupt;
+
+	for( BYTE i = 0b0; i <= 0b111; i++ )
+	{
+		mFuncMap[ 0b11000111u | static_cast<BYTE>( i << 3u ) ] = BIND_FUNCS::restartFromParam;
+	}
 
 }
 
