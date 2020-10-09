@@ -130,6 +130,12 @@ inline void call_subN(GameboyCPU & cpu, BYTE a_value, BYTE n )
 	base_op_code_n(cpu, 0xD6, a_value, n);
 }
 
+inline void subN( GameboyCPU & cpu, BYTE n )
+{
+	cpu.InjectionMemory( 0xD6 );
+	cpu.InjectionMemory( n );
+}
+
 // 0b10010110 (0x96)
 inline void call_subHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
 {

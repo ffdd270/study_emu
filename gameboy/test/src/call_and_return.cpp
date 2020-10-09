@@ -20,7 +20,7 @@ void check_call(GameboyCPU & cpu, CheckCondition check_condition, bool jp_ok  )
 	WORD saved_pc_value = static_cast<WORD>( static_cast<WORD>( cpu.GetMemoryValue(result.reg_16_sp + 1 ) ) << 8u ) | // hi
 						  static_cast<WORD>( cpu.GetMemoryValue( result.reg_16_sp ) ); // lo.
 
-	REQUIRE( ( saved_pc_value == ( before_pc + 1 ) ) == jp_ok ); // 한 스텝 진행했으니까..
+	REQUIRE( ( saved_pc_value == ( before_pc + 3 ) ) == jp_ok ); // 한 스텝 진행했으니까.. -> 그리고 3개가 뛰어넘어짐.
 }
 
 void check_condition_ret(GameboyCPU & cpu, CheckCondition check_condition, bool rtn_ok, BYTE a_value )
@@ -32,7 +32,7 @@ void check_condition_ret(GameboyCPU & cpu, CheckCondition check_condition, bool 
 	cpu.SetInjectionCount( 0x5260 );
 	call_subN(cpu, a_value, 1);
 
-	REQUIRE( ( returnIfCondition( cpu, check_condition ) == before_pc + 1 ) == rtn_ok );
+	REQUIRE( ( returnIfCondition( cpu, check_condition ) == before_pc + 3 ) == rtn_ok );
 	REQUIRE( ( before_sp == cpu.GetRegisterSP().reg_16 ) == rtn_ok );
 }
 
@@ -42,19 +42,24 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 
 	SECTION("CALL WORD")
 	{
-		WORD before_sp = cpu.GetRegisterSP().reg_16;
-		WORD before_pc = cpu.GetRegisterPC().reg_16;
+		SECTION("BASIC TEST")
+		{
+			WORD before_sp = cpu.GetRegisterSP().reg_16;
+			WORD before_pc = cpu.GetRegisterPC().reg_16;
 
-		CallResult result = callWord( cpu, 0x2460 );
+			CallResult result = callWord( cpu, 0x2460 );
 
-		REQUIRE( result.reg_16_sp == ( before_sp - 2 ) );
-		REQUIRE( result.reg_16_pc == 0x2460 );
+			REQUIRE( result.reg_16_sp == ( before_sp - 2 ) );
+			REQUIRE( result.reg_16_pc == 0x2460 );
 
-		WORD saved_pc_value = static_cast<WORD>( static_cast<WORD>( cpu.GetMemoryValue(result.reg_16_sp + 1 ) ) << 8u ) | // hi
-				static_cast<WORD>( cpu.GetMemoryValue( result.reg_16_sp ) ); // lo.
+			WORD saved_pc_value = static_cast<WORD>( static_cast<WORD>( cpu.GetMemoryValue(result.reg_16_sp + 1 ) ) << 8u ) | // hi
+								  static_cast<WORD>( cpu.GetMemoryValue( result.reg_16_sp ) ); // lo.
 
-		REQUIRE( saved_pc_value == ( before_pc + 1 ) ); // 한 스텝 진행했으니까..
+			REQUIRE( saved_pc_value == ( before_pc + 3 ) ); // 한 스텝 진행했으니까.. -> 가 아니라 3개가 날아간거다!
+		}
 	}
+
+
 
 	SECTION("CALL cc, WORD")
 	{
@@ -135,7 +140,7 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 			cpu.SetInjectionCount( 0x3242 );
 			WORD ret_pc = returnInstruction( cpu );
 
-			REQUIRE( ret_pc == before_pc + 1 ); // PC는 1늘었을테니..
+			REQUIRE( ret_pc == before_pc + 3 ); // PC는 1늘었을테니.. 가 아니라 뒤에 WORD 있어서 3.
 			REQUIRE( before_sp == cpu.GetRegisterSP().reg_16 );
 		}
 
@@ -213,7 +218,28 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 		cpu.InjectionMemory( 0xD9 ); //RETI
 		cpu.NextStep();
 
-		REQUIRE(before_pc + 1 == cpu.GetRegisterPC().reg_16);
+		REQUIRE(before_pc + 3 == cpu.GetRegisterPC().reg_16); // CALL Instruction은 3 개의 명령어 스텝임.
 		REQUIRE(cpu.IsInterruptEnable());
+	}
+}
+
+TEST_CASE("FIX IN CALL AND RETURN", "[FIX_CALL_AND_RETURN]")
+{
+	GameboyCPU cpu;
+
+	// CALL과 RET 이후로 명령어가 제대로 진행되지 않아서 생겼던 문제의 테스트 케이스.
+	SECTION("CALL and RET, After Instruction OK?")
+	{
+		callSetRegister8( cpu, Param8BitIndex::A, 0xA ); // 레지스터 .
+		callWord( cpu, 0x2460 ); // 함수 호출
+		subN( cpu, 1 );
+
+		// 함수. RTN만 있다.
+		cpu.SetInjectionCount( 0x2460 );
+		returnInstruction( cpu );
+
+		cpu.NextStep(); // subN.
+
+		REQUIRE( cpu.GetRegisterAF().hi == 0x9 );
 	}
 }
