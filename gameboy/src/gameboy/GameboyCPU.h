@@ -435,6 +435,14 @@ private:
 	// 0xcb, 0b00001rrr { r = m8BitRegisters } ( HL = 0b110 )
 	void rotateRightThroughCarry( BYTE op_code );
 
+	//RRCA
+	// Desc
+	// RRC, but Register A, and Not Prefix.
+	// Reset Z, N, H. if Carry Set Carry.
+	// Op Code
+	// 0x0f
+	void rotateRightThroughCarryRegisterA( BYTE op_code );
+
 	//RL
 	// Desc
 	// Bit0 is Carry. Carry is Bit7. and Rotate Left.
@@ -446,6 +454,14 @@ private:
 	// Bit7 is Carry. Carry is Bit0. and Rotate Right.
 	// 0xcb, 0b00011rrr
 	void rotateRight( BYTE op_code );
+
+	//RRA
+	// Desc
+	// RRC, but Register A, and Not Prefix.
+	// Reset Z, N, H. if Carry Set Carry.
+	// Op Code
+	// 0x1f
+	void rotateRightRegisterA( BYTE op_code );
 
 	//SLA
 	// Desc
@@ -583,6 +599,9 @@ private:
 
 	void commonAddSetFlag( BYTE origin_value, BYTE add_value, BYTE carry );
 	void commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry );
+
+	void commonRotateRightThroughCarry( BYTE & ref_value );
+	void commonRotateRight( BYTE & ref_value );
 
 	void commonBitSetFlag();
 
