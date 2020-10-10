@@ -36,3 +36,13 @@ void GameboyCPU::returnFromInterrupt(BYTE op_code)
 	mInturruptEnable = true;
 	mPC.reg_16 = getWORDFromStack();
 }
+
+void GameboyCPU::restartFromParam(BYTE op_code)
+{
+	static const BYTE param_to_jp_pos[] = { 0x0, 0x8, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38 };
+	BYTE param = static_cast<BYTE>( op_code & 0b00111000u ) >> 3u;
+
+	setWORDToStack( mPC.reg_16 );
+	mPC.reg_16 = param_to_jp_pos[ param ];
+}
+

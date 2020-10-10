@@ -221,6 +221,37 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 		REQUIRE(before_pc + 3 == cpu.GetRegisterPC().reg_16); // CALL Instruction은 3 개의 명령어 스텝임.
 		REQUIRE(cpu.IsInterruptEnable());
 	}
+
+	SECTION("RST param")
+	{
+		BYTE base_op_code = 0b11000111u;
+	 	const BYTE param_to_jp_pos[] = { 0x0, 0x8, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38 };
+
+	 	/* SET
+	 	 * 0x1000 => RST 0x0
+	 	 * 0x0 => RTN
+	 	 * 0x1001 => RST 0x8
+	 	 * 0x0 => RTN
+	 	 * ...
+	 	 */
+	 	for( BYTE i = 0; i <= 0b111u; i++)
+		{
+	 		cpu.SetInjectionCount( 0x1000 + i );
+			cpu.InjectionMemory( base_op_code | static_cast<BYTE>( i << 3u ) );
+			cpu.SetInjectionCount(  param_to_jp_pos[i] );
+			cpu.InjectionMemory(0xC9); // RTN
+		}
+
+
+	 	for( BYTE i = 0; i <= 0b111u; i++ )
+		{
+			REQUIRE( cpu.GetRegisterPC().reg_16 == 0x1000 + i );
+	 		cpu.NextStep(); //RET i
+			REQUIRE( cpu.GetRegisterPC().reg_16 == param_to_jp_pos[i] );
+			cpu.NextStep(); //RTN
+		}
+	}
+
 }
 
 TEST_CASE("FIX IN CALL AND RETURN", "[FIX_CALL_AND_RETURN]")

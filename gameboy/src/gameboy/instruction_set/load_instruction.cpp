@@ -160,10 +160,7 @@ void GameboyCPU::pushReg16(BYTE op_code)
 	BYTE argument =  ( op_code & 0b00110000 ) >> 4;
 	WORD & ref_16 = m16bitArguments[ argument ].ref;
 
-	mGameMemory[ mSP.reg_16 - 2 ] = ref_16 & 0x00FF  ; // low;
-	mGameMemory[ mSP.reg_16 - 1 ] = (ref_16 & 0xFF00) >> 8; // high;
-	
-	mSP.reg_16 -= 2;
+	setWORDToStack( ref_16 );
 }
 
 
@@ -175,10 +172,7 @@ void GameboyCPU::popReg16(BYTE op_code)
 	BYTE argument  = ( op_code & 0b00110000 ) >> 4;
 	Register & ref_register = mRegisters.array[ argument ];
 
-	ref_register.lo = mGameMemory[ mSP.reg_16 ];
-	ref_register.hi = mGameMemory[ mSP.reg_16 + 1 ];
-
-	mSP.reg_16 += 2;
+	ref_register.reg_16 = getWORDFromStack();
 }
 
 void GameboyCPU::complementCarryFlag(BYTE op_code)
