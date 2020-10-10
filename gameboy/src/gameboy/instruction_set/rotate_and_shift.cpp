@@ -13,6 +13,24 @@ void GameboyCPU::commonRotateAndShiftFlags(const BYTE & result_value)
 	setFlagN( false );
 }
 
+void GameboyCPU::commonRotateRightThroughCarry(BYTE & ref_value)
+{
+	setFlagC( ( ref_value & 0b00000001u ) == 1 );
+	ref_value >>= 1u;
+	ref_value = ref_value | static_cast<BYTE>( static_cast<BYTE>( GetFlagC() ) << 7u );
+}
+
+void GameboyCPU::commonRotateRight(BYTE & ref_value)
+{
+	BYTE flag_value = static_cast<BYTE>( GetFlagC());
+
+	setFlagC((ref_value & 1u) == 1);
+
+	ref_value >>= 1u;
+	ref_value |= static_cast<BYTE>(flag_value << 7u);
+}
+
+
 void GameboyCPU::rotateLeftThroughCarry(BYTE op_code)
 {
 	BYTE & ref_value = get8BitArgumentValue( ( 0b00000111u ) & op_code );
@@ -28,12 +46,18 @@ void GameboyCPU::rotateRightThroughCarry(BYTE op_code)
 {
 	BYTE & ref_value = get8BitArgumentValue( ( 0b00000111u ) & op_code );
 
-	setFlagC( ( ref_value & 0b00000001u ) == 1 );
-	ref_value >>= 1u;
-	ref_value = ref_value | static_cast<BYTE>( static_cast<BYTE>( GetFlagC() ) << 7u );
+	commonRotateRightThroughCarry( ref_value );
 
 	commonRotateAndShiftFlags(ref_value);
 }
+
+void GameboyCPU::rotateRightThroughCarryRegisterA(BYTE op_code)
+{
+	commonRotateRightThroughCarry(  mRegisters.AF.hi );
+
+	setFlagZ( false ); setFlagN( false );  setFlagH( false );
+}
+
 
 void GameboyCPU::rotateLeft(BYTE op_code)
 {
@@ -51,15 +75,19 @@ void GameboyCPU::rotateLeft(BYTE op_code)
 void GameboyCPU::rotateRight(BYTE op_code)
 {
 	BYTE &ref_value = get8BitArgumentValue((0b00000111u) & op_code);
-	BYTE flag_value = static_cast<BYTE>( GetFlagC());
 
-	setFlagC((ref_value & 1u) == 1);
-
-	ref_value >>= 1u;
-	ref_value |= static_cast<BYTE>(flag_value << 7u);
+	commonRotateRight( ref_value );
 
 	commonRotateAndShiftFlags(ref_value);
 }
+
+void GameboyCPU::rotateRightRegisterA(BYTE op_code)
+{
+	commonRotateRight( mRegisters.AF.hi );
+
+	setFlagZ( false ); setFlagN( false );  setFlagH( false );
+}
+
 
 void GameboyCPU::shiftLeftArithmetic(BYTE op_code)
 {
