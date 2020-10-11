@@ -4,46 +4,32 @@ project(gameboy)
 set(CMAKE_CXX_STANDARD 17)
 set( PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR} )
 set( SRC_PATH ${PROJECT_ROOT_PATH}/src )
+set( HARUCAR_PATH ${PROJECT_ROOT_PATH}/../harucar )
 
-
-
-find_package(glfw3 CONFIG REQUIRED)
+find_package(SFML 2 COMPONENTS graphics REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(gl3w CONFIG REQUIRED)
 
-find_path( GLFW_INCLUDE_DIR GLFW/glfw3.h )
-
-include_directories(${GLFW_INCLUDE_DIR}
-		src/angelica/imgui
-		)
-
-set( IMGUI_LIB
-		src/angelica/imgui/imgui.cpp
-		src/angelica/imgui/imgui.h
-		src/angelica/imgui/imgui_draw.cpp
-		src/angelica/imgui/imgui_internal.h
-		src/angelica/imgui/imgui_widgets.cpp
-		src/angelica/imgui/imstb_rectpack.h
-		src/angelica/imgui/imstb_textedit.h
-		src/angelica/imgui/imstb_truetype.h
-		)
-
-set( ANGELICA_LIB
-		src/angelica/Window.cpp
-		src/angelica/Window.h
-		src/angelica/GLRenderer.cpp
-		src/angelica/GLRenderer.h
-		src/angelica/typedef.h
-		src/angelica/ImGuiContext.cpp
-		src/angelica/ImGuiContext.h
-		src/angelica/Log.h
-		src/angelica/GLProgram.cpp
-		src/angelica/GLProgram.h
-		src/angelica/glutil.h
-
-		${IMGUI_LIB}
+include_directories(
+		${HARUCAR_PATH}/lib/imgui/
+		lib/imgui-sfml/
 )
 
+set(IMGUI
+		${HARUCAR_PATH}/lib/imgui/imconfig.h
+		${HARUCAR_PATH}/lib/imgui/imgui.cpp
+		${HARUCAR_PATH}/lib/imgui/imgui.h
+		${HARUCAR_PATH}/lib/imgui/imgui_draw.cpp
+		${HARUCAR_PATH}/lib/imgui/imgui_internal.h
+		${HARUCAR_PATH}/lib/imgui/imgui_widgets.cpp
+		${HARUCAR_PATH}/lib/imgui/imstb_rectpack.h
+		${HARUCAR_PATH}/lib/imgui/imstb_textedit.h
+		${HARUCAR_PATH}/lib/imgui/imstb_truetype.h)
+
+set(IMGUI_SFML
+		lib/imgui-sfml/imconfig-SFML.h
+		lib/imgui-sfml/imgui-SFML.cpp
+		lib/imgui-sfml/imgui-SFML.h
+		lib/imgui-sfml/imgui-SFML_export.h)
 
 # 실제 테스트 돌릴 것들.
 set( GAMEBOY_SRC
@@ -60,5 +46,5 @@ set( GAMEBOY_SRC
 		)
 
 add_subdirectory(test)
-add_executable(gameboy src/main.cpp ${ANGELICA_LIB} ${GAMEBOY_SRC} )
-target_link_libraries(gameboy PRIVATE glfw OpenGL32 unofficial::gl3w::gl3w })
+add_executable(gameboy src/main.cpp ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} )
+target_link_libraries(gameboy PRIVATE sfml-graphics OpenGL32)
