@@ -11,7 +11,7 @@ find_package(OpenGL REQUIRED)
 
 include_directories(
 		${HARUCAR_PATH}/lib/imgui/
-		lib/imgui-sfml/
+		${HARUCAR_PATH}/lib/imgui-sfml/
 )
 
 set(IMGUI
@@ -26,10 +26,10 @@ set(IMGUI
 		${HARUCAR_PATH}/lib/imgui/imstb_truetype.h)
 
 set(IMGUI_SFML
-		lib/imgui-sfml/imconfig-SFML.h
-		lib/imgui-sfml/imgui-SFML.cpp
-		lib/imgui-sfml/imgui-SFML.h
-		lib/imgui-sfml/imgui-SFML_export.h)
+		${HARUCAR_PATH}/lib/imgui-sfml/imconfig-SFML.h
+		${HARUCAR_PATH}/lib/imgui-sfml/imgui-SFML.cpp
+		${HARUCAR_PATH}/lib/imgui-sfml/imgui-SFML.h
+		${HARUCAR_PATH}/lib/imgui-sfml/imgui-SFML_export.h)
 
 # 실제 테스트 돌릴 것들.
 set( GAMEBOY_SRC

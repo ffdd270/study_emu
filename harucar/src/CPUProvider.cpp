@@ -40,19 +40,12 @@ size_t CPUProvider::AddInstruction(const std::string &ref_instruction, int op_co
 	return mOpCodes.size();
 }
 
-std::vector<const std::string *> CPUProvider::GetRegisterNames()
+const std::vector<std::string> & CPUProvider::GetRegisterNames() const
 {
-	std::vector<const std::string *> view_array;
-
-	for ( auto & ref_string : mRegisterNames )
-	{
-		view_array.push_back( &ref_string );
-	}
-
-	return view_array;
+	return mRegisterNames;
 }
 
-std::vector<int> CPUProvider::GetRegisterValue()
+std::vector<int> CPUProvider::GetRegisterValue() const
 {
 	std::vector<int> view_array;
 
@@ -64,19 +57,12 @@ std::vector<int> CPUProvider::GetRegisterValue()
 	return view_array;
 }
 
-std::vector<const std::string *> CPUProvider::GetFlagNames()
+const std::vector<std::string> & CPUProvider::GetFlagNames() const
 {
-	std::vector<const std::string *> view_array;
-
-	for ( auto & ref_string : mFlagNames )
-	{
-		view_array.push_back( &ref_string );
-	}
-
-	return view_array;
+	return mFlagNames;
 }
 
-std::vector<bool> CPUProvider::GetFlags()
+std::vector<bool> CPUProvider::GetFlags() const
 {
 	std::vector<bool> view_array;
 
@@ -88,19 +74,12 @@ std::vector<bool> CPUProvider::GetFlags()
 	return view_array;
 }
 
-std::vector<const std::string *> CPUProvider::GetInstructions()
+const std::vector<std::string> &  CPUProvider::GetInstructions() const
 {
-	std::vector<const std::string *> view_array;
-
-	for ( auto & ref_string : mInstructions )
-	{
-		view_array.push_back( &ref_string );
-	}
-
-	return view_array;
+	return mInstructions;
 }
 
-std::vector<int> CPUProvider::GetOpCodes()
+std::vector<int> CPUProvider::GetOpCodes() const
 {
 	std::vector<int> view_array;
 
@@ -112,42 +91,42 @@ std::vector<int> CPUProvider::GetOpCodes()
 	return view_array;
 }
 
-const std::string *CPUProvider::GetRegisterName(size_t index)
+const std::string *CPUProvider::GetRegisterName(size_t index) const
 {
 	if ( mRegisterNames.size() <= index ) { return nullptr; }
 
 	return &mRegisterNames[index];
 }
 
-int CPUProvider::GetRegisterValue(size_t index)
+int CPUProvider::GetRegisterValue(size_t index) const
 {
 	if ( mRegisters.size() <= index ) { assert(false); return -765; }
 
 	return mRegisters[index];
 }
 
-const std::string *CPUProvider::GetFlagName(size_t index)
+const std::string *CPUProvider::GetFlagName(size_t index) const
 {
 	if ( mFlagNames.size() <= index ) { return nullptr; }
 
 	return &mFlagNames[index];
 }
 
-bool CPUProvider::GetFlag(size_t index)
+bool CPUProvider::GetFlag(size_t index) const
 {
 	if ( mFlags.size() <= index ) { assert(false); return false; }
 
 	return mRegisters[index];
 }
 
-const std::string *CPUProvider::GetInstruction(size_t index)
+const std::string *CPUProvider::GetInstruction(size_t index) const
 {
 	if ( mInstructions.size() <= index ) { return nullptr; }
 
 	return &mInstructions[index];
 }
 
-int CPUProvider::GetOpCode(size_t index)
+int CPUProvider::GetOpCode(size_t index) const
 {
 	if ( mOpCodes.size() <= index ) { assert(false); return mOpCodes[index]; }
 

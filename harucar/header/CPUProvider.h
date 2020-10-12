@@ -10,7 +10,7 @@
 #include <string>
 
 
-class CPUProvider
+class CPUProvider : public IProvider
 {
 public:
 	void SetMemory( std::vector<int> & ref_memory );
@@ -24,23 +24,23 @@ public:
 	// 인덱스 발급
 	size_t AddInstruction(const std::string & ref_instruction, int op_code);
 
-	std::vector<const std::string*> GetRegisterNames();
-	std::vector<int> GetRegisterValue();
+	const std::vector<std::string> & GetRegisterNames() const;
+	std::vector<int> GetRegisterValue() const;
 
-	std::vector<const std::string*> GetFlagNames();
-	std::vector<bool> GetFlags();
+	const std::vector<std::string> & GetFlagNames() const;
+	std::vector<bool> GetFlags() const;
 
-	std::vector<const std::string*> GetInstructions();
-	std::vector<int> GetOpCodes();
+	const std::vector<std::string> & GetInstructions() const;
+	std::vector<int> GetOpCodes() const;
 
-	const std::string * GetRegisterName(size_t index);
-	int GetRegisterValue(size_t index);
+	const std::string * GetRegisterName(size_t index) const;
+	int GetRegisterValue(size_t index) const;
 
-	const std::string * GetFlagName(size_t index);
-	bool GetFlag(size_t index);
+	const std::string * GetFlagName(size_t index) const;
+	bool GetFlag(size_t index) const;
 
-	const std::string * GetInstruction(size_t index);
-	int GetOpCode(size_t index);
+	const std::string * GetInstruction(size_t index) const;
+	int GetOpCode(size_t index) const;
 
 private:
 	std::vector<int> mMemory;
