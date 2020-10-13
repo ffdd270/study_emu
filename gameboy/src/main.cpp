@@ -12,6 +12,7 @@ int main()
 {
 	GameboyCPU cpu;
 	GameboyCPUBroker broker;
+	std::shared_ptr<CPUProvider> provider_ptr = broker.MakeProvider( cpu );
 	CPUViewer viewer;
 
 	cpu.InjectionMemory( 0b00111110 ); // LD A, imm8
@@ -21,9 +22,10 @@ int main()
 	cpu.InjectionMemory( 0xD6 ); //SUB N
 	cpu.InjectionMemory( 1 );
 	cpu.NextStep();
+
+	broker.UpdateProvider( cpu, provider_ptr );
 	//Carry!
 
-	std::shared_ptr<CPUProvider> provider_ptr = broker.MakeProvider( cpu );
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);

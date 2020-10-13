@@ -34,7 +34,7 @@ size_t CPUProvider::AddFlag(const std::string &ref_flag_name, bool flag_value)
 
 	assert( mFlagNames.size() == mFlags.size() );
 
-	return mFlags.size();
+	return mFlags.size() - 1;
 }
 
 void CPUProvider::UpdateFlag(size_t index, bool flag_value)
