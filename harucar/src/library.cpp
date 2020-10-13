@@ -1,4 +1,4 @@
-#include "../header/library.h"
+#include "../include/library.h"
 
 #include <iostream>
 

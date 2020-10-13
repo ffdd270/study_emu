@@ -20,6 +20,13 @@ size_t CPUProvider::AddRegister(const std::string &ref_register_name, int regist
 	return mRegisters.size();
 }
 
+void CPUProvider::UpdateRegister(size_t index, int register_value)
+{
+	assert( mRegisters.size() > index );
+
+	mRegisters[index] = register_value;
+}
+
 size_t CPUProvider::AddFlag(const std::string &ref_flag_name, bool flag_value)
 {
 	mFlagNames.push_back( ref_flag_name );
@@ -28,6 +35,13 @@ size_t CPUProvider::AddFlag(const std::string &ref_flag_name, bool flag_value)
 	assert( mFlagNames.size() == mFlags.size() );
 
 	return mFlags.size();
+}
+
+void CPUProvider::UpdateFlag(size_t index, bool flag_value)
+{
+	assert( mFlags.size() > index );
+
+	mFlags[index] = flag_value;
 }
 
 size_t CPUProvider::AddInstruction(const std::string &ref_instruction, int op_code)

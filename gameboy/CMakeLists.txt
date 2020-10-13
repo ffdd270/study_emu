@@ -9,9 +9,14 @@ set( HARUCAR_PATH ${PROJECT_ROOT_PATH}/../harucar )
 find_package(SFML 2 COMPONENTS graphics REQUIRED)
 find_package(OpenGL REQUIRED)
 
+find_library(HARUCAR_LIB
+		NAMES harucar.lib
+		HINTS ${HARUCAR_PATH}/cmake-build-debug )
+
 include_directories(
 		${HARUCAR_PATH}/lib/imgui/
 		${HARUCAR_PATH}/lib/imgui-sfml/
+		${HARUCAR_PATH}/include/
 )
 
 set(IMGUI
@@ -43,8 +48,9 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/instruction_set/bit_set_reset_test.cpp
 		${SRC_PATH}/gameboy/instruction_set/jump_group.cpp
 		${SRC_PATH}/gameboy/instruction_set/call_and_return.cpp
-		)
+		${SRC_PATH}/gameboy/GameboyCPUBroker.cpp
+		${SRC_PATH}/gameboy/GameboyCPUBroker.h)
 
 add_subdirectory(test)
 add_executable(gameboy src/main.cpp ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} )
-target_link_libraries(gameboy PRIVATE sfml-graphics OpenGL32)
+target_link_libraries(gameboy PRIVATE sfml-graphics OpenGL32 ${HARUCAR_LIB})

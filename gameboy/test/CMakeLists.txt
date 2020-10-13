@@ -16,3 +16,5 @@ add_executable( gb_test
         lib/catch.hpp
         ${TEST}
         ${GAMEBOY_SRC})
+
+target_link_libraries(gb_test PRIVATE ${HARUCAR_LIB})

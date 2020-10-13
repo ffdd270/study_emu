@@ -17,9 +17,11 @@ public:
 
 	// 인덱스 발급.
 	size_t AddRegister(const std::string & ref_register_name, int register_value);
+	void UpdateRegister(size_t index, int register_value);
 
 	// 인덱스 발급
 	size_t AddFlag(const std::string & ref_flag_name, bool flag_value);
+	void UpdateFlag(size_t index, bool flag_value);
 
 	// 인덱스 발급
 	size_t AddInstruction(const std::string & ref_instruction, int op_code);
