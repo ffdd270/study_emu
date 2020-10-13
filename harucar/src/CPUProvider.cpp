@@ -105,44 +105,44 @@ std::vector<int> CPUProvider::GetOpCodes() const
 	return view_array;
 }
 
-const std::string *CPUProvider::GetRegisterName(size_t index) const
+const std::string &CPUProvider::GetRegisterName(size_t index) const
 {
-	if ( mRegisterNames.size() <= index ) { return nullptr; }
+	if ( mRegisterNames.size() <= index ) {  throw std::exception("Register Names Out of Index"); }
 
-	return &mRegisterNames[index];
+	return mRegisterNames[index];
 }
 
 int CPUProvider::GetRegisterValue(size_t index) const
 {
-	if ( mRegisters.size() <= index ) { assert(false); return -765; }
+	if ( mRegisters.size() <= index ) { throw std::exception("Register Out of Index"); }
 
 	return mRegisters[index];
 }
 
-const std::string *CPUProvider::GetFlagName(size_t index) const
+const std::string &CPUProvider::GetFlagName(size_t index) const
 {
-	if ( mFlagNames.size() <= index ) { return nullptr; }
+	if ( mFlagNames.size() <= index ) { throw std::exception("Flag Names Out of Index"); }
 
-	return &mFlagNames[index];
+	return mFlagNames[index];
 }
 
 bool CPUProvider::GetFlag(size_t index) const
 {
-	if ( mFlags.size() <= index ) { assert(false); return false; }
+	if ( mFlags.size() <= index ) { throw std::exception("Flag Out of Index"); }
 
 	return mRegisters[index];
 }
 
-const std::string *CPUProvider::GetInstruction(size_t index) const
+const std::string &CPUProvider::GetInstruction(size_t index) const
 {
-	if ( mInstructions.size() <= index ) { return nullptr; }
+	if ( mInstructions.size() <= index ) { throw std::exception("Instruction Out of Index`"); }
 
-	return &mInstructions[index];
+	return mInstructions[index];
 }
 
 int CPUProvider::GetOpCode(size_t index) const
 {
-	if ( mOpCodes.size() <= index ) { assert(false); return mOpCodes[index]; }
+	if ( mOpCodes.size() <= index ) { throw std::exception("OpCode Out of Index`"); }
 
 	return mOpCodes[index];
 }

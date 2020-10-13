@@ -14,7 +14,7 @@ void Elements::CPU::RenderFlags(const std::vector<std::string> &flag_names, cons
 	ImGui::Separator();
 	ImGui::Text("Flag Name"); ImGui::NextColumn();
 	ImGui::Text("Flag"); ImGui::NextColumn();
-	ImGui::Separator();
+	ImGui::Separator();	
 
 	for ( int i = 0; i < flags.size(); i++ )
 	{

@@ -35,13 +35,13 @@ public:
 	const std::vector<std::string> & GetInstructions() const;
 	std::vector<int> GetOpCodes() const;
 
-	const std::string * GetRegisterName(size_t index) const;
+	const std::string & GetRegisterName(size_t index) const;
 	int GetRegisterValue(size_t index) const;
 
-	const std::string * GetFlagName(size_t index) const;
+	const std::string & GetFlagName(size_t index) const;
 	bool GetFlag(size_t index) const;
 
-	const std::string * GetInstruction(size_t index) const;
+	const std::string & GetInstruction(size_t index) const;
 	int GetOpCode(size_t index) const;
 
 private:

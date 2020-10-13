@@ -10,16 +10,23 @@ include_directories(
 )
 
 set( LIB_SRC
-		src/library.cpp
-		include/library.h
-		include/CPUViewer.h
-		include/CPUProvider.h
+		# Interface.
 		include/Viewer.h
 		include/Provider.h
+
+		include/library.h
+		src/library.cpp
+
+		include/CPUViewer.h
 		src/CPUViewer.cpp
+
+		include/CPUProvider.h
 		src/CPUProvider.cpp
-		src/element/cpu_element.cpp include/element/cpu_element.h)
+
+		include/element/cpu_element.h
+		src/element/cpu_element.cpp)
 
 
 add_library(harucar ${LIB_SRC})
 add_subdirectory(demo)
+add_subdirectory(test)
