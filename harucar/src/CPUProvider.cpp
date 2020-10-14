@@ -141,7 +141,7 @@ bool CPUProvider::GetFlag(size_t index) const
 {
 	if ( mFlags.size() <= index ) { throw std::exception("Flag Out of Index"); }
 
-	return mRegisters[index];
+	return mFlags[index];
 }
 
 std::string CPUProvider::GetInstruction(size_t index) const

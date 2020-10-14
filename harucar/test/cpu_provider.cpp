@@ -8,34 +8,41 @@ constexpr std::array<const char *, 9> TEST_NAMES = { "A", "B", "C",
 										   "H", "L"};
 
 void add_value_and_check_rtn(
-		 					 const std::function<size_t(const std::string &, int )> & add_func,
+		 					 const std::function<size_t(const std::string &, int)> & add_func,
+							 const std::function<int()> & answer_func,
 							 const std::function<std::string ( size_t )> & get_func,
-							 const std::function<int (const std::string &)> & find_func)
+							 const std::function<int ( size_t )> & get_value_func,
+							 const std::function<int (const std::string &)> & find_func )
 {
 	std::array<const char *, 5> select_names = {};
 	std::array<size_t, 5> indices = {};
+	std::array<int, 5> answers = {};
 
 	size_t start_pos = rand() % 4;
 	for( int i = 0; i < select_names.size(); i++ )
 	{
+		int answer = answer_func();
 		select_names[ i ] = TEST_NAMES[ start_pos + i ];
-		indices[ i ] = add_func( select_names[ i ], i );
+		indices[ i ] = add_func( select_names[ i ], answer );
+		answers[ i ] = answer;
 	}
 
 	for ( int i = 0; i < indices.size(); i++ )
 	{
 		const std::string & require_string = select_names[ i ];
-		REQUIRE_NOTHROW(  get_func( i ) );
-		const std::string & result_string = get_func( i );
+		REQUIRE_NOTHROW(  get_func( indices[i]) );
+		const std::string & result_string = get_func( indices[i] );
 
 		REQUIRE( require_string == result_string );
 		REQUIRE( find_func( require_string ) == i );
+		REQUIRE( get_value_func( indices[i] ) == answers[ indices[i] ] );
 	}
 }
 
 void add_value_and_wrong_attemp(
 		const std::function<size_t(const std::string &, int )> & add_func,
 		const std::function<std::string ( size_t )> & get_func,
+		const std::function<int ( size_t )> & get_value_func,
 		const std::function<int (const std::string &)> & find_func
 )
 {
@@ -49,6 +56,7 @@ void add_value_and_wrong_attemp(
 	}
 
 	REQUIRE_THROWS( get_func( 6 ) );
+	REQUIRE_THROWS( get_value_func(6) );
 	REQUIRE( find_func( "DAMAE" ) == -1 );
 }
 
@@ -60,8 +68,10 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 	SECTION("ADD FLAG OK?")
 	{
 		add_value_and_check_rtn(
-				[&provider](const std::string &string, int value) { return provider.AddFlag(string, value); },
+				[&provider](const std::string &string, bool value) { return provider.AddFlag(string, value); },
+				[]() { return rand() % 2; },
 				[&provider](size_t index) { return provider.GetFlagName(index); },
+				[&provider](size_t index) { return provider.GetFlag(index); },
 				[&provider](const std::string & ref_string) { return provider.FindFlagIndex( ref_string ); }
 		);
 	}
@@ -71,6 +81,7 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 		add_value_and_wrong_attemp(
 				[&provider](const std::string &string, int value) { return provider.AddFlag(string, value); },
 				[&provider](size_t index) { return provider.GetFlagName(index); },
+				[&provider](size_t index) { return provider.GetFlag(index); },
 				[&provider](const std::string & ref_string) { return provider.FindFlagIndex( ref_string ); }
 		);
 	}
