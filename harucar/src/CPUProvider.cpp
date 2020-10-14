@@ -88,6 +88,17 @@ std::vector<bool> CPUProvider::GetFlags() const
 	return view_array;
 }
 
+// 100개 이상 들어오면 바꾸기
+int CPUProvider::FindFlagIndex(const std::string &flag_name) const
+{
+	for( int i = 0; i < mFlagNames.size(); i++ )
+	{
+		if( mFlagNames[i] == flag_name ) { return i; }
+	}
+
+	return -1;
+}
+
 const std::vector<std::string> &  CPUProvider::GetInstructions() const
 {
 	return mInstructions;
@@ -105,7 +116,7 @@ std::vector<int> CPUProvider::GetOpCodes() const
 	return view_array;
 }
 
-const std::string &CPUProvider::GetRegisterName(size_t index) const
+std::string CPUProvider::GetRegisterName(size_t index) const
 {
 	if ( mRegisterNames.size() <= index ) {  throw std::exception("Register Names Out of Index"); }
 
@@ -119,7 +130,7 @@ int CPUProvider::GetRegisterValue(size_t index) const
 	return mRegisters[index];
 }
 
-const std::string &CPUProvider::GetFlagName(size_t index) const
+std::string CPUProvider::GetFlagName(size_t index) const
 {
 	if ( mFlagNames.size() <= index ) { throw std::exception("Flag Names Out of Index"); }
 
@@ -133,7 +144,7 @@ bool CPUProvider::GetFlag(size_t index) const
 	return mRegisters[index];
 }
 
-const std::string &CPUProvider::GetInstruction(size_t index) const
+std::string CPUProvider::GetInstruction(size_t index) const
 {
 	if ( mInstructions.size() <= index ) { throw std::exception("Instruction Out of Index`"); }
 
