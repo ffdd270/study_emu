@@ -17,7 +17,7 @@ size_t CPUProvider::AddRegister(const std::string &ref_register_name, int regist
 
 	assert( mRegisterNames.size() == mRegisters.size() );
 
-	return mRegisters.size();
+	return mRegisters.size() - 1;
 }
 
 void CPUProvider::UpdateRegister(size_t index, int register_value)
@@ -88,16 +88,6 @@ std::vector<bool> CPUProvider::GetFlags() const
 	return view_array;
 }
 
-// 100개 이상 들어오면 바꾸기
-int CPUProvider::FindFlagIndex(const std::string &flag_name) const
-{
-	for( int i = 0; i < mFlagNames.size(); i++ )
-	{
-		if( mFlagNames[i] == flag_name ) { return i; }
-	}
-
-	return -1;
-}
 
 const std::vector<std::string> &  CPUProvider::GetInstructions() const
 {
@@ -130,6 +120,16 @@ int CPUProvider::GetRegisterValue(size_t index) const
 	return mRegisters[index];
 }
 
+int CPUProvider::FindRegisterIndex(const std::string &register_name) const
+{
+	for( int i = 0; i < mRegisterNames.size(); i++ )
+	{
+		if( mRegisterNames[i] == register_name ) { return i; }
+	}
+
+	return -1;
+}
+
 std::string CPUProvider::GetFlagName(size_t index) const
 {
 	if ( mFlagNames.size() <= index ) { throw std::exception("Flag Names Out of Index"); }
@@ -142,6 +142,17 @@ bool CPUProvider::GetFlag(size_t index) const
 	if ( mFlags.size() <= index ) { throw std::exception("Flag Out of Index"); }
 
 	return mFlags[index];
+}
+
+// 100개 이상 들어오면 바꾸기
+int CPUProvider::FindFlagIndex(const std::string &flag_name) const
+{
+	for( int i = 0; i < mFlagNames.size(); i++ )
+	{
+		if( mFlagNames[i] == flag_name ) { return i; }
+	}
+
+	return -1;
 }
 
 std::string CPUProvider::GetInstruction(size_t index) const
@@ -157,4 +168,3 @@ int CPUProvider::GetOpCode(size_t index) const
 
 	return mOpCodes[index];
 }
-

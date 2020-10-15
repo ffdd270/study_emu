@@ -31,8 +31,6 @@ public:
 
 	const std::vector<std::string> & GetFlagNames() const;
 	std::vector<bool> GetFlags() const;
-	// 없으면 -1.
-	int FindFlagIndex(const std::string & flag_name) const;
 
 
 	const std::vector<std::string> & GetInstructions() const;
@@ -40,9 +38,13 @@ public:
 
 	std::string GetRegisterName(size_t index) const;
 	int GetRegisterValue(size_t index) const;
+	// 없으면 -1.
+	int FindRegisterIndex(const std::string & register_name) const;
 
 	std::string GetFlagName(size_t index) const;
 	bool GetFlag(size_t index) const;
+	// 없으면 -1.
+	int FindFlagIndex(const std::string & flag_name) const;
 
 	std::string GetInstruction(size_t index) const;
 	int GetOpCode(size_t index) const;

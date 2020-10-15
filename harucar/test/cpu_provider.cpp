@@ -56,8 +56,8 @@ void add_value_and_wrong_attemp(
 	}
 
 	REQUIRE_THROWS( get_func( 6 ) );
-	REQUIRE_THROWS( get_value_func(6) );
-	REQUIRE( find_func( "DAMAE" ) == -1 );
+	REQUIRE_THROWS( get_value_func( 6 ) );
+	REQUIRE( find_func( "Z" ) == -1 );
 }
 
 
@@ -83,6 +83,27 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 				[&provider](size_t index) { return provider.GetFlagName(index); },
 				[&provider](size_t index) { return provider.GetFlag(index); },
 				[&provider](const std::string & ref_string) { return provider.FindFlagIndex( ref_string ); }
+		);
+	}
+
+	SECTION("ADD REGISTER OK?")
+	{
+		add_value_and_check_rtn(
+				[&provider](const std::string &string, int value) { return provider.AddRegister(string, value); },
+				[]() { return (rand() % 512) - 256; },
+				[&provider](size_t index) { return provider.GetRegisterName(index); },
+				[&provider](size_t index) { return provider.GetRegisterValue(index); },
+				[&provider](const std::string & ref_string) { return provider.FindRegisterIndex( ref_string ); }
+		);
+	}
+
+	SECTION("ADD REGISTER, NO REGISTER?")
+	{
+		add_value_and_wrong_attemp(
+				[&provider](const std::string &string, int value) { return provider.AddRegister(string, value); },
+				[&provider](size_t index) { return provider.GetRegisterName(index); },
+				[&provider](size_t index) { return provider.GetRegisterValue(index); },
+				[&provider](const std::string & ref_string) { return provider.FindRegisterIndex( ref_string ); }
 		);
 	}
 }
