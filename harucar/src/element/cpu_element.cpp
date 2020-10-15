@@ -80,7 +80,8 @@ void Elements::CPU::RenderRegister(const std::vector<std::string> &register_name
 		auto & ref_value = values[i];
 		if( ref_value.IsHiLo() )
 		{
-			ImGui::BeginChild("Hi Low Window", ImVec2(0, 0 ), false );
+			std::string str_id = "Hi Low Window" + std::to_string(i);
+			ImGui::BeginChild(str_id.c_str(), ImVec2(0, 0 ), false );
 			RenderRegisterHiLow( ref_value );
 			ImGui::EndChild();
 		}

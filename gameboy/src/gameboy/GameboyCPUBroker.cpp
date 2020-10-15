@@ -17,6 +17,15 @@ GameboyCPUBroker::GameboyCPUBroker() : mIndexC( NO_INITED ), mIndexH( NO_INITED 
 
 }
 
+static ProviderRegister providerMaker( WORD reg_16_value, const std::string & ref_hi_reg_name, const std::string & ref_lo_reg_name  )
+{
+	ProviderRegister reg;
+	reg.register_value = reg_16_value;
+	reg.UseHiLo( ref_hi_reg_name, ref_lo_reg_name, 2 );
+
+	return reg;
+}
+
 std::shared_ptr<CPUProvider> GameboyCPUBroker::MakeProvider(GameboyCPU &cpu)
 {
 	std::shared_ptr<CPUProvider> provider_ptr = std::make_shared<CPUProvider>();
@@ -26,18 +35,10 @@ std::shared_ptr<CPUProvider> GameboyCPUBroker::MakeProvider(GameboyCPU &cpu)
 	mIndexZ = provider_ptr->AddFlag( "Z (Zero Flag)", cpu.GetFlagZ() );
 	mIndexN = provider_ptr->AddFlag( "N (Negative Flag)", cpu.GetFlagN() );
 
-	mIndexAF = provider_ptr->AddRegister( "AF", cpu.GetRegisterAF().reg_16 );
-	mIndexBC = provider_ptr->AddRegister( "BC", cpu.GetRegisterBC().reg_16 );
-	mIndexDE = provider_ptr->AddRegister( "DE", cpu.GetRegisterDE().reg_16 );
-	mIndexHL = provider_ptr->AddRegister( "HL", cpu.GetRegisterHL().reg_16 );
-
-
-	for ( size_t i = 0; i < REGISTER_NAMES.size(); i++ )
-	{
-		if ( i == 6 ) { continue; }
-
-		mRegisterIndices[i] = provider_ptr->AddRegister( REGISTER_NAMES[i], cpu.GetRegisterValueBy8BitIndex( i ) );
-	}
+	mIndexAF = provider_ptr->AddRegister( "AF", providerMaker( cpu.GetRegisterAF().reg_16 , "A", "F" ) );
+	mIndexBC = provider_ptr->AddRegister( "BC", providerMaker( cpu.GetRegisterBC().reg_16, "B", "C" ));
+	mIndexDE = provider_ptr->AddRegister( "DE", providerMaker( cpu.GetRegisterDE().reg_16, "D", "E" ));
+	mIndexHL = provider_ptr->AddRegister( "HL", providerMaker( cpu.GetRegisterHL().reg_16, "H", "L" ) );
 
 	return provider_ptr;
 }
@@ -48,5 +49,10 @@ void GameboyCPUBroker::UpdateProvider(GameboyCPU &cpu, std::shared_ptr<CPUProvid
 	provider_ref_ptr->UpdateFlag( mIndexH, cpu.GetFlagH() );
 	provider_ref_ptr->UpdateFlag( mIndexZ, cpu.GetFlagZ() );
 	provider_ref_ptr->UpdateFlag( mIndexN, cpu.GetFlagN() );
+
+	provider_ref_ptr->UpdateRegister( mIndexAF, cpu.GetRegisterAF().reg_16 );
+	provider_ref_ptr->UpdateRegister( mIndexBC, cpu.GetRegisterBC().reg_16 );
+	provider_ref_ptr->UpdateRegister( mIndexDE, cpu.GetRegisterDE().reg_16 );
+	provider_ref_ptr->UpdateRegister( mIndexHL, cpu.GetRegisterHL().reg_16 );
 }
 

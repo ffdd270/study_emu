@@ -38,4 +38,37 @@ TEST_CASE( "Gameboy CPU Broker", "[Broker]" )
 			REQUIRE(require_values[i] == provider_ptr->GetFlag(index_flags[i]));
 		}
 	}
+
+	SECTION("Set Register after UPDATE OK?")
+	{
+		provider_ptr = broker.MakeProvider( cpu );
+		REQUIRE( provider_ptr != nullptr );
+
+		for( int i = 0; i < 3; i++ )
+		{
+			setRegister16( cpu, i, 0xff00 + i );
+			cpu.NextStep();
+		}
+
+		broker.UpdateProvider( cpu, provider_ptr );
+
+		std::array<std::string, 3> register_names = { "BC", "DE", "HL"  };
+		std::array<std::string, 6> _8bit_register_names = {"B", "C", "D", "E", "H", "L" };
+
+
+		for( int i = 0; i < 3; i++ )
+		{
+			size_t index = provider_ptr->FindRegisterIndex( register_names[i] );
+			ProviderRegister reg =  provider_ptr->GetRegisterValue( index );
+
+			REQUIRE( reg.register_value == 0xff00 + i );
+			REQUIRE( reg.GetHigh() == 0xff );
+			REQUIRE( reg.GetLow() == 0x00 + i );
+
+			REQUIRE( provider_ptr->GetRegisterName( index ) == register_names[ i ] );
+			REQUIRE( reg.hi_register_name == _8bit_register_names[ ( i * 2 ) ] );
+			REQUIRE( reg.lo_register_name == _8bit_register_names[ ( i * 2 ) + 1 ] );
+		}
+	}
+
 }
