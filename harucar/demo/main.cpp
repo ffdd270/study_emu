@@ -19,11 +19,15 @@ int main()
 	provider_ptr->AddFlag("F", false);
 
 	// Registers..
-	provider_ptr->AddRegister("A", 30);
-	provider_ptr->AddRegister("B", 30);
-	provider_ptr->AddRegister("C", 30);
-	provider_ptr->AddRegister("HL", 2409);
-	provider_ptr->AddRegister("BC", 3030);
+	ProviderRegister register_AB;
+	register_AB.register_value = 0x4250;
+	register_AB.UseHiLo("A", "B", 2);
+
+	ProviderRegister register_B;
+	register_B.register_value = 0x4;
+
+	provider_ptr->AddRegister("AB", register_AB);
+	provider_ptr->AddRegister( "B", register_B );
 
 
 	CPUViewer viewer;

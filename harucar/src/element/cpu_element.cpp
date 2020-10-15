@@ -3,6 +3,7 @@
 //
 
 #include "element/cpu_element.h"
+#include "CPUProvider.h"
 #include "imgui.h"
 
 void Elements::CPU::RenderFlags(const std::vector<std::string> &flag_names, const std::vector<bool> & flags)
@@ -29,7 +30,7 @@ void Elements::CPU::RenderFlags(const std::vector<std::string> &flag_names, cons
 	ImGui::Separator();
 }
 
-void Elements::CPU::RenderRegister(const std::vector<std::string> &register_names, const std::vector<int> &values)
+void Elements::CPU::RenderRegister(const std::vector<std::string> &register_names, const std::vector<ProviderRegister> &values)
 {
 	if( register_names.size() != values.size() )
 	{
@@ -55,7 +56,13 @@ void Elements::CPU::RenderRegister(const std::vector<std::string> &register_name
 
 	for ( int i = 0; i < values.size(); i++ )
 	{
-		ImGui::Text( "%d", values[i] );
+		ImGui::Text( "%d", values[i].register_value );
+
+		if( values[i].IsHiLo() )
+		{
+
+		}
+
 		ImGui::NextColumn();
 	}
 
