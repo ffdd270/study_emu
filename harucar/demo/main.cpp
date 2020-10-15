@@ -12,13 +12,21 @@
 int main()
 {
 	std::shared_ptr<CPUProvider> provider_ptr = std::make_shared<CPUProvider>();
+
+	// Flags..s
 	provider_ptr->AddFlag("Z", false);
 	provider_ptr->AddFlag("C", false);
 	provider_ptr->AddFlag("F", false);
 
+	// Registers..
+	provider_ptr->AddRegister("A", 30);
+	provider_ptr->AddRegister("B", 30);
+	provider_ptr->AddRegister("C", 30);
+	provider_ptr->AddRegister("HL", 2409);
+	provider_ptr->AddRegister("BC", 3030);
+
 
 	CPUViewer viewer;
-
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
