@@ -14,12 +14,14 @@ struct ProviderRegister
 {
 	bool IsHiLo() const { return use_hi_lo; }
 
-	void UseHiLo( const std::string & hi_register_name, const std::string & lo_register_name, size_t register_byte_size )
+	void UseHiLo(const std::string & ref_hi_reg_name, const std::string & ref_log_reg_name, size_t reg_byte_size )
 	{
-		if ( ( register_byte_size % 2 ) == 1 ) { throw std::exception("SHOULD BE 2, 4, .... 짝수."); }
+		if ( ( reg_byte_size % 2 ) == 1 )  { throw std::exception("WAS reg_byte_size % 2 == 1."); }
+		if ( ( ( reg_byte_size / 2 ) % 2 ) == 1 && ( reg_byte_size != 2 ) ) { throw std::exception("SHOULD BE 2, 4, .... 2^N"); }
 
-		this->hi_register_name = hi_register_name;
-		this->lo_register_name = lo_register_name;
+		hi_register_name = ref_hi_reg_name;
+		lo_register_name = ref_log_reg_name;
+		register_byte_size = reg_byte_size;
 
 		use_hi_lo = true;
 	}
@@ -27,21 +29,23 @@ struct ProviderRegister
 	int GetHigh() const
 	{
 		if( !use_hi_lo ) { throw std::exception("NO USE HI LO, BUT ACCESS HI."); }
+		if ( ( register_byte_size % 2 ) == 1 )  { throw std::exception("WAS reg_byte_size % 2 == 1."); }
+		if ( ( register_byte_size / 2 ) % 2 == 1 && ( register_byte_size != 2 ) ) { throw std::exception("SHOULD BE 2, 4, .... 2^N"); }
 		size_t half = register_byte_size / 2;
-		if ( ( half % 2 ) == 1 ) { throw std::exception("SHOULD BE 2, 4, .... 짝수."); }
 
 		int and_value = getBitMaskValue(half);
-		and_value = and_value < (half * 8);
+		and_value = and_value << (half * 8);
 
-		return (register_value & and_value) > (half * 4);
+		return (register_value & and_value) >> (half * 8);
 	}
 
 
 	int GetLow() const
 	{
 		if( !use_hi_lo ) { throw std::exception("NO USE HI LO, BUT ACCESS HI."); }
+		if ( ( register_byte_size % 2 ) == 1 )   { throw std::exception("WAS reg_byte_size % 2 == 1."); }
+		if ( ( register_byte_size / 2 ) % 2 == 1 && ( register_byte_size != 2 ) ) { throw std::exception("SHOULD BE 2, 4, .... 2^N"); }
 		size_t half = register_byte_size / 2;
-		if ( ( half % 2 ) == 1 ) { throw std::exception("SHOULD BE 2, 4, .... 짝수."); }
 
 		int or_value = getBitMaskValue(half);
 
@@ -49,19 +53,20 @@ struct ProviderRegister
 	}
 
 	int register_value = 0;
-	std::string hi_register_name = "";
-	std::string lo_register_name = "";
+	std::string hi_register_name;
+	std::string lo_register_name;
 private:
-	int getBitMaskValue(size_t half) const
+	static int getBitMaskValue(size_t half)
 	{
-
 		constexpr int _8BIT = 0xff;
 		int mask_value = 0;
 
 		for( int i = 0; i < half; i++ )
 		{
-			mask_value |= _8BIT < (i * 8); // byte to bit. so *4.
+			mask_value |=  ( _8BIT << (i * 8) ); // byte to bit. so *8.
 		}
+
+		return mask_value;
 	}
 private:
 	size_t register_byte_size;

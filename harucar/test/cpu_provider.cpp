@@ -86,13 +86,47 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 		);
 	}
 
+	SECTION("REGISTER HI, LO OK?")
+	{
+		ProviderRegister provider_register;
+
+		REQUIRE_THROWS(provider_register.GetHigh() ); //안하고 GetHigh하면 폭발.
+		REQUIRE_THROWS(provider_register.GetLow() ); //안하고 GetLow하면 폭발.
+
+		provider_register.register_value = 0xf024;
+
+
+		REQUIRE_THROWS(provider_register.UseHiLo("A", "B", 1));
+		//16 BIT REGISTER TEST
+		REQUIRE_NOTHROW(provider_register.UseHiLo("Hi", "Lo", 2));
+
+		REQUIRE(provider_register.hi_register_name == "Hi");
+		REQUIRE(provider_register.lo_register_name == "Lo");
+
+		REQUIRE(provider_register.GetHigh() == 0xf0);
+		REQUIRE(provider_register.GetLow() == 0x24);
+
+		//32 BIT REGISTER TEST ( 실험적 )
+		provider_register.register_value = 0x03241fff;
+		REQUIRE_NOTHROW(provider_register.UseHiLo("16", "32", 4));
+		REQUIRE(provider_register.hi_register_name == "16");
+		REQUIRE(provider_register.lo_register_name == "32");
+
+		REQUIRE(provider_register.GetHigh() == 0x0324);
+		REQUIRE(provider_register.GetLow() == 0x1fff);
+	}
+
 	SECTION("ADD REGISTER OK?")
 	{
 		add_value_and_check_rtn(
-				[&provider](const std::string &string, int value) { return provider.AddRegister(string, value); },
+				[&provider](const std::string &string, int value) {
+					ProviderRegister provider_register;
+					provider_register.register_value = value;
+					return provider.AddRegister(string, provider_register);
+				},
 				[]() { return (rand() % 512) - 256; },
 				[&provider](size_t index) { return provider.GetRegisterName(index); },
-				[&provider](size_t index) { return provider.GetRegisterValue(index); },
+				[&provider](size_t index) { return provider.GetRegisterValue(index).register_value; },
 				[&provider](const std::string & ref_string) { return provider.FindRegisterIndex( ref_string ); }
 		);
 	}
@@ -100,9 +134,13 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 	SECTION("ADD REGISTER, NO REGISTER?")
 	{
 		add_value_and_wrong_attemp(
-				[&provider](const std::string &string, int value) { return provider.AddRegister(string, value); },
+				[&provider](const std::string &string, int value) {
+					ProviderRegister register_value;
+					register_value.register_value = value;
+					return provider.AddRegister(string, register_value);
+					},
 				[&provider](size_t index) { return provider.GetRegisterName(index); },
-				[&provider](size_t index) { return provider.GetRegisterValue(index); },
+				[&provider](size_t index) { return provider.GetRegisterValue(index).register_value; },
 				[&provider](const std::string & ref_string) { return provider.FindRegisterIndex( ref_string ); }
 		);
 	}
