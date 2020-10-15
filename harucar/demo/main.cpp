@@ -27,7 +27,7 @@ int main()
 	register_B.register_value = 0x4;
 
 	provider_ptr->AddRegister("AB", register_AB);
-	provider_ptr->AddRegister( "B", register_B );
+	provider_ptr->AddRegister( "C", register_B );
 
 
 	CPUViewer viewer;

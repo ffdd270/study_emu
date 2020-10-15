@@ -23,8 +23,19 @@ void CPUViewer::render(std::weak_ptr<IProvider> provider_ptr)
 
 	ImGui::Begin("CPU Viewer");
 
-	Elements::CPU::RenderFlags( cpu_provider_ptr->GetFlagNames(), cpu_provider_ptr->GetFlags() );
-	Elements::CPU::RenderRegister( cpu_provider_ptr->GetRegisterNames(), cpu_provider_ptr->GetRegisterValues() );
+	if( ImGui::TreeNode("Flags") )
+	{
+		Elements::CPU::RenderFlags( cpu_provider_ptr->GetFlagNames(), cpu_provider_ptr->GetFlags() );
+
+		ImGui::TreePop();
+	}
+
+	if ( ImGui::TreeNode("Registers") )
+	{
+		Elements::CPU::RenderRegister( cpu_provider_ptr->GetRegisterNames(), cpu_provider_ptr->GetRegisterValues() );
+
+		ImGui::TreePop();
+	}
 
 	ImGui::End();
 }
