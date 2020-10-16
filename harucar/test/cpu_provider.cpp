@@ -60,6 +60,39 @@ void add_value_and_wrong_attemp(
 	REQUIRE( find_func( "Z" ) == -1 );
 }
 
+void add_value_and_check_values(
+		const std::function<size_t(const std::string &, int )> & add_func,
+		const std::function<int ()> & answer_func,
+		const std::function<const std::vector<std::string>()> & get_names_func,
+		const std::function<const std::vector<int>()> & get_values_func
+)
+{
+	std::array<const char *, 5> select_names = {};
+	std::array<int, 5> answers = {};
+
+	size_t start_pos = rand() % 4;
+
+	for( int i = 0; i < select_names.size(); i++ )
+	{
+		int answer = answer_func();
+		select_names[ i ] = TEST_NAMES[ start_pos + i ];
+		add_func( select_names[ i ], answer );
+		answers[ i ] = answer;
+	}
+
+	auto & values = get_values_func();
+	auto & names = get_names_func();
+
+	REQUIRE( values.size() == answers.size() );
+	REQUIRE( names.size() == select_names.size() );
+
+	for( int i = 0; i < answers.size(); i++ )
+	{
+		REQUIRE( values[i] == answers[i] );
+		REQUIRE( names[i] == select_names[i] );
+	}
+}
+
 
 TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 {
@@ -73,6 +106,28 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 				[&provider](size_t index) { return provider.GetFlagName(index); },
 				[&provider](size_t index) { return provider.GetFlag(index); },
 				[&provider](const std::string & ref_string) { return provider.FindFlagIndex( ref_string ); }
+		);
+	}
+
+	SECTION("ADD FLAGS and CHECK FLAGS")
+	{
+		add_value_and_check_values(
+				[&provider](const std::string &string, bool value) { return provider.AddFlag(string, value); },
+				[]() { return rand() % 2; },
+				[&provider]() { return provider.GetFlagNames(); },
+				[&provider]() {
+					const std::vector<bool> & flags = provider.GetFlags();
+					std::vector<int> return_vector;
+
+					return_vector.reserve(flags.size());
+
+					for( bool flag : flags )
+					{
+						return_vector.emplace_back( flag );
+					}
+
+					return return_vector;
+				}
 		);
 	}
 
@@ -94,7 +149,6 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 		REQUIRE_THROWS(provider_register.GetLow() ); //안하고 GetLow하면 폭발.
 
 		provider_register.register_value = 0xf024;
-
 
 		REQUIRE_THROWS(provider_register.UseHiLo("A", "B", 1));
 		//16 BIT REGISTER TEST
@@ -130,6 +184,33 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 				[&provider](const std::string & ref_string) { return provider.FindRegisterIndex( ref_string ); }
 		);
 	}
+
+	SECTION("ADD REGISTER, and CHECK REGISTERS")
+	{
+		add_value_and_check_values(
+				[&provider](const std::string &string, int value) {
+					ProviderRegister provider_register;
+					provider_register.register_value = value;
+					return provider.AddRegister(string, provider_register);
+					},
+				[]() { return (rand() % 512) - 256; },
+				[&provider]() { return provider.GetRegisterNames(); },
+				[&provider]() {
+					const std::vector<ProviderRegister> & regs = provider.GetRegisterValues();
+					std::vector<int> return_vector;
+
+					return_vector.reserve(regs.size());
+
+					for( const ProviderRegister & reg : regs )
+					{
+						return_vector.emplace_back( reg.register_value );
+					}
+
+					return return_vector;
+				}
+		);
+	}
+
 
 	SECTION("ADD REGISTER, NO REGISTER?")
 	{
