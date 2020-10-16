@@ -26,6 +26,13 @@ static ProviderRegister providerMaker( WORD reg_16_value, const std::string & re
 	return reg;
 }
 
+static ProviderRegister providerMaker( WORD reg_16_value )
+{
+	ProviderRegister reg;
+	reg.register_value = reg_16_value;
+	return reg;
+}
+
 std::shared_ptr<CPUProvider> GameboyCPUBroker::MakeProvider(GameboyCPU &cpu)
 {
 	std::shared_ptr<CPUProvider> provider_ptr = std::make_shared<CPUProvider>();
@@ -39,6 +46,8 @@ std::shared_ptr<CPUProvider> GameboyCPUBroker::MakeProvider(GameboyCPU &cpu)
 	mIndexBC = provider_ptr->AddRegister( "BC", providerMaker( cpu.GetRegisterBC().reg_16, "B", "C" ));
 	mIndexDE = provider_ptr->AddRegister( "DE", providerMaker( cpu.GetRegisterDE().reg_16, "D", "E" ));
 	mIndexHL = provider_ptr->AddRegister( "HL", providerMaker( cpu.GetRegisterHL().reg_16, "H", "L" ) );
+	mIndexSP = provider_ptr->AddRegister( "SP", providerMaker( cpu.GetRegisterSP().reg_16 ));
+	mIndexPC = provider_ptr->AddRegister( "PC", providerMaker( cpu.GetRegisterPC().reg_16 ));
 
 	return provider_ptr;
 }
@@ -54,5 +63,7 @@ void GameboyCPUBroker::UpdateProvider(GameboyCPU &cpu, std::shared_ptr<CPUProvid
 	provider_ref_ptr->UpdateRegister( mIndexBC, cpu.GetRegisterBC().reg_16 );
 	provider_ref_ptr->UpdateRegister( mIndexDE, cpu.GetRegisterDE().reg_16 );
 	provider_ref_ptr->UpdateRegister( mIndexHL, cpu.GetRegisterHL().reg_16 );
+	provider_ref_ptr->UpdateRegister( mIndexSP, cpu.GetRegisterSP().reg_16 );
+	provider_ref_ptr->UpdateRegister( mIndexPC, cpu.GetRegisterPC().reg_16 );
 }
 

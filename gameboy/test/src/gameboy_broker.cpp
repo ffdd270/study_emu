@@ -69,6 +69,19 @@ TEST_CASE( "Gameboy CPU Broker", "[Broker]" )
 			REQUIRE( reg.hi_register_name == _8bit_register_names[ ( i * 2 ) ] );
 			REQUIRE( reg.lo_register_name == _8bit_register_names[ ( i * 2 ) + 1 ] );
 		}
+
+		std::array<std::string, 2> special_register_names = { "PC", "SP" };
+		std::array<WORD, 2> expect_values = { cpu.GetRegisterPC().reg_16, cpu.GetRegisterSP().reg_16 };
+
+		for ( int i = 0; i < 2; i++ )
+		{
+			size_t index = provider_ptr->FindRegisterIndex( special_register_names[i] );
+			REQUIRE( index != -1 );
+
+			ProviderRegister reg = provider_ptr->GetRegisterValue( index );
+			REQUIRE( reg.register_value ==  expect_values[i] );
+		}
+
 	}
 
 }

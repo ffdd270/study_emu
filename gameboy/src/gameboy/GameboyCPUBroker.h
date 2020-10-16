@@ -18,7 +18,7 @@ public:
 	void UpdateProvider(GameboyCPU & cpu, std::shared_ptr<CPUProvider> & provider_ref_ptr ) const;
 private:
 	size_t mIndexC, mIndexH, mIndexZ, mIndexN;
-	size_t mIndexAF, mIndexBC, mIndexDE, mIndexHL;
+	size_t mIndexAF, mIndexBC, mIndexDE, mIndexHL, mIndexSP, mIndexPC;
 	std::array<size_t, 8> mRegisterIndices;
 };
 
