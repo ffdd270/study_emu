@@ -49,10 +49,16 @@ std::shared_ptr<CPUProvider> GameboyCPUBroker::MakeProvider(GameboyCPU &cpu)
 	mIndexSP = provider_ptr->AddRegister( "SP", providerMaker( cpu.GetRegisterSP().reg_16 ));
 	mIndexPC = provider_ptr->AddRegister( "PC", providerMaker( cpu.GetRegisterPC().reg_16 ));
 
+	cpu.SetOnInstructionCallback([&](const char * instruction, BYTE opcode)
+	{
+		this->mAddedInstructions.emplace_back( instruction );
+		this->mAddedOpCodes.emplace_back( opcode );
+	});
+
 	return provider_ptr;
 }
 
-void GameboyCPUBroker::UpdateProvider(GameboyCPU &cpu, std::shared_ptr<CPUProvider> &provider_ref_ptr) const
+void GameboyCPUBroker::UpdateProvider(GameboyCPU &cpu, std::shared_ptr<CPUProvider> &provider_ref_ptr)
 {
 	provider_ref_ptr->UpdateFlag( mIndexC, cpu.GetFlagC() );
 	provider_ref_ptr->UpdateFlag( mIndexH, cpu.GetFlagH() );
@@ -65,5 +71,19 @@ void GameboyCPUBroker::UpdateProvider(GameboyCPU &cpu, std::shared_ptr<CPUProvid
 	provider_ref_ptr->UpdateRegister( mIndexHL, cpu.GetRegisterHL().reg_16 );
 	provider_ref_ptr->UpdateRegister( mIndexSP, cpu.GetRegisterSP().reg_16 );
 	provider_ref_ptr->UpdateRegister( mIndexPC, cpu.GetRegisterPC().reg_16 );
+
+	for( size_t i = 0; i < mAddedInstructions.size(); i++ )
+	{
+		provider_ref_ptr->AddInstruction( mAddedInstructions[i], mAddedOpCodes[i] );
+	}
+
+	mAddedInstructions.clear();
+	mAddedOpCodes.clear();
 }
+
+void GameboyCPUBroker::Close( GameboyCPU & cpu )
+{
+	cpu.RemoveInstructionCallback();
+}
+
 

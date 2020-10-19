@@ -9,6 +9,7 @@
 #include "typedef.h"
 #include <array>
 #include <vector>
+#include <functional>
 
 union Register
 {
@@ -24,6 +25,8 @@ union Register
 class GameboyCPU;
 
 typedef void(*BindFunctionPointer)(GameboyCPU *, BYTE);
+using InstructionCallback = std::function<void( const char * instruction_name, BYTE opcode )>;
+
 
 class GameboyCPU
 {
@@ -42,6 +45,8 @@ public:
 	void InjectionMemory(BYTE injection_byte);
 	void SetInjectionCount(WORD injection_address) { mDebugInjectionCount.reg_16 = injection_address; }
 
+	void SetOnInstructionCallback( InstructionCallback callback );
+	void RemoveInstructionCallback();
 	void SetMemoryValue( unsigned int mem_index, BYTE value );
 	BYTE GetMemoryValue( unsigned int mem_index );
 
@@ -585,6 +590,9 @@ private:
 	// 0b11ppp111
 	void restartFromParam(BYTE op_code);
 
+	// Friend로 호출되는 Callback 이벤트
+	void addInstructionEvent(const char * name, BYTE opcode);
+
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
 	 */
@@ -686,6 +694,8 @@ private:
 
 	// BC, DE, HL, SP
 	std::array<RefRegister16Bit, 4> m16bitArguments;
+
+	InstructionCallback mOnInstructionCallback;
 
 	// Debug Register
 	Register mDebugInjectionCount;

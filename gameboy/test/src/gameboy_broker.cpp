@@ -81,7 +81,31 @@ TEST_CASE( "Gameboy CPU Broker", "[Broker]" )
 			ProviderRegister reg = provider_ptr->GetRegisterValue( index );
 			REQUIRE( reg.register_value ==  expect_values[i] );
 		}
+	}
 
+	SECTION("Add Instruction after UPDATE OK?")
+	{
+		provider_ptr = broker.MakeProvider( cpu );
+		REQUIRE( provider_ptr != nullptr );
+
+		for( int i = 0; i < 10; i++ )
+		{
+			setRegister16( cpu, Register16BitIndex::HL, 0xff00 );
+			cpu.NextStep();
+		}
+
+		broker.UpdateProvider( cpu, provider_ptr );
+
+		const std::vector<std::string> & ref_instructions = provider_ptr->GetInstructions();
+		const std::vector<int> & ref_opcodes = provider_ptr->GetOpCodes();
+
+		REQUIRE( provider_ptr->GetInstructionsLength() == 10 );
+
+		for( int i = 0; i < 10; i++ )
+		{
+			REQUIRE( ref_opcodes[i] == ( 0b00000001 | ( Register16BitIndex::HL << 4 ) ) );
+			REQUIRE( ref_instructions[i] == "loadReg16FromImm16");
+		}
 	}
 
 }

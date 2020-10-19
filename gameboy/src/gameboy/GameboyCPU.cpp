@@ -97,6 +97,7 @@ void GameboyCPU::NextStep()
 {\
 	cpu->func_name\
 	( op_code );\
+	cpu->addInstructionEvent( #func_name, op_code );\
 }\
 
 
@@ -720,15 +721,30 @@ BYTE GameboyCPU::GetMemoryValue(unsigned int mem_index)
 	return mGameMemory[ mem_index ];
 }
 
+void GameboyCPU::SetOnInstructionCallback(InstructionCallback callback)
+{
+	mOnInstructionCallback = std::move(callback);
+}
+
+void GameboyCPU::RemoveInstructionCallback()
+{
+	mOnInstructionCallback = nullptr;
+}
 
 void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
 {
 	mGameMemory[ mem_index ] = value;
 }
 
-// 여기서부터는 명령어들.
+void GameboyCPU::addInstructionEvent(const char *name, BYTE opcode)
+{
+	if ( mOnInstructionCallback != nullptr )
+	{
+		mOnInstructionCallback( name, opcode );
+	}
+}
 
-
+// 여기서부터는 명령어들 Helper.
 
 BYTE GameboyCPU::immediateValue()
 {
@@ -815,5 +831,5 @@ void GameboyCPU::resetFlags()
 
 BYTE &GameboyCPU::get8BitArgumentValue(BYTE param)
 {
-	return ( param == 0b110 ) ? mGameMemory[ mRegisters.HL.reg_16 ] : m8bitArguments[ param ].ref;
+	return (param == 0b110) ? mGameMemory[mRegisters.HL.reg_16] : m8bitArguments[param].ref;
 }
