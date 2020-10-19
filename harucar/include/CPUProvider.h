@@ -94,24 +94,27 @@ public:
 	const std::vector<ProviderRegister>& GetRegisterValues() const;
 
 	const std::vector<std::string> & GetFlagNames() const;
-	std::vector<bool> GetFlags() const;
-
+	const std::vector<bool> & GetFlags() const;
 
 	const std::vector<std::string> & GetInstructions() const;
 	const std::vector<int> & GetOpCodes() const;
 
-	std::string GetRegisterName(size_t index) const;
-	ProviderRegister GetRegisterValue(size_t index) const;
+	const std::string & GetRegisterName(size_t index) const;
+	const ProviderRegister & GetRegisterValue(size_t index) const;
 	// 없으면 -1.
 	int FindRegisterIndex(const std::string & register_name) const;
 
-	std::string GetFlagName(size_t index) const;
+	const std::string & GetFlagName(size_t index) const;
 	bool GetFlag(size_t index) const;
 	// 없으면 -1.
 	int FindFlagIndex(const std::string & flag_name) const;
 
-	std::string GetInstruction(size_t index) const;
+	const std::string & GetInstruction(size_t index) const;
 	int GetOpCode(size_t index) const;
+
+	const std::string & GetLastInstruction() const;
+	int GetLastOpCode() const;
+	size_t GetInstructionsLength() { return mInstructions.size(); }
 
 	// 존재하는 것들중 가장 최신으로. 없으면 -1.
 	int FindInstructionIndex(const std::string & instruction_name) const;

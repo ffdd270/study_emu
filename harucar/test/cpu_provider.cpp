@@ -285,4 +285,23 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 			REQUIRE( provider.GetOpCode( index ) == 0x34 );
 		}
 	}
+
+	SECTION("GET LAST INSTRUCTIONS")
+	{
+		provider.AddInstruction( "MOV", 0x34 );
+		provider.AddInstruction( "MOV", 0x34 );
+		provider.AddInstruction("ADD", 0x24 );
+		provider.AddInstruction("ADD", 0x24 );
+
+		REQUIRE( provider.GetLastInstruction() == "ADD" );
+		REQUIRE( provider.GetLastOpCode() == 0x24 );
+		REQUIRE( provider.GetInstructionsLength() == 4 );
+	}
+
+	SECTION("EMPTY, AND LAST INSTRUCTION. THEN THROW")
+	{
+		REQUIRE_THROWS( provider.GetLastOpCode() );
+		REQUIRE_THROWS( provider.GetLastInstruction() );
+	}
+
 }
