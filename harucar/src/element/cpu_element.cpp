@@ -92,3 +92,32 @@ void Elements::CPU::RenderRegister(const std::vector<std::string> &register_name
 	ImGui::Separator();
 }
 
+void Elements::CPU::RenderInstructions(const std::vector<std::string> &instructions, const std::vector<int> &opcodes, float width, float height, int id)
+{
+	if( instructions.size() != opcodes.size() )
+	{
+		throw std::exception("OPCODES NAMES SIZE SHOULD BE SAME AS INSTRUCTIONS");
+	}
+
+	if ( instructions.empty() ) { return; }
+
+	std::string str_id = "Instructions" + std::to_string( id );
+	ImGui::Text("LAST INSTRUCTION : %s, 0x%x", instructions[ instructions.size() - 1 ].c_str(), opcodes[ opcodes.size() - 1 ] );
+
+	bool is_visible = ImGui::BeginChild( "Instructions", ImVec2( 200.0f, 200.0f ), true );
+
+	if ( is_visible )
+	{
+		ImGui::Columns( 2 );
+		for( size_t i = 0; i < instructions.size(); i++ )
+		{
+			ImGui::Text( "%s" ,instructions[i].c_str() );
+			ImGui::NextColumn();
+			ImGui::Text( "0x%x" ,opcodes[i] );
+			ImGui::NextColumn();
+		}
+		ImGui::Columns();
+	}
+
+	ImGui::EndChild();
+}

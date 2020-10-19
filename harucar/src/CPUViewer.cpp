@@ -37,6 +37,13 @@ void CPUViewer::render(std::weak_ptr<IProvider> provider_ptr)
 		ImGui::TreePop();
 	}
 
+	if ( ImGui::TreeNode("Instructions"))
+	{
+		Elements::CPU::RenderInstructions( cpu_provider_ptr->GetInstructions(), cpu_provider_ptr->GetOpCodes() );
+
+		ImGui::TreePop();
+	}
+
 	ImGui::End();
 }
 

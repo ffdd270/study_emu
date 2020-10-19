@@ -9,6 +9,19 @@
 
 
 
+static void add_instructions( std::shared_ptr<CPUProvider> & provider_ptr )
+{
+	for( size_t i = 0; i < 60; i++ )
+	{
+		provider_ptr->AddInstruction( "NOP", 0x0 );
+	}
+
+	provider_ptr->AddInstruction("ADD", 0x24 );
+	provider_ptr->AddInstruction( "MOV", 0x34 );
+}
+
+
+
 int main()
 {
 	std::shared_ptr<CPUProvider> provider_ptr = std::make_shared<CPUProvider>();
@@ -17,6 +30,8 @@ int main()
 	provider_ptr->AddFlag("Z", false);
 	provider_ptr->AddFlag("C", false);
 	provider_ptr->AddFlag("F", false);
+
+	add_instructions( provider_ptr );
 
 	// Registers..
 	ProviderRegister register_AB;
