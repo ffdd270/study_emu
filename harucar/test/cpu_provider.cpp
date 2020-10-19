@@ -225,4 +225,64 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 				[&provider](const std::string & ref_string) { return provider.FindRegisterIndex( ref_string ); }
 		);
 	}
+
+	SECTION("ADD INSTRUCTION OK?")
+	{
+		add_value_and_check_rtn(
+				[&provider](const std::string &string, int value) {
+					return provider.AddInstruction(string, value);
+				},
+				[]() { return (rand() % 0xff); },
+				[&provider](size_t index) { return provider.GetInstruction(index); },
+				[&provider](size_t index) { return provider.GetOpCode(index); },
+				[&provider](const std::string & ref_string) { return provider.FindInstructionIndex( ref_string ); }
+		);
+	}
+
+
+	SECTION("ADD INSTRUCTION and CHECK INSTRUCTIONS")
+	{
+		add_value_and_check_values(
+				[&provider](const std::string &string, int value) { return provider.AddInstruction(string, value); },
+				[]() { return rand() % 0xff; },
+				[&provider]() -> std::vector<std::string>
+				{
+					return provider.GetInstructions();
+				},
+				[&provider]() -> std::vector<int> {
+					return provider.GetOpCodes();
+				}
+		);
+	}
+
+	SECTION("ADD INSTRUCTION, NO INSTRUCTION?")
+	{
+		add_value_and_wrong_attemp(
+				[&provider](const std::string &string, int value) { return provider.AddInstruction(string, value); },
+				[&provider](size_t index) { return provider.GetInstruction(index); },
+				[&provider](size_t index) { return provider.GetOpCode(index); },
+				[&provider](const std::string & ref_string) { return provider.FindInstructionIndex( ref_string ); }
+		);
+	}
+
+	SECTION("FIND INSTRUCTIONS INDICES")
+	{
+		provider.AddInstruction("MOV", 0x34);
+		provider.AddInstruction("MOV", 0x34);
+		provider.AddInstruction("ADD", 0x24);
+		provider.AddInstruction("MOV", 0x34);
+		provider.AddInstruction("ADD", 0x24);
+		provider.AddInstruction("MOV", 0x34);
+		provider.AddInstruction("MOV", 0x34);
+		//MOV 5.
+
+		std::vector<int> indices = provider.FindInstructionIndices( "MOV" );
+		REQUIRE( indices.size() == 5 );
+
+		for( const int & index : indices )
+		{
+			REQUIRE( provider.GetInstruction( index ) == "MOV" );
+			REQUIRE( provider.GetOpCode( index ) == 0x34 );
+		}
+	}
 }

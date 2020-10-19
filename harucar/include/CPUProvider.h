@@ -98,7 +98,7 @@ public:
 
 
 	const std::vector<std::string> & GetInstructions() const;
-	std::vector<int> GetOpCodes() const;
+	const std::vector<int> & GetOpCodes() const;
 
 	std::string GetRegisterName(size_t index) const;
 	ProviderRegister GetRegisterValue(size_t index) const;
@@ -112,6 +112,11 @@ public:
 
 	std::string GetInstruction(size_t index) const;
 	int GetOpCode(size_t index) const;
+
+	// 존재하는 것들중 가장 최신으로. 없으면 -1.
+	int FindInstructionIndex(const std::string & instruction_name) const;
+	// 최신부터 오래된 것까지
+	std::vector<int> FindInstructionIndices(const std::string & instruction_name) const;
 
 private:
 	std::vector<int> mMemory;

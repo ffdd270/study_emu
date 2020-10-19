@@ -52,7 +52,7 @@ size_t CPUProvider::AddInstruction(const std::string &ref_instruction, int op_co
 
 	assert( mInstructions.size() == mOpCodes.size() );
 
-	return mOpCodes.size();
+	return mOpCodes.size() - 1;
 }
 
 const std::vector<std::string> & CPUProvider::GetRegisterNames() const
@@ -88,16 +88,9 @@ const std::vector<std::string> &  CPUProvider::GetInstructions() const
 	return mInstructions;
 }
 
-std::vector<int> CPUProvider::GetOpCodes() const
+const std::vector<int> & CPUProvider::GetOpCodes() const
 {
-	std::vector<int> view_array;
-
-	for ( auto ref_value : mOpCodes )
-	{
-		view_array.emplace_back( ref_value );
-	}
-
-	return view_array;
+	return mOpCodes;
 }
 
 std::string CPUProvider::GetRegisterName(size_t index) const
@@ -161,4 +154,31 @@ int CPUProvider::GetOpCode(size_t index) const
 	if ( mOpCodes.size() <= index ) { throw std::exception("OpCode Out of Index`"); }
 
 	return mOpCodes[index];
+}
+
+int CPUProvider::FindInstructionIndex(const std::string &instruction_name) const
+{
+	if ( mInstructions.size() == 0 ) { return -1; }
+
+	for( int i = static_cast<int>(mInstructions.size() - 1); i >= 0; --i )
+	{
+		if( instruction_name == mInstructions[ i ] ) { return i; }
+	}
+
+	return -1;
+}
+
+std::vector<int> CPUProvider::FindInstructionIndices(const std::string &instruction_name) const
+{
+	std::vector<int> indices;
+
+	for (int i = static_cast<int>(mInstructions.size() - 1); i >= 0; --i)
+	{
+		if (instruction_name == mInstructions[i])
+		{
+			indices.emplace_back( i );
+		}
+	}
+
+	return indices;
 }
