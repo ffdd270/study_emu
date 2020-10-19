@@ -16,7 +16,7 @@ namespace Elements
 	{
 		void RenderFlags(const std::vector<std::string> & flag_names, const std::vector<bool> & flags);
 		void RenderRegisterHiLow( const ProviderRegister & ref_provider_register );
-		void RenderRegister(const std::vector<std::string> & register_names, const std::vector<ProviderRegister> & values);
+		void RenderRegister(const std::vector<std::string> & register_names, const std::vector<ProviderRegister> & values, float width = 0.f, float height = 300.f);
 		void RenderInstructions(const std::vector<std::string> & instructions, const std::vector<int> & opcodes, float width = 200.f, float height = 200.f, int id = 0 );
 	}
 }

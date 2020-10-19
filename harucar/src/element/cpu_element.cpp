@@ -45,7 +45,7 @@ void Elements::CPU::RenderRegisterHiLow(const ProviderRegister & ref_provider_re
 }
 
 
-void Elements::CPU::RenderRegister(const std::vector<std::string> &register_names, const std::vector<ProviderRegister> &values)
+void Elements::CPU::RenderRegister(const std::vector<std::string> &register_names, const std::vector<ProviderRegister> &values, float width, float height)
 {
 	if( register_names.size() != values.size() )
 	{
@@ -57,39 +57,43 @@ void Elements::CPU::RenderRegister(const std::vector<std::string> &register_name
 		return;
 	}
 
-	ImGui::Columns( register_names.size(), "CPU Register Names" );
-	ImGui::Separator();
-
-	for ( int i = 0; i < register_names.size(); i++)
+	ImGui::BeginChild( "Registers Viewer", ImVec2( width, height ) );
 	{
-		ImGui::Text("%s", register_names[i].c_str());
-		ImGui::NextColumn();
-	}
-
-	ImGui::Separator();
-
-	for ( int i = 0; i < values.size(); i++ )
-	{
-		auto & ref_value = values[i];
-		ImGui::Text( "%d", ref_value.register_value );
-		ImGui::NextColumn();
-	}
-
-	for ( int i = 0; i < values.size(); i++ )
-	{
-		auto & ref_value = values[i];
-		if( ref_value.IsHiLo() )
+		ImGui::Columns( register_names.size(), "CPU Register Names" );
 		{
-			std::string str_id = "Hi Low Window" + std::to_string(i);
-			ImGui::BeginChild(str_id.c_str(), ImVec2(0, 0 ), false );
-			RenderRegisterHiLow( ref_value );
-			ImGui::EndChild();
-		}
-		ImGui::NextColumn();
-	}
+			ImGui::Separator();
 
-	ImGui::Columns(1);
-	ImGui::Separator();
+			for (const auto & register_name : register_names)
+			{
+				ImGui::Text("%s", register_name.c_str());
+				ImGui::NextColumn();
+			}
+
+			ImGui::Separator();
+
+			for (const auto & ref_value : values)
+			{
+				ImGui::Text( "%d", ref_value.register_value );
+				ImGui::NextColumn();
+			}
+
+			for ( int i = 0; i < values.size(); i++ )
+			{
+				auto & ref_value = values[i];
+				if( ref_value.IsHiLo() )
+				{
+					std::string str_id = "Hi Low Window" + std::to_string(i);
+					ImGui::BeginChild(str_id.c_str(), ImVec2(0, 0 ), false );
+					RenderRegisterHiLow( ref_value );
+					ImGui::EndChild();
+				}
+				ImGui::NextColumn();
+			}
+		}
+		ImGui::Columns(1);
+		ImGui::Separator();
+	}
+	ImGui::EndChild();
 }
 
 void Elements::CPU::RenderInstructions(const std::vector<std::string> &instructions, const std::vector<int> &opcodes, float width, float height, int id)
@@ -105,7 +109,6 @@ void Elements::CPU::RenderInstructions(const std::vector<std::string> &instructi
 	ImGui::Text("LAST INSTRUCTION : %s, 0x%x", instructions[ instructions.size() - 1 ].c_str(), opcodes[ opcodes.size() - 1 ] );
 
 	bool is_visible = ImGui::BeginChild( "Instructions", ImVec2( 200.0f, 200.0f ), true );
-
 	if ( is_visible )
 	{
 		ImGui::Columns( 2 );
