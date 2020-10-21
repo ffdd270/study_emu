@@ -6,8 +6,11 @@ set( PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR} )
 set( SRC_PATH ${PROJECT_ROOT_PATH}/src )
 set( HARUCAR_PATH ${PROJECT_ROOT_PATH}/../harucar )
 
+include(FindLua)
+
 find_package(SFML 2 COMPONENTS graphics REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Lua REQUIRED)
 
 find_library(HARUCAR_LIB
 		NAMES harucar.lib
@@ -17,6 +20,9 @@ include_directories(
 		${HARUCAR_PATH}/lib/imgui/
 		${HARUCAR_PATH}/lib/imgui-sfml/
 		${HARUCAR_PATH}/include/
+
+		${PROJECT_ROOT_PATH}/external/LuaBridge/
+		${LUA_INCLUDE_DIR}
 )
 
 set(IMGUI
@@ -41,6 +47,7 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/GameboyCPU.cpp
 		${SRC_PATH}/gameboy/GameboyCPU.h
 		${SRC_PATH}/gameboy/typedef.h
+
 		${SRC_PATH}/gameboy/instruction_set/load_instruction.cpp
 		${SRC_PATH}/gameboy/instruction_set/arithmetic_instruction.cpp
 		${SRC_PATH}/gameboy/instruction_set/cpu_control_instruction.cpp
@@ -48,9 +55,15 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/instruction_set/bit_set_reset_test.cpp
 		${SRC_PATH}/gameboy/instruction_set/jump_group.cpp
 		${SRC_PATH}/gameboy/instruction_set/call_and_return.cpp
+
 		${SRC_PATH}/gameboy/GameboyCPUBroker.cpp
-		${SRC_PATH}/gameboy/GameboyCPUBroker.h)
+		${SRC_PATH}/gameboy/GameboyCPUBroker.h
+
+		${SRC_PATH}/lua-binding/gameboy_luabinding.cpp
+		${SRC_PATH}/lua-binding/gameboy_luabinding.h
+		)
+
 
 add_subdirectory(test)
 add_executable(gameboy src/main.cpp ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} )
-target_link_libraries(gameboy PRIVATE sfml-graphics OpenGL32 ${HARUCAR_LIB})
+target_link_libraries(gameboy PRIVATE sfml-graphics OpenGL32 ${HARUCAR_LIB} ${LUA_LIBRARIES})
