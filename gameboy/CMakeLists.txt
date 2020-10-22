@@ -21,8 +21,8 @@ include_directories(
 		${HARUCAR_PATH}/lib/imgui-sfml/
 		${HARUCAR_PATH}/include/
 
-		${PROJECT_ROOT_PATH}/external/LuaBridge/
-		${LUA_INCLUDE_DIR}
+		${PROJECT_ROOT_PATH}/external/
+		${LUA_INCLUDE_DIR}/
 )
 
 set(IMGUI
