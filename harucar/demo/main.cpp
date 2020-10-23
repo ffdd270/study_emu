@@ -1,8 +1,8 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
-#include "CPUViewer.h"
-#include "CPUProvider.h"
+#include "cpu/cpu_viewer.h"
+#include "cpu/cpu_provider.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>

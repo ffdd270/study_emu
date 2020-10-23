@@ -9,7 +9,7 @@ class IProvider
 {
 public:
 	// 데이터 업데이트.
-	virtual void update() {};
+	virtual void Update() {};
 
 
 private:

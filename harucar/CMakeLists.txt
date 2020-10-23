@@ -11,25 +11,25 @@ include_directories(
 
 set( LIB_SRC
 		# Interface.
-		include/Viewer.h
-		include/Provider.h
+		include/base/viewer.h
+		include/base/provider.h
 
 		include/library.h
 		src/library.cpp
 
-		include/CPUViewer.h
-		src/CPUViewer.cpp
+		include/cpu/cpu_viewer.h
+		src/cpu/cpu_viewer.cpp
 
-		include/CPUProvider.h
-		src/CPUProvider.cpp
+		include/cpu/cpu_provider.h
+		src/cpu/cpu_provider.cpp
 
-		include/element/cpu_element.h
-		src/element/cpu_element.cpp
+		include/cpu/cpu_element.h
+		src/cpu/cpu_element.cpp
 
-		include/element/common_element.h
-		src/element/common_element.cpp
+		include/common/common_element.h
+		src/common/common_element.cpp
 
-		include/common_structure.h
+		include/common/common_structure.h
 		src/common/common_structure.cpp)
 
 

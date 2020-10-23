@@ -2,10 +2,10 @@
 // Created by HaruGakkaP on 2020-10-12.
 //
 
-#ifndef HARUCAR_CPUPROVIDER_H
-#define HARUCAR_CPUPROVIDER_H
+#ifndef HARUCAR_CPU_PROVIDER_H
+#define HARUCAR_CPU_PROVIDER_H
 
-#include "Provider.h"
+#include "base/provider.h"
 #include <vector>
 #include <string>
 
@@ -137,4 +137,4 @@ private:
 	std::vector<int> mOpCodes;
 };
 
-#endif //HARUCAR_CPUPROVIDER_H
+#endif //HARUCAR_CPU_PROVIDER_H

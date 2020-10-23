@@ -2,7 +2,7 @@
 // Created by HaruGakkaP on 2020-10-12.
 //
 
-#include <CPUProvider.h>
+#include <cpu/cpu_provider.h>
 #include <assert.h>
 
 void CPUProvider::SetMemory(std::vector<int> &ref_memory)

@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include <CPUProvider.h>
+#include <cpu/cpu_provider.h>
 #include <array>
 #include <functional>
 

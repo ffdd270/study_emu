@@ -2,8 +2,8 @@
 // Created by nhy20 on 2020-10-12.
 //
 
-#include "element/cpu_element.h"
-#include "CPUProvider.h"
+#include "cpu/cpu_element.h"
+#include "cpu/cpu_provider.h"
 #include "imgui.h"
 
 void Elements::CPU::RenderFlags(const std::vector<std::string> &flag_names, const std::vector<bool> & flags)

@@ -2243,7 +2243,7 @@ bool ImGuiListClipper::Step()
         return false;
     }
 
-    // Step 0: Let you process the first element (regardless of it being visible or not, so we can measure the element height)
+    // Step 0: Let you process the first cpu (regardless of it being visible or not, so we can measure the cpu height)
     if (StepNo == 0)
     {
         StartPosY = window->DC.CursorPos.y;
@@ -2261,7 +2261,7 @@ bool ImGuiListClipper::Step()
         StepNo = 2;
     }
 
-    // Step 1: the clipper infer height from first element
+    // Step 1: the clipper infer height from first cpu
     if (StepNo == 1)
     {
         IM_ASSERT(ItemsHeight <= 0.0f);
@@ -2270,7 +2270,7 @@ bool ImGuiListClipper::Step()
         StepNo = 2;
     }
 
-    // Step 2: calculate the actual range of elements to display, and position the cursor before the first element
+    // Step 2: calculate the actual range of elements to display, and position the cursor before the first cpu
     if (StepNo == 2)
     {
         IM_ASSERT(ItemsHeight > 0.0f);
@@ -2288,7 +2288,7 @@ bool ImGuiListClipper::Step()
         return true;
     }
 
-    // Step 3: the clipper validate that we have reached the expected Y position (corresponding to element DisplayEnd),
+    // Step 3: the clipper validate that we have reached the expected Y position (corresponding to cpu DisplayEnd),
     // Advance the cursor to the end of the list and then returns 'false' to end the loop.
     if (StepNo == 3)
     {
@@ -2589,7 +2589,7 @@ void ImGui::RenderTextWrapped(ImVec2 pos, const char* text, const char* text_end
 // Handle clipping on CPU immediately (vs typically let the GPU clip the triangles that are overlapping the clipping rectangle edges)
 void ImGui::RenderTextClippedEx(ImDrawList* draw_list, const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_display_end, const ImVec2* text_size_if_known, const ImVec2& align, const ImRect* clip_rect)
 {
-    // Perform CPU side clipping for single clipped element to avoid using scissor state
+    // Perform CPU side clipping for single clipped cpu to avoid using scissor state
     ImVec2 pos = pos_min;
     const ImVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_display_end, false, 0.0f);
 
@@ -6037,7 +6037,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
 
         // Pressing CTRL+C while holding on a window copy its content to the clipboard
         // This works but 1. doesn't handle multiple Begin/End pairs, 2. recursing into another Begin/End pair - so we need to work that out and add better logging scope.
-        // Maybe we can support CTRL+C on every element?
+        // Maybe we can support CTRL+C on every cpu?
         /*
         if (g.ActiveId == move_id)
             if (g.IO.KeyCtrl && IsKeyPressedMap(ImGuiKey_C))

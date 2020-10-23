@@ -2,10 +2,10 @@
 // Created by HaruGakkaP on 2020-10-12.
 //
 
-#include "CPUViewer.h"
-#include "CPUProvider.h"
-#include "element/cpu_element.h"
-#include "element/common_element.h"
+#include "cpu/cpu_viewer.h"
+#include "cpu/cpu_provider.h"
+#include "cpu/cpu_element.h"
+#include "common/common_element.h"
 #include "imgui.h"
 
 

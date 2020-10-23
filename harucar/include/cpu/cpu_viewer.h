@@ -2,14 +2,14 @@
 // Created by HaruGakkaP on 2020-10-12.
 //
 
-#ifndef HARUCAR_CPUVIEWER_H
-#define HARUCAR_CPUVIEWER_H
+#ifndef HARUCAR_CPU_VIEWER_H
+#define HARUCAR_CPU_VIEWER_H
 
 #include <vector>
 #include <string>
 
-#include "common_structure.h"
-#include "Viewer.h"
+#include "common/common_structure.h"
+#include "base/viewer.h"
 
 class CPUViewer : public IViewer
 {
@@ -23,4 +23,4 @@ private:
 
 };
 
-#endif //HARUCAR_CPUVIEWER_H
+#endif //HARUCAR_CPU_VIEWER_H

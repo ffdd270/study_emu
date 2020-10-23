@@ -2,7 +2,7 @@
 // Created by nhy20 on 2020-10-24.
 //
 
-#include "common_structure.h"
+#include "common/common_structure.h"
 
 using namespace Structure;
 
