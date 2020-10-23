@@ -11,7 +11,7 @@
 class IViewer
 {
 public:
-	virtual void render(std::weak_ptr<IProvider> provider_ptr) = 0;
+	virtual void Render(std::weak_ptr<IProvider> provider_ptr) = 0;
 };
 
 #endif //HARUCAR_VIEWER_H

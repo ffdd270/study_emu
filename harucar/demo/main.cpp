@@ -20,9 +20,7 @@ static void add_instructions( std::shared_ptr<CPUProvider> & provider_ptr )
 	provider_ptr->AddInstruction( "MOV", 0x34 );
 }
 
-
-
-int main()
+std::shared_ptr<CPUProvider> make_provider( )
 {
 	std::shared_ptr<CPUProvider> provider_ptr = std::make_shared<CPUProvider>();
 
@@ -44,8 +42,18 @@ int main()
 	provider_ptr->AddRegister("AB", register_AB);
 	provider_ptr->AddRegister( "C", register_B );
 
+	return provider_ptr;
+}
+
+
+
+int main()
+{
+	std::shared_ptr<CPUProvider> provider_ptr = make_provider();
+	std::shared_ptr<Structure::InputBuffer> input_buffer_ptr = std::make_shared<Structure::InputBuffer>( 500 );
 
 	CPUViewer viewer;
+	viewer.SetInputBuffer( input_buffer_ptr );
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
@@ -69,7 +77,7 @@ int main()
 		ImGui::Button("Look at this pretty button");
 		ImGui::End();
 
-		viewer.render( std::static_pointer_cast<IProvider>( provider_ptr ) );
+		viewer.Render(std::static_pointer_cast<IProvider>(provider_ptr));
 
 		window.clear();
 		ImGui::SFML::Render(window);

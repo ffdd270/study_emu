@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 
+#include "common_structure.h"
 #include "Viewer.h"
 
 class CPUViewer : public IViewer
@@ -15,7 +16,11 @@ class CPUViewer : public IViewer
 public:
 	CPUViewer();
 
-	void render(std::weak_ptr<IProvider> provider_ptr) override;
+	void Render(std::weak_ptr<IProvider> provider_ptr) override;
+	void SetInputBuffer( std::shared_ptr<Structure::InputBuffer> & ptr_set_input_buffer );
+private:
+	std::shared_ptr<Structure::InputBuffer> mPtrInputBuffer;
+
 };
 
 #endif //HARUCAR_CPUVIEWER_H

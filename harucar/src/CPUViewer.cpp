@@ -5,7 +5,7 @@
 #include "CPUViewer.h"
 #include "CPUProvider.h"
 #include "element/cpu_element.h"
-
+#include "element/common_element.h"
 #include "imgui.h"
 
 
@@ -14,12 +14,12 @@ CPUViewer::CPUViewer()
 
 }
 
-void CPUViewer::render(std::weak_ptr<IProvider> provider_ptr)
+void CPUViewer::Render(std::weak_ptr<IProvider> provider_ptr)
 {
 	auto ptr = provider_ptr.lock();
 	if ( ptr == nullptr ) { return; }
 
-	std::shared_ptr<const CPUProvider> cpu_provider_ptr = std::static_pointer_cast<const CPUProvider>( ptr );
+	std::shared_ptr<CPUProvider> cpu_provider_ptr = std::static_pointer_cast<CPUProvider>( ptr );
 
 	ImGui::Begin("CPU Viewer");
 
@@ -44,6 +44,18 @@ void CPUViewer::render(std::weak_ptr<IProvider> provider_ptr)
 		ImGui::TreePop();
 	}
 
+	if ( mPtrInputBuffer != nullptr && ImGui::TreeNode("Input") )
+	{
+		Elements::Common::RenderInputTextBox( *mPtrInputBuffer );
+
+		ImGui::TreePop();
+	}
+
 	ImGui::End();
+}
+
+void CPUViewer::SetInputBuffer(std::shared_ptr<Structure::InputBuffer> &ptr_set_input_buffer)
+{
+	mPtrInputBuffer = ptr_set_input_buffer;
 }
 

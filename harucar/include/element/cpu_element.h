@@ -21,5 +21,4 @@ namespace Elements
 	}
 }
 
-
 #endif //HARUCAR_CPU_ELEMENT_H

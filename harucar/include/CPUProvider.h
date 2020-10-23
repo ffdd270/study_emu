@@ -12,7 +12,7 @@
 
 struct ProviderRegister
 {
-	bool IsHiLo() const { return use_hi_lo; }
+	[[nodiscard]] bool IsHiLo() const { return use_hi_lo; }
 
 	void UseHiLo(const std::string & ref_hi_reg_name, const std::string & ref_log_reg_name, size_t reg_byte_size )
 	{
@@ -26,7 +26,7 @@ struct ProviderRegister
 		use_hi_lo = true;
 	}
 
-	int GetHigh() const
+	[[nodiscard]] int GetHigh() const
 	{
 		if( !use_hi_lo ) { throw std::exception("NO USE HI LO, BUT ACCESS HI."); }
 		if ( ( register_byte_size % 2 ) == 1 )  { throw std::exception("WAS reg_byte_size % 2 == 1."); }
@@ -40,7 +40,7 @@ struct ProviderRegister
 	}
 
 
-	int GetLow() const
+	[[nodiscard]] int GetLow() const
 	{
 		if( !use_hi_lo ) { throw std::exception("NO USE HI LO, BUT ACCESS HI."); }
 		if ( ( register_byte_size % 2 ) == 1 )   { throw std::exception("WAS reg_byte_size % 2 == 1."); }
@@ -90,36 +90,36 @@ public:
 	// 인덱스 발급
 	size_t AddInstruction(const std::string & ref_instruction, int op_code);
 
-	const std::vector<std::string> & GetRegisterNames() const;
-	const std::vector<ProviderRegister>& GetRegisterValues() const;
+	[[nodiscard]] const std::vector<std::string> & GetRegisterNames() const;
+	[[nodiscard]] const std::vector<ProviderRegister> & GetRegisterValues() const;
 
-	const std::vector<std::string> & GetFlagNames() const;
-	const std::vector<bool> & GetFlags() const;
+	[[nodiscard]] const std::vector<std::string> & GetFlagNames() const;
+	[[nodiscard]] const std::vector<bool> & GetFlags() const;
 
-	const std::vector<std::string> & GetInstructions() const;
-	const std::vector<int> & GetOpCodes() const;
+	[[nodiscard]] const std::vector<std::string> & GetInstructions() const;
+	[[nodiscard]] const std::vector<int> & GetOpCodes() const;
 
-	const std::string & GetRegisterName(size_t index) const;
-	const ProviderRegister & GetRegisterValue(size_t index) const;
+	[[nodiscard]] const std::string & GetRegisterName(size_t index) const;
+	[[nodiscard]] const ProviderRegister & GetRegisterValue(size_t index) const;
 	// 없으면 -1.
-	int FindRegisterIndex(const std::string & register_name) const;
+	[[nodiscard]] int FindRegisterIndex(const std::string & register_name) const;
 
-	const std::string & GetFlagName(size_t index) const;
-	bool GetFlag(size_t index) const;
+	[[nodiscard]] const std::string & GetFlagName(size_t index) const;
+	[[nodiscard]] bool GetFlag(size_t index) const;
 	// 없으면 -1.
-	int FindFlagIndex(const std::string & flag_name) const;
+	[[nodiscard]] int FindFlagIndex(const std::string & flag_name) const;
 
-	const std::string & GetInstruction(size_t index) const;
-	int GetOpCode(size_t index) const;
+	[[nodiscard]] const std::string & GetInstruction(size_t index) const;
+	[[nodiscard]] int GetOpCode(size_t index) const;
 
-	const std::string & GetLastInstruction() const;
-	int GetLastOpCode() const;
+	[[nodiscard]] const std::string & GetLastInstruction() const;
+	[[nodiscard]] int GetLastOpCode() const;
 	size_t GetInstructionsLength() { return mInstructions.size(); }
 
 	// 존재하는 것들중 가장 최신으로. 없으면 -1.
-	int FindInstructionIndex(const std::string & instruction_name) const;
+	[[nodiscard]] int FindInstructionIndex(const std::string & instruction_name) const;
 	// 최신부터 오래된 것까지
-	std::vector<int> FindInstructionIndices(const std::string & instruction_name) const;
+	[[nodiscard]] std::vector<int> FindInstructionIndices(const std::string & instruction_name) const;
 
 private:
 	std::vector<int> mMemory;

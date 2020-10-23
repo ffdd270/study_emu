@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(harucar)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(HARUCAR_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(
@@ -24,7 +24,13 @@ set( LIB_SRC
 		src/CPUProvider.cpp
 
 		include/element/cpu_element.h
-		src/element/cpu_element.cpp)
+		src/element/cpu_element.cpp
+
+		include/element/common_element.h
+		src/element/common_element.cpp
+
+		include/common_structure.h
+		src/common/common_structure.cpp)
 
 
 add_library(harucar ${LIB_SRC})
