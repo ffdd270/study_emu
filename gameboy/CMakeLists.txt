@@ -22,6 +22,7 @@ include_directories(
 		${HARUCAR_PATH}/include/
 
 		${PROJECT_ROOT_PATH}/external/
+		${PROJECT_ROOT_PATH}/src/gameboy/
 		${LUA_INCLUDE_DIR}/
 )
 

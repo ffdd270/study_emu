@@ -6,7 +6,7 @@
 
 #include "gameboy/GameboyCPU.h"
 #include "gameboy/GameboyCPUBroker.h"
-#include "CPUViewer.h"
+#include "cpu/cpu_viewer.h"
 
 int main()
 {
@@ -49,7 +49,7 @@ int main()
 		ImGui::Button("Look at this pretty button");
 		ImGui::End();
 
-		viewer.render( provider_ptr );
+		viewer.Render( provider_ptr );
 
 		window.clear();
 		ImGui::SFML::Render(window);

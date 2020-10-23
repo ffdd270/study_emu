@@ -5,7 +5,7 @@
 #ifndef GAMEBOY_GAMEBOYCPUBROKER_H
 #define GAMEBOY_GAMEBOYCPUBROKER_H
 
-#include <CPUProvider.h>
+#include <cpu/cpu_provider.h>
 #include "GameboyCPU.h"
 #include <array>
 
