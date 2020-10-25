@@ -13,7 +13,7 @@ set(TEST_SRC
 		main.cpp
 		catch.hpp
 		cpu_provider.cpp
-		ui_event_protocol.cpp)
+		ui_event_protocol.cpp util.cpp)
 
 add_executable(harucar-test ${TEST_SRC}  )
 target_link_libraries( harucar-test PRIVATE harucar )

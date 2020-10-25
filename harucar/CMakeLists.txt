@@ -34,7 +34,7 @@ set( LIB_SRC
 
 		include/ui/ui_event_protocol.h
 		src/ui/ui_event_protocol.cpp
-		)
+		include/util/util_string.h)
 
 
 add_library(harucar ${LIB_SRC})
