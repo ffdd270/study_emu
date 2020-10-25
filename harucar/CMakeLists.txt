@@ -30,7 +30,11 @@ set( LIB_SRC
 		src/common/common_element.cpp
 
 		include/common/common_structure.h
-		src/common/common_structure.cpp)
+		src/common/common_structure.cpp
+
+		include/ui/ui_event_protocol.h
+		src/ui/ui_event_protocol.cpp
+		)
 
 
 add_library(harucar ${LIB_SRC})

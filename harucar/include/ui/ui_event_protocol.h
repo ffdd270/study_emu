@@ -1,0 +1,31 @@
+//
+// Created by nhy20 on 2020-10-25.
+//
+
+#ifndef HARUCAR_UI_EVENT_PROTOCOL_H
+#define HARUCAR_UI_EVENT_PROTOCOL_H
+
+
+#include <string>
+#include <string_view>
+#include <unordered_map>
+
+//이벤트 켜면 언젠간 가져가서 언젠간 Remove하는 굉장히 Lazy한 프로토콜. Viewer 와 Eventer가 교환할 때 쓴다.
+//콜백 방식.. 써야 하나.. :thinking_face:. 넣는 건 안 어려운데 고민중.
+class UIEventProtocol
+{
+public:
+	// if not add.
+	void AddEvent( std::string_view event_name );
+
+	// Get, Not Set To False
+	[[nodiscard]] bool CheckEvent( std::string_view event_name ) const;
+
+	// set to false.
+	void RemoveEvent( std::string_view event_name );
+private:
+	std::unordered_map<std::string_view, bool> mEvents;
+};
+
+
+#endif //HARUCAR_UI_EVENT_PROTOCOL_H
