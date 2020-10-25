@@ -32,4 +32,10 @@ void UIEventProtocol::RemoveEvent(std::string_view event_name)
 }
 
 
+bool UIEventHelperFunction::FireEvent(UIEventProtocol &ref_event_protocol, std::string_view event_name)
+{
+	bool rtn_flag = ref_event_protocol.CheckEvent( event_name );
+	ref_event_protocol.RemoveEvent( event_name );
 
+	return rtn_flag;
+}

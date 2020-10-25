@@ -14,9 +14,9 @@
 class CPUViewer : public IViewer
 {
 public:
-	CPUViewer();
+	CPUViewer() = default;
 
-	void Render(std::weak_ptr<IProvider> provider_ptr) override;
+	void Render(std::shared_ptr<IProvider> provider_ptr, std::shared_ptr<UIEventProtocol> protocol_ptr) override;
 	void SetInputBuffer( std::shared_ptr<Structure::InputBuffer> & ptr_set_input_buffer );
 private:
 	std::shared_ptr<Structure::InputBuffer> mPtrInputBuffer;

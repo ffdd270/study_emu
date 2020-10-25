@@ -50,6 +50,7 @@ std::shared_ptr<CPUProvider> make_provider( )
 int main()
 {
 	std::shared_ptr<CPUProvider> provider_ptr = make_provider();
+	std::shared_ptr<UIEventProtocol> protocol_ptr = std::make_shared<UIEventProtocol>();
 	std::shared_ptr<Structure::InputBuffer> input_buffer_ptr = std::make_shared<Structure::InputBuffer>( 500 );
 
 	CPUViewer viewer;
@@ -77,7 +78,12 @@ int main()
 		ImGui::Button("Look at this pretty button");
 		ImGui::End();
 
-		viewer.Render(std::static_pointer_cast<IProvider>(provider_ptr));
+		viewer.Render(std::static_pointer_cast<IProvider>(provider_ptr), protocol_ptr);
+
+		if( UIEventHelperFunction::FireEvent( *protocol_ptr, "Injection" ) )
+		{
+			provider_ptr->AddInstruction( "NOPE", 0x00 );
+		}
 
 		window.clear();
 		ImGui::SFML::Render(window);

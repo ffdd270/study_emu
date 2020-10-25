@@ -27,5 +27,10 @@ private:
 	std::unordered_map<std::string_view, bool> mEvents;
 };
 
+namespace UIEventHelperFunction
+{
+	// 버튼 같은 단발성 이벤트용.
+	bool FireEvent( UIEventProtocol & ref_event_protocol, std::string_view event_name );
+}
 
 #endif //HARUCAR_UI_EVENT_PROTOCOL_H

@@ -9,17 +9,11 @@
 #include "imgui.h"
 
 
-CPUViewer::CPUViewer()
+void CPUViewer::Render(std::shared_ptr<IProvider> provider_ptr, std::shared_ptr<UIEventProtocol> protocol_ptr)
 {
+	if ( provider_ptr == nullptr ) { return; }
 
-}
-
-void CPUViewer::Render(std::weak_ptr<IProvider> provider_ptr)
-{
-	auto ptr = provider_ptr.lock();
-	if ( ptr == nullptr ) { return; }
-
-	std::shared_ptr<CPUProvider> cpu_provider_ptr = std::static_pointer_cast<CPUProvider>( ptr );
+	std::shared_ptr<CPUProvider> cpu_provider_ptr = std::static_pointer_cast<CPUProvider>( provider_ptr );
 
 	ImGui::Begin("CPU Viewer");
 
@@ -50,6 +44,15 @@ void CPUViewer::Render(std::weak_ptr<IProvider> provider_ptr)
 
 		ImGui::TreePop();
 	}
+
+	if( ImGui::Button("Injection") )
+	{
+		if ( protocol_ptr != nullptr )
+		{
+			protocol_ptr->AddEvent("Injection");
+		}
+	}
+
 
 	ImGui::End();
 }

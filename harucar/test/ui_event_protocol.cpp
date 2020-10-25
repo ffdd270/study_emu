@@ -31,4 +31,15 @@ TEST_CASE("UI BUTTON EVENT TEST" , "[UI]")
 		REQUIRE( protocol.CheckEvent("TEST") == true );
 		REQUIRE( protocol.CheckEvent("Not Exist Event.") == false );
 	}
+
+
+	SECTION("Test Helper Functions")
+	{
+		UIEventProtocol protocol;
+
+		protocol.AddEvent("Event");
+		REQUIRE( protocol.CheckEvent("Event") == true );
+		REQUIRE( UIEventHelperFunction::FireEvent( protocol, "Event" ) == true );
+		REQUIRE( UIEventHelperFunction::FireEvent( protocol, "Event" ) == false );
+	}
 }

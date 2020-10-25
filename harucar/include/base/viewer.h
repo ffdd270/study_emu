@@ -6,12 +6,13 @@
 #define HARUCAR_VIEWER_H
 
 #include "provider.h"
+#include "ui/ui_event_protocol.h"
 #include <memory>
 
 class IViewer
 {
 public:
-	virtual void Render(std::weak_ptr<IProvider> provider_ptr) = 0;
+	virtual void Render(std::shared_ptr<IProvider> provider_ptr, std::shared_ptr<UIEventProtocol> protocol_ptr = nullptr) = 0;
 };
 
 #endif //HARUCAR_VIEWER_H
