@@ -42,16 +42,26 @@ void CPUViewer::Render(std::shared_ptr<IProvider> provider_ptr, std::shared_ptr<
 	{
 		Elements::Common::RenderInputTextBox( *mPtrInputBuffer );
 
+		if( ImGui::Button("Injection") )
+		{
+			if ( protocol_ptr != nullptr )
+			{
+				protocol_ptr->AddEvent("Injection");
+			}
+		}
+
 		ImGui::TreePop();
 	}
 
-	if( ImGui::Button("Injection") )
+
+	if ( ImGui::Button("Next Step" ) )
 	{
 		if ( protocol_ptr != nullptr )
 		{
-			protocol_ptr->AddEvent("Injection");
+			protocol_ptr->AddEvent("Next Step");
 		}
 	}
+
 
 
 	ImGui::End();

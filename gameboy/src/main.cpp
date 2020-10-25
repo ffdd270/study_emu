@@ -92,6 +92,8 @@ int main()
 		if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Next Step") )
 		{
 			cpu.NextStep();
+
+			broker.UpdateProvider( cpu, provider_ptr );
 		}
 
 		window.clear();
