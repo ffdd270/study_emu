@@ -34,9 +34,6 @@ SCENARIO("Logger, Log.", "[Logger]")
 
 		WHEN( "Out of index" )
 		{
-			logger << "AB";
-			logger << "CD";
-
 			LOG(logger) << "AB" << "CD";
 			REQUIRE_NOTHROW( logger.GetData( 0 ) );
 			REQUIRE_THROWS( logger.GetData( 1 ) );

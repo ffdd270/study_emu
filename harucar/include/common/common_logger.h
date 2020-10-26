@@ -56,7 +56,7 @@ namespace HaruCar::Common::Log
 	};
 
 #define LOG( Logger )\
-	LoggerEnd() = Logger
+	HaruCar::Common::Log::LoggerEnd() = Logger
 }
 
 #endif //HARUCAR_COMMON_LOGGER_H
