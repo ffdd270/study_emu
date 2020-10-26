@@ -2,7 +2,9 @@
 // Created by nhy20 on 2020-10-25.
 //
 
-#include <ui/ui_event_protocol.h>
+#include <ui/ui_event_protocol_structure.h>
+
+using namespace HaruCar::UI::Structure;
 
 void UIEventProtocol::AddEvent(std::string_view event_name)
 {

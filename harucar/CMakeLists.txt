@@ -10,9 +10,9 @@ include_directories(
 )
 
 set( LIB_SRC
-		# Interface.
-		include/base/viewer.h
-		include/base/provider.h
+		# Base.
+		include/base/viewer_interface.h
+		include/base/provider_interface.h
 
 		include/library.h
 		src/library.cpp
@@ -32,8 +32,8 @@ set( LIB_SRC
 		include/common/common_structure.h
 		src/common/common_structure.cpp
 
-		include/ui/ui_event_protocol.h
-		src/ui/ui_event_protocol.cpp
+		include/ui/ui_event_protocol_structure.h
+		src/ui/ui_event_protocol_structure.cpp
 		include/util/util_string.h)
 
 

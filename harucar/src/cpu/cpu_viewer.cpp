@@ -8,8 +8,11 @@
 #include "common/common_element.h"
 #include "imgui.h"
 
+using namespace HaruCar;
+using namespace HaruCar::CPU;
+using namespace HaruCar::Base::Interface;
 
-void CPUViewer::Render(std::shared_ptr<IProvider> provider_ptr, std::shared_ptr<UIEventProtocol> protocol_ptr)
+void CPUViewer::Render(std::shared_ptr<Provider> provider_ptr, std::shared_ptr<UI::Structure::UIEventProtocol> protocol_ptr)
 {
 	if ( provider_ptr == nullptr ) { return; }
 
@@ -19,28 +22,28 @@ void CPUViewer::Render(std::shared_ptr<IProvider> provider_ptr, std::shared_ptr<
 
 	if( ImGui::TreeNode("Flags") )
 	{
-		Elements::CPU::RenderFlags( cpu_provider_ptr->GetFlagNames(), cpu_provider_ptr->GetFlags() );
+		CPU::Elements::RenderFlags(cpu_provider_ptr->GetFlagNames(), cpu_provider_ptr->GetFlags() );
 
 		ImGui::TreePop();
 	}
 
 	if ( ImGui::TreeNode("Registers") )
 	{
-		Elements::CPU::RenderRegister( cpu_provider_ptr->GetRegisterNames(), cpu_provider_ptr->GetRegisterValues() );
+		CPU::Elements::RenderRegister(cpu_provider_ptr->GetRegisterNames(), cpu_provider_ptr->GetRegisterValues() );
 
 		ImGui::TreePop();
 	}
 
 	if ( ImGui::TreeNode("Instructions"))
 	{
-		Elements::CPU::RenderInstructions( cpu_provider_ptr->GetInstructions(), cpu_provider_ptr->GetOpCodes() );
+		CPU::Elements::RenderInstructions(cpu_provider_ptr->GetInstructions(), cpu_provider_ptr->GetOpCodes() );
 
 		ImGui::TreePop();
 	}
 
 	if ( mPtrInputBuffer != nullptr && ImGui::TreeNode("Input") )
 	{
-		Elements::Common::RenderInputTextBox( *mPtrInputBuffer );
+		Common::Elements::RenderInputTextBox(*mPtrInputBuffer );
 
 		if( ImGui::Button("Injection") )
 		{
@@ -67,7 +70,7 @@ void CPUViewer::Render(std::shared_ptr<IProvider> provider_ptr, std::shared_ptr<
 	ImGui::End();
 }
 
-void CPUViewer::SetInputBuffer(std::shared_ptr<Structure::InputBuffer> &ptr_set_input_buffer)
+void CPUViewer::SetInputBuffer(std::shared_ptr<Common::Structure::InputBuffer> &ptr_set_input_buffer)
 {
 	mPtrInputBuffer = ptr_set_input_buffer;
 }

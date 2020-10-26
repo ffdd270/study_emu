@@ -5,11 +5,12 @@
 #include <cpu/cpu_provider.h>
 #include <assert.h>
 
+using namespace HaruCar::CPU;
+
 void CPUProvider::SetMemory(std::vector<int> &ref_memory)
 {
 	mMemory = ref_memory;
 }
-
 
 size_t CPUProvider::AddRegister(const std::string &ref_register_name, const ProviderRegister & register_value)
 {	

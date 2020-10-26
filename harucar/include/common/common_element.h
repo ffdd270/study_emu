@@ -7,9 +7,9 @@
 
 #include "common_structure.h"
 
-namespace Elements::Common
+namespace HaruCar::Common::Elements
 {
-	void RenderInputTextBox( Structure::InputBuffer & ref_in_out_buffer );
+	void RenderInputTextBox(Structure::InputBuffer & ref_in_out_buffer );
 }
 
 #endif //HARUCAR_COMMON_ELEMENT_H

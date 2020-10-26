@@ -4,7 +4,7 @@
 
 #include "common/common_structure.h"
 
-using namespace Structure;
+using namespace HaruCar::Common::Structure;
 
 InputBuffer::InputBuffer(size_t buffer_size) : buffer_size( buffer_size )
 {

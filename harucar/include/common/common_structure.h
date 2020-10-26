@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-namespace Structure
+namespace HaruCar::Common::Structure
 {
 	class InputBuffer
 	{

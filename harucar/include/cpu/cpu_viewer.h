@@ -9,18 +9,22 @@
 #include <string>
 
 #include "common/common_structure.h"
-#include "base/viewer.h"
+#include "base/viewer_interface.h"
 
-class CPUViewer : public IViewer
+namespace HaruCar::CPU
 {
-public:
-	CPUViewer() = default;
+	class CPUViewer : public Base::Interface::Viewer
+	{
+	public:
+		CPUViewer() = default;
 
-	void Render(std::shared_ptr<IProvider> provider_ptr, std::shared_ptr<UIEventProtocol> protocol_ptr) override;
-	void SetInputBuffer( std::shared_ptr<Structure::InputBuffer> & ptr_set_input_buffer );
-private:
-	std::shared_ptr<Structure::InputBuffer> mPtrInputBuffer;
+		void Render(std::shared_ptr<Base::Interface::Provider> provider_ptr, std::shared_ptr<UI::Structure::UIEventProtocol> protocol_ptr) override;
+		void SetInputBuffer( std::shared_ptr<Common::Structure::InputBuffer> & ptr_set_input_buffer );
+	private:
+		std::shared_ptr<Common::Structure::InputBuffer> mPtrInputBuffer;
+	};
 
-};
+}
+
 
 #endif //HARUCAR_CPU_VIEWER_H

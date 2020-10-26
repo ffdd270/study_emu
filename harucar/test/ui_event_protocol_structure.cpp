@@ -1,5 +1,7 @@
 #include <catch.hpp>
-#include "ui/ui_event_protocol.h"
+#include "ui/ui_event_protocol_structure.h"
+
+using namespace HaruCar::UI::Structure;
 
 void Button_Test1_Mock( UIEventProtocol & protocol )
 {

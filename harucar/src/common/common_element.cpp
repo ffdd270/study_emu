@@ -5,9 +5,11 @@
 #include <common/common_element.h>
 #include <imgui.h>
 
-using namespace Structure;
+using namespace HaruCar;
+using namespace HaruCar::Common;
 
-void Elements::Common::RenderInputTextBox(InputBuffer &ref_in_out_buffer)
+
+void Common::Elements::RenderInputTextBox(Structure::InputBuffer &ref_in_out_buffer)
 {
 	ImGui::InputTextMultiline( "##input_source", ref_in_out_buffer.GetBuffer(), ref_in_out_buffer.GetBufferSize() );
 }

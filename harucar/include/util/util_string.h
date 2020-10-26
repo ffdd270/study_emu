@@ -9,7 +9,7 @@
 #include <string>
 #include <string_view>
 
-namespace Util
+namespace HaruCar::Util
 {
 	inline std::vector<std::string> string_split( std::string_view view, char spliter = '\n')
 	{

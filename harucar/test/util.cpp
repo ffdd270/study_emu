@@ -13,7 +13,7 @@ TEST_CASE( "UTIL STRING", "[UTIL]" )
 		{
 			std::string_view test = "0x24424\n0x23242";
 
-			auto split_result = Util::string_split(test);
+			auto split_result = HaruCar::Util::string_split(test);
 
 			REQUIRE(split_result.size() == 2);
 			REQUIRE(split_result[0] == "0x24424");
@@ -25,7 +25,7 @@ TEST_CASE( "UTIL STRING", "[UTIL]" )
 		{
 			std::string_view test = "0x24242424";
 
-			std::vector<std::string> split_result = Util::string_split( test );
+			std::vector<std::string> split_result = HaruCar::Util::string_split( test );
 
 			REQUIRE( split_result.size() == 1 );
 			REQUIRE( split_result[0] == "0x24242424" );
