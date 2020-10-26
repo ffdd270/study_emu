@@ -21,22 +21,24 @@ SCENARIO("Logger, Log.", "[Logger]")
 			LOG(logger) << test_str;
 			LOG(logger) << "AB" << "CD";
 
-			REQUIRE( logger.GetSize() == 2 );
+			THEN("Size 2, Same as Input String.")
+			{
+				REQUIRE( logger.GetSize() == 2 );
 
-			REQUIRE_NOTHROW( logger.GetData( 0 ) );
-			REQUIRE( logger.GetData( 0 ).log  == test_str );
-			REQUIRE( logger.GetData( 0 ).info == LogLevels::INFO );
+				REQUIRE_NOTHROW( logger.GetData( 0 ) );
+				REQUIRE( logger.GetData( 0 ).log  == test_str );
+				REQUIRE( logger.GetData( 0 ).info == LogLevels::INFO );
 
-			REQUIRE_NOTHROW( logger.GetData( 1 ) );
-			REQUIRE( logger.GetData( 1 ).log == "ABCD" );
-			REQUIRE( logger.GetData( 1 ).info == LogLevels::INFO );
-		}
+				REQUIRE_NOTHROW( logger.GetData( 1 ) );
+				REQUIRE( logger.GetData( 1 ).log == "ABCD" );
+				REQUIRE( logger.GetData( 1 ).info == LogLevels::INFO );
+			}
 
-		WHEN( "Out of index" )
-		{
-			LOG(logger) << "AB" << "CD";
-			REQUIRE_NOTHROW( logger.GetData( 0 ) );
-			REQUIRE_THROWS( logger.GetData( 1 ) );
+			THEN("Out of Index, require throw.")
+			{
+				REQUIRE_THROWS( logger.GetData( 3 ) );
+			}
+
 		}
 	}
 }
