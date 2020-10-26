@@ -12,8 +12,10 @@ include_directories(
 set(TEST_SRC
 		main.cpp
 		catch.hpp
-		cpu_provider.cpp
-		ui_event_protocol_structure.cpp util.cpp)
+		cpu/cpu_provider.cpp
+		ui/ui_event_protocol_structure.cpp
+		common/util.cpp
+		common/logger.cpp)
 
 add_executable(harucar-test ${TEST_SRC}  )
 target_link_libraries( harucar-test PRIVATE harucar )
