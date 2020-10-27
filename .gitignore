@@ -35,3 +35,4 @@ chip8/cmake-build-debug-visual-studio
 .idea
 gameboy/cmake-build-debug
 harucar/cmake-build-debug
+gameboy/cmake-build-release

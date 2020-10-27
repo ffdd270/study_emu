@@ -58,9 +58,17 @@ void GameboyCPU::Reset()
 
 void GameboyCPU::NextStep()
 {
-	if (! mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) )
+	if (!mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) )
 	{
-		mHalted = true;
+		if( mBreakPoints[ mPC.reg_16 ] ) // 그냥 Hatled.
+		{
+			mHalted = true;
+		}
+		else // Continue 요청옴.
+		{
+			mBreakPoints[ mPC.reg_16 ] = true;
+		}
+
 	}
 
 	if( mHalted )
@@ -114,6 +122,7 @@ void GameboyCPU::ContinueFromBreakPoint()
 {
 	if ( mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) ) // 브레이크 포인트 안이며, Halted였으면.
 	{
+		mBreakPoints[mPC.reg_16] = false; // Halted 유무.
 		mHalted = false;
 	}
 }
