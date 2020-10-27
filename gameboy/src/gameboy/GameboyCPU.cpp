@@ -58,6 +58,11 @@ void GameboyCPU::Reset()
 
 void GameboyCPU::NextStep()
 {
+	if (! mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) )
+	{
+		mHalted = true;
+	}
+
 	if( mHalted )
 	{
 		return;
@@ -90,6 +95,29 @@ void GameboyCPU::NextStep()
 
 	func( this, op_code );
 }
+
+void GameboyCPU::AddBreakPoint(WORD break_address)
+{
+	auto iter = mBreakPoints.find( break_address );
+	if( iter != mBreakPoints.end() ) { return; }
+	mBreakPoints.insert( std::make_pair( break_address, true ) );
+}
+
+void GameboyCPU::RemoveBreakPoint(WORD break_address)
+{
+	auto iter = mBreakPoints.find( break_address );
+	if( iter == mBreakPoints.end() ) { return; }
+	mBreakPoints.erase( iter );
+}
+
+void GameboyCPU::ContinueFromBreakPoint()
+{
+	if ( mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) ) // 브레이크 포인트 안이며, Halted였으면.
+	{
+		mHalted = false;
+	}
+}
+
 
 // PRE 0b00의 콜백 함수.
 #define BIND_FUNC( func_name ) static void func_name\

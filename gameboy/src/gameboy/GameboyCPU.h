@@ -40,8 +40,11 @@ public:
 	void NextStep();
 	[[nodiscard]] bool IsInterruptEnable() const { return  mInturruptEnable; }
 
-
 	// 게임 보이 디버거 함수들
+	void AddBreakPoint( WORD break_address );
+	void RemoveBreakPoint( WORD break_address );
+	void ContinueFromBreakPoint();
+
 	void InjectionMemory(BYTE injection_byte);
 	void SetInjectionCount(WORD injection_address) { mDebugInjectionCount.reg_16 = injection_address; }
 
@@ -699,6 +702,9 @@ private:
 
 	// Debug Register
 	Register mDebugInjectionCount;
+
+	// Debug Break Points
+	std::unordered_map<WORD, bool> mBreakPoints;
 
 	bool mInturruptEnable;
 };
