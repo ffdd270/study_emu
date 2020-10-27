@@ -19,11 +19,9 @@ set(TEST
 		src/bit_set_reset_test.cpp
 		src/jump_group.cpp
 		src/call_and_return.cpp
-<<<<<<< HEAD
-		src/gameboy_broker.cpp "src/breakpoint.cpp")
-=======
-		src/gameboy_broker.cpp src/gameboy_luabinding_test.cpp)
->>>>>>> master
+		src/gameboy_broker.cpp
+		src/gameboy_luabinding_test.cpp
+		src/breakpoint.cpp)
 
 
 add_executable( gb_test
