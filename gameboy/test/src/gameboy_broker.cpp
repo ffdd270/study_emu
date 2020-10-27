@@ -5,6 +5,8 @@
 #include "catch.hpp"
 #include "util.h"
 
+using namespace HaruCar::CPU;
+
 TEST_CASE( "Gameboy CPU Broker", "[Broker]" )
 {
 	GameboyCPU cpu;
