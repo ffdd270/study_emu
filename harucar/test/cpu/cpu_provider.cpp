@@ -1,7 +1,9 @@
 #include <catch.hpp>
-#include <CPUProvider.h>
+#include <cpu/cpu_provider.h>
 #include <array>
 #include <functional>
+
+using namespace HaruCar::CPU;
 
 constexpr std::array<const char *, 9> TEST_NAMES = { "A", "B", "C",
 										   "D", "E", "F", "G",
@@ -96,7 +98,7 @@ void add_value_and_check_values(
 
 TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 {
-	CPUProvider provider;
+	HaruCar::CPU::CPUProvider provider;
 
 	SECTION("ADD FLAG OK?")
 	{
@@ -143,7 +145,7 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 
 	SECTION("REGISTER HI, LO OK?")
 	{
-		ProviderRegister provider_register;
+		HaruCar::CPU::ProviderRegister provider_register;
 
 		REQUIRE_THROWS(provider_register.GetHigh() ); //안하고 GetHigh하면 폭발.
 		REQUIRE_THROWS(provider_register.GetLow() ); //안하고 GetLow하면 폭발.
@@ -174,7 +176,7 @@ TEST_CASE( "CPU PROVIDER", "[PROVIDER]" )
 	{
 		add_value_and_check_rtn(
 				[&provider](const std::string &string, int value) {
-					ProviderRegister provider_register;
+					HaruCar::CPU::ProviderRegister provider_register;
 					provider_register.register_value = value;
 					return provider.AddRegister(string, provider_register);
 				},

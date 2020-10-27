@@ -2,11 +2,13 @@
 // Created by nhy20 on 2020-10-12.
 //
 
-#include "element/cpu_element.h"
-#include "CPUProvider.h"
+#include "cpu/cpu_element.h"
+#include "cpu/cpu_provider.h"
 #include "imgui.h"
 
-void Elements::CPU::RenderFlags(const std::vector<std::string> &flag_names, const std::vector<bool> & flags)
+using namespace HaruCar;
+
+void CPU::Elements::RenderFlags(const std::vector<std::string> &flag_names, const std::vector<bool> & flags)
 {
 	if( flag_names.size() != flags.size() )
 	{
@@ -29,7 +31,7 @@ void Elements::CPU::RenderFlags(const std::vector<std::string> &flag_names, cons
 	ImGui::Separator();
 }
 
-void Elements::CPU::RenderRegisterHiLow(const ProviderRegister & ref_provider_register)
+void CPU::Elements::RenderRegisterHiLow(const HaruCar::CPU::ProviderRegister & ref_provider_register)
 {
 	ImGui::Columns( 2, "Hi - Lo Values" );
 	ImGui::Separator();
@@ -45,7 +47,7 @@ void Elements::CPU::RenderRegisterHiLow(const ProviderRegister & ref_provider_re
 }
 
 
-void Elements::CPU::RenderRegister(const std::vector<std::string> &register_names, const std::vector<ProviderRegister> &values, float width, float height)
+void CPU::Elements::RenderRegister(const std::vector<std::string> &register_names, const std::vector<HaruCar::CPU::ProviderRegister> &values, float width, float height)
 {
 	if( register_names.size() != values.size() )
 	{
@@ -96,7 +98,7 @@ void Elements::CPU::RenderRegister(const std::vector<std::string> &register_name
 	ImGui::EndChild();
 }
 
-void Elements::CPU::RenderInstructions(const std::vector<std::string> &instructions, const std::vector<int> &opcodes, float width, float height, int id)
+void CPU::Elements::RenderInstructions(const std::vector<std::string> &instructions, const std::vector<int> &opcodes, float width, float height, int id)
 {
 	if( instructions.size() != opcodes.size() )
 	{

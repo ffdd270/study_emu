@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories( lib/
         ${SRC_PATH}/gameboy/
+		${SRC_PATH}/lua-binding/
 		${HARUCAR_PATH}/include/
 		)
 
@@ -18,7 +19,11 @@ set(TEST
 		src/bit_set_reset_test.cpp
 		src/jump_group.cpp
 		src/call_and_return.cpp
+<<<<<<< HEAD
 		src/gameboy_broker.cpp "src/breakpoint.cpp")
+=======
+		src/gameboy_broker.cpp src/gameboy_luabinding_test.cpp)
+>>>>>>> master
 
 
 add_executable( gb_test
@@ -26,4 +31,4 @@ add_executable( gb_test
         ${TEST}
         ${GAMEBOY_SRC})
 
-target_link_libraries(gb_test PRIVATE ${HARUCAR_LIB} ${HARUCAR_LIB})
+target_link_libraries(gb_test PRIVATE ${HARUCAR_LIB} ${LUA_LIBRARIES})

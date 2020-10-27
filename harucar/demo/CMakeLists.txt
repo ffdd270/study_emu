@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(harucar-demo)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(SFML 2 COMPONENTS graphics REQUIRED)
 find_package(OpenGL REQUIRED)
