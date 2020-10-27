@@ -14,8 +14,8 @@ class GameboyCPUBroker
 public:
 	GameboyCPUBroker();
 
-	std::shared_ptr<CPUProvider> MakeProvider(GameboyCPU & cpu);
-	void UpdateProvider(GameboyCPU & cpu, std::shared_ptr<CPUProvider> & provider_ref_ptr );
+	std::shared_ptr<HaruCar::CPU::CPUProvider> MakeProvider(GameboyCPU & cpu);
+	void UpdateProvider(GameboyCPU & cpu, std::shared_ptr<HaruCar::CPU::CPUProvider> & provider_ref_ptr );
 	static void Close(GameboyCPU & cpu);
 private:
 	size_t mIndexC, mIndexH, mIndexZ, mIndexN;

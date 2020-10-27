@@ -13,6 +13,11 @@
 
 
 
+using namespace HaruCar::UI;
+using namespace HaruCar::CPU;
+using namespace HaruCar::UI::Structure;
+using namespace HaruCar::Common::Structure;
+
 int main()
 {
 	GameboyCPU cpu;
@@ -20,7 +25,7 @@ int main()
 
 	std::shared_ptr<UIEventProtocol> protocol_ptr = std::make_shared<UIEventProtocol>();
 	std::shared_ptr<CPUProvider> provider_ptr = broker.MakeProvider( cpu );
-	std::shared_ptr<Structure::InputBuffer> input_buffer_ptr = std::make_shared<Structure::InputBuffer>( 300 );
+	std::shared_ptr<InputBuffer> input_buffer_ptr = std::make_shared<InputBuffer>( 300 );
 
 	CPUViewer viewer;
 
@@ -64,7 +69,7 @@ int main()
 
 		if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Injection" ) )
 		{
-			std::vector<std::string> parse_result = Util::string_split( input_buffer_ptr->GetViewString() );
+			std::vector<std::string> parse_result = HaruCar::Util::string_split( input_buffer_ptr->GetViewString() );
 
 			try
 			{

@@ -4,6 +4,7 @@
 
 #include "GameboyCPUBroker.h"
 
+using namespace HaruCar::CPU;
 
 constexpr size_t NO_INITED = 0xDEADBEEF;
 
