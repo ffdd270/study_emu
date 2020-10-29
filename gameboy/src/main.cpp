@@ -10,7 +10,7 @@
 #include "gameboy/GameboyCPU.h"
 #include "gameboy/GameboyCPUBroker.h"
 #include "cpu/cpu_viewer.h"
-
+#include "lua-binding/LuaContext.h"
 
 
 using namespace HaruCar::UI;
@@ -42,6 +42,7 @@ int main()
 	broker.UpdateProvider( cpu, provider_ptr );
 	//Carry!
 
+	LuaContext lua_context {};
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
@@ -99,6 +100,12 @@ int main()
 			cpu.NextStep();
 
 			broker.UpdateProvider( cpu, provider_ptr );
+		}
+
+		if ( lua_context.ExecuteFunction("lua_test") )
+		{
+			std::cout << "LAST ERROR" << lua_context.GetLastError() << std::endl;
+			assert( false );
 		}
 
 		window.clear();

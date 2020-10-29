@@ -5,6 +5,7 @@
 #include <catch.hpp>
 #include "GameboyCPU.h"
 #include "gameboy_luabinding.h"
+#include <common/common_logger.h>
 #include <LuaBridge/LuaBridge.h>
 
 void runLua(lua_State * L, const std::string& script)

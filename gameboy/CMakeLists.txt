@@ -62,7 +62,10 @@ set( GAMEBOY_SRC
 
 		${SRC_PATH}/lua-binding/gameboy_luabinding.cpp
 		${SRC_PATH}/lua-binding/gameboy_luabinding.h
-		)
+
+		${SRC_PATH}/lua-binding/LuaContext.cpp
+		${SRC_PATH}/lua-binding/LuaContext.h)
+
 
 
 add_subdirectory(test)

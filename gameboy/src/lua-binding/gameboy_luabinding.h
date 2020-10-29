@@ -7,8 +7,12 @@
 
 #include <lua.hpp>
 #include <memory>
-#include <common/common_logger.h>
 #include <GameboyCPU.h>
+
+namespace HaruCar::Common::Log
+{
+	class Logger;
+}
 
 void gameboy_lua_binding_logger( std::shared_ptr<HaruCar::Common::Log::Logger> logger );
 void gameboy_lua_binding_cpu( std::shared_ptr<GameboyCPU> cpu  );
