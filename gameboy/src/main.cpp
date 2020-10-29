@@ -10,7 +10,7 @@
 #include "gameboy/GameboyCPU.h"
 #include "gameboy/GameboyCPUBroker.h"
 #include "cpu/cpu_viewer.h"
-
+#include "lua-binding/gameboy_luabinding.h"
 
 
 using namespace HaruCar::UI;
@@ -42,6 +42,10 @@ int main()
 	broker.UpdateProvider( cpu, provider_ptr );
 	//Carry!
 
+	lua_State  * lua_state_ptr = luaL_newstate();
+	luaL_openlibs( lua_state_ptr );
+
+	gameboy_lua_binding( lua_state_ptr );
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
@@ -100,6 +104,13 @@ int main()
 
 			broker.UpdateProvider( cpu, provider_ptr );
 		}
+
+		int ret = luaL_dostring( lua_state_ptr,
+				 "ImGui:Begin('I`m In Lua')"
+	 				 "ImGui:Text('Really!')"
+	   				 "ImGui:End()");
+
+		std::cout << ret << std::endl; 
 
 		window.clear();
 		ImGui::SFML::Render(window);

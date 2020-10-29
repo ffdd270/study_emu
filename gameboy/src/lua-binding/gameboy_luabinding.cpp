@@ -6,7 +6,10 @@
 #include <LuaBridge/LuaBridge.h>
 
 #include <utility>
+#include <imgui.h>
 #include "GameboyCPU.h"
+
+#include <common/common_logger.h>
 
 static std::shared_ptr<HaruCar::Common::Log::Logger> StaticLuaLoggerInstance = nullptr;
 
@@ -39,6 +42,19 @@ static void log_info( Logger * logger, const char * str  )
 	logger->LogInfo( str );
 }
 
+
+// Imgui Warrpper
+void ImGui_Begin( const char * window_name )
+{
+	ImGui::Begin( window_name );
+}
+
+void ImGui_Text( const char * str )
+{
+	ImGui::Text( "%s", str );
+}
+
+
 void gameboy_lua_binding(lua_State *lua_state)
 {
 	luabridge::getGlobalNamespace(lua_state)
@@ -64,6 +80,14 @@ void gameboy_lua_binding(lua_State *lua_state)
 	luabridge::getGlobalNamespace(lua_state).
 		beginClass<HaruCar::Common::Log::Logger>("Logger")
 		.endClass();
+
+	// Imgui
+	luabridge::getGlobalNamespace(lua_state)
+		.beginNamespace("ImGui")
+			.addFunction( "Begin", &ImGui_Begin )
+			.addFunction( "End", &ImGui::End )
+			.addFunction( "Text", &ImGui_Text )
+		.endNamespace();
 
 	// 로그를 실제로 남길 때는 Global function으로.
 	luabridge::getGlobalNamespace(lua_state)

@@ -19,12 +19,14 @@ set(TEST
 		src/bit_set_reset_test.cpp
 		src/jump_group.cpp
 		src/call_and_return.cpp
-		src/gameboy_broker.cpp src/gameboy_luabinding_test.cpp)
+		src/gameboy_broker.cpp
+		src/gameboy_luabinding_test.cpp)
 
 
 add_executable( gb_test
         lib/catch.hpp
         ${TEST}
-        ${GAMEBOY_SRC})
+        ${GAMEBOY_SRC}
+		${IMGUI})
 
 target_link_libraries(gb_test PRIVATE ${HARUCAR_LIB} ${LUA_LIBRARIES})
