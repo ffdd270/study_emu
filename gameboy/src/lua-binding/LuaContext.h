@@ -13,15 +13,19 @@
 class LuaContext
 {
 public:
-	// Problem, Return True.
-	bool ExecuteFunction( std::string_view func_name );
-	std::string_view GetLastError();
-
 	LuaContext();
+
+	bool ExecuteFunction( std::string_view func_name );
+	bool ExecuteString( std::string_view execute_string );
+
+	bool IsExistGlobalValue( std::string_view value_name );
+
+	void Reload();
+
+	std::string_view GetLastError();
 
 	~LuaContext();
 private:
-
 	void init();
 private:
 	lua_State * mLuaState = nullptr;

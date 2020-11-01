@@ -15,18 +15,24 @@ bool LuaContext::ExecuteFunction(std::string_view func_name)
 {
 	lua_getglobal( mLuaState, func_name.data() );
 
-	if( !lua_isfunction( mLuaState, -1 ) )
+	if( !lua_isfunction( mLuaState, lua_gettop( mLuaState ) ) )
 	{
-		return true;
+		return false;
 	}
 
-	return lua_pcall( mLuaState, 0, 0, 0 );
+	return ( lua_pcall( mLuaState, 0, 0, 0 ) == 0 );
 }
 
-LuaContext::~LuaContext()
+bool LuaContext::ExecuteString(std::string_view execute_string)
 {
-	lua_close( mLuaState );
+	if ( luaL_dostring( mLuaState, execute_string.data() ) ) // Return 있으면 문제가..
+	{
+		return false;
+	}
+
+	return true;
 }
+
 
 void LuaContext::init()
 {
@@ -40,5 +46,27 @@ void LuaContext::init()
 
 std::string_view LuaContext::GetLastError()
 {
-	return lua_tostring(mLuaState, -1);
+	const char * last_err = lua_tostring(mLuaState, -1);
+	return last_err == nullptr ?  "" : last_err ;
+}
+
+bool LuaContext::IsExistGlobalValue(std::string_view value_name)
+{
+	lua_getglobal( mLuaState, value_name.data() );
+	bool rtn = lua_isnil( mLuaState, -1 );
+	lua_pop( mLuaState, 1 );
+	return rtn;
+}
+
+void LuaContext::Reload()
+{
+	lua_close( mLuaState );
+	mLuaState = nullptr;
+	init();
+}
+
+
+LuaContext::~LuaContext()
+{
+	lua_close( mLuaState );
 }
