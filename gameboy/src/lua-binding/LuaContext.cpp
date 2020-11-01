@@ -34,14 +34,22 @@ bool LuaContext::ExecuteString(std::string_view execute_string)
 }
 
 
+bool LuaContext::ExecuteFile(std::string_view file_path )
+{
+	if (luaL_dofile(mLuaState, file_path.data()))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void LuaContext::init()
 {
 	mLuaState = luaL_newstate();
 	luaL_openlibs( mLuaState );
 
 	gameboy_lua_binding( mLuaState );
-
-	luaL_dofile( mLuaState, "script/basic_lua_element.lua" );
 }
 
 std::string_view LuaContext::GetLastError()
@@ -55,7 +63,7 @@ bool LuaContext::IsExistGlobalValue(std::string_view value_name)
 	lua_getglobal( mLuaState, value_name.data() );
 	bool rtn = lua_isnil( mLuaState, -1 );
 	lua_pop( mLuaState, 1 );
-	return rtn;
+	return !rtn;
 }
 
 void LuaContext::Reload()

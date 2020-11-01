@@ -17,6 +17,7 @@ public:
 
 	bool ExecuteFunction( std::string_view func_name );
 	bool ExecuteString( std::string_view execute_string );
+	bool ExecuteFile( std::string_view file_path );
 
 	bool IsExistGlobalValue( std::string_view value_name );
 
