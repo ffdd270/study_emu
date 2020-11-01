@@ -20,7 +20,7 @@ set(TEST
 		src/jump_group.cpp
 		src/call_and_return.cpp
 		src/gameboy_broker.cpp
-		src/gameboy_broker.cpp src/gameboy_luabinding_test.cpp)
+		src/gameboy_luabinding_test.cpp src/lua_context.cpp
 		src/breakpoint.cpp)
 
 

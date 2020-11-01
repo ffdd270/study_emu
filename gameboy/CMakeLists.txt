@@ -66,8 +66,18 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/lua-binding/LuaContext.cpp
 		${SRC_PATH}/lua-binding/LuaContext.h)
 
+set( UI_SRC
+		${SRC_PATH}/harucar/LuaCommandViewer.cpp
+		${SRC_PATH}/harucar/LuaCommandViewer.h
+		)
+
+
+set( COLOR_TEXT_EDIT
+		external/color_text_edit/TextEditor.cpp
+		external/color_text_edit/TextEditor.h )
+
 
 
 add_subdirectory(test)
-add_executable(gameboy src/main.cpp ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} )
+add_executable(gameboy src/main.cpp ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} ${COLOR_TEXT_EDIT} ${UI_SRC} )
 target_link_libraries(gameboy PRIVATE sfml-graphics OpenGL32 ${HARUCAR_LIB} ${LUA_LIBRARIES})
