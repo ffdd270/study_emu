@@ -11,7 +11,7 @@
 #include "gameboy/GameboyCPUBroker.h"
 #include "cpu/cpu_viewer.h"
 #include "lua-binding/LuaContext.h"
-
+#include "color_text_edit/TextEditor.h"
 
 using namespace HaruCar::UI;
 using namespace HaruCar::CPU;
@@ -20,8 +20,10 @@ using namespace HaruCar::Common::Structure;
 
 int main()
 {
-	GameboyCPU cpu;
+
 	GameboyCPUBroker broker;
+	TextEditor editor;
+	editor.SetLanguageDefinition( TextEditor::LanguageDefinition::Lua() );
 
 	std::shared_ptr<UIEventProtocol> protocol_ptr = std::make_shared<UIEventProtocol>();
 	std::shared_ptr<CPUProvider> provider_ptr = broker.MakeProvider( cpu );
@@ -30,6 +32,7 @@ int main()
 	CPUViewer viewer;
 
 	viewer.SetInputBuffer( input_buffer_ptr );
+	GameboyCPU cpu;
 
 	cpu.InjectionMemory( 0b00111110 ); // LD A, imm8
 	cpu.InjectionMemory( 0x0 );
@@ -67,6 +70,7 @@ int main()
 		ImGui::End();
 
 		viewer.Render( provider_ptr, protocol_ptr );
+		editor.Render( "Absoulte" );
 
 		if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Injection" ) )
 		{
