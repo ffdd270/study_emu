@@ -13,6 +13,8 @@
 #include "harucar/LuaCommandViewer.h"
 
 #include "lua-binding/LuaContext.h"
+#include "lua-binding/gameboy_luabinding.h"
+
 #include "color_text_edit/TextEditor.h"
 
 using namespace HaruCar::UI;
@@ -20,7 +22,7 @@ using namespace HaruCar::CPU;
 using namespace HaruCar::UI::Structure;
 using namespace HaruCar::Common::Structure;
 
-void InputEvents( GameboyCPU & cpu,
+void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 				  GameboyCPUBroker & broker,
 				  LuaContext & context,
 				  TextEditor & editor,
@@ -44,7 +46,7 @@ void InputEvents( GameboyCPU & cpu,
 
 			for(const BYTE & value : instructions )
 			{
-				cpu.InjectionMemory( value );
+				ref_ptr_cpu->InjectionMemory(value );
 			}
 		}
 		catch(std::invalid_argument & invalid_argument)
@@ -52,19 +54,21 @@ void InputEvents( GameboyCPU & cpu,
 			std::cout << "WRONG INPUT" << std::endl;
 		}
 
-		broker.UpdateProvider( cpu, provider_ptr );
+		broker.UpdateProvider(*ref_ptr_cpu, provider_ptr );
 	}
 
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Next Step") )
 	{
-		cpu.NextStep();
+		ref_ptr_cpu->NextStep();
 
-		broker.UpdateProvider( cpu, provider_ptr );
+		broker.UpdateProvider(*ref_ptr_cpu, provider_ptr );
 	}
 
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Lua:Reload" ) )
 	{
 		context.Reload();
+		context.ExecuteFile("script/basic_lua_element.lua");
+
 		if(!context.ExecuteString( editor.GetText() ))
 		{
 			std::cout << context.GetLastError() << std::endl;
@@ -84,33 +88,35 @@ void InputEvents( GameboyCPU & cpu,
 
 int main()
 {
-	GameboyCPU cpu;
+	std::shared_ptr<GameboyCPU> cpu_ptr = std::make_shared<GameboyCPU>();
 	GameboyCPUBroker broker;
 	TextEditor editor;
 	LuaCommandViewer command_viewer;
 
 	editor.SetLanguageDefinition( TextEditor::LanguageDefinition::Lua() );
+	gameboy_lua_binding_cpu( cpu_ptr );
 
 	std::shared_ptr<UIEventProtocol> protocol_ptr = std::make_shared<UIEventProtocol>();
-	std::shared_ptr<CPUProvider> provider_ptr = broker.MakeProvider( cpu );
+	std::shared_ptr<CPUProvider> provider_ptr = broker.MakeProvider( *cpu_ptr );
 	std::shared_ptr<InputBuffer> input_buffer_ptr = std::make_shared<InputBuffer>( 300 );
 
 	CPUViewer viewer;
 
 	viewer.SetInputBuffer( input_buffer_ptr );
 
-	cpu.InjectionMemory( 0b00111110 ); // LD A, imm8
-	cpu.InjectionMemory( 0x0 );
-	cpu.NextStep();
+	cpu_ptr->InjectionMemory(0b00111110 ); // LD A, imm8
+	cpu_ptr->InjectionMemory(0x0 );
+	cpu_ptr->NextStep();
 
-	cpu.InjectionMemory( 0xD6 ); //SUB N
-	cpu.InjectionMemory( 1 );
-	cpu.NextStep();
+	cpu_ptr->InjectionMemory(0xD6 ); //SUB N
+	cpu_ptr->InjectionMemory(1 );
+	cpu_ptr->NextStep();
 
-	broker.UpdateProvider( cpu, provider_ptr );
+	broker.UpdateProvider(*cpu_ptr, provider_ptr );
 	//Carry!
 
 	LuaContext lua_context {};
+	lua_context.ExecuteFile("script/basic_lua_element.lua");
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
@@ -138,8 +144,7 @@ int main()
 		command_viewer.Render( nullptr, protocol_ptr );
 		editor.Render( "Absoulte" );
 
-		InputEvents( cpu, broker, lua_context, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;
-
+		InputEvents(cpu_ptr, broker, lua_context, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;
 
 		if ( !lua_context.ExecuteFunction("lua_test") )
 		{

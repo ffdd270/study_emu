@@ -12,10 +12,17 @@
 #include <common/common_logger.h>
 
 static std::shared_ptr<HaruCar::Common::Log::Logger> StaticLuaLoggerInstance = nullptr;
+static std::shared_ptr<GameboyCPU> StaticGameboyCPUInstance = nullptr;
+
 
 void gameboy_lua_binding_logger(std::shared_ptr<HaruCar::Common::Log::Logger> logger)
 {
 	StaticLuaLoggerInstance = std::move(logger);
+}
+
+void gameboy_lua_binding_cpu(std::shared_ptr<GameboyCPU> cpu)
+{
+	StaticGameboyCPUInstance = std::move(cpu);
 }
 
 HaruCar::Common::Log::Logger * GetInstanceLogger()
@@ -23,6 +30,13 @@ HaruCar::Common::Log::Logger * GetInstanceLogger()
 	if ( StaticLuaLoggerInstance == nullptr ) { return nullptr; }
 	return StaticLuaLoggerInstance.get();
 }
+
+GameboyCPU * GetInstanceCPU()
+{
+	if ( StaticGameboyCPUInstance == nullptr ) { return nullptr; }
+	return StaticGameboyCPUInstance.get();
+}
+
 
 using namespace HaruCar::Common::Log;
 
@@ -58,7 +72,8 @@ void ImGui_Text( const char * str )
 void gameboy_lua_binding(lua_State *lua_state)
 {
 	luabridge::getGlobalNamespace(lua_state)
-		.addFunction( "GetInstanceLogger", &GetInstanceLogger );
+		.addFunction( "GetInstanceLogger", &GetInstanceLogger )
+		.addFunction( "GetInstanceCPU", &GetInstanceCPU );
 
 	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<GameboyCPU>("GameboyCPU")
@@ -95,4 +110,5 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.addFunction( "log_warning", log_warning )
 		.addFunction( "log_info", log_info );
 }
+
 
