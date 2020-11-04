@@ -39,9 +39,9 @@ bool LuaContext::ExecuteRefFunction(LuaContextRefId ref_id)
 
 	LuaRefId lua_ref_id = mReferenceMap[ ref_id ];
 	lua_rawgeti( mLuaState, LUA_REGISTRYINDEX, lua_ref_id );
-	lua_pcall( mLuaState, 0, 0, 0 );
 
-	return false;
+
+	return 	( lua_pcall( mLuaState, 0, 0, 0 ) == 0 );
 }
 
 bool LuaContext::ExecuteString(std::string_view execute_string)
@@ -65,7 +65,12 @@ bool LuaContext::ExecuteFile(std::string_view file_path )
 	return true;
 }
 
-
+bool LuaContext::PushGlobalValue( std::string_view value_name )
+{
+	lua_getglobal( mLuaState, value_name.data() );
+	if ( lua_isnil( mLuaState, -1 ) ) { return false; }
+	return true;
+}
 
 bool LuaContext::IsExistGlobalValue(std::string_view value_name)
 {
@@ -90,7 +95,7 @@ LuaContextRefId LuaContext::contextRefIdGenerate()
 
 bool LuaContext::IsCorrectKey(LuaContextRefId ref_id) const
 {
-	uint32_t key = ref_id & 0xffff00000000u; //상위 16비트
+	uint32_t key = ( ref_id & 0xffff00000000u ) >> 32u; //상위 16비트
 	uint32_t expect_key = mReloadCnt & 0xffffu;
 
 	return key == expect_key;
@@ -99,10 +104,10 @@ bool LuaContext::IsCorrectKey(LuaContextRefId ref_id) const
 LuaContextRefId LuaContext::MakeLuaCallback()
 {
 	LuaRefId ref_id = luaL_ref( mLuaState, LUA_REGISTRYINDEX );
+	if ( ref_id == LUA_REFNIL ) { return REF_NIL; }
+
 	LuaContextRefId context_ref_id = contextRefIdGenerate();
-
 	mReferenceMap.insert( std::make_pair( context_ref_id, ref_id ) );
-
 	return context_ref_id;
 }
 

@@ -14,11 +14,12 @@
 typedef size_t LuaContextRefId;
 typedef int LuaRefId;
 
-
 // Reload를 ffff번 하고 Callback 바인딛 하면 ... 망가지지는 않을 것 같은데.. :thinking_face:
 class LuaContext
 {
 public:
+	static const LuaContextRefId REF_NIL = 0x1000000000000;
+
 	LuaContext();
 
 	bool ExecuteFunction( std::string_view func_name );
@@ -26,6 +27,8 @@ public:
 
 	bool ExecuteString( std::string_view execute_string );
 	bool ExecuteFile( std::string_view file_path );
+
+	bool PushGlobalValue( std::string_view value_name );
 
 	bool IsExistGlobalValue( std::string_view value_name );
 
