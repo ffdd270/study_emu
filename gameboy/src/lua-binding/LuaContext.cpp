@@ -27,8 +27,19 @@ bool LuaContext::ExecuteRefFunction(LuaContextRefId ref_id)
 {
 	if ( !IsCorrectKey( ref_id ) )
 	{
+		mLastError = "Not Correct Key.";
 		return false;
 	}
+
+	if ( mReferenceMap.find( ref_id ) == mReferenceMap.end() )
+	{
+		mLastError = "Not in ReferenceMap.";
+		return false;
+	}
+
+	LuaRefId lua_ref_id = mReferenceMap[ ref_id ];
+	lua_rawgeti( mLuaState, LUA_REGISTRYINDEX, lua_ref_id );
+	lua_pcall( mLuaState, 0, 0, 0 );
 
 	return false;
 }

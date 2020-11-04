@@ -14,6 +14,8 @@
 typedef size_t LuaContextRefId;
 typedef int LuaRefId;
 
+
+// Reload를 ffff번 하고 Callback 바인딛 하면 ... 망가지지는 않을 것 같은데.. :thinking_face:
 class LuaContext
 {
 public:
