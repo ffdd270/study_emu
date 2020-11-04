@@ -72,4 +72,18 @@ SCENARIO( "How to use lua context", "[LUA_CONTEXT]" )
 			REQUIRE(context.GetIntegerFromStack() == 5 );
 		}
 	}
+
+	GIVEN( "Reset, and Ref Function NIL")
+	{
+		REQUIRE( context.ExecuteString("function TEST() return 3 end") );
+		REQUIRE( context.PushGlobalValue( "TEST" ) );
+		LuaContextRefId context_ref_id = context.MakeLuaCallback();
+		REQUIRE( context_ref_id != LuaContext::REF_NIL );
+		context.Reload();
+
+		THEN("Should NIL")
+		{
+			REQUIRE( !context.IsCorrectKey( context_ref_id ) );
+		}
+	}
 }
