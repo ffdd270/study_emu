@@ -41,4 +41,35 @@ SCENARIO( "How to use lua context", "[LUA_CONTEXT]" )
 		}
 	}
 
+	GIVEN( "Many Ref Function" )
+	{
+		REQUIRE( context.ExecuteString("function TEST() return 3 end\n"
+								 "function TEST2() return 4 end\n"
+								 "function TEST3() return 5 end\n") );
+
+		context.PushGlobalValue( "TEST" );
+		LuaContextRefId context_ref_id_test = context.MakeLuaCallback();
+
+		context.PushGlobalValue( "TEST2" );
+		LuaContextRefId context_ref_id_test2 = context.MakeLuaCallback();
+
+		context.PushGlobalValue( "TEST3" );
+		LuaContextRefId context_ref_id_test3 = context.MakeLuaCallback();
+
+		REQUIRE( context_ref_id_test != LuaContext::REF_NIL );
+		REQUIRE( context_ref_id_test2 != LuaContext::REF_NIL );
+		REQUIRE( context_ref_id_test3 != LuaContext::REF_NIL );
+
+		THEN( "Call Ref Functions")
+		{
+			REQUIRE( context.ExecuteRefFunction( context_ref_id_test, 1 ) );
+			REQUIRE(context.GetIntegerFromStack() == 3 );
+
+			REQUIRE( context.ExecuteRefFunction( context_ref_id_test2, 1 ) );
+			REQUIRE(context.GetIntegerFromStack() == 4 );
+
+			REQUIRE( context.ExecuteRefFunction( context_ref_id_test3, 1 ) );
+			REQUIRE(context.GetIntegerFromStack() == 5 );
+		}
+	}
 }

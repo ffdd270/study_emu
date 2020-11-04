@@ -11,7 +11,7 @@ LuaContext::LuaContext()
 	init();
 }
 
-bool LuaContext::ExecuteFunction(std::string_view func_name)
+bool LuaContext::ExecuteFunction(std::string_view func_name, size_t expect_rtn, size_t expect_param )
 {
 	lua_getglobal( mLuaState, func_name.data() );
 
@@ -20,10 +20,10 @@ bool LuaContext::ExecuteFunction(std::string_view func_name)
 		return false;
 	}
 
-	return ( lua_pcall( mLuaState, 0, 0, 0 ) == 0 );
+	return ( lua_pcall( mLuaState, expect_param, expect_rtn, 0 ) == 0 );
 }
 
-bool LuaContext::ExecuteRefFunction(LuaContextRefId ref_id)
+bool LuaContext::ExecuteRefFunction(LuaContextRefId ref_id, size_t expect_rtn, size_t expect_param )
 {
 	if ( !IsCorrectKey( ref_id ) )
 	{
@@ -41,7 +41,12 @@ bool LuaContext::ExecuteRefFunction(LuaContextRefId ref_id)
 	lua_rawgeti( mLuaState, LUA_REGISTRYINDEX, lua_ref_id );
 
 
-	return 	( lua_pcall( mLuaState, 0, 0, 0 ) == 0 );
+	return	( lua_pcall( mLuaState, expect_param, expect_rtn, 0 ) == 0 );
+}
+
+int LuaContext::GetIntegerFromStack()
+{
+	return lua_tointeger( mLuaState, -1 );
 }
 
 bool LuaContext::ExecuteString(std::string_view execute_string)

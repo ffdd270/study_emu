@@ -22,11 +22,13 @@ public:
 
 	LuaContext();
 
-	bool ExecuteFunction( std::string_view func_name );
-	bool ExecuteRefFunction( LuaContextRefId ref_id );
+	bool ExecuteFunction( std::string_view func_name, size_t expect_rtn = 0, size_t expect_param = 0  );
+	bool ExecuteRefFunction( LuaContextRefId ref_id, size_t expect_rtn = 0, size_t expect_param = 0 );
 
 	bool ExecuteString( std::string_view execute_string );
 	bool ExecuteFile( std::string_view file_path );
+
+	int  GetIntegerFromStack();
 
 	bool PushGlobalValue( std::string_view value_name );
 
