@@ -46,6 +46,10 @@ bool LuaContext::ExecuteFile(std::string_view file_path )
 
 void LuaContext::init()
 {
+	mRefCnt = 0;
+	mReloadCnt++;
+	mReferenceMap.clear();
+
 	mLuaState = luaL_newstate();
 	luaL_openlibs( mLuaState );
 
@@ -66,6 +70,12 @@ bool LuaContext::IsExistGlobalValue(std::string_view value_name)
 	return !rtn;
 }
 
+
+LuaContextRefId LuaContext::MakeLuaCallback(int stack)
+{
+
+}
+
 void LuaContext::Reload()
 {
 	lua_close( mLuaState );
@@ -77,4 +87,23 @@ void LuaContext::Reload()
 LuaContext::~LuaContext()
 {
 	lua_close( mLuaState );
+}
+
+LuaContextRefId LuaContext::contextRefIdGenerate() const
+{
+	uint64_t key = mReloadCnt & 0xffffu;
+	uint64_t unique_id = mRefCnt & 0x0000ffffffffu;
+
+	// 32비트 점프.
+	uint64_t ref_id = ( key << 4u * 8u ) | unique_id;
+
+	return ref_id;
+}
+
+bool LuaContext::isCurrentKey(LuaContextRefId ref_id) const
+{
+	uint32_t key = ref_id & 0xffff00000000u; //상위 16비트
+	uint32_t expect_key = mReloadCnt & 0xffffu;
+
+	return key == expect_key;
 }

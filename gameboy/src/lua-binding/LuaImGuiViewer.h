@@ -8,6 +8,7 @@
 #include <base/viewer_interface.h>
 #include "LuaContext.h"
 
+
 class LuaImGuiViewer : public HaruCar::Base::Interface::Viewer
 {
 public:
@@ -15,7 +16,6 @@ public:
 	void AddCallback();
 private:
 	std::shared_ptr<LuaContext> mPtrLuaContext = nullptr;
-
 };
 
 
