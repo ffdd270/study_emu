@@ -64,7 +64,13 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/lua-binding/gameboy_luabinding.h
 
 		${SRC_PATH}/lua-binding/LuaContext.cpp
-		${SRC_PATH}/lua-binding/LuaContext.h)
+		${SRC_PATH}/lua-binding/LuaContext.h
+
+		${SRC_PATH}/lua-binding/LuaImGuiHandler.cpp
+		${SRC_PATH}/lua-binding/LuaImGuiHandler.h
+
+		${SRC_PATH}/lua-binding/LuaImGuiViewer.cpp
+		${SRC_PATH}/lua-binding/LuaImGuiViewer.h)
 
 set( UI_SRC
 		${SRC_PATH}/harucar/LuaCommandViewer.cpp
