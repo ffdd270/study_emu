@@ -9,14 +9,16 @@
 #include "LuaContext.h"
 
 
+
 class LuaImGuiViewer : public HaruCar::Base::Interface::Viewer
 {
 public:
 	void SetLuaContext( std::shared_ptr<LuaContext> & lua_context );
-	void AddCallback();
+	void AddLuaCallback(LuaContextRefId ref_id);
+	virtual void Render(std::shared_ptr<HaruCar::Base::Interface::Provider> provider_ptr, std::shared_ptr<HaruCar::UI::Structure::UIEventProtocol> protocol_ptr);
 private:
+	LuaContextRefId mRefId = LuaContext::REF_NIL;
 	std::shared_ptr<LuaContext> mPtrLuaContext = nullptr;
 };
-
 
 #endif //GAMEBOY_LUAIMGUIVIEWER_H
