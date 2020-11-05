@@ -49,6 +49,16 @@ int LuaContext::GetIntegerFromStack()
 	return lua_tointeger( mLuaState, -1 );
 }
 
+const char *LuaContext::GetStringFromStack()
+{
+	return lua_tostring( mLuaState, -1 );
+}
+
+size_t LuaContext::GetStackSize()
+{
+	return lua_gettop( mLuaState );
+}
+
 bool LuaContext::ExecuteString(std::string_view execute_string)
 {
 	if ( luaL_dostring( mLuaState, execute_string.data() ) ) // Return 있으면 문제가..

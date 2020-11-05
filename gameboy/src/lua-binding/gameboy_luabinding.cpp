@@ -109,6 +109,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.addFunction( "log_error", log_error )
 		.addFunction( "log_warning", log_warning )
 		.addFunction( "log_info", log_info );
+
 }
 
 

@@ -13,11 +13,18 @@
 class LuaImGuiViewer : public HaruCar::Base::Interface::Viewer
 {
 public:
+	LuaImGuiViewer( std::string_view name, std::shared_ptr<LuaContext> & ref_ptr_lua_context, LuaContextRefId context_ref_id );
 	void SetLuaContext( std::shared_ptr<LuaContext> & lua_context );
+	void SetName( std::string_view name );
+	std::string_view GetName();
+
 	void AddLuaCallback(LuaContextRefId ref_id);
-	virtual void Render(std::shared_ptr<HaruCar::Base::Interface::Provider> provider_ptr, std::shared_ptr<HaruCar::UI::Structure::UIEventProtocol> protocol_ptr);
+
+	void Render(std::shared_ptr<HaruCar::Base::Interface::Provider> provider_ptr,
+			 std::shared_ptr<HaruCar::UI::Structure::UIEventProtocol> protocol_ptr) final;
 private:
 	LuaContextRefId mRefId = LuaContext::REF_NIL;
+	std::string mWindowName;
 	std::shared_ptr<LuaContext> mPtrLuaContext = nullptr;
 };
 
