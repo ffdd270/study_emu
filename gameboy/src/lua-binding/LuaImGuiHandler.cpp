@@ -32,8 +32,8 @@ void LuaImGuiHandler::MakeViewer()
 	mViewers.emplace_back( LuaImGuiViewer( name, mPtrLuaContext, context_ref_id ) );
 }
 
-void LuaImGuiHandler::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> provider_ptr,
-							 std::shared_ptr<HaruCar::UI::Structure::UIEventProtocol> protocol_ptr)
+void LuaImGuiHandler::Render(const std::shared_ptr<HaruCar::Base::Interface::Provider>& provider_ptr,
+							 const std::shared_ptr<HaruCar::UI::Structure::UIEventProtocol>& protocol_ptr)
 {
 	for ( auto & viewer : mViewers )
 	{

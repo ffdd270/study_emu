@@ -6,14 +6,21 @@
 #include <LuaBridge/LuaBridge.h>
 
 #include <utility>
+#include <stdexcept>
 #include <imgui.h>
 #include "GameboyCPU.h"
+#include "LuaImGuiHandler.h"
 
 #include <common/common_logger.h>
 
+static std::shared_ptr<LuaImGuiHandler> StaticLuaImGuiHandler = nullptr;
 static std::shared_ptr<HaruCar::Common::Log::Logger> StaticLuaLoggerInstance = nullptr;
 static std::shared_ptr<GameboyCPU> StaticGameboyCPUInstance = nullptr;
 
+void gameboy_lua_binding_imgui_handler(std::shared_ptr<LuaImGuiHandler> & ref_ptr_handler)
+{
+	StaticLuaImGuiHandler = ref_ptr_handler
+}
 
 void gameboy_lua_binding_logger(std::shared_ptr<HaruCar::Common::Log::Logger> logger)
 {
@@ -68,6 +75,15 @@ void ImGui_Text( const char * str )
 	ImGui::Text( "%s", str );
 }
 
+int lua_AddViewer( lua_State * lua_state )
+{
+	if ( StaticLuaImGuiHandler == nullptr ) { throw std::logic_error("No ImGuiHandler.") }
+
+	StaticLuaImGuiHandler->MakeViewer();
+
+	return 0;
+}
+
 
 void gameboy_lua_binding(lua_State *lua_state)
 {
@@ -110,6 +126,9 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.addFunction( "log_warning", log_warning )
 		.addFunction( "log_info", log_info );
 
+	// Raw Lua Binding.
+	lua_pushcfunction( lua_state, lua_AddViewer );
+	lua_setglobal( lua_state, "AddViewer" );
 }
 
 
