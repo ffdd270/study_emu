@@ -18,6 +18,12 @@ typedef int LuaRefId;
 class LuaContext
 {
 public:
+	enum class LuaSpecialTypes
+	{
+		LUA_FUNC,
+
+	};
+
 	static const LuaContextRefId REF_NIL = 0x1000000000000;
 
 	LuaContext();
@@ -29,8 +35,22 @@ public:
 	bool ExecuteFile( std::string_view file_path );
 
 	int  GetIntegerFromStack();
+	const char * GetStringFromStack();
+	size_t GetStackSize();
 
 	bool PushGlobalValue( std::string_view value_name );
+
+	template<typename T>
+	bool IsTypeOf( int stack = -1 )
+	{
+		return CheckLuaType<T>( mLuaState, stack );
+	}
+
+	template<LuaContext::LuaSpecialTypes SpecialType>
+	bool IsTypeOf( int stack = -1 )
+	{
+		return CheckLuaType<SpecialType>( mLuaState, stack );
+	}
 
 	bool IsExistGlobalValue( std::string_view value_name );
 
@@ -61,5 +81,35 @@ private:
 	lua_State * mLuaState = nullptr;
 };
 
+template<typename Type>
+bool CheckLuaType(lua_State * lua_state, int stack)
+{
+	static_assert( false, "Template Special REQ!" );
+}
+
+template<>
+bool CheckLuaType<int>(lua_State * lua_state, int stack)
+{
+	return lua_isnumber( lua_state, stack );
+}
+
+template<>
+bool CheckLuaType<const char *>(lua_State * lua_state, int stack)
+{
+	return lua_isstring( lua_state, stack );
+}
+
+
+template<LuaContext::LuaSpecialTypes SpecialType>
+bool CheckLuaType(lua_State * lua_state, int stack)
+{
+	static_assert( false, "Template Special REQ!" );
+}
+
+template<>
+bool CheckLuaType<LuaContext::LuaSpecialTypes::LUA_FUNC>(lua_State * lua_state, int stack)
+{
+	return lua_isfunction( lua_state, stack );
+}
 
 #endif //GAMEBOY_LUACONTEXT_H
