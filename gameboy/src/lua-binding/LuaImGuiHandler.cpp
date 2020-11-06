@@ -53,3 +53,26 @@ LuaImGuiViewer * LuaImGuiHandler::GetViewer(std::string_view viewer_name)
 
 	return nullptr;
 }
+
+bool LuaImGuiHandler::IsRenderFailed() const
+{
+	for( const auto & viewer : mViewers )
+	{
+		if (viewer.IsRenderFailed()) { return true; }
+	}
+
+	return false;
+}
+
+std::string LuaImGuiHandler::GetRenderFailedReason(std::string_view window_name)
+{
+	for (const auto &viewer : mViewers)
+	{
+		if ( viewer.GetName() == window_name && viewer.IsRenderFailed() )
+		{
+			return std::string( viewer.GetLastError() );
+		}
+	}
+
+	return "";
+}

@@ -29,10 +29,9 @@ SCENARIO("How to bind to imgui lua test.")
 	GIVEN("Rendering Lua Functions")
 	{
 		std::string_view lua_code_execute =
-				R"( AddViewer("Render", function() log_info("Executed.") end) )";
+				R"( AddViewer("Render", function() log_info(GetInstanceLogger(), "Executed.") end) )";
 
 		REQUIRE_NOTHROW( ptr_context->ExecuteString(lua_code_execute ) );
-		std::cout << ptr_context->GetLastError();
 		REQUIRE( ptr_imgui_handler->GetViewer( "Render" ) != nullptr );
 
 		WHEN("Render Call")
@@ -41,6 +40,7 @@ SCENARIO("How to bind to imgui lua test.")
 
 			THEN("Logger Info added Executed")
 			{
+				REQUIRE_FALSE( ptr_imgui_handler->IsRenderFailed() );
 				REQUIRE( ptr_logger->GetSize() == 1 );
 				REQUIRE( ptr_logger->GetData(0).log == "Executed." );
 			}

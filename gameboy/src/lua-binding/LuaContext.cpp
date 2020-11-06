@@ -138,6 +138,7 @@ std::string LuaContext::GetLastError()
 	if ( !mLastError.empty() )
 	{
 		std::string return_value = mLastError;
+		mLastError = "";
 		return mLastError;
 	}
 

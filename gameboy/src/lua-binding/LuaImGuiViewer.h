@@ -16,7 +16,10 @@ public:
 	LuaImGuiViewer( std::string_view name, std::shared_ptr<LuaContext> & ref_ptr_lua_context, LuaContextRefId context_ref_id );
 	void SetLuaContext( std::shared_ptr<LuaContext> & lua_context );
 	void SetName( std::string_view name );
+
 	[[nodiscard]] std::string_view GetName() const;
+	[[nodiscard]] std::string_view GetLastError() const;
+	[[nodiscard]] bool IsRenderFailed() const;
 
 	void AddLuaCallback(LuaContextRefId ref_id);
 
@@ -24,7 +27,11 @@ public:
 			 std::shared_ptr<HaruCar::UI::Structure::UIEventProtocol> protocol_ptr) final;
 private:
 	LuaContextRefId mRefId = LuaContext::REF_NIL;
+
+	std::string mLastError;
 	std::string mWindowName;
+	bool mRenderFailed = false;
+
 	std::shared_ptr<LuaContext> mPtrLuaContext = nullptr;
 };
 
