@@ -39,6 +39,11 @@ void LuaImGuiHandler::Render(const std::shared_ptr<HaruCar::Base::Interface::Pro
 	{
 		viewer.Render( provider_ptr, protocol_ptr );
 	}
+
+	// 루아 리로드로 인한 사망
+	mViewers.remove_if( [](LuaImGuiViewer & ref_viewer )->bool{
+		return ref_viewer.GetStatus() == LuaImGuiViewer::Status::LUA_REF_ID_INVALID;
+	});
 }
 
 LuaImGuiViewer * LuaImGuiHandler::GetViewer(std::string_view viewer_name)

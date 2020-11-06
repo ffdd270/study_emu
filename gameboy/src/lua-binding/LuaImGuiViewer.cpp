@@ -48,10 +48,19 @@ void LuaImGuiViewer::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> 
 {
 	mRenderFailed = true;
 
-	if (mPtrLuaContext == nullptr) { return; }
-	if (mRefId == LuaContext::REF_NIL) { return; }
+	if (mPtrLuaContext == nullptr)
+	{
+		mStatus = Status::LUA_CONTEXT_NULL;
+		return;
+	}
+	if (mRefId == LuaContext::REF_NIL)
+	{
+		mStatus = Status::LUA_REF_ID_NIL;
+		return;
+	}
 	if (!mPtrLuaContext->IsCorrectKey(mRefId))
 	{
+		mStatus = Status::LUA_REF_ID_INVALID;
 		mRefId = LuaContext::REF_NIL;
 		return;
 	}
@@ -59,9 +68,15 @@ void LuaImGuiViewer::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> 
 	bool ok = mPtrLuaContext->ExecuteRefFunction(mRefId);
 	if (!ok)
 	{
+		mStatus = Status::LUA_CALL_FAILED;
 		mLastError = mPtrLuaContext->GetLastError();
 		return;
 	}
 
 	mRenderFailed = false;
+}
+
+LuaImGuiViewer::Status LuaImGuiViewer::GetStatus() const
+{
+	return mStatus;
 }

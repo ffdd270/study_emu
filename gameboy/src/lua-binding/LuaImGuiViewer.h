@@ -13,13 +13,25 @@
 class LuaImGuiViewer : public HaruCar::Base::Interface::Viewer
 {
 public:
+	enum class Status
+	{
+		LUA_CONTEXT_NULL,
+		LUA_REF_ID_NIL,
+		LUA_REF_ID_INVALID,
+		LUA_CALL_FAILED,
+		OK = 9999
+	};
+
+
 	LuaImGuiViewer( std::string_view name, std::shared_ptr<LuaContext> & ref_ptr_lua_context, LuaContextRefId context_ref_id );
 	void SetLuaContext( std::shared_ptr<LuaContext> & lua_context );
 	void SetName( std::string_view name );
 
 	[[nodiscard]] std::string_view GetName() const;
 	[[nodiscard]] std::string_view GetLastError() const;
-	[[nodiscard]] bool IsRenderFailed() const;
+	[[nodiscard]] Status GetStatus() const;
+
+ 	[[nodiscard]] bool IsRenderFailed() const;
 
 	void AddLuaCallback(LuaContextRefId ref_id);
 
@@ -27,6 +39,8 @@ public:
 			 std::shared_ptr<HaruCar::UI::Structure::UIEventProtocol> protocol_ptr) final;
 private:
 	LuaContextRefId mRefId = LuaContext::REF_NIL;
+
+	Status mStatus = Status::OK;
 
 	std::string mLastError;
 	std::string mWindowName;
