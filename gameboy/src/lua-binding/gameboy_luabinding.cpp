@@ -19,7 +19,7 @@ static std::shared_ptr<GameboyCPU> StaticGameboyCPUInstance = nullptr;
 
 void gameboy_lua_binding_imgui_handler(std::shared_ptr<LuaImGuiHandler> & ref_ptr_handler)
 {
-	StaticLuaImGuiHandler = ref_ptr_handler
+	StaticLuaImGuiHandler = ref_ptr_handler;
 }
 
 void gameboy_lua_binding_logger(std::shared_ptr<HaruCar::Common::Log::Logger> logger)
@@ -77,7 +77,7 @@ void ImGui_Text( const char * str )
 
 int lua_AddViewer( lua_State * lua_state )
 {
-	if ( StaticLuaImGuiHandler == nullptr ) { throw std::logic_error("No ImGuiHandler.") }
+	if ( StaticLuaImGuiHandler == nullptr ) { throw std::logic_error("No ImGuiHandler."); }
 
 	StaticLuaImGuiHandler->MakeViewer();
 

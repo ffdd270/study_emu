@@ -40,3 +40,16 @@ void LuaImGuiHandler::Render(const std::shared_ptr<HaruCar::Base::Interface::Pro
 		viewer.Render( provider_ptr, protocol_ptr );
 	}
 }
+
+LuaImGuiViewer * LuaImGuiHandler::GetViewer(std::string_view viewer_name)
+{
+	for( auto & ref_viewer: mViewers )
+	{
+		if( ref_viewer.GetName() == viewer_name )
+		{
+			return &ref_viewer;
+		}
+	}
+
+	return nullptr;
+}

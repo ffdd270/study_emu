@@ -16,7 +16,7 @@ public:
 	LuaImGuiViewer( std::string_view name, std::shared_ptr<LuaContext> & ref_ptr_lua_context, LuaContextRefId context_ref_id );
 	void SetLuaContext( std::shared_ptr<LuaContext> & lua_context );
 	void SetName( std::string_view name );
-	std::string_view GetName();
+	[[nodiscard]] std::string_view GetName() const;
 
 	void AddLuaCallback(LuaContextRefId ref_id);
 

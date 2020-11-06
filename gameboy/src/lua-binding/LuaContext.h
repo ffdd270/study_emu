@@ -82,32 +82,32 @@ private:
 };
 
 template<typename Type>
-bool CheckLuaType(lua_State * lua_state, int stack)
+inline bool CheckLuaType(lua_State * lua_state, int stack)
 {
 	static_assert( false, "Template Special REQ!" );
 }
 
 template<>
-bool CheckLuaType<int>(lua_State * lua_state, int stack)
+inline bool CheckLuaType<int>(lua_State * lua_state, int stack)
 {
 	return lua_isnumber( lua_state, stack );
 }
 
 template<>
-bool CheckLuaType<const char *>(lua_State * lua_state, int stack)
+inline bool CheckLuaType<const char *>(lua_State * lua_state, int stack)
 {
 	return lua_isstring( lua_state, stack );
 }
 
 
 template<LuaContext::LuaSpecialTypes SpecialType>
-bool CheckLuaType(lua_State * lua_state, int stack)
+inline bool CheckLuaType(lua_State * lua_state, int stack)
 {
 	static_assert( false, "Template Special REQ!" );
 }
 
 template<>
-bool CheckLuaType<LuaContext::LuaSpecialTypes::LUA_FUNC>(lua_State * lua_state, int stack)
+inline bool CheckLuaType<LuaContext::LuaSpecialTypes::LUA_FUNC>(lua_State * lua_state, int stack)
 {
 	return lua_isfunction( lua_state, stack );
 }

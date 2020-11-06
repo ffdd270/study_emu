@@ -23,7 +23,7 @@ void LuaImGuiViewer::SetName(std::string_view name)
 	mWindowName = name;
 }
 
-std::string_view LuaImGuiViewer::GetName()
+std::string_view LuaImGuiViewer::GetName() const
 {
 	return mWindowName;
 }
