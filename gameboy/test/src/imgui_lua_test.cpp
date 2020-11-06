@@ -37,6 +37,7 @@ SCENARIO("How to bind to imgui lua test.")
 		WHEN("Render Call")
 		{
 			ptr_imgui_handler->Render( nullptr, nullptr );
+			ptr_imgui_handler->CleanUp();
 
 			THEN("Logger Info added Executed")
 			{
@@ -46,6 +47,22 @@ SCENARIO("How to bind to imgui lua test.")
 
 				// And, OK Get Viewer.
 				REQUIRE( ptr_imgui_handler->GetViewer("Render") != nullptr );
+			}
+		}
+
+		WHEN("Reload after Render Call.")
+		{
+			ptr_context->Reload();
+			ptr_imgui_handler->Render( nullptr, nullptr );
+
+			THEN( "Render Failed, Killed Viewer." )
+			{
+				REQUIRE( ptr_imgui_handler->IsRenderFailed() );
+
+				ptr_imgui_handler->CleanUp(); // 에러 확인 후 정리.
+
+				REQUIRE( ptr_imgui_handler->GetViewer("Render") == nullptr );
+				REQUIRE( ptr_logger->GetSize() == 0 );
 			}
 		}
 	}
@@ -69,6 +86,7 @@ SCENARIO("How to bind to imgui lua test.")
 		WHEN("Render!")
 		{
 			REQUIRE_NOTHROW( ptr_imgui_handler->Render( nullptr, nullptr ) );
+			ptr_imgui_handler->CleanUp();
 
 			THEN("Log should one, Render Should One.")
 			{
@@ -80,6 +98,5 @@ SCENARIO("How to bind to imgui lua test.")
 				REQUIRE( ptr_logger->GetData(0).log == "Executed." );
 			}
 		}
-
 	}
 }
