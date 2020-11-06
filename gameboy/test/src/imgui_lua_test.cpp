@@ -43,8 +43,43 @@ SCENARIO("How to bind to imgui lua test.")
 				REQUIRE_FALSE( ptr_imgui_handler->IsRenderFailed() );
 				REQUIRE( ptr_logger->GetSize() == 1 );
 				REQUIRE( ptr_logger->GetData(0).log == "Executed." );
+
+				// And, OK Get Viewer.
+				REQUIRE( ptr_imgui_handler->GetViewer("Render") != nullptr );
 			}
 		}
 	}
 
+	GIVEN("Invalid Lua Context's two, OK Lua Context One.")
+	{
+		std::string_view lua_code_execute =
+				R"(
+					AddViewer("Render1", function() log_info() end) -- Wrong Param.
+					AddViewer("Render2", function() log_info(GetInstanceLogger()) end) -- Wrong Param.
+					AddViewer("Render3", function() log_info(GetInstanceLogger(), "Executed.") end) -- OK
+				)";
+
+		REQUIRE_NOTHROW( ptr_context->ExecuteString(lua_code_execute ) );
+		std::cout << ptr_context->GetLastError();
+
+		REQUIRE( ptr_imgui_handler->GetViewer( "Render1" ) != nullptr );
+		REQUIRE( ptr_imgui_handler->GetViewer( "Render2" ) != nullptr );
+		REQUIRE( ptr_imgui_handler->GetViewer( "Render3" ) != nullptr );
+
+		WHEN("Render!")
+		{
+			REQUIRE_NOTHROW( ptr_imgui_handler->Render( nullptr, nullptr ) );
+
+			THEN("Log should one, Render Should One.")
+			{
+				REQUIRE( ptr_imgui_handler->GetViewer( "Render1" ) == nullptr );
+				REQUIRE( ptr_imgui_handler->GetViewer( "Render2" ) == nullptr );
+				REQUIRE( ptr_imgui_handler->GetViewer( "Render3" ) != nullptr );
+
+				REQUIRE( ptr_logger->GetSize() == 1 );
+				REQUIRE( ptr_logger->GetData(0).log == "Executed." );
+			}
+		}
+
+	}
 }

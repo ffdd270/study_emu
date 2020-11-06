@@ -40,9 +40,18 @@ void LuaImGuiHandler::Render(const std::shared_ptr<HaruCar::Base::Interface::Pro
 		viewer.Render( provider_ptr, protocol_ptr );
 	}
 
-	// 루아 리로드로 인한 사망
+	// 모든 잘못될 가능성에 대한삭제.
 	mViewers.remove_if( [](LuaImGuiViewer & ref_viewer )->bool{
-		return ref_viewer.GetStatus() == LuaImGuiViewer::Status::LUA_REF_ID_INVALID;
+		using ContextStatus = LuaImGuiViewer::Status;
+
+		auto status = ref_viewer.GetStatus();
+
+		return
+			status == ContextStatus::LUA_REF_ID_INVALID ||
+			status == ContextStatus::LUA_CONTEXT_NULL ||
+			status == ContextStatus::LUA_CALL_FAILED ||
+			status == ContextStatus::LUA_REF_ID_NIL;
+
 	});
 }
 
