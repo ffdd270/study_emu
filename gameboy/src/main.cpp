@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "imgui.h"
 #include "imgui-SFML.h"
@@ -21,6 +22,25 @@ using namespace HaruCar::UI;
 using namespace HaruCar::CPU;
 using namespace HaruCar::UI::Structure;
 using namespace HaruCar::Common::Structure;
+
+
+void loadLuaFiles( LuaContext & ref_context )
+{
+	std::string base_path = "script/";
+	std::fstream file( "script/init.txt" );
+	std::string path;
+
+	assert( file.is_open() );
+
+	while( !file.eof() )
+	{
+		file >> path;
+
+		ref_context.ExecuteFile( base_path + path );
+	}
+
+	assert( ref_context.ExecuteFunction( "init_script" ) );
+}
 
 void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 				  GameboyCPUBroker & broker,
@@ -67,7 +87,7 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Lua:Reload" ) )
 	{
 		context.Reload();
-		context.ExecuteFile("script/basic_lua_element.lua");
+		context.ExecuteFile("script/test_ui.lua");
 
 		if(!context.ExecuteString( editor.GetText() ))
 		{
@@ -85,6 +105,7 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 		}
 	}
 }
+
 
 int main()
 {
@@ -116,7 +137,7 @@ int main()
 	//Carry!
 
 	LuaContext lua_context {};
-	lua_context.ExecuteFile("script/basic_lua_element.lua");
+	loadLuaFiles( lua_context );
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
@@ -145,13 +166,6 @@ int main()
 		editor.Render( "Absoulte" );
 
 		InputEvents(cpu_ptr, broker, lua_context, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;
-
-		if ( !lua_context.ExecuteFunction("lua_test") )
-		{
-			std::cout << "LAST ERROR" << lua_context.GetLastError() << std::endl;
-			assert( false );
-		}
-
 
 		window.clear();
 		ImGui::SFML::Render(window);
