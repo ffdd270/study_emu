@@ -15,6 +15,7 @@
 
 #include "lua-binding/LuaContext.h"
 #include "lua-binding/gameboy_luabinding.h"
+#include "lua-binding/LuaImGuiHandler.h"
 
 #include "color_text_edit/TextEditor.h"
 
@@ -87,7 +88,7 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Lua:Reload" ) )
 	{
 		context.Reload();
-		context.ExecuteFile("script/test_ui.lua");
+		loadLuaFiles( context );
 
 		if(!context.ExecuteString( editor.GetText() ))
 		{
@@ -136,8 +137,12 @@ int main()
 	broker.UpdateProvider(*cpu_ptr, provider_ptr );
 	//Carry!
 
-	LuaContext lua_context {};
-	loadLuaFiles( lua_context );
+	std::shared_ptr<LuaContext> lua_context_ptr = std::make_shared<LuaContext>();
+
+	std::shared_ptr<LuaImGuiHandler> handler_ptr = std::make_shared<LuaImGuiHandler>(lua_context_ptr );
+	gameboy_lua_binding_imgui_handler( handler_ptr );
+
+	loadLuaFiles( *lua_context_ptr );
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
@@ -165,7 +170,10 @@ int main()
 		command_viewer.Render( nullptr, protocol_ptr );
 		editor.Render( "Absoulte" );
 
-		InputEvents(cpu_ptr, broker, lua_context, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;
+		handler_ptr->Render( nullptr, nullptr );
+		handler_ptr->CleanUp();
+
+		InputEvents(cpu_ptr, broker, *lua_context_ptr, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;
 
 		window.clear();
 		ImGui::SFML::Render(window);
