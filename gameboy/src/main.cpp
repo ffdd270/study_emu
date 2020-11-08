@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "imgui.h"
 #include "imgui-SFML.h"
@@ -14,6 +15,7 @@
 
 #include "lua-binding/LuaContext.h"
 #include "lua-binding/gameboy_luabinding.h"
+#include "lua-binding/LuaImGuiHandler.h"
 
 #include "color_text_edit/TextEditor.h"
 
@@ -21,6 +23,25 @@ using namespace HaruCar::UI;
 using namespace HaruCar::CPU;
 using namespace HaruCar::UI::Structure;
 using namespace HaruCar::Common::Structure;
+
+
+void loadLuaFiles( LuaContext & ref_context )
+{
+	std::string base_path = "script/";
+	std::fstream file( "script/init.txt" );
+	std::string path;
+
+	assert( file.is_open() );
+
+	while( !file.eof() )
+	{
+		file >> path;
+
+		ref_context.ExecuteFile( base_path + path );
+	}
+
+	assert( ref_context.ExecuteFunction( "init_script" ) );
+}
 
 void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 				  GameboyCPUBroker & broker,
@@ -67,7 +88,7 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Lua:Reload" ) )
 	{
 		context.Reload();
-		context.ExecuteFile("script/basic_lua_element.lua");
+		loadLuaFiles( context );
 
 		if(!context.ExecuteString( editor.GetText() ))
 		{
@@ -85,6 +106,7 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 		}
 	}
 }
+
 
 int main()
 {
@@ -115,8 +137,12 @@ int main()
 	broker.UpdateProvider(*cpu_ptr, provider_ptr );
 	//Carry!
 
-	LuaContext lua_context {};
-	lua_context.ExecuteFile("script/basic_lua_element.lua");
+	std::shared_ptr<LuaContext> lua_context_ptr = std::make_shared<LuaContext>();
+
+	std::shared_ptr<LuaImGuiHandler> handler_ptr = std::make_shared<LuaImGuiHandler>(lua_context_ptr );
+	gameboy_lua_binding_imgui_handler( handler_ptr );
+
+	loadLuaFiles( *lua_context_ptr );
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
@@ -144,14 +170,10 @@ int main()
 		command_viewer.Render( nullptr, protocol_ptr );
 		editor.Render( "Absoulte" );
 
-		InputEvents(cpu_ptr, broker, lua_context, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;
+		handler_ptr->Render( nullptr, nullptr );
+		handler_ptr->CleanUp();
 
-		if ( !lua_context.ExecuteFunction("lua_test") )
-		{
-			std::cout << "LAST ERROR" << lua_context.GetLastError() << std::endl;
-			assert( false );
-		}
-
+		InputEvents(cpu_ptr, broker, *lua_context_ptr, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;
 
 		window.clear();
 		ImGui::SFML::Render(window);
