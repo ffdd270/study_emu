@@ -39,11 +39,20 @@ namespace HaruCar::Common::Log
 
 		Logger & operator<<( const std::string_view & str );
 
+		// 마지막 획득으로부터 이후.
+		[[nodiscard]] std::vector<LogData> GetLogsFromLastGet();
+		[[nodiscard]] size_t GetLogSizeFromLastGet() const;
+
+		// 마지막 획득 초기화
+		void ResetLastGetIndex();
+
 		[[nodiscard]] const LogData & GetData( size_t index ) const;
 		[[nodiscard]] const std::vector<LogData> & GetDatas() const;
 		[[nodiscard]] size_t GetSize() const { return mLogData.size(); }
 	private:
 		void logStreamEnd();
+
+		size_t mLastGetIndex = 0;
 
 		std::string mStream;
 		std::vector<LogData> mLogData;

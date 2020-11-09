@@ -2,6 +2,7 @@
 #define GAMEBOY_LUAIMGUIHANDLER_H
 
 #include "LuaImGuiViewer.h"
+#include <vector>
 #include <list>
 #include <optional>
 
@@ -25,8 +26,8 @@ public:
 	void CleanUp();
 
 	[[nodiscard]] bool IsRenderFailed() const;
-	[[nodiscard]] std::string GetRenderFailedReason( std::string_view window_name );
-
+	[[nodiscard]] std::string GetRenderFailedReason( std::string_view window_name ) const;
+	[[nodiscard]] std::vector<std::string> GetRenderFailedReasons() const;
 private:
 	std::list<LuaImGuiViewer> mViewers;
 	std::shared_ptr<LuaContext> mPtrLuaContext;

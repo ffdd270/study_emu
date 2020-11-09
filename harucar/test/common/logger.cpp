@@ -6,6 +6,19 @@
 
 using namespace HaruCar::Common::Log;
 
+inline void check_for( std::vector<LogData> & ref_last_logs, size_t begin, size_t end, size_t add_num )
+{
+	for( size_t i = begin; i < end; i++ )
+	{
+		auto & ref_log = ref_last_logs[i];
+
+		REQUIRE( ref_log.info == LogLevels::INFO );
+		REQUIRE( ref_log.log == "log " + std::to_string( i + add_num ) );
+	}
+
+
+}
+
 SCENARIO("Logger, Log.", "[Logger]")
 {
 	GIVEN("A Logger")
@@ -38,7 +51,40 @@ SCENARIO("Logger, Log.", "[Logger]")
 			{
 				REQUIRE_THROWS( logger.GetData( 3 ) );
 			}
+		}
+	}
 
+	GIVEN("A Logger with three log.")
+	{
+		Logger logger;
+		logger.LogInfo("log 1");
+		logger.LogInfo("log 2");
+		logger.LogInfo("log 3");
+
+		THEN("last get 3.")
+		{
+			REQUIRE( logger.GetLogSizeFromLastGet() == 3 );
+		}
+
+		WHEN("Get last, and add two.")
+		{
+			auto last_logs = logger.GetLogsFromLastGet();
+			REQUIRE( last_logs.size() == 3 );
+
+			check_for( last_logs, 0, 3, 1 );
+
+			logger.LogInfo("log 4");
+			logger.LogInfo("log 5");
+
+			THEN("last indices two.")
+			{
+				REQUIRE(logger.GetLogSizeFromLastGet() == 2);
+				auto last_logs_two = logger.GetLogsFromLastGet();
+
+				REQUIRE( last_logs_two.size() == 2 );
+
+				check_for( last_logs_two, 0, 2, 4 );
+			}
 		}
 	}
 }
