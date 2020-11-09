@@ -64,7 +64,26 @@ static void log_info( Logger * logger, const char * str  )
 }
 
 
-// Imgui Warrpper
+// Imgui Warrppher
+
+struct ImDrawList_Warp
+{
+public:
+	friend ImDrawList_Warp * ImGui_GetWindowDrawList();
+
+	void AddText( const ImVec2 pos, uint32_t color, const char * str )
+	{
+		mDrawList->AddText(  pos, color, str );
+
+	}
+private:
+	void setDrawList( ImDrawList * ptr_draw_list ) { mDrawList = ptr_draw_list; }
+private:
+	ImDrawList * mDrawList = nullptr;
+};
+
+static std::shared_ptr<ImDrawList_Warp> StaticImDrawList = nullptr;
+
 void ImGui_Begin( const char * window_name )
 {
 	ImGui::Begin( window_name );
@@ -73,6 +92,20 @@ void ImGui_Begin( const char * window_name )
 void ImGui_Text( const char * str )
 {
 	ImGui::Text( "%s", str );
+}
+
+ImDrawList_Warp * ImGui_GetWindowDrawList( )
+{
+	ImDrawList * draw_list_ptr = ImGui::GetWindowDrawList();
+
+	if ( StaticImDrawList == nullptr )
+	{
+		StaticImDrawList = std::make_shared<ImDrawList_Warp>();
+	}
+
+	StaticImDrawList->setDrawList( draw_list_ptr );
+
+	return StaticImDrawList.get();
 }
 
 int lua_AddViewer( lua_State * lua_state )
@@ -114,9 +147,22 @@ void gameboy_lua_binding(lua_State *lua_state)
 
 	// Imgui
 	luabridge::getGlobalNamespace(lua_state)
-		.beginNamespace("ImGui")
-			.addFunction( "Begin", &ImGui_Begin )
-			.addFunction( "End", &ImGui::End )
+		.beginClass<ImVec2>("ImVec2")
+		        .addConstructor<void (*)( float, float )>()
+		                .addData( "x", &ImVec2::x )
+		                .addData( "y", &ImVec2::y )
+		        .endClass();
+
+	luabridge::getGlobalNamespace(lua_state)
+		.beginClass<ImDrawList_Warp>("ImDrawList")
+		        .addFunction( "AddText", &ImDrawList_Warp::AddText )
+		.endClass();
+
+	luabridge::getGlobalNamespace(lua_state)
+			.beginNamespace("ImGui")
+			.addFunction("Begin", &ImGui_Begin)
+			.addFunction("End", &ImGui::End)
+			.addFunction("GetWindowDrawList", ImGui_GetWindowDrawList)
 			.addFunction( "Text", &ImGui_Text )
 		.endNamespace();
 
