@@ -1,2 +1,3 @@
 init.lua
 test_ui.lua
+memory_viewer.lua
