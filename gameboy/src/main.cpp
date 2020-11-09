@@ -171,6 +171,16 @@ int main()
 		editor.Render( "Absoulte" );
 
 		handler_ptr->Render( nullptr, nullptr );
+		if ( handler_ptr->IsRenderFailed() )
+		{
+			auto reasons = handler_ptr->GetRenderFailedReasons();
+
+			for ( const auto & reason : reasons )
+			{
+				std::cout << reason << std::endl;
+			}
+		}
+
 		handler_ptr->CleanUp();
 
 		InputEvents(cpu_ptr, broker, *lua_context_ptr, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;

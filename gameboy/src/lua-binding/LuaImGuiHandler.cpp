@@ -85,7 +85,8 @@ bool LuaImGuiHandler::IsRenderFailed() const
 	return false;
 }
 
-std::string LuaImGuiHandler::GetRenderFailedReason(std::string_view window_name)
+
+std::string LuaImGuiHandler::GetRenderFailedReason(std::string_view window_name) const
 {
 	for (const auto &viewer : mViewers)
 	{
@@ -96,4 +97,19 @@ std::string LuaImGuiHandler::GetRenderFailedReason(std::string_view window_name)
 	}
 
 	return "";
+}
+
+std::vector<std::string> LuaImGuiHandler::GetRenderFailedReasons() const
+{
+	std::vector<std::string> error_list;
+
+	for (const auto &viewer : mViewers)
+	{
+		if ( viewer.IsRenderFailed() )
+		{
+			error_list.emplace_back( viewer.GetLastError() );
+		}
+	}
+
+	return error_list;
 }

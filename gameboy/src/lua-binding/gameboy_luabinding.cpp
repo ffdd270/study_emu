@@ -108,6 +108,11 @@ ImDrawList_Warp * ImGui_GetWindowDrawList( )
 	return StaticImDrawList.get();
 }
 
+void ImGui_SameLine()
+{
+	ImGui::SameLine();
+}
+
 int lua_AddViewer( lua_State * lua_state )
 {
 	if ( StaticLuaImGuiHandler == nullptr ) { throw std::logic_error("No ImGuiHandler."); }
@@ -164,6 +169,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 			.addFunction("End", &ImGui::End)
 			.addFunction("GetWindowDrawList", ImGui_GetWindowDrawList)
 			.addFunction( "Text", &ImGui_Text )
+			.addFunction( "SameLine", &ImGui_SameLine )
 		.endNamespace();
 
 	// 로그를 실제로 남길 때는 Global function으로.
