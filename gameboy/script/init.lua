@@ -1,6 +1,7 @@
 function init_script()
 	TestUI:init()
 	MemoryViewer:init()
+	LoggerViewer:init()
 end
 
 

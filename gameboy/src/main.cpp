@@ -4,12 +4,14 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
+#include "common/common_logger.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
 #include "util/util_string.h"
 #include "gameboy/GameboyCPU.h"
 #include "gameboy/GameboyCPUBroker.h"
+
 #include "cpu/cpu_viewer.h"
 #include "harucar/LuaCommandViewer.h"
 
@@ -37,10 +39,22 @@ void loadLuaFiles( LuaContext & ref_context )
 	{
 		file >> path;
 
-		ref_context.ExecuteFile( base_path + path );
+		bool flag = ref_context.ExecuteFile( base_path + path );
+
+		if( !flag )
+		{
+			std::cout << ref_context.GetLastError() << std::endl;
+		}
 	}
 
-	assert( ref_context.ExecuteFunction( "init_script" ) );
+	bool ok = ref_context.ExecuteFunction( "init_script" );
+
+	if( !ok )
+	{
+		std::cout << ref_context.GetLastError() << std::endl;
+		assert(false);
+	}
+
 }
 
 void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
@@ -99,7 +113,7 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Lua:Execute" ) )
 	{
-		if ( !context.ExecuteFunction("execute_func") )
+		if(!context.ExecuteString( editor.GetText() ))
 		{
 			std::cout << context.GetLastError() << std::endl;
 			assert( false );
@@ -121,6 +135,8 @@ int main()
 	std::shared_ptr<UIEventProtocol> protocol_ptr = std::make_shared<UIEventProtocol>();
 	std::shared_ptr<CPUProvider> provider_ptr = broker.MakeProvider( *cpu_ptr );
 	std::shared_ptr<InputBuffer> input_buffer_ptr = std::make_shared<InputBuffer>( 300 );
+	std::shared_ptr<HaruCar::Common::Log::Logger> logger_ptr = std::make_shared<HaruCar::Common::Log::Logger>();
+	gameboy_lua_binding_logger( logger_ptr );
 
 	CPUViewer viewer;
 

@@ -10,6 +10,7 @@
 #include <imgui.h>
 #include "GameboyCPU.h"
 #include "LuaImGuiHandler.h"
+#include "LuaBridge/Vector.h"
 
 #include <common/common_logger.h>
 
@@ -62,7 +63,6 @@ static void log_info( Logger * logger, const char * str  )
 {
 	logger->LogInfo( str );
 }
-
 
 // Imgui Warrppher
 
@@ -123,6 +123,20 @@ int lua_AddViewer( lua_State * lua_state )
 }
 
 
+int lua_get_last_logs( lua_State * lua_state )
+{
+	Logger * ptr_logger = luabridge::Stack<Logger *>::get( lua_state, -1 );
+
+	if ( ptr_logger->GetLogSizeFromLastGet() == 0 )
+	{
+		return 0;
+	}
+
+	luabridge::Stack<std::vector<LogData>>::push( lua_state, ptr_logger->GetLogsFromLastGet() );
+	return 1;
+}
+
+
 void gameboy_lua_binding(lua_State *lua_state)
 {
 	luabridge::getGlobalNamespace(lua_state)
@@ -146,6 +160,12 @@ void gameboy_lua_binding(lua_State *lua_state)
 		        .addData( "lo", &Register::lo )
 		.endClass();
 
+	luabridge::getGlobalNamespace(lua_state)
+		.beginClass<LogData>("LogData")
+		        .addData( "log", &LogData::log )
+		        .addData( "info", &LogData::info )
+		.endClass();
+
 	luabridge::getGlobalNamespace(lua_state).
 		beginClass<HaruCar::Common::Log::Logger>("Logger")
 		.endClass();
@@ -164,10 +184,10 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.endClass();
 
 	luabridge::getGlobalNamespace(lua_state)
-			.beginNamespace("ImGui")
-			.addFunction("Begin", &ImGui_Begin)
-			.addFunction("End", &ImGui::End)
-			.addFunction("GetWindowDrawList", ImGui_GetWindowDrawList)
+		.beginNamespace("ImGui")
+			.addFunction( "Begin", &ImGui_Begin)
+			.addFunction( "End", &ImGui::End)
+			.addFunction( "GetWindowDrawList", ImGui_GetWindowDrawList)
 			.addFunction( "Text", &ImGui_Text )
 			.addFunction( "SameLine", &ImGui_SameLine )
 		.endNamespace();
@@ -176,11 +196,9 @@ void gameboy_lua_binding(lua_State *lua_state)
 	luabridge::getGlobalNamespace(lua_state)
 		.addFunction( "log_error", log_error )
 		.addFunction( "log_warning", log_warning )
-		.addFunction( "log_info", log_info );
-
-	// Raw Lua Binding.
-	lua_pushcfunction( lua_state, lua_AddViewer );
-	lua_setglobal( lua_state, "AddViewer" );
+		.addFunction( "log_info", log_info )
+		.addCFunction( "get_last_logs", lua_get_last_logs )
+		.addCFunction( "AddViewer", lua_AddViewer );
 }
 
 
