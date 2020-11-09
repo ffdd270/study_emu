@@ -30,13 +30,14 @@ std::vector<LogData> Logger::GetLogsFromLastGet()
 		data.emplace_back( mLogData[start_index] );
 	}
 
-	mLastGetIndex = mLogData.size() - 1;
+	mLastGetIndex = mLogData.size();
+
 	return data;
 }
 
 size_t Logger::GetLogSizeFromLastGet() const
 {
-	return mLogData.size() - ( mLastGetIndex + 1 );
+	return mLogData.size() - mLastGetIndex;
 }
 
 
