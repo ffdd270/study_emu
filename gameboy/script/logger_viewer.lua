@@ -30,7 +30,7 @@ function LoggerViewer.render( self )
 	ImGuiListClipperWarp:Begin( clipper, #self.vars.logs )
 
 	while( clipper:Step() ) do
-		for i = clipper.DisplayStart + 1, clipper.DisplayEnd do -- lua는 <= 라서..
+		for i = clipper.DisplayStart + 1, clipper.DisplayEnd do -- lua는 <= 라서
 			local log_data = self.vars.logs[i]
 			ImGui.Text( ErrorString[ log_data.info ]  .. ' : ' .. log_data.log )
 		end

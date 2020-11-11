@@ -106,6 +106,11 @@ void ImGui_Begin( const char * window_name )
 	ImGui::Begin( window_name );
 }
 
+void ImGui_Columns( int count )
+{
+	ImGui::Columns( count );
+}
+
 void ImGui_Text( const char * str )
 {
 	ImGui::Text( "%s", str );
@@ -213,6 +218,8 @@ void gameboy_lua_binding(lua_State *lua_state)
 			.addFunction( "End", &ImGui::End)
 			.addFunction( "GetWindowDrawList", ImGui_GetWindowDrawList)
 			.addFunction( "Text", &ImGui_Text )
+			.addFunction( "Columns", &ImGui_Columns )
+			.addFunction( "NextColumn", &ImGui::NextColumn )
 			.addFunction( "Button", &ImGui_Button )
 			.addFunction( "SameLine", &ImGui_SameLine )
 		.endNamespace();

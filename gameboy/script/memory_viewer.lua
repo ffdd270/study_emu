@@ -1,7 +1,9 @@
 MemoryViewer = {}
 
 DummyData = {
-	0x00, 0x32, 0x34, 0x42, 0x31, 0x36, 0x85, 0x92
+	0x00, 0x32, 0x34, 0x42, 0x31, 0x36, 0x85, 0x92,
+	0x00, 0x32, 0x34, 0x42, 0x31, 0x36, 0x85, 0x92,
+	0x00, 0x32, 0x34, 0x42, 0x31, 0x36, 0x85, 0x92,
 }
 
 HexTable = {
@@ -39,10 +41,55 @@ function MemoryViewer.render( self )
 
 	local len = 8
 
-	for i = 1, len do
-		ImGui.Text( to_hex_string( DummyData[ i ] ) )
-		ImGui.SameLine()
+	local clipper = ImGuiListClipper()
+	ImGuiListClipperWarp:Begin( clipper, math.floor( #DummyData / len )  )
+
+	ImGui.Columns( 2 )
+
+	while( clipper:Step() ) do
+		local prev_line = 0
+
+		for line = clipper.DisplayStart + 1, clipper.DisplayEnd do -- lua는 <= 라서
+			local calc_line = line - 1
+
+			for i = 1, len do
+				if DummyData[ i + ( calc_line * len  ) ] then
+					if prev_line == line then
+						ImGui.SameLine()
+					end
+
+					ImGui.Text( to_hex_string( DummyData[ i + ( calc_line * len ) ] ) )
+					prev_line = line
+				else
+					break
+				end
+			end
+
+			ImGui.NextColumn()
+
+			for i = 1, len  do
+				if DummyData[ i + ( calc_line * len ) ] then
+					ImGui.SameLine()
+
+					local result = string.char( DummyData[  i + ( calc_line * len )  ] )
+					local re_find =  string.find( result, "[%a%d]" )
+					if re_find == nil then
+						ImGui.Text('.')
+					else
+						ImGui.Text( result )
+					end
+
+				else
+					break
+				end
+			end
+
+			ImGui.NextColumn()
+		end
 	end
+
+	ImGui.Columns( 1 )
+
 
 	ImGui.End()
 end
