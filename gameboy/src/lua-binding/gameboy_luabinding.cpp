@@ -64,6 +64,23 @@ static void log_info( Logger * logger, const char * str  )
 	logger->LogInfo( str );
 }
 
+
+
+#include <LuaBridge/detail/Stack.h>
+
+using LogLevels = HaruCar::Common::Log::LogLevels;
+
+namespace luabridge
+{
+	template <>
+	struct Stack<LogLevels>
+	{
+		static void push(lua_State* L, LogLevels const& v) { lua_pushnumber( L, static_cast<int>(v) ); }
+		static LogLevels get(lua_State* L, int index) { return LuaRef::fromStack(L, index); }
+	};
+}
+
+
 // Imgui Warrppher
 
 struct ImDrawList_Warp
@@ -89,10 +106,21 @@ void ImGui_Begin( const char * window_name )
 	ImGui::Begin( window_name );
 }
 
+void ImGui_Columns( int count )
+{
+	ImGui::Columns( count );
+}
+
 void ImGui_Text( const char * str )
 {
 	ImGui::Text( "%s", str );
 }
+
+bool ImGui_Button( const char * str )
+{
+	return ImGui::Button( str );
+}
+
 
 ImDrawList_Warp * ImGui_GetWindowDrawList( )
 {
@@ -160,6 +188,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 		        .addData( "lo", &Register::lo )
 		.endClass();
 
+
 	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<LogData>("LogData")
 		        .addData( "log", &LogData::log )
@@ -185,12 +214,25 @@ void gameboy_lua_binding(lua_State *lua_state)
 
 	luabridge::getGlobalNamespace(lua_state)
 		.beginNamespace("ImGui")
-			.addFunction( "Begin", &ImGui_Begin)
+			.addFunction( "Begin", &ImGui_Begin )
 			.addFunction( "End", &ImGui::End)
 			.addFunction( "GetWindowDrawList", ImGui_GetWindowDrawList)
 			.addFunction( "Text", &ImGui_Text )
+			.addFunction( "Columns", &ImGui_Columns )
+			.addFunction( "NextColumn", &ImGui::NextColumn )
+			.addFunction( "Button", &ImGui_Button )
 			.addFunction( "SameLine", &ImGui_SameLine )
 		.endNamespace();
+
+	// 클리퍼 구현.
+	luabridge::getGlobalNamespace(lua_state)
+		.beginClass<ImGuiListClipper>("ImGuiListClipper")
+			.addConstructor<void(*)()>()
+			.addFunction("Begin", &ImGuiListClipper::Begin)
+			.addFunction( "Step", &ImGuiListClipper::Step )
+			.addData( "DisplayStart", &ImGuiListClipper::DisplayStart )
+			.addData( "DisplayEnd", &ImGuiListClipper::DisplayEnd )
+		.endClass();
 
 	// 로그를 실제로 남길 때는 Global function으로.
 	luabridge::getGlobalNamespace(lua_state)

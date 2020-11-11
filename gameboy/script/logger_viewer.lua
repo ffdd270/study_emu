@@ -1,5 +1,11 @@
 LoggerViewer = {}
 
+local ErrorString = {
+	[0] = 'ERROR',
+	[1] = 'WARNING',
+	[2] = 'INFO'
+}
+
 function LoggerViewer.update( self)
 	local logs = get_last_logs( GetInstanceLogger() )
 
@@ -16,8 +22,18 @@ function LoggerViewer.render( self )
 
 	ImGui.Begin("Logger Viewer")
 
-	for k, v in pairs( self.vars.logs ) do
-		ImGui.Text( v.log )
+	if ImGui.Button( "CLEAR LOG" ) then
+		self.vars.logs = {}
+	end
+
+	local clipper = ImGuiListClipper()
+	ImGuiListClipperWarp:Begin( clipper, #self.vars.logs )
+
+	while( clipper:Step() ) do
+		for i = clipper.DisplayStart + 1, clipper.DisplayEnd do -- lua는 <= 라서
+			local log_data = self.vars.logs[i]
+			ImGui.Text( ErrorString[ log_data.info ]  .. ' : ' .. log_data.log )
+		end
 	end
 
 	ImGui.End()
