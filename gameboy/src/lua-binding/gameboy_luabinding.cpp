@@ -64,6 +64,23 @@ static void log_info( Logger * logger, const char * str  )
 	logger->LogInfo( str );
 }
 
+
+
+#include <LuaBridge/detail/Stack.h>
+
+using LogLevels = HaruCar::Common::Log::LogLevels;
+
+namespace luabridge
+{
+	template <>
+	struct Stack<LogLevels>
+	{
+		static void push(lua_State* L, LogLevels const& v) { lua_pushnumber( L, static_cast<int>(v) ); }
+		static LogLevels get(lua_State* L, int index) { return LuaRef::fromStack(L, index); }
+	};
+}
+
+
 // Imgui Warrppher
 
 struct ImDrawList_Warp
@@ -165,6 +182,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 		        .addData( "hi", &Register::hi )
 		        .addData( "lo", &Register::lo )
 		.endClass();
+
 
 	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<LogData>("LogData")
