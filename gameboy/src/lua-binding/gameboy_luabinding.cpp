@@ -94,6 +94,12 @@ void ImGui_Text( const char * str )
 	ImGui::Text( "%s", str );
 }
 
+bool ImGui_Button( const char * str )
+{
+	return ImGui::Button( str );
+}
+
+
 ImDrawList_Warp * ImGui_GetWindowDrawList( )
 {
 	ImDrawList * draw_list_ptr = ImGui::GetWindowDrawList();
@@ -189,6 +195,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 			.addFunction( "End", &ImGui::End)
 			.addFunction( "GetWindowDrawList", ImGui_GetWindowDrawList)
 			.addFunction( "Text", &ImGui_Text )
+			.addFunction( "Button", &ImGui_Button )
 			.addFunction( "SameLine", &ImGui_SameLine )
 		.endNamespace();
 

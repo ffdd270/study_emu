@@ -16,6 +16,11 @@ function LoggerViewer.render( self )
 
 	ImGui.Begin("Logger Viewer")
 
+
+	if ImGui.Button( "CLEAR LOG" ) then
+		self.vars.logs = {}
+	end
+
 	local clipper = ImGuiListClipper()
 	ImGuiListClipperWarp:Begin( clipper, #self.vars.logs )
 
