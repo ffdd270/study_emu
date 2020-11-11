@@ -26,6 +26,7 @@ using namespace HaruCar::CPU;
 using namespace HaruCar::UI::Structure;
 using namespace HaruCar::Common::Structure;
 
+using Logger = HaruCar::Common::Log::Logger;
 
 void loadLuaFiles( LuaContext & ref_context )
 {
@@ -63,7 +64,8 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 				  TextEditor & editor,
 			  std::shared_ptr<InputBuffer> & input_buffer_ptr,
 			  std::shared_ptr<CPUProvider> & provider_ptr,
-			  std::shared_ptr<UIEventProtocol> & protocol_ptr )
+			  std::shared_ptr<UIEventProtocol> & protocol_ptr,
+			  std::shared_ptr<Logger> & logger_ptr )
 {
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Injection" ) )
 	{
@@ -106,8 +108,9 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 
 		if(!context.ExecuteString( editor.GetText() ))
 		{
-			std::cout << context.GetLastError() << std::endl;
-			assert( false );
+			std::string last_error = context.GetLastError();
+			logger_ptr->LogError( last_error );
+			std::cout << last_error << std::endl;
 		}
 	}
 
@@ -115,8 +118,9 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 	{
 		if(!context.ExecuteString( editor.GetText() ))
 		{
-			std::cout << context.GetLastError() << std::endl;
-			assert( false );
+			std::string last_error = context.GetLastError();
+			logger_ptr->LogError( last_error );
+			std::cout << last_error << std::endl;
 		}
 	}
 }
@@ -135,7 +139,7 @@ int main()
 	std::shared_ptr<UIEventProtocol> protocol_ptr = std::make_shared<UIEventProtocol>();
 	std::shared_ptr<CPUProvider> provider_ptr = broker.MakeProvider( *cpu_ptr );
 	std::shared_ptr<InputBuffer> input_buffer_ptr = std::make_shared<InputBuffer>( 300 );
-	std::shared_ptr<HaruCar::Common::Log::Logger> logger_ptr = std::make_shared<HaruCar::Common::Log::Logger>();
+	std::shared_ptr<Logger> logger_ptr = std::make_shared<Logger>();
 	gameboy_lua_binding_logger( logger_ptr );
 
 	CPUViewer viewer;
@@ -154,7 +158,6 @@ int main()
 	//Carry!
 
 	std::shared_ptr<LuaContext> lua_context_ptr = std::make_shared<LuaContext>();
-
 	std::shared_ptr<LuaImGuiHandler> handler_ptr = std::make_shared<LuaImGuiHandler>(lua_context_ptr );
 	gameboy_lua_binding_imgui_handler( handler_ptr );
 
@@ -199,7 +202,8 @@ int main()
 
 		handler_ptr->CleanUp();
 
-		InputEvents(cpu_ptr, broker, *lua_context_ptr, editor, input_buffer_ptr, provider_ptr, protocol_ptr ) ;
+		InputEvents(cpu_ptr, broker, *lua_context_ptr, editor,
+			  input_buffer_ptr, provider_ptr, protocol_ptr, logger_ptr ) ;
 
 		window.clear();
 		ImGui::SFML::Render(window);
