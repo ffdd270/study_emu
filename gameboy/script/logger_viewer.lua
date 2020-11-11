@@ -16,8 +16,13 @@ function LoggerViewer.render( self )
 
 	ImGui.Begin("Logger Viewer")
 
-	for k, v in pairs( self.vars.logs ) do
-		ImGui.Text( v.log )
+	local clipper = ImGuiListClipper()
+	ImGuiListClipperWarp:Begin( clipper, #self.vars.logs )
+
+	while( clipper:Step() ) do
+		for i = clipper.DisplayStart + 1, clipper.DisplayEnd do -- lua는 <= 라서..
+			ImGui.Text( self.vars.logs[i].log )
+		end
 	end
 
 	ImGui.End()

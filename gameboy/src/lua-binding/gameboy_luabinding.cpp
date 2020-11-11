@@ -185,12 +185,22 @@ void gameboy_lua_binding(lua_State *lua_state)
 
 	luabridge::getGlobalNamespace(lua_state)
 		.beginNamespace("ImGui")
-			.addFunction( "Begin", &ImGui_Begin)
+			.addFunction( "Begin", &ImGui_Begin )
 			.addFunction( "End", &ImGui::End)
 			.addFunction( "GetWindowDrawList", ImGui_GetWindowDrawList)
 			.addFunction( "Text", &ImGui_Text )
 			.addFunction( "SameLine", &ImGui_SameLine )
 		.endNamespace();
+
+	// 클리퍼 구현.
+	luabridge::getGlobalNamespace(lua_state)
+		.beginClass<ImGuiListClipper>("ImGuiListClipper")
+			.addConstructor<void(*)()>()
+			.addFunction("Begin", &ImGuiListClipper::Begin)
+			.addFunction( "Step", &ImGuiListClipper::Step )
+			.addData( "DisplayStart", &ImGuiListClipper::DisplayStart )
+			.addData( "DisplayEnd", &ImGuiListClipper::DisplayEnd )
+		.endClass();
 
 	// 로그를 실제로 남길 때는 Global function으로.
 	luabridge::getGlobalNamespace(lua_state)

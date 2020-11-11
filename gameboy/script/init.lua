@@ -11,3 +11,10 @@ function table.shallow_copy( table, copy_target )
 		table[k] = v
 	end
 end
+
+
+ImGuiListClipperWarp = {}
+
+function ImGuiListClipperWarp.Begin( self, clipper, item_count )
+	clipper:Begin( item_count, -1 )
+end
