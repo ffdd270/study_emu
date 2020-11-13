@@ -23,16 +23,16 @@ end
 Util = {}
 
 function Util.LogError( self, str )
-	log_error( GetInstanceLogger(), str )
+	log_error( GetInstanceLogger(), tostring( str ) )
 end
 
 
 function Util.LogWarn( self, str )
-	log_warning( GetInstanceLogger(), str )
+	log_warning( GetInstanceLogger(), tostring( str ) )
 end
 
 
 function Util.LogInfo(  self, str )
-	log_info( GetInstanceLogger(), str )
+	log_info( GetInstanceLogger(), tostring( str ) )
 end
 
