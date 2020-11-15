@@ -39,10 +39,13 @@ end
 function MemoryViewer.render( self )
 	ImGui.Begin( "Memory Viewer" )
 
-	local len = 8
-
+	local len = 4
+	local memory_size = 0xffff
+	local memory = GetInstanceCPU():GetMemory()
 	local clipper = ImGuiListClipper()
-	ImGuiListClipperWarp:Begin( clipper, math.floor( #DummyData / len )  )
+
+
+	ImGuiListClipperWarp:Begin( clipper, math.floor( memory_size / len )  )
 
 	ImGui.Columns( 2 )
 
@@ -53,35 +56,37 @@ function MemoryViewer.render( self )
 			local calc_line = line - 1
 
 			for i = 1, len do
-				if DummyData[ i + ( calc_line * len  ) ] then
-					if prev_line == line then
-						ImGui.SameLine()
-					end
+				local index = i + ( calc_line * len )
+				if index >= 0xffff then break end
 
-					ImGui.Text( to_hex_string( DummyData[ i + ( calc_line * len ) ] ) )
-					prev_line = line
-				else
-					break
+				local data = memory:GetValue( index )
+
+				if prev_line == line then
+					ImGui.SameLine()
 				end
+
+				ImGui.Text( to_hex_string( data ) )
+				prev_line = line
 			end
 
 			ImGui.NextColumn()
 
 			for i = 1, len  do
-				if DummyData[ i + ( calc_line * len ) ] then
-					ImGui.SameLine()
+				ImGui.SameLine()
 
-					local result = string.char( DummyData[  i + ( calc_line * len )  ] )
-					local re_find =  string.find( result, "[%a%d]" )
-					if re_find == nil then
-						ImGui.Text('.')
-					else
-						ImGui.Text( result )
-					end
+				local index = i + ( calc_line * len )
+				if index >= 0xffff then break end
 
+				local data = memory:GetValue( index )
+
+				local result = string.char( data )
+				local re_find =  string.find( result, "[%a%d]" )
+				if re_find == nil then
+					ImGui.Text('.')
 				else
-					break
+					ImGui.Text( result )
 				end
+
 			end
 
 			ImGui.NextColumn()

@@ -172,9 +172,15 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.addFunction( "GetInstanceCPU", &GetInstanceCPU );
 
 	luabridge::getGlobalNamespace(lua_state)
+		.beginClass<GameboyMemory>("GameboyMemory")
+			.addFunction("GetValue", &GameboyMemory::GetValue)
+		.endClass();
+
+	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<GameboyCPU>("GameboyCPU")
 			.addFunction( "InjectionMemory", &GameboyCPU::InjectionMemory )
 			.addFunction( "GetMemoryValue", &GameboyCPU::GetMemoryValue )
+			.addFunction( "GetMemory", &GameboyCPU::GetMemory )
 			.addFunction( "GetRegisterAF", &GameboyCPU::GetRegisterAF )
 			.addFunction( "GetRegisterBC", &GameboyCPU::GetRegisterBC )
 			.addFunction( "GetRegisterDE", &GameboyCPU::GetRegisterDE )
