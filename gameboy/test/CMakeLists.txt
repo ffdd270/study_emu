@@ -22,7 +22,7 @@ set(TEST
 		src/gameboy_broker.cpp
 		src/gameboy_luabinding_test.cpp
 		src/lua_context.cpp
-		src/imgui_lua_test.cpp)
+		src/imgui_lua_test.cpp src/cpu_public_methods.cpp)
 
 
 add_executable( gb_test
