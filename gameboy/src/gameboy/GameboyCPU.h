@@ -28,6 +28,30 @@ typedef void(*BindFunctionPointer)(GameboyCPU *, BYTE);
 using InstructionCallback = std::function<void( const char * instruction_name, BYTE opcode )>;
 
 
+// 외부 반출용
+class GameboyMemory
+{
+public:
+	friend class GameboyCPU;
+
+	BYTE GetValue( std::size_t memory_index )
+	{
+		if ( memory_index >= mSize )
+		{
+			throw std::logic_error("OUT OF INDEX");
+		}
+
+		return mPtrMemory[memory_index];
+	}
+private:
+	GameboyMemory( BYTE * ptr_memory, std::size_t mem_size ) : mPtrMemory( ptr_memory ), mSize( mem_size )  { }
+
+	BYTE * mPtrMemory;
+	std::size_t mSize;
+};
+
+
+
 class GameboyCPU
 {
 public:
@@ -52,7 +76,7 @@ public:
 	void RemoveInstructionCallback();
 	void SetMemoryValue( unsigned int mem_index, BYTE value );
 	BYTE GetMemoryValue( unsigned int mem_index );
-
+	GameboyMemory GetMemory();
 
 	BYTE GetRegisterValueBy8BitIndex( BYTE index ) const {  return m8bitArguments[index].ref; }
 	Register GetRegisterAF() { return mRegisters.array[3]; }

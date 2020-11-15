@@ -758,6 +758,11 @@ BYTE GameboyCPU::GetMemoryValue(unsigned int mem_index)
 	return mGameMemory[ mem_index ];
 }
 
+GameboyMemory GameboyCPU::GetMemory()
+{
+	return GameboyMemory(mGameMemory, 0xffff);
+}
+
 void GameboyCPU::SetOnInstructionCallback(InstructionCallback callback)
 {
 	mOnInstructionCallback = std::move(callback);
