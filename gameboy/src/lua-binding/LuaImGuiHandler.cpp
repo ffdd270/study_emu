@@ -75,6 +75,18 @@ void LuaImGuiHandler::CleanUp()
 
 	});
 }
+
+void LuaImGuiHandler::CleanUpOnLuaReload()
+{
+	for ( auto & viewer : mViewers )
+	{
+		viewer.CheckLuaContextValid();
+	}
+
+	CleanUp();
+}
+
+
 bool LuaImGuiHandler::IsRenderFailed() const
 {
 	for( const auto & viewer : mViewers )

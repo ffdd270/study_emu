@@ -65,7 +65,8 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 			  std::shared_ptr<InputBuffer> & input_buffer_ptr,
 			  std::shared_ptr<CPUProvider> & provider_ptr,
 			  std::shared_ptr<UIEventProtocol> & protocol_ptr,
-			  std::shared_ptr<Logger> & logger_ptr )
+			  std::shared_ptr<Logger> & logger_ptr,
+			  std::shared_ptr<LuaImGuiHandler> & handler_ptr )
 {
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Injection" ) )
 	{
@@ -112,6 +113,8 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 			logger_ptr->LogError( last_error );
 			std::cout << last_error << std::endl;
 		}
+
+		handler_ptr->CleanUpOnLuaReload();
 	}
 
 	if ( UIEventHelperFunction::FireEvent( *protocol_ptr, "Lua:Execute" ) )
@@ -158,7 +161,7 @@ int main()
 	//Carry!
 
 	std::shared_ptr<LuaContext> lua_context_ptr = std::make_shared<LuaContext>();
-	std::shared_ptr<LuaImGuiHandler> handler_ptr = std::make_shared<LuaImGuiHandler>(lua_context_ptr );
+	std::shared_ptr<LuaImGuiHandler> handler_ptr = std::make_shared<LuaImGuiHandler>( lua_context_ptr );
 	gameboy_lua_binding_imgui_handler( handler_ptr );
 
 	loadLuaFiles( *lua_context_ptr );
@@ -204,7 +207,7 @@ int main()
 		handler_ptr->CleanUp();
 
 		InputEvents(cpu_ptr, broker, *lua_context_ptr, editor,
-			  input_buffer_ptr, provider_ptr, protocol_ptr, logger_ptr ) ;
+			  input_buffer_ptr, provider_ptr, protocol_ptr, logger_ptr, handler_ptr ) ;
 
 		window.clear();
 		ImGui::SFML::Render(window);

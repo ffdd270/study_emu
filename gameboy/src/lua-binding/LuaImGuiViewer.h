@@ -31,6 +31,7 @@ public:
 	[[nodiscard]] std::string_view GetLastError() const;
 	[[nodiscard]] Status GetStatus() const;
 
+	bool CheckLuaContextValid();
  	[[nodiscard]] bool IsRenderFailed() const;
 
 	void AddLuaCallback(LuaContextRefId ref_id);

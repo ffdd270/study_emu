@@ -34,6 +34,28 @@ std::string_view LuaImGuiViewer::GetLastError() const
 	return mLastError;
 }
 
+bool LuaImGuiViewer::CheckLuaContextValid()
+{
+	if (mPtrLuaContext == nullptr)
+	{
+		mStatus = Status::LUA_CONTEXT_NULL;
+		return false;
+	}
+	if (mRefId == LuaContext::REF_NIL)
+	{
+		mStatus = Status::LUA_REF_ID_NIL;
+		return false;
+	}
+	if (!mPtrLuaContext->IsCorrectKey(mRefId))
+	{
+		mStatus = Status::LUA_REF_ID_INVALID;
+		mRefId = LuaContext::REF_NIL;
+		return false;
+	}
+
+	return true;
+}
+
 bool LuaImGuiViewer::IsRenderFailed() const
 {
 	return mRenderFailed;
@@ -49,22 +71,7 @@ void LuaImGuiViewer::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> 
 {
 	mRenderFailed = true;
 
-	if (mPtrLuaContext == nullptr)
-	{
-		mStatus = Status::LUA_CONTEXT_NULL;
-		return;
-	}
-	if (mRefId == LuaContext::REF_NIL)
-	{
-		mStatus = Status::LUA_REF_ID_NIL;
-		return;
-	}
-	if (!mPtrLuaContext->IsCorrectKey(mRefId))
-	{
-		mStatus = Status::LUA_REF_ID_INVALID;
-		mRefId = LuaContext::REF_NIL;
-		return;
-	}
+	if( !CheckLuaContextValid() ) { return; }
 
 	// 여기서부터 ImGui 영역
 	ImGui::Begin( mWindowName.c_str() );
@@ -80,6 +87,7 @@ void LuaImGuiViewer::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> 
 		return;
 	}
 
+	mStatus = Status::OK;
 	mRenderFailed = false;
 }
 

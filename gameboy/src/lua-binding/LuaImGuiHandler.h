@@ -24,6 +24,7 @@ public:
 				const std::shared_ptr<HaruCar::UI::Structure::UIEventProtocol>& protocol_ptr);
 
 	void CleanUp();
+	void CleanUpOnLuaReload();
 
 	[[nodiscard]] bool IsRenderFailed() const;
 	[[nodiscard]] std::string GetRenderFailedReason( std::string_view window_name ) const;
