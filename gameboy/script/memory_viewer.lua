@@ -37,8 +37,6 @@ function to_hex_string( number, base_num )
 end
 
 function MemoryViewer.render( self )
-	ImGui.Begin( "Memory Viewer" )
-
 	local len = 4
 	local memory_size = 0xffff
 	local memory = GetInstanceCPU():GetMemory()
@@ -94,9 +92,6 @@ function MemoryViewer.render( self )
 	end
 
 	ImGui.Columns( 1 )
-
-
-	ImGui.End()
 end
 
 function MemoryViewer.init ( self )

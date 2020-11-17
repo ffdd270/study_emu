@@ -3,6 +3,7 @@
 //
 
 #include "LuaImGuiViewer.h"
+#include <imgui.h>
 
 
 LuaImGuiViewer::LuaImGuiViewer(std::string_view name, std::shared_ptr<LuaContext> &ref_ptr_lua_context, LuaContextRefId context_ref_id)
@@ -65,7 +66,13 @@ void LuaImGuiViewer::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> 
 		return;
 	}
 
+	// 여기서부터 ImGui 영역
+	ImGui::Begin( mWindowName.c_str() );
+
 	bool ok = mPtrLuaContext->ExecuteRefFunction(mRefId);
+
+	ImGui::End(); // 터지던 말던 정리해준다.
+
 	if (!ok)
 	{
 		mStatus = Status::LUA_CALL_FAILED;

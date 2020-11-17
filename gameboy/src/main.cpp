@@ -196,6 +196,7 @@ int main()
 
 			for ( const auto & reason : reasons )
 			{
+				logger_ptr->LogError( reason );
 				std::cout << reason << std::endl;
 			}
 		}
