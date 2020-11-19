@@ -99,6 +99,61 @@ private:
 	ImDrawList * mDrawList = nullptr;
 };
 
+struct StringBuf
+{
+public:
+	explicit StringBuf( size_t buf )
+	{
+		_allocation( buf );
+	}
+
+	[[nodiscard]] size_t Size() const
+	{
+		return mSize;
+	}
+
+	void Reallocation( size_t size )
+	{
+		if ( mSize == 0 ) { throw std::logic_error("Size Was 0, Reallocation Dose not support Delete.");}
+
+		delete mStringBuf;
+
+		_allocation( size );
+	}
+
+	char * Get()
+	{
+		return mStringBuf;
+	}
+
+	[[nodiscard]] const char * GetViewString() const
+	{
+		return mStringBuf;
+	}
+
+	void Clear()
+	{
+		memset( mStringBuf, 0, mSize );
+	}
+
+
+	~StringBuf()
+	{
+		delete mStringBuf;
+	}
+private:
+	void _allocation( size_t buf )
+	{
+		mStringBuf = new char[buf];
+		mSize = buf;
+		memset( mStringBuf, 0, buf );
+	}
+private:
+	size_t mSize = 0;
+	char * mStringBuf = nullptr;
+};
+
+
 static std::shared_ptr<ImDrawList_Warp> StaticImDrawList = nullptr;
 
 void ImGui_Begin( const char * window_name )
@@ -116,11 +171,15 @@ void ImGui_Text( const char * str )
 	ImGui::Text( "%s", str );
 }
 
+void ImGui_InputText( StringBuf * string_buf )
+{
+	ImGui::InputText( nullptr, string_buf->Get(), string_buf->Size() );
+}
+
 bool ImGui_Button( const char * str )
 {
 	return ImGui::Button( str );
 }
-
 
 ImDrawList_Warp * ImGui_GetWindowDrawList( )
 {
@@ -219,12 +278,23 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.endClass();
 
 	luabridge::getGlobalNamespace(lua_state)
+		.beginClass<StringBuf>("StringBuf")
+		        .addConstructor<void (*)(size_t)>()
+		                .addFunction("Get", &StringBuf::Get)
+		                .addFunction("GetStringView", &StringBuf::GetViewString)
+		                .addFunction("Size", &StringBuf::Size)
+		                .addFunction("Reallocation", &StringBuf::Reallocation)
+		                .addFunction("Clear", &StringBuf::Clear)
+		.endClass();
+
+	luabridge::getGlobalNamespace(lua_state)
 		.beginNamespace("ImGui")
 			.addFunction( "Begin", &ImGui_Begin )
 			.addFunction( "End", &ImGui::End)
 			.addFunction( "GetWindowDrawList", ImGui_GetWindowDrawList)
 			.addFunction( "Text", &ImGui_Text )
 			.addFunction( "Columns", &ImGui_Columns )
+			.addFunction( "InputText", &ImGui_InputText )
 			.addFunction( "NextColumn", &ImGui::NextColumn )
 			.addFunction( "Button", &ImGui_Button )
 			.addFunction( "SameLine", &ImGui_SameLine )
