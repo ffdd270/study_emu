@@ -228,7 +228,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.beginClass<StringBuf>("StringBuf")
 		        .addConstructor<void (*)(size_t)>()
 		                .addFunction("Get", &StringBuf::Get)
-		                .addFunction("GetStringView", &StringBuf::GetViewString)
+		                .addFunction("GetViewString", &StringBuf::GetViewString)
 		                .addFunction("Size", &StringBuf::Size)
 		                .addFunction("Reallocation", &StringBuf::Reallocation)
 		                .addFunction("Clear", &StringBuf::Clear)
@@ -310,5 +310,5 @@ void StringBuf::_allocation(size_t buf)
 {
 	mStringBuf = new char[buf];
 	mSize = buf;
-	memset( mStringBuf, 0, buf );
+	memset( mStringBuf, 0, mSize );
 }
