@@ -36,6 +36,7 @@ SCENARIO("How to bind to imgui lua test.")
 
 		WHEN("Render Call")
 		{
+			ptr_imgui_handler->NoUseImGui();
 			ptr_imgui_handler->Render( nullptr, nullptr );
 			ptr_imgui_handler->CleanUp();
 
@@ -85,6 +86,7 @@ SCENARIO("How to bind to imgui lua test.")
 
 		WHEN("Render!")
 		{
+			ptr_imgui_handler->NoUseImGui();
 			REQUIRE_NOTHROW( ptr_imgui_handler->Render( nullptr, nullptr ) );
 			ptr_imgui_handler->CleanUp();
 

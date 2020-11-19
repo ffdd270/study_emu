@@ -24,6 +24,11 @@ void LuaImGuiViewer::SetName(std::string_view name)
 	mWindowName = name;
 }
 
+void LuaImGuiViewer::NoUseImGui(bool flag)
+{
+	mNoUseImGui = flag;
+}
+
 std::string_view LuaImGuiViewer::GetName() const
 {
 	return mWindowName;
@@ -74,11 +79,17 @@ void LuaImGuiViewer::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> 
 	if( !CheckLuaContextValid() ) { return; }
 
 	// 여기서부터 ImGui 영역
-	ImGui::Begin( mWindowName.c_str() );
+	if ( !mNoUseImGui )
+	{
+		ImGui::Begin( mWindowName.c_str() );
 
+	}
 	bool ok = mPtrLuaContext->ExecuteRefFunction(mRefId);
 
-	ImGui::End(); // 터지던 말던 정리해준다.
+	if ( !mNoUseImGui )
+	{
+		ImGui::End(); // 터지던 말던 정리해준다.
+	}
 
 	if (!ok)
 	{

@@ -99,59 +99,6 @@ private:
 	ImDrawList * mDrawList = nullptr;
 };
 
-struct StringBuf
-{
-public:
-	explicit StringBuf( size_t buf )
-	{
-		_allocation( buf );
-	}
-
-	[[nodiscard]] size_t Size() const
-	{
-		return mSize;
-	}
-
-	void Reallocation( size_t size )
-	{
-		if ( mSize == 0 ) { throw std::logic_error("Size Was 0, Reallocation Dose not support Delete.");}
-
-		delete mStringBuf;
-
-		_allocation( size );
-	}
-
-	char * Get()
-	{
-		return mStringBuf;
-	}
-
-	[[nodiscard]] const char * GetViewString() const
-	{
-		return mStringBuf;
-	}
-
-	void Clear()
-	{
-		memset( mStringBuf, 0, mSize );
-	}
-
-
-	~StringBuf()
-	{
-		delete mStringBuf;
-	}
-private:
-	void _allocation( size_t buf )
-	{
-		mStringBuf = new char[buf];
-		mSize = buf;
-		memset( mStringBuf, 0, buf );
-	}
-private:
-	size_t mSize = 0;
-	char * mStringBuf = nullptr;
-};
 
 
 static std::shared_ptr<ImDrawList_Warp> StaticImDrawList = nullptr;
@@ -319,4 +266,49 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.addCFunction( "AddViewer", lua_AddViewer );
 }
 
+/*--------------------------------------------------------------*/
+StringBuf::StringBuf(size_t buf)
+{
+	_allocation( buf );
+}
 
+size_t StringBuf::Size() const
+{
+	return mSize;
+}
+
+void StringBuf::Reallocation(size_t size)
+{
+	if ( mSize == 0 ) { throw std::logic_error("Size Was 0, Reallocation Dose not support Delete.");}
+
+	delete mStringBuf;
+
+	_allocation( size );
+}
+
+char *StringBuf::Get()
+{
+	return mStringBuf;
+}
+
+const char *StringBuf::GetViewString() const
+{
+	return mStringBuf;
+}
+
+void StringBuf::Clear()
+{
+	memset( mStringBuf, 0, mSize );
+}
+
+StringBuf::~StringBuf()
+{
+	delete mStringBuf;
+}
+
+void StringBuf::_allocation(size_t buf)
+{
+	mStringBuf = new char[buf];
+	mSize = buf;
+	memset( mStringBuf, 0, buf );
+}

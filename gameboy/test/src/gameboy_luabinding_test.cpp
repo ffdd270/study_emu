@@ -4,28 +4,9 @@
 
 #include <catch.hpp>
 #include "GameboyCPU.h"
-#include "gameboy_luabinding.h"
+#include "lua_util.h"
 #include <common/common_logger.h>
-#include <LuaBridge/LuaBridge.h>
 
-void runLua(lua_State * L, const std::string& script)
-{
-	if (luaL_loadstring(L, script.c_str()) != 0)
-	{
-		throw std::runtime_error(lua_tostring(L, -1));
-	}
-
-	if (lua_pcall(L, 0, 0, -2) != 0)
-	{
-		throw std::runtime_error(lua_tostring(L, -1));
-	}
-}
-
-template <typename T>
-T getValue(lua_State * L, const std::string & value_name )
-{
-	return luabridge::getGlobal(L, value_name.c_str()).cast<T>();
-}
 
 GameboyCPU getCPU()
 {
