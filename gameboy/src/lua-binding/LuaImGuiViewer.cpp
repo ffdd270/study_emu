@@ -3,6 +3,7 @@
 //
 
 #include "LuaImGuiViewer.h"
+#include <imgui.h>
 
 
 LuaImGuiViewer::LuaImGuiViewer(std::string_view name, std::shared_ptr<LuaContext> &ref_ptr_lua_context, LuaContextRefId context_ref_id)
@@ -23,6 +24,11 @@ void LuaImGuiViewer::SetName(std::string_view name)
 	mWindowName = name;
 }
 
+void LuaImGuiViewer::NoUseImGui(bool flag)
+{
+	mNoUseImGui = flag;
+}
+
 std::string_view LuaImGuiViewer::GetName() const
 {
 	return mWindowName;
@@ -31,6 +37,28 @@ std::string_view LuaImGuiViewer::GetName() const
 std::string_view LuaImGuiViewer::GetLastError() const
 {
 	return mLastError;
+}
+
+bool LuaImGuiViewer::CheckLuaContextValid()
+{
+	if (mPtrLuaContext == nullptr)
+	{
+		mStatus = Status::LUA_CONTEXT_NULL;
+		return false;
+	}
+	if (mRefId == LuaContext::REF_NIL)
+	{
+		mStatus = Status::LUA_REF_ID_NIL;
+		return false;
+	}
+	if (!mPtrLuaContext->IsCorrectKey(mRefId))
+	{
+		mStatus = Status::LUA_REF_ID_INVALID;
+		mRefId = LuaContext::REF_NIL;
+		return false;
+	}
+
+	return true;
 }
 
 bool LuaImGuiViewer::IsRenderFailed() const
@@ -48,24 +76,21 @@ void LuaImGuiViewer::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> 
 {
 	mRenderFailed = true;
 
-	if (mPtrLuaContext == nullptr)
+	if( !CheckLuaContextValid() ) { return; }
+
+	// 여기서부터 ImGui 영역
+	if ( !mNoUseImGui )
 	{
-		mStatus = Status::LUA_CONTEXT_NULL;
-		return;
+		ImGui::Begin( mWindowName.c_str() );
+
 	}
-	if (mRefId == LuaContext::REF_NIL)
+	bool ok = mPtrLuaContext->ExecuteRefFunction(mRefId);
+
+	if ( !mNoUseImGui )
 	{
-		mStatus = Status::LUA_REF_ID_NIL;
-		return;
-	}
-	if (!mPtrLuaContext->IsCorrectKey(mRefId))
-	{
-		mStatus = Status::LUA_REF_ID_INVALID;
-		mRefId = LuaContext::REF_NIL;
-		return;
+		ImGui::End(); // 터지던 말던 정리해준다.
 	}
 
-	bool ok = mPtrLuaContext->ExecuteRefFunction(mRefId);
 	if (!ok)
 	{
 		mStatus = Status::LUA_CALL_FAILED;
@@ -73,6 +98,7 @@ void LuaImGuiViewer::Render(std::shared_ptr<HaruCar::Base::Interface::Provider> 
 		return;
 	}
 
+	mStatus = Status::OK;
 	mRenderFailed = false;
 }
 

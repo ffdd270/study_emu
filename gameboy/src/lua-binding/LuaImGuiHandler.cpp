@@ -51,8 +51,14 @@ void LuaImGuiHandler::Render(const std::shared_ptr<HaruCar::Base::Interface::Pro
 {
 	for ( auto & viewer : mViewers )
 	{
+		viewer.NoUseImGui( mNoUseImGui );
 		viewer.Render(provider_ptr, protocol_ptr);
 	}
+}
+
+void LuaImGuiHandler::NoUseImGui()
+{
+	mNoUseImGui = true;
 }
 
 /*
@@ -75,6 +81,18 @@ void LuaImGuiHandler::CleanUp()
 
 	});
 }
+
+void LuaImGuiHandler::CleanUpOnLuaReload()
+{
+	for ( auto & viewer : mViewers )
+	{
+		viewer.CheckLuaContextValid();
+	}
+
+	CleanUp();
+}
+
+
 bool LuaImGuiHandler::IsRenderFailed() const
 {
 	for( const auto & viewer : mViewers )

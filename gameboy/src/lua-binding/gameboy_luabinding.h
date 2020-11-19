@@ -22,4 +22,28 @@ void gameboy_lua_binding_cpu( std::shared_ptr<GameboyCPU> cpu  );
 void gameboy_lua_binding( lua_State * lua_state );
 
 
+struct StringBuf
+{
+public:
+	explicit StringBuf( size_t buf );
+
+	[[nodiscard]] size_t Size() const;
+	void Reallocation( size_t size );
+
+	char * Get();
+
+	[[nodiscard]] const char * GetViewString() const;
+
+	void Clear();
+
+
+	~StringBuf();
+private:
+	void _allocation( size_t buf );
+private:
+	size_t mSize = 0;
+	char * mStringBuf = nullptr;
+};
+
+
 #endif //GAMEBOY_GAMEBOY_LUABINDING_H

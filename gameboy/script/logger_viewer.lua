@@ -20,8 +20,6 @@ end
 function LoggerViewer.render( self )
 	self:update()
 
-	ImGui.Begin("Logger Viewer")
-
 	if ImGui.Button( "CLEAR LOG" ) then
 		self.vars.logs = {}
 	end
@@ -35,8 +33,6 @@ function LoggerViewer.render( self )
 			ImGui.Text( ErrorString[ log_data.info ]  .. ' : ' .. log_data.log )
 		end
 	end
-
-	ImGui.End()
 end
 
 

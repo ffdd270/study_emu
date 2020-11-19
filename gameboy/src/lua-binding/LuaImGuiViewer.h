@@ -26,11 +26,13 @@ public:
 	LuaImGuiViewer( std::string_view name, std::shared_ptr<LuaContext> & ref_ptr_lua_context, LuaContextRefId context_ref_id );
 	void SetLuaContext( std::shared_ptr<LuaContext> & lua_context );
 	void SetName( std::string_view name );
+	void NoUseImGui( bool flag );
 
 	[[nodiscard]] std::string_view GetName() const;
 	[[nodiscard]] std::string_view GetLastError() const;
 	[[nodiscard]] Status GetStatus() const;
 
+	bool CheckLuaContextValid();
  	[[nodiscard]] bool IsRenderFailed() const;
 
 	void AddLuaCallback(LuaContextRefId ref_id);
@@ -45,6 +47,7 @@ private:
 	std::string mLastError;
 	std::string mWindowName;
 	bool mRenderFailed = false;
+	bool mNoUseImGui = false;
 
 	std::shared_ptr<LuaContext> mPtrLuaContext = nullptr;
 };
