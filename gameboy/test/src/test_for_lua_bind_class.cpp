@@ -41,6 +41,23 @@ SCENARIO("Usage of StringBuf", "[BIND]")
 				REQUIRE( getValue<bool>(lua_state, "ResultFalse") == false );
 			}
 		}
+
+		WHEN("Clear Value")
+		{
+			REQUIRE_NOTHROW(
+					runLua(lua_state,
+						   R"(buf:Clear())"));
+
+			THEN("Same as Empty")
+			{
+				REQUIRE_NOTHROW(
+						runLua(lua_state,
+			 					R"(ResultEmpty = buf:GetViewString() == "")")
+						);
+
+				REQUIRE( getValue<bool>(lua_state, "ResultEmpty") );
+			}
+		}
 	}
 
 	GIVEN("REQUIRE ERROR")
