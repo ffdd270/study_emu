@@ -227,7 +227,6 @@ void gameboy_lua_binding(lua_State *lua_state)
 	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<StringBuf>("StringBuf")
 		        .addConstructor<void (*)(size_t)>()
-		                .addFunction("Get", &StringBuf::Get)
 		                .addFunction("GetViewString", &StringBuf::GetViewString)
 		                .addFunction("Size", &StringBuf::Size)
 		                .addFunction("Reallocation", &StringBuf::Reallocation)
@@ -279,7 +278,7 @@ size_t StringBuf::Size() const
 
 void StringBuf::Reallocation(size_t size)
 {
-	if ( mSize == 0 ) { throw std::logic_error("Size Was 0, Reallocation Dose not support Delete.");}
+	if ( size == 0 ) { throw std::logic_error("Size Was 0, Reallocation Dose not support Delete.");}
 
 	delete mStringBuf;
 

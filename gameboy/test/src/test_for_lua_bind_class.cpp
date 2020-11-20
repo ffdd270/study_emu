@@ -58,6 +58,34 @@ SCENARIO("Usage of StringBuf", "[BIND]")
 				REQUIRE( getValue<bool>(lua_state, "ResultEmpty") );
 			}
 		}
+
+		WHEN("Reallocation OK")
+		{
+			REQUIRE_NOTHROW(
+					runLua(lua_state,
+							R"(buf:Reallocation(10))")
+					);
+
+			THEN( "Resize by 10.")
+			{
+				char _10arr[10] = { 0 };
+				REQUIRE(ptr_buf->Size() == 10);
+				REQUIRE(memcmp( ptr_buf->Get(), _10arr, 10 ) == 0);
+			}
+		}
+
+		WHEN("Reallocation Failed")
+		{
+			REQUIRE_THROWS(
+					runLua(lua_state,
+						   R"(buf:Reallocation())")
+			);
+
+			REQUIRE_THROWS(
+					runLua(lua_state,
+						   R"(buf:Reallocation(0))")
+			);
+		}
 	}
 
 	GIVEN("REQUIRE ERROR")
