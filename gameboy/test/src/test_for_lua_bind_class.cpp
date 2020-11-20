@@ -95,5 +95,7 @@ SCENARIO("Usage of StringBuf", "[BIND]")
 						"buf = StringBuf()"));
 	}
 
+	lua_close( lua_state );
 
+	REQUIRE( GetRemainStringBufCount() == 0 ); // 전부 해제되슴?
 }
