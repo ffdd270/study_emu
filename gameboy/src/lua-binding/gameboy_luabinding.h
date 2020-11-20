@@ -40,10 +40,13 @@ public:
 	~StringBuf();
 private:
 	void _allocation( size_t buf );
+	void _deallocation();
 private:
 	size_t mSize = 0;
 	char * mStringBuf = nullptr;
 };
+
+int GetRemainStringBufCount();
 
 
 #endif //GAMEBOY_GAMEBOY_LUABINDING_H

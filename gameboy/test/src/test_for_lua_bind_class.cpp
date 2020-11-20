@@ -41,6 +41,51 @@ SCENARIO("Usage of StringBuf", "[BIND]")
 				REQUIRE( getValue<bool>(lua_state, "ResultFalse") == false );
 			}
 		}
+
+		WHEN("Clear Value")
+		{
+			REQUIRE_NOTHROW(
+					runLua(lua_state,
+						   R"(buf:Clear())"));
+
+			THEN("Same as Empty")
+			{
+				REQUIRE_NOTHROW(
+						runLua(lua_state,
+			 					R"(ResultEmpty = buf:GetViewString() == "")")
+						);
+
+				REQUIRE( getValue<bool>(lua_state, "ResultEmpty") );
+			}
+		}
+
+		WHEN("Reallocation OK")
+		{
+			REQUIRE_NOTHROW(
+					runLua(lua_state,
+							R"(buf:Reallocation(10))")
+					);
+
+			THEN( "Resize by 10.")
+			{
+				char _10arr[10] = { 0 };
+				REQUIRE(ptr_buf->Size() == 10);
+				REQUIRE(memcmp( ptr_buf->Get(), _10arr, 10 ) == 0);
+			}
+		}
+
+		WHEN("Reallocation Failed")
+		{
+			REQUIRE_THROWS(
+					runLua(lua_state,
+						   R"(buf:Reallocation())")
+			);
+
+			REQUIRE_THROWS(
+					runLua(lua_state,
+						   R"(buf:Reallocation(0))")
+			);
+		}
 	}
 
 	GIVEN("REQUIRE ERROR")
@@ -50,5 +95,7 @@ SCENARIO("Usage of StringBuf", "[BIND]")
 						"buf = StringBuf()"));
 	}
 
+	lua_close( lua_state );
 
+	REQUIRE( GetRemainStringBufCount() == 0 ); // 전부 해제되슴?
 }

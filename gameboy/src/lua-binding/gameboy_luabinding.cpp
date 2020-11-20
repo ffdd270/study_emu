@@ -227,7 +227,6 @@ void gameboy_lua_binding(lua_State *lua_state)
 	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<StringBuf>("StringBuf")
 		        .addConstructor<void (*)(size_t)>()
-		                .addFunction("Get", &StringBuf::Get)
 		                .addFunction("GetViewString", &StringBuf::GetViewString)
 		                .addFunction("Size", &StringBuf::Size)
 		                .addFunction("Reallocation", &StringBuf::Reallocation)
@@ -267,6 +266,9 @@ void gameboy_lua_binding(lua_State *lua_state)
 }
 
 /*--------------------------------------------------------------*/
+
+static int BufAllocationCount = 0;
+
 StringBuf::StringBuf(size_t buf)
 {
 	_allocation( buf );
@@ -279,10 +281,9 @@ size_t StringBuf::Size() const
 
 void StringBuf::Reallocation(size_t size)
 {
-	if ( mSize == 0 ) { throw std::logic_error("Size Was 0, Reallocation Dose not support Delete.");}
+	if ( size == 0 ) { throw std::logic_error("Size Was 0, Reallocation Dose not support Delete.");}
 
-	delete mStringBuf;
-
+	_deallocation();
 	_allocation( size );
 }
 
@@ -303,7 +304,7 @@ void StringBuf::Clear()
 
 StringBuf::~StringBuf()
 {
-	delete mStringBuf;
+	_deallocation();
 }
 
 void StringBuf::_allocation(size_t buf)
@@ -311,4 +312,17 @@ void StringBuf::_allocation(size_t buf)
 	mStringBuf = new char[buf];
 	mSize = buf;
 	memset( mStringBuf, 0, mSize );
+	BufAllocationCount++;
+}
+
+void StringBuf::_deallocation()
+{
+	delete mStringBuf;
+	BufAllocationCount--;
+}
+
+
+int GetRemainStringBufCount()
+{
+	return BufAllocationCount;
 }
