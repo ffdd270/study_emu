@@ -38,6 +38,7 @@ function Util.LogInfo(  self, str )
 end
 
 
+
 ImGuiInputTextFlags_ = {
 	None = 0,
 	CharsHexadecimal = 1 << 1
