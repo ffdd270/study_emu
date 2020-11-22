@@ -2,6 +2,7 @@ function init_script()
 	TestUI:init()
 	MemoryViewer:init()
 	LoggerViewer:init()
+	MemoryWatch:init()
 end
 
 
@@ -36,3 +37,8 @@ function Util.LogInfo(  self, str )
 	log_info( GetInstanceLogger(), tostring( str ) )
 end
 
+
+ImGuiInputTextFlags_ = {
+	None = 0,
+	CharsHexadecimal = 1 << 1
+}

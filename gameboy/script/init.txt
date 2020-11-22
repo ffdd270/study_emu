@@ -1,4 +1,5 @@
 init.lua
 test_ui.lua
 memory_viewer.lua
+memory_watch.lua
 logger_viewer.lua
