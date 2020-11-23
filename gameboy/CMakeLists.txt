@@ -70,7 +70,10 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/lua-binding/LuaImGuiHandler.h
 
 		${SRC_PATH}/lua-binding/LuaImGuiViewer.cpp
-		${SRC_PATH}/lua-binding/LuaImGuiViewer.h)
+		${SRC_PATH}/lua-binding/LuaImGuiViewer.h
+
+		${SRC_PATH}/gameboy/Cartridge.cpp
+		${SRC_PATH}/gameboy/Cartridge.h)
 
 set( UI_SRC
 		${SRC_PATH}/harucar/LuaCommandViewer.cpp
