@@ -101,8 +101,22 @@ void GameboyCPU::NextStep()
 		return;
 	}
 
-	func( this, op_code );
+	func( this, op_code, true );
 }
+
+
+const char * GameboyCPU::TestOpCode(BYTE op_code, bool prefix)
+{
+	auto& func = (prefix) ? mPrefixCBFuncMap[ op_code ] : mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
+	if( func == nullptr )
+	{
+		assert(false);
+		return "";
+	}
+
+	return func( this, op_code, false );
+}
+
 
 void GameboyCPU::AddBreakPoint(WORD break_address)
 {
@@ -129,12 +143,13 @@ void GameboyCPU::ContinueFromBreakPoint()
 
 
 // PRE 0b00의 콜백 함수.
-#define BIND_FUNC( func_name ) static void func_name\
-( GameboyCPU * cpu, BYTE op_code )\
+#define BIND_FUNC( func_name ) static const char * func_name\
+( GameboyCPU * cpu, BYTE op_code, bool use_event)\
 {\
 	cpu->func_name\
 	( op_code );\
-	cpu->addInstructionEvent( #func_name, op_code );\
+	if (use_event) { cpu->addInstructionEvent( #func_name, op_code ); return ""; } \
+	return #func_name;                                                            \
 }\
 
 

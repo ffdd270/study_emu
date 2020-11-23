@@ -13,6 +13,7 @@ public:
 	Cartridge();
 
 	void Load( std::string_view path );
+
 private:
 };
 

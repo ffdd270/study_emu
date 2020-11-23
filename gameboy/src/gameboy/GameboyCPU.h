@@ -24,7 +24,7 @@ union Register
 
 class GameboyCPU;
 
-typedef void(*BindFunctionPointer)(GameboyCPU *, BYTE);
+typedef const char *(*BindFunctionPointer)(GameboyCPU *, BYTE, bool);
 using InstructionCallback = std::function<void( const char * instruction_name, BYTE opcode )>;
 
 
@@ -62,6 +62,8 @@ public:
 	void Reset();
 
 	void NextStep();
+	const char * TestOpCode( BYTE op_code, bool prefix );
+
 	[[nodiscard]] bool IsInterruptEnable() const { return  mInturruptEnable; }
 
 	// 게임 보이 디버거 함수들
