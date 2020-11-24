@@ -14,6 +14,7 @@ public:
 	Cartridge() = default;
 
 	void Load( std::string_view path );
+	std::string GetTitle();
 
 private:
 	std::vector<char> mBuffer;
