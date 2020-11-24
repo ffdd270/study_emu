@@ -5,16 +5,18 @@
 #ifndef GAMEBOY_CARTRIDGE_H
 #define GAMEBOY_CARTRIDGE_H
 
+#include <vector>
 #include <string_view>
 
 class Cartridge
 {
 public:
-	Cartridge();
+	Cartridge() = default;
 
 	void Load( std::string_view path );
 
 private:
+	std::vector<char> mBuffer;
 };
 
 

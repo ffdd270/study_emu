@@ -26,6 +26,7 @@ set(TEST
 		src/imgui_lua_test.cpp
 		src/cpu_public_methods.cpp
 		src/test_for_lua_bind_class.cpp
+		src/cartridge.cpp
 		src/lua_util.h)
 
 
