@@ -41,5 +41,17 @@ SCENARIO( "Cartridge Test", "[CART]" )
 				REQUIRE( type == 0x01 );
 			}
 		}
+
+		WHEN("Get Cartridge Size")
+		{
+			CartridgeSizeInfo info;
+			REQUIRE_NOTHROW( info = cart.GetSizeInfo() );
+
+			THEN("64kb")
+			{
+				REQUIRE( info.bank == 4 );
+				REQUIRE( info.size == 64000 );
+			}
+		}
 	}
 }

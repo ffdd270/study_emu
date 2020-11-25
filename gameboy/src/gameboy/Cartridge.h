@@ -9,6 +9,12 @@
 #include <vector>
 #include <string_view>
 
+struct CartridgeSizeInfo
+{
+	size_t size = 0;
+	size_t bank = 0;
+};
+
 class Cartridge
 {
 public:
@@ -27,8 +33,10 @@ public:
 	std::string GetTitle();
 	ColorGameBoyFlag GetCGBFlag();
 	BYTE GetCartridgeType();
+	CartridgeSizeInfo GetSizeInfo();
+	size_t GetRealBufferSize() { return mBuffer.size(); }
 private:
-	void basicErrorCheck( const size_t pos );
+	void basicErrorCheck( size_t pos );
 private:
 	std::vector<BYTE> mBuffer;
 };

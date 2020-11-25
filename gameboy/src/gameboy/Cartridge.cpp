@@ -70,9 +70,47 @@ BYTE Cartridge::GetCartridgeType()
 	return mBuffer[ CARTRIDGE_TYPE_POINT ];
 }
 
+CartridgeSizeInfo Cartridge::GetSizeInfo()
+{
+	constexpr size_t SIZE_BASIC_INFOS [] = {
+			32000, 64000, 128000, 256000, 512000, 1000000, 2000000, 4000000, 8000000
+	};
+
+	constexpr size_t BANK_BASIC_INFOS [] = {
+			2, 4, 8, 16, 32, 64, 128, 256, 512
+	};
+
+	constexpr size_t SIZE_EXTEND_INFOS [] = {
+			0, 0, 1100000, 1200000, 1500000
+	};
+
+	constexpr size_t BANK_EXTEND_INFOS [] = {
+			0, 0, 72, 80, 96
+	};
+
+	constexpr size_t CARTRIDGE_TYPE_POINT = 0x147;
+	basicErrorCheck( CARTRIDGE_TYPE_POINT );
+
+	auto value = mBuffer[CARTRIDGE_TYPE_POINT];
+	BYTE hi = (value & 0xf0u) >> 4u;
+	BYTE lo = (value & 0x0fu);
+
+	if( lo > 8 || ( hi == 5 ) && ( lo > 4 ) ) { throw  std::logic_error("WRONG SIZE INFO."); }
+
+	size_t size = hi == 5 ? SIZE_EXTEND_INFOS[lo] : SIZE_BASIC_INFOS[lo];
+	size_t bank = hi == 5 ? BANK_EXTEND_INFOS[lo] : BANK_BASIC_INFOS[lo];
+
+	if( size == 0 || bank == 0 ) { throw std::logic_error("HI = 5, But Access to 1~2"); }
+
+	CartridgeSizeInfo info;
+	info.size = size;
+	info.bank = bank;
+
+	return info;
+}
+
 void Cartridge::basicErrorCheck(const size_t pos)
 {
 	if( mBuffer.empty() ) { throw std::logic_error("Cartridge Not INITED."); }
 	if( mBuffer.size() <= pos ) { throw std::logic_error("NOT VALID CARTRIDGE."); }
 }
-
