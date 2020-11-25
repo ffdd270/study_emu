@@ -19,5 +19,16 @@ SCENARIO( "Cartridge Test", "[CART]" )
 				REQUIRE( name == "CPU_INSTRS" );
 			}
 		}
+
+		WHEN("Get CGB Flag")
+		{
+			Cartridge::ColorGameBoyFlag flag;
+			REQUIRE_NOTHROW( flag = cart.GetCGBFlag()  );
+
+			THEN("FLAG : NONE")
+			{
+				REQUIRE( flag == Cartridge::ColorGameBoyFlag::CGB_UNKNOWN );
+			}
+		}
 	}
 }
