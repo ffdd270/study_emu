@@ -27,7 +27,7 @@ SCENARIO( "Cartridge Test", "[CART]" )
 
 			THEN("FLAG : NONE")
 			{
-				REQUIRE( flag == Cartridge::ColorGameBoyFlag::CGB_UNKNOWN );
+				REQUIRE( flag == Cartridge::ColorGameBoyFlag::CGB_SUPPORT );
 			}
 		}
 	}

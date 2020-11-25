@@ -21,12 +21,10 @@ void Cartridge::Load(std::string_view path)
 
 std::string Cartridge::GetTitle()
 {
-	if( mBuffer.empty() ) { throw std::logic_error("Cartridge Not INITED."); }
-
 	const size_t TITLE_START_POINT = 0x134;
 	const size_t TITLE_END_POINT = 0x143;
 
-	if( mBuffer.size() < TITLE_END_POINT ) { throw std::logic_error("NOT VALID CARTRIDGE."); }
+	basicErrorCheck( TITLE_END_POINT );
 
 	std::string name = std::string( &mBuffer[TITLE_START_POINT], &mBuffer[TITLE_END_POINT] );
 
