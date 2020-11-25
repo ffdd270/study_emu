@@ -19,6 +19,17 @@ void Cartridge::Load(std::string_view path)
 	mBuffer = std::move( buffer );
 }
 
+std::vector<BYTE> Cartridge::GetRawCartridgeData()
+{
+	return mBuffer;
+}
+
+BYTE Cartridge::GetData( size_t mem_pos )
+{
+	basicErrorCheck( mem_pos );
+	return mBuffer[mem_pos];
+}
+
 std::string Cartridge::GetTitle()
 {
 	const size_t TITLE_START_POINT = 0x134;

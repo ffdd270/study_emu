@@ -68,5 +68,25 @@ SCENARIO( "Cartridge Test", "[CART]" )
 				REQUIRE( array[3] == 0x06 );
 			}
 		}
+
+		WHEN("Access to right address.")
+		{
+			BYTE data = 0;
+			REQUIRE_NOTHROW( data = cart.GetData( 0x3f3 ) );
+
+			THEN("data is 2f")
+			{
+				REQUIRE( data == 0x2f );
+			}
+		}
+
+		WHEN("Access to wrong address.")
+		{
+			size_t out_of_range = cart.GetSizeInfo().size;
+			THEN("THROW!")
+			{
+				REQUIRE_THROWS( cart.GetData( out_of_range ) );
+			}
+		}
 	}
 }

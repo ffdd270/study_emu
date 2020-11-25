@@ -30,6 +30,8 @@ public:
 	Cartridge() = default;
 
 	void Load( std::string_view path );
+	BYTE GetData( size_t mem_pos );
+	std::vector<BYTE> GetRawCartridgeData();
 
 	std::string GetTitle();
 	ColorGameBoyFlag GetCGBFlag();
