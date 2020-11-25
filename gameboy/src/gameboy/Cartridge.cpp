@@ -72,8 +72,17 @@ BYTE Cartridge::GetCartridgeType()
 
 CartridgeSizeInfo Cartridge::GetSizeInfo()
 {
+	constexpr size_t K = 1024;
 	constexpr size_t SIZE_BASIC_INFOS [] = {
-			32000, 64000, 128000, 256000, 512000, 1000000, 2000000, 4000000, 8000000
+			32 * K,
+			64 * K,
+			128 * K,
+			256 * K,
+			512 * K,
+			( 1 * K  )* K, // MB
+			( 2 * K ) * K,
+			( 4 * K ) * K,
+			( 8 * K ) * K
 	};
 
 	constexpr size_t BANK_BASIC_INFOS [] = {
@@ -81,7 +90,10 @@ CartridgeSizeInfo Cartridge::GetSizeInfo()
 	};
 
 	constexpr size_t SIZE_EXTEND_INFOS [] = {
-			0, 0, 1100000, 1200000, 1500000
+			0, 0,
+			static_cast<size_t>( 1.1 * K ) * K,
+			static_cast<size_t>( 1.2 * K ) * K,
+			static_cast<size_t>( 1.5 * K ) * K,
 	};
 
 	constexpr size_t BANK_EXTEND_INFOS [] = {

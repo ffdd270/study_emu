@@ -50,7 +50,8 @@ SCENARIO( "Cartridge Test", "[CART]" )
 			THEN("64kb")
 			{
 				REQUIRE( info.bank == 4 );
-				REQUIRE( info.size == 64000 );
+				REQUIRE( info.size == 0x10000 );
+				REQUIRE( cart.GetRealBufferSize() == info.size );
 			}
 		}
 	}
