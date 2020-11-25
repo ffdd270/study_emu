@@ -62,6 +62,14 @@ Cartridge::ColorGameBoyFlag Cartridge::GetCGBFlag()
 	return rtn;
 }
 
+BYTE Cartridge::GetCartridgeType()
+{
+	constexpr size_t CARTRIDGE_TYPE_POINT = 0x147;
+	basicErrorCheck( CARTRIDGE_TYPE_POINT );
+
+	return mBuffer[ CARTRIDGE_TYPE_POINT ];
+}
+
 void Cartridge::basicErrorCheck(const size_t pos)
 {
 	if( mBuffer.empty() ) { throw std::logic_error("Cartridge Not INITED."); }

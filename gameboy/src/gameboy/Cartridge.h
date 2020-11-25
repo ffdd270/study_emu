@@ -26,6 +26,7 @@ public:
 
 	std::string GetTitle();
 	ColorGameBoyFlag GetCGBFlag();
+	BYTE GetCartridgeType();
 private:
 	void basicErrorCheck( const size_t pos );
 private:

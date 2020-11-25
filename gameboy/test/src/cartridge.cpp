@@ -30,5 +30,16 @@ SCENARIO( "Cartridge Test", "[CART]" )
 				REQUIRE( flag == Cartridge::ColorGameBoyFlag::CGB_SUPPORT );
 			}
 		}
+
+		WHEN("Get Cartridge Type")
+		{
+			BYTE type;
+			REQUIRE_NOTHROW( type = cart.GetCartridgeType() );
+
+			THEN("TYPE : MBC1")
+			{
+				REQUIRE( type == 0x01 );
+			}
+		}
 	}
 }
