@@ -45,13 +45,27 @@ SCENARIO( "Cartridge Test", "[CART]" )
 		WHEN("Get Cartridge Size")
 		{
 			CartridgeSizeInfo info;
-			REQUIRE_NOTHROW( info = cart.GetSizeInfo() );
+			REQUIRE_NOTHROW(info = cart.GetSizeInfo());
 
 			THEN("64kb")
 			{
-				REQUIRE( info.bank == 4 );
-				REQUIRE( info.size == 0x10000 );
-				REQUIRE( cart.GetRealBufferSize() == info.size );
+				REQUIRE(info.bank == 4);
+				REQUIRE(info.size == 0x10000);
+				REQUIRE(cart.GetRealBufferSize() == info.size);
+			}
+		}
+
+		WHEN( "Get EntryPoint" )
+		{
+			std::array<BYTE, 4> array = { 0 };
+			REQUIRE_NOTHROW( array = cart.GetEntryPoint()  );
+
+			THEN("0x00, 0xc3, 0x37, 0x06")
+			{
+				REQUIRE( array[0] == 0x00 );
+				REQUIRE( array[1] == 0xc3 );
+				REQUIRE( array[2] == 0x37 );
+				REQUIRE( array[3] == 0x06 );
 			}
 		}
 	}

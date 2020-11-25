@@ -126,3 +126,19 @@ void Cartridge::basicErrorCheck(const size_t pos)
 	if( mBuffer.empty() ) { throw std::logic_error("Cartridge Not INITED."); }
 	if( mBuffer.size() <= pos ) { throw std::logic_error("NOT VALID CARTRIDGE."); }
 }
+
+std::array<BYTE, 4> Cartridge::GetEntryPoint()
+{
+	constexpr size_t ENTRY_POINT = 0x100;
+	constexpr size_t READ_BYTE = 0x4;
+	basicErrorCheck( ENTRY_POINT + READ_BYTE  );
+
+	std::array<BYTE, 4> entry_data = { 0 };
+
+	for( size_t data_index = 0; data_index < READ_BYTE; data_index++ )
+	{
+		entry_data[data_index] = mBuffer[ENTRY_POINT + data_index];
+	}
+
+	return entry_data;
+}

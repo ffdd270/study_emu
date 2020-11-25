@@ -7,6 +7,7 @@
 
 #include "typedef.h"
 #include <vector>
+#include <array>
 #include <string_view>
 
 struct CartridgeSizeInfo
@@ -35,6 +36,7 @@ public:
 	BYTE GetCartridgeType();
 	CartridgeSizeInfo GetSizeInfo();
 	size_t GetRealBufferSize() { return mBuffer.size(); }
+	std::array<BYTE, 4> GetEntryPoint();
 private:
 	void basicErrorCheck( size_t pos );
 private:
