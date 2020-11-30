@@ -22,6 +22,8 @@ public:
 	BYTE Get(size_t mem_addr);
 	void Set(size_t mem_addr, BYTE value);
 
+	[[nodiscard]] bool IsRAMActive() const { return mRamEnable; }
+
 private:
 	void setActiveRAM( size_t mem_addr, BYTE value );
 	void setRomBankLeast5Bit( size_t mem_addr, BYTE value );
@@ -29,6 +31,8 @@ private:
 	void setBankMode( size_t mem_addr, BYTE value );
 private:
 	Cartridge mCartridge;
+
+	bool mRamEnable = false;
 };
 
 

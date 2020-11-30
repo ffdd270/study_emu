@@ -44,8 +44,7 @@ void MBC1::Set(size_t mem_addr, BYTE value)
 
 void MBC1::setActiveRAM(size_t mem_addr, BYTE value)
 {
-
-
+	mRamEnable = value == 0xa;
 }
 
 void MBC1::setRomBankLeast5Bit(size_t mem_addr, BYTE value)
