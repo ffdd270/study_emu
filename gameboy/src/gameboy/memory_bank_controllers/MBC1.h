@@ -16,12 +16,18 @@
 
 class MBC1
 {
-private:
+public:
 	MBC1( Cartridge && cartridge );
 
 	BYTE Get(size_t mem_addr);
 	void Set(size_t mem_addr);
-public:
+
+private:
+	void setActiveRAM( size_t mem_addr );
+	void setRomBankLeast5Bit( size_t mem_addr );
+	void setRomBankHigh3Bit( size_t mem_addr );
+	void setBankMode( size_t mem_addr );
+private:
 	Cartridge mCartridge;
 };
 
