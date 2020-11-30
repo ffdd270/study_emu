@@ -73,7 +73,10 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/lua-binding/LuaImGuiViewer.h
 
 		${SRC_PATH}/gameboy/Cartridge.cpp
-		${SRC_PATH}/gameboy/Cartridge.h)
+		${SRC_PATH}/gameboy/Cartridge.h
+
+		${SRC_PATH}/gameboy/memory_bank_controllers/MBC1.cpp
+		${SRC_PATH}/gameboy/memory_bank_controllers/MBC1.h)
 
 set( UI_SRC
 		${SRC_PATH}/harucar/LuaCommandViewer.cpp
