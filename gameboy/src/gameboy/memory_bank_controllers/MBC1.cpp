@@ -53,6 +53,10 @@ void MBC1::setActiveRAM(size_t mem_addr, BYTE value)
 
 void MBC1::setRomBankLeast5Bit(size_t mem_addr, BYTE value)
 {
+	value &= 0b00011111u;
+	value = value == 0 ? 1 : value;
+
+	mRomBankNumber = ( mRomBankNumber & 0b11100000u ) | ( value );
 }
 
 void MBC1::setRomBankHigh3Bit(size_t mem_addr, BYTE value)

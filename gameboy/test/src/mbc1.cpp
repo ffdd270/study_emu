@@ -42,5 +42,32 @@ SCENARIO("Use MBC1.", "[MBC]")
 				}
 			}
 		}
+
+		SECTION("Set Rom Bank Least 5Bit.  (0x2000~0x3fff)")
+		{
+			WHEN("Write to 0x2000, 0b10111111")
+			{
+				BYTE set_value = 0b10111111u;
+				BYTE expect_value = set_value & 0b00011111u; // 5Bit 빼고 제거.
+
+				mbc1.Set( 0x2000, set_value );
+
+				THEN("ROM BANK same as expect value.")
+				{
+					REQUIRE( mbc1.GetRomBankNumber() == expect_value );
+				}
+			}
+
+			WHEN( "Write to 0x32f3, 0b0.")
+			{
+				mbc1.Set( 0x2000, 0 );
+				THEN("ROM BANK is 1!")
+				{
+					REQUIRE(mbc1.GetRomBankNumber() == 1);
+				}
+			}
+		}
+
+
 	}
 }
