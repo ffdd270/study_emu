@@ -36,7 +36,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 			{
 				mbc1.Set( 0x02ff, 0xA );
 
-				THEN("RAM is disabled.")
+				THEN("RAM is Enabled.")
 				{
 					REQUIRE( mbc1.IsRAMActive() );
 				}
