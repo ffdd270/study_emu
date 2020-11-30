@@ -20,13 +20,13 @@ public:
 	MBC1( Cartridge && cartridge );
 
 	BYTE Get(size_t mem_addr);
-	void Set(size_t mem_addr);
+	void Set(size_t mem_addr, BYTE value);
 
 private:
-	void setActiveRAM( size_t mem_addr );
-	void setRomBankLeast5Bit( size_t mem_addr );
-	void setRomBankHigh3Bit( size_t mem_addr );
-	void setBankMode( size_t mem_addr );
+	void setActiveRAM( size_t mem_addr, BYTE value );
+	void setRomBankLeast5Bit( size_t mem_addr, BYTE value );
+	void setRomBankHigh3Bit( size_t mem_addr, BYTE value );
+	void setBankMode( size_t mem_addr, BYTE value );
 private:
 	Cartridge mCartridge;
 };

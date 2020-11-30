@@ -18,23 +18,23 @@ BYTE MBC1::Get(size_t mem_addr)
 }
 
 
-void MBC1::Set(size_t mem_addr)
+void MBC1::Set(size_t mem_addr, BYTE value)
 {
 	size_t hi = ( mem_addr & 0xf000u ) >> 12u;
 
 	switch ( hi )
 	{
 		case 0: // RAM 활성화
-			setActiveRAM( mem_addr );
+			setActiveRAM( mem_addr, value );
 			break;
 		case 2: // ROM 뱅크 번호
-			setRomBankLeast5Bit( mem_addr );
+			setRomBankLeast5Bit( mem_addr, value );
 			break;
 		case 4: // RAM 뱅크 번호, ROM 뱅크 번호
-			setRomBankHigh3Bit( mem_addr );
+			setRomBankHigh3Bit( mem_addr, value );
 			break;
 		case 6: // BANK MODE SELECT
-			setBankMode( mem_addr );
+			setBankMode( mem_addr, value );
 			break;
 		default:
 
@@ -44,6 +44,7 @@ void MBC1::Set(size_t mem_addr)
 
 void MBC1::setActiveRAM(size_t mem_addr)
 {
+
 
 }
 
