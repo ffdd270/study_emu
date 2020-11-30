@@ -10,24 +10,36 @@ SCENARIO("Use MBC1.", "[MBC]")
 		REQUIRE( cart.GetCartridgeType() == 0x01 ); // MBC1!
 
 		MBC1 mbc1( std::move(cart) );
-
-		WHEN("write to 0x02ff, 0xa.")
+		SECTION( "Set Ram Enabled." )
 		{
-			mbc1.Set( 0x02ff, 0xA );
-
-			THEN("RAM is Enabled!")
+			WHEN("write to 0x02ff, 0xa.")
 			{
-				REQUIRE( mbc1.IsRAMActive() );
+				mbc1.Set( 0x02ff, 0xA );
+
+				THEN("RAM is Enabled!")
+				{
+					REQUIRE( mbc1.IsRAMActive() );
+				}
 			}
-		}
 
-		WHEN("write to 0x03ff, 0x0.")
-		{
-			mbc1.Set( 0x03ff, 0x0 );
-
-			THEN("RAM is disabled.")
+			WHEN("write to 0x03ff, 0x0.")
 			{
-				REQUIRE_FALSE( mbc1.IsRAMActive() );
+				mbc1.Set( 0x03ff, 0x0 );
+
+				THEN("RAM is disabled.")
+				{
+					REQUIRE_FALSE( mbc1.IsRAMActive() );
+				}
+			}
+
+			WHEN("write to 0x14ff, 0x0.")
+			{
+				mbc1.Set( 0x02ff, 0xA );
+
+				THEN("RAM is disabled.")
+				{
+					REQUIRE( mbc1.IsRAMActive() );
+				}
 			}
 		}
 	}

@@ -25,15 +25,19 @@ void MBC1::Set(size_t mem_addr, BYTE value)
 	switch ( hi )
 	{
 		case 0: // RAM 활성화
+		case 1:
 			setActiveRAM( mem_addr, value );
 			break;
 		case 2: // ROM 뱅크 번호
+		case 3:
 			setRomBankLeast5Bit( mem_addr, value );
 			break;
 		case 4: // RAM 뱅크 번호, ROM 뱅크 번호
+		case 5:
 			setRomBankHigh3Bit( mem_addr, value );
 			break;
 		case 6: // BANK MODE SELECT
+		case 7:
 			setBankMode( mem_addr, value );
 			break;
 		default:
@@ -49,7 +53,6 @@ void MBC1::setActiveRAM(size_t mem_addr, BYTE value)
 
 void MBC1::setRomBankLeast5Bit(size_t mem_addr, BYTE value)
 {
-
 }
 
 void MBC1::setRomBankHigh3Bit(size_t mem_addr, BYTE value)

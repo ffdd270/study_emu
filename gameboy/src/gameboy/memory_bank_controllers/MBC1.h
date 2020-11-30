@@ -33,6 +33,7 @@ private:
 	Cartridge mCartridge;
 
 	bool mRamEnable = false;
+	BYTE mRomBankNumber = 0;
 };
 
 
