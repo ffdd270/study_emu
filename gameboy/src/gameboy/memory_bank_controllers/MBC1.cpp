@@ -9,7 +9,7 @@ MBC1::MBC1(Cartridge &&cartridge) : mCartridge( cartridge )
 }
 
 
-BYTE MBC1::Get(size_t mem_addr)
+BYTE MBC1::Get(size_t mem_addr) const
 {
 
 
