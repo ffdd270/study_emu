@@ -81,10 +81,39 @@ SCENARIO("Use MBC1.", "[MBC]")
 					// 기본 값 + .
 					REQUIRE( mbc1.GetRomBankNumber() == ( expect_value + 1 ) );
 				}
-
 			}
 		}
 
+		SECTION("Set BankMode. (0x6000~0x7fff)")
+		{
+			REQUIRE( mbc1.GetBankMode() == BankMode::ROM ); // 기본 값은 ROM.
+
+			WHEN("Write to 0x7000, 0x1")
+			{
+				mbc1.Set( 0x7000, 0x1 );
+				THEN("BANK MODE : RAM")
+				{
+					REQUIRE( mbc1.GetBankMode() == BankMode::RAM );
+				}
+			}
+
+			WHEN("Write to 0x7100, 0x0")
+			{
+				mbc1.Set( 0x7100, 0x0 );
+				THEN("BANK MODE : ROM")
+				{
+					REQUIRE( mbc1.GetBankMode() == BankMode::ROM );
+				}
+			}
+
+			WHEN("Write to 0x6000, 0x2 ")
+			{
+				THEN("THROW!")
+				{
+					REQUIRE_THROWS( mbc1.Set(0x6000, 0x2) );
+				}
+			}
+		}
 
 	}
 }

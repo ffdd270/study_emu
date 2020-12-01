@@ -12,7 +12,10 @@
  *
  *
  */
-
+enum BankMode
+{
+	ROM, RAM
+};
 
 class MBC1
 {
@@ -24,6 +27,7 @@ public:
 
 	[[nodiscard]] bool IsRAMActive() const { return mRamEnable; }
 	[[nodiscard]] BYTE GetRomBankNumber() const { return mSelectBank; }
+	[[nodiscard]] BankMode GetBankMode() const {  return mBankMode; }
 private:
 	void setActiveRAM( size_t mem_addr, BYTE value );
 	void setRomBankLeast5Bit( size_t mem_addr, BYTE value );
@@ -31,6 +35,7 @@ private:
 	void setBankMode( size_t mem_addr, BYTE value );
 private:
 	Cartridge mCartridge;
+	BankMode mBankMode = BankMode::ROM;
 
 	bool mRamEnable = false;
 	BYTE mSelectBank = 1;

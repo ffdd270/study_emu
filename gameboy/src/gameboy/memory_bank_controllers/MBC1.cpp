@@ -71,5 +71,15 @@ void MBC1::setBankHigh2Bit(size_t mem_addr, BYTE value)
 
 void MBC1::setBankMode(size_t mem_addr, BYTE value)
 {
-
+	switch ( value )
+	{
+		case 0:
+			mBankMode = BankMode::ROM;
+			break;
+		case 1:
+			mBankMode = BankMode::RAM;
+			break;
+		default:
+			throw std::logic_error("INVALID BANK MODE : IN MBC1!");
+	}
 }
