@@ -115,5 +115,15 @@ SCENARIO("Use MBC1.", "[MBC]")
 			}
 		}
 
+		WHEN("Low => 0b11010101 ( SET 10101 ), Hi => 0b11111111 ( SET 0b11 ) ")
+		{
+			mbc1.Set( 0x22ff, 0b11010101 );
+			mbc1.Set( 0x5500, 0xff );
+
+			THEN(" Result => 0b1110101")
+			{
+				REQUIRE( mbc1.GetRomBankNumber() == 0b1110101 );
+			}
+		}
 	}
 }
