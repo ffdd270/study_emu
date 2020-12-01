@@ -34,7 +34,7 @@ void MBC1::Set(size_t mem_addr, BYTE value)
 			break;
 		case 4: // RAM 뱅크 번호, ROM 뱅크 번호
 		case 5:
-			setRomBankHigh3Bit( mem_addr, value );
+			setBankHigh2Bit(mem_addr, value);
 			break;
 		case 6: // BANK MODE SELECT
 		case 7:
@@ -56,12 +56,17 @@ void MBC1::setRomBankLeast5Bit(size_t mem_addr, BYTE value)
 	value &= 0b00011111u;
 	value = value == 0 ? 1 : value;
 
-	mRomBankNumber = ( mRomBankNumber & 0b11100000u ) | ( value );
+	mSelectBank = ( mSelectBank & 0b11100000u ) | ( value );
 }
 
-void MBC1::setRomBankHigh3Bit(size_t mem_addr, BYTE value)
+// bank는 ROM. RAM 둘 다 쓰고. 상위 2비트에 기록한다.
+// 이걸 구분하는 건 Bank Mode에서.
+void MBC1::setBankHigh2Bit(size_t mem_addr, BYTE value)
 {
+	value &= 0b00000011u; // 2비트 받고.
+	value <<= 5u; // 5비트 쉬프트 Left..
 
+	mSelectBank = ( mSelectBank & 0b00011111u ) | ( value );
 }
 
 void MBC1::setBankMode(size_t mem_addr, BYTE value)

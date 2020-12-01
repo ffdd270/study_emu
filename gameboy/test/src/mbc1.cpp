@@ -68,6 +68,23 @@ SCENARIO("Use MBC1.", "[MBC]")
 			}
 		}
 
+		SECTION("Set Rom Bank Hi 2Bit. (0x4000~0x5fff)")
+		{
+			WHEN("Write to 0x5000, 0x0f.")
+			{
+				BYTE set_value = 0x0f;
+				BYTE expect_value = ( set_value & 0x03u ) << 5u;
+				mbc1.Set( 0x5000, set_value );
+
+				THEN("ROM BANK : ( 0x0f & 0x03 ) << 5u")
+				{
+					// 기본 값 + .
+					REQUIRE( mbc1.GetRomBankNumber() == ( expect_value + 1 ) );
+				}
+
+			}
+		}
+
 
 	}
 }
