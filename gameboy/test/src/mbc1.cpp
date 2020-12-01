@@ -10,7 +10,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 		REQUIRE( cart.GetCartridgeType() == 0x01 ); // MBC1!
 
 		MBC1 mbc1( std::move(cart) );
-		SECTION( "Set Ram Enabled." )
+		SECTION( "Set Ram Enabled. (0x0000~0x1fff)" )
 		{
 			WHEN("write to 0x02ff, 0xa.")
 			{
