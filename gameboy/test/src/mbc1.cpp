@@ -1,6 +1,22 @@
 #include <catch.hpp>
 #include "memory_bank_controllers/MBC1.h"
 
+void MBC1GetterTest( MBC1 & mbc1 )
+{
+	WHEN("Read CARTRIDGE TYPE In bank 0.")
+	{
+		BYTE result = 0;
+
+		REQUIRE_NOTHROW( result = mbc1.Get( 0x147 ) );
+
+		THEN("Result : MBC1.")
+		{
+			REQUIRE( result == 0x1 );
+		}
+	}
+}
+
+
 SCENARIO("Use MBC1.", "[MBC]")
 {
 	GIVEN("A Single cpu_instrs.gb. Use MBC1.")
@@ -10,6 +26,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 		REQUIRE( cart.GetCartridgeType() == 0x01 ); // MBC1!
 
 		MBC1 mbc1( std::move(cart) );
+
 		SECTION( "Set Ram Enabled. (0x0000~0x1fff)" )
 		{
 			WHEN("write to 0x02ff, 0xa.")
@@ -117,13 +134,18 @@ SCENARIO("Use MBC1.", "[MBC]")
 
 		WHEN("Low => 0b11010101 ( SET 10101 ), Hi => 0b11111111 ( SET 0b11 ) ")
 		{
-			mbc1.Set( 0x22ff, 0b11010101 );
-			mbc1.Set( 0x5500, 0xff );
+			mbc1.Set(0x22ff, 0b11010101);
+			mbc1.Set(0x5500, 0xff);
 
 			THEN(" Result => 0b1110101")
 			{
-				REQUIRE( mbc1.GetRomBankNumber() == 0b1110101 );
+				REQUIRE(mbc1.GetRomBankNumber() == 0b1110101);
 			}
+		}
+
+		SECTION("Getter")
+		{
+			MBC1GetterTest( mbc1 );
 		}
 	}
 }

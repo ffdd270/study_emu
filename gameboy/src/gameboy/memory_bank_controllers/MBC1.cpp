@@ -72,7 +72,7 @@ void MBC1::Set(size_t mem_addr, BYTE value)
 
 BYTE MBC1::getROMBank00(size_t mem_addr) const
 {
-	return 0;
+	return mCartridge.GetData( mem_addr );
 }
 
 BYTE MBC1::getROMSelectedBank(size_t mem_addr) const
