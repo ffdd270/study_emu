@@ -30,17 +30,17 @@ public:
 	Cartridge() = default;
 
 	void Load( std::string_view path );
-	BYTE GetData( size_t mem_pos );
-	std::vector<BYTE> GetRawCartridgeData();
+	[[nodiscard]] BYTE GetData( size_t mem_pos ) const;
+	[[nodiscard]] std::vector<BYTE> GetRawCartridgeData() const;
 
-	std::string GetTitle();
-	ColorGameBoyFlag GetCGBFlag();
-	BYTE GetCartridgeType();
-	CartridgeSizeInfo GetSizeInfo();
-	size_t GetRealBufferSize() { return mBuffer.size(); }
-	std::array<BYTE, 4> GetEntryPoint();
+	[[nodiscard]] std::string GetTitle() const;
+	[[nodiscard]] ColorGameBoyFlag GetCGBFlag() const;
+	[[nodiscard]] BYTE GetCartridgeType() const;
+	[[nodiscard]] CartridgeSizeInfo GetSizeInfo() const;
+	[[nodiscard]] size_t GetRealBufferSize() const { return mBuffer.size(); }
+	[[nodiscard]] std::array<BYTE, 4> GetEntryPoint() const;
 private:
-	void basicErrorCheck( size_t pos );
+	void basicErrorCheck( size_t pos ) const;
 private:
 	std::vector<BYTE> mBuffer;
 };

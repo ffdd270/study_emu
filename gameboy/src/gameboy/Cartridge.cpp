@@ -19,18 +19,18 @@ void Cartridge::Load(std::string_view path)
 	mBuffer = std::move( buffer );
 }
 
-std::vector<BYTE> Cartridge::GetRawCartridgeData()
+std::vector<BYTE> Cartridge::GetRawCartridgeData() const
 {
 	return mBuffer;
 }
 
-BYTE Cartridge::GetData( size_t mem_pos )
+BYTE Cartridge::GetData( size_t mem_pos ) const
 {
 	basicErrorCheck( mem_pos );
 	return mBuffer[mem_pos];
 }
 
-std::string Cartridge::GetTitle()
+std::string Cartridge::GetTitle() const
 {
 	const size_t TITLE_START_POINT = 0x134;
 	const size_t TITLE_END_POINT = 0x143;
@@ -47,7 +47,7 @@ std::string Cartridge::GetTitle()
 	return name;
 }
 
-Cartridge::ColorGameBoyFlag Cartridge::GetCGBFlag()
+Cartridge::ColorGameBoyFlag Cartridge::GetCGBFlag() const
 {
 	constexpr size_t CGB_FLAG_POINT = 0x143;
 	basicErrorCheck( CGB_FLAG_POINT );
@@ -73,7 +73,7 @@ Cartridge::ColorGameBoyFlag Cartridge::GetCGBFlag()
 	return rtn;
 }
 
-BYTE Cartridge::GetCartridgeType()
+BYTE Cartridge::GetCartridgeType() const
 {
 	constexpr size_t CARTRIDGE_TYPE_POINT = 0x147;
 	basicErrorCheck( CARTRIDGE_TYPE_POINT );
@@ -81,7 +81,7 @@ BYTE Cartridge::GetCartridgeType()
 	return mBuffer[ CARTRIDGE_TYPE_POINT ];
 }
 
-CartridgeSizeInfo Cartridge::GetSizeInfo()
+CartridgeSizeInfo Cartridge::GetSizeInfo() const
 {
 	constexpr size_t K = 1024;
 	constexpr size_t SIZE_BASIC_INFOS [] = {
@@ -132,13 +132,13 @@ CartridgeSizeInfo Cartridge::GetSizeInfo()
 	return info;
 }
 
-void Cartridge::basicErrorCheck(const size_t pos)
+void Cartridge::basicErrorCheck(const size_t pos) const
 {
 	if( mBuffer.empty() ) { throw std::logic_error("Cartridge Not INITED."); }
 	if( mBuffer.size() <= pos ) { throw std::logic_error("NOT VALID CARTRIDGE."); }
 }
 
-std::array<BYTE, 4> Cartridge::GetEntryPoint()
+std::array<BYTE, 4> Cartridge::GetEntryPoint() const
 {
 	constexpr size_t ENTRY_POINT = 0x100;
 	constexpr size_t READ_BYTE = 0x4;
