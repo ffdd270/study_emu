@@ -109,6 +109,15 @@ void MBC1::setBankHigh2Bit(size_t mem_addr, BYTE value)
 	mSelectBank = ( mSelectBank & 0b00011111u ) | ( value );
 }
 
+/*
+ * 모드 0에서 2 비트 보조 뱅킹 레지스터는 4000-7FFF 뱅크 ROM 영역에만 영향을 줄 수 있습니다. 카트리지가 "소형 ROM" / "대형 RAM"카트 (<1MB ROM,> 8kB RAM) 인 경우,
+ * 4000-7FFF는 어쨌든 이 레지스터의 영향을 받지 않으므로 실제 효과는 RAM 뱅킹이 비활성화되고 A000-BFFF입니다.
+ * RAM의 뱅크 0에만 액세스 할 수 있도록 잠겨 있으며 2 비트 보조 뱅킹 레지스터는 완전히 무시됩니다.
+ *
+ * 모드 1에서는 현재 카트가 "대형 RAM"카트 (> 8kB RAM)인지 "대형 ROM"카트 (1MB 이상)인지에 따라 동작이 다릅니다.
+ * 대형 RAM 카트의 경우 모드 1로 전환하면 RAM 뱅킹이 활성화되고 (RAM이 활성화 된 경우)
+ * 즉시 A000-BFFF RAM 영역을 2 비트 보조 뱅킹 레지스터에서 선택한 뱅크로 전환합니다.
+ */
 void MBC1::setBankMode(size_t mem_addr, BYTE value)
 {
 	switch ( value )
