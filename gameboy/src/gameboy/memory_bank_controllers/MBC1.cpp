@@ -11,10 +11,34 @@ MBC1::MBC1(Cartridge &&cartridge) : mCartridge( cartridge )
 
 BYTE MBC1::Get(size_t mem_addr) const
 {
+	size_t hi = ( mem_addr & 0xf000u ) >> 12u;
 
+	BYTE result = 0x0;
 
+	switch ( hi )
+	{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			result = getROMBank00( mem_addr );
+			break;
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			result = getROMSelectedBank( mem_addr );
+			break;
+		case 0xA:
+		case 0xB:
+			result = getRAMSelectedBank( mem_addr );
+			break;
+		default:
+			// INVALID ACCESS
+			break;
+	}
 
-	return 0;
+	return result;
 }
 
 
@@ -45,6 +69,22 @@ void MBC1::Set(size_t mem_addr, BYTE value)
 			break;
 	}
 }
+
+BYTE MBC1::getROMBank00(size_t mem_addr) const
+{
+	return 0;
+}
+
+BYTE MBC1::getROMSelectedBank(size_t mem_addr) const
+{
+	return 0;
+}
+
+BYTE MBC1::getRAMSelectedBank(size_t mem_addr) const
+{
+	return 0;
+}
+
 
 void MBC1::setActiveRAM(size_t mem_addr, BYTE value)
 {

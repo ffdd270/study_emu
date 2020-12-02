@@ -29,6 +29,10 @@ public:
 	[[nodiscard]] BYTE GetRomBankNumber() const { return mSelectBank; }
 	[[nodiscard]] BankMode GetBankMode() const {  return mBankMode; }
 private:
+	[[nodiscard]] BYTE getROMBank00( size_t mem_addr ) const;
+	[[nodiscard]] BYTE getROMSelectedBank( size_t mem_addr ) const;
+	[[nodiscard]] BYTE getRAMSelectedBank( size_t mem_addr ) const;
+
 	void setActiveRAM( size_t mem_addr, BYTE value );
 	void setRomBankLeast5Bit( size_t mem_addr, BYTE value );
 	void setBankHigh2Bit(size_t mem_addr, BYTE value );
