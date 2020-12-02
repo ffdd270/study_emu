@@ -29,6 +29,9 @@ public:
 	[[nodiscard]] BYTE GetRomBankNumber() const { return mSelectBank; }
 	[[nodiscard]] BankMode GetBankMode() const {  return mBankMode; }
 private:
+	[[nodiscard]] BYTE getSelectRomBank() const;
+	[[nodiscard]] BYTE getSelectRamBank() const;
+
 	[[nodiscard]] BYTE getROMBank00( size_t mem_addr ) const;
 	[[nodiscard]] BYTE getROMSelectedBank( size_t mem_addr ) const;
 	[[nodiscard]] BYTE getRAMSelectedBank( size_t mem_addr ) const;

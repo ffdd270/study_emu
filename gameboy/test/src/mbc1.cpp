@@ -14,6 +14,36 @@ void MBC1GetterTest( MBC1 & mbc1 )
 			REQUIRE( result == 0x1 );
 		}
 	}
+
+	// 아래 테스트들은 ROM 뱅크여야 한다.
+	REQUIRE( mbc1.GetBankMode() == BankMode::ROM );
+
+	// 기본 뱅크 선택은 1이라서.
+	WHEN("Read Cartridge Type In bank 01, Get 0x4000(0x4000).")
+	{
+		REQUIRE( mbc1.GetRomBankNumber() == 1 );
+		BYTE result = 0;
+		REQUIRE_NOTHROW(  result = mbc1.Get( 0x4000 ) );
+
+		THEN(" Result : MBC1")
+		{
+			REQUIRE( result == 0xC3 );
+		}
+	}
+
+	WHEN("Read Cartridge Type IN bank 03, Get 0x4500( 0x4000 * 3 + 0x500 )")
+	{
+		mbc1.Set( 0x2000, 0x03 );
+		REQUIRE( mbc1.GetRomBankNumber() == 3 );
+
+		BYTE result = 0;
+		REQUIRE_NOTHROW( result = mbc1.Get( 0x4500 ) );
+
+		THEN("BANK 3, 0x500(0xc500) == 0xc0.")
+		{
+			REQUIRE( result == 0xC0 );
+		}
+	}
 }
 
 void MBC1SetterTest( MBC1 & mbc1 )

@@ -70,6 +70,19 @@ void MBC1::Set(size_t mem_addr, BYTE value)
 	}
 }
 
+
+BYTE MBC1::getSelectRomBank() const
+{
+	return mSelectBank == BankMode::ROM ?
+		mSelectBank & 0x1fu :
+		mSelectBank & 0x7fu ;
+}
+
+BYTE MBC1::getSelectRamBank() const
+{
+	return 0;
+}
+
 BYTE MBC1::getROMBank00(size_t mem_addr) const
 {
 	return mCartridge.GetData( mem_addr );
@@ -77,7 +90,7 @@ BYTE MBC1::getROMBank00(size_t mem_addr) const
 
 BYTE MBC1::getROMSelectedBank(size_t mem_addr) const
 {
-	return 0;
+	return mCartridge.GetData( ( getSelectRomBank() * 0x4000 ) + ( mem_addr - 0x4000 )  );
 }
 
 BYTE MBC1::getRAMSelectedBank(size_t mem_addr) const
