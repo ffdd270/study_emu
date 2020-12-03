@@ -17,6 +17,9 @@ void Cartridge::Load(std::string_view path)
 
 	// 버퍼
 	mBuffer = std::move( buffer );
+
+	//RAM 할당
+	mRam.resize( GetRamSizeInfo().size );
 }
 
 std::vector<BYTE> Cartridge::GetRawCartridgeData() const
@@ -28,6 +31,12 @@ BYTE Cartridge::GetData( size_t mem_pos ) const
 {
 	basicErrorCheck( mem_pos );
 	return mBuffer[mem_pos];
+}
+
+BYTE Cartridge::GetRamData(size_t mem_pos) const
+{
+	ramErrorCheck(mem_pos);
+	return mRam[mem_pos];
 }
 
 std::string Cartridge::GetTitle() const
@@ -81,9 +90,44 @@ BYTE Cartridge::GetCartridgeType() const
 	return mBuffer[ CARTRIDGE_TYPE_POINT ];
 }
 
+constexpr size_t K = 1024;
+
+CartridgeSizeInfo Cartridge::GetRamSizeInfo() const
+{
+	constexpr size_t SIZE_INFOS[] = {
+			0,
+			2 * K,
+			8 * K,
+			32 * K,
+			128 * K,
+			64 * K,
+	};
+
+	constexpr size_t BANK_INFOS[] = {
+			1,
+			1,
+			1,
+			4,
+			16,
+			8,
+	};
+
+	constexpr size_t RAM_SIZE_POINT = 0x149;
+	basicErrorCheck( RAM_SIZE_POINT );
+
+	auto value = mBuffer[RAM_SIZE_POINT];
+	if ( value > 5 ) { throw std::logic_error("Ram Size info Out of index.");}
+
+	CartridgeSizeInfo info;
+	info.size = SIZE_INFOS[ value ];
+	info.bank = BANK_INFOS[ value ];
+
+	return info;
+}
+
+
 CartridgeSizeInfo Cartridge::GetSizeInfo() const
 {
-	constexpr size_t K = 1024;
 	constexpr size_t SIZE_BASIC_INFOS [] = {
 			32 * K,
 			64 * K,
@@ -132,12 +176,6 @@ CartridgeSizeInfo Cartridge::GetSizeInfo() const
 	return info;
 }
 
-void Cartridge::basicErrorCheck(const size_t pos) const
-{
-	if( mBuffer.empty() ) { throw std::logic_error("Cartridge Not INITED."); }
-	if( mBuffer.size() <= pos ) { throw std::logic_error("NOT VALID CARTRIDGE."); }
-}
-
 std::array<BYTE, 4> Cartridge::GetEntryPoint() const
 {
 	constexpr size_t ENTRY_POINT = 0x100;
@@ -152,4 +190,16 @@ std::array<BYTE, 4> Cartridge::GetEntryPoint() const
 	}
 
 	return entry_data;
+}
+
+void Cartridge::ramErrorCheck(size_t pos) const
+{
+	if ( mRam.empty() ) { throw std::logic_error("Not Have RAM."); }
+	if ( mRam.size() <= pos ) { throw std::logic_error("Out of Index, RAM!"); }
+}
+
+void Cartridge::basicErrorCheck(const size_t pos) const
+{
+	if( mBuffer.empty() ) { throw std::logic_error("Cartridge Not INITED."); }
+	if( mBuffer.size() <= pos ) { throw std::logic_error("NOT VALID CARTRIDGE."); }
 }

@@ -88,5 +88,50 @@ SCENARIO( "Cartridge Test", "[CART]" )
 				REQUIRE_THROWS( cart.GetData( out_of_range ) );
 			}
 		}
+
+		WHEN("Get Ram Size info.")
+		{
+			CartridgeSizeInfo info;
+			REQUIRE_NOTHROW( info = cart.GetRamSizeInfo() );
+
+			THEN("Not have RAM.")
+			{
+				REQUIRE(info.bank == 1);
+				REQUIRE(info.size == 0);
+			}
+		}
+	}
+
+	GIVEN("RAM 64kb  Cartridge.")
+	{
+		cart.Load("roms/ram_64kb.gb");
+
+		WHEN("Get Ram Size Info.")
+		{
+			CartridgeSizeInfo info;
+			REQUIRE_NOTHROW(info = cart.GetRamSizeInfo());
+
+			THEN("RAM is 64Kbit.")
+			{
+				REQUIRE(info.bank == 1);
+				REQUIRE(info.size == 8192); // 0x2000
+			}
+		}
+
+		WHEN("Access to Right RAM Address")
+		{
+			THEN("No Throw.")
+			{
+				REQUIRE_NOTHROW( cart.GetRamData( 0x30 ) );
+			}
+		}
+
+		WHEN( "Access to Wrong RAM Address" )
+		{
+			THEN("Throw")
+			{
+				REQUIRE_THROWS( cart.GetRamData( 0x3000 ) );
+			}
+		}
 	}
 }

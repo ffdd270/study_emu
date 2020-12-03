@@ -31,18 +31,22 @@ public:
 
 	void Load( std::string_view path );
 	[[nodiscard]] BYTE GetData( size_t mem_pos ) const;
+	[[nodiscard]] BYTE GetRamData( size_t mem_pos ) const;
 	[[nodiscard]] std::vector<BYTE> GetRawCartridgeData() const;
 
 	[[nodiscard]] std::string GetTitle() const;
 	[[nodiscard]] ColorGameBoyFlag GetCGBFlag() const;
 	[[nodiscard]] BYTE GetCartridgeType() const;
+	[[nodiscard]] CartridgeSizeInfo GetRamSizeInfo() const;
 	[[nodiscard]] CartridgeSizeInfo GetSizeInfo() const;
 	[[nodiscard]] size_t GetRealBufferSize() const { return mBuffer.size(); }
 	[[nodiscard]] std::array<BYTE, 4> GetEntryPoint() const;
 private:
+	void ramErrorCheck( size_t pos ) const;
 	void basicErrorCheck( size_t pos ) const;
 private:
 	std::vector<BYTE> mBuffer;
+	std::vector<BYTE> mRam;
 };
 
 
