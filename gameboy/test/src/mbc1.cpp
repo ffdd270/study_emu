@@ -231,7 +231,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 	{
 		Cartridge cart;
 		REQUIRE_NOTHROW( cart.Load( "roms/ram_64kb.gb" ) );
-		REQUIRE( cart.GetCartridgeType() == 0x01 ); // MBC1!
+		REQUIRE( cart.GetCartridgeType() == 0x03 ); // MBC1 + RAM + BATTERY!
 
 		MBC1 mbc1( std::move(cart) );
 

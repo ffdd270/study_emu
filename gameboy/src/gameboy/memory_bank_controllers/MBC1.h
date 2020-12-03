@@ -12,7 +12,7 @@
  *
  *
  */
-enum BankMode
+enum class BankMode
 {
 	ROM, RAM
 };
