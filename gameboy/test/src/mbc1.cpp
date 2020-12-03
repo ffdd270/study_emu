@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "memory_bank_controllers/MBC1.h"
 
-void MBC1GetterTest( MBC1 & mbc1 )
+void MBC1GetterTest_NORAM(MBC1 & mbc1 )
 {
 	WHEN("Read CARTRIDGE TYPE In bank 0.")
 	{
@@ -44,6 +44,44 @@ void MBC1GetterTest( MBC1 & mbc1 )
 			REQUIRE( result == 0xC0 );
 		}
 	}
+
+	// 램 활성화.
+	mbc1.Set( 0x0000, 0xA );
+
+	WHEN("Read Cartridge RAM")
+	{
+		THEN("THROW!")
+		{
+			REQUIRE_THROWS( mbc1.Get( 0xA000 ) );
+		}
+	}
+}
+
+void MBC1GetterTest_WithRAM64( MBC1 & mbc1 )
+{
+	// 램 활성화.
+	mbc1.Set( 0x0000, 0xA );
+
+	WHEN("Read Cartridge RAM, in address BANK 0, 0x1AAA ( 0xBAAA ).")
+	{
+		THEN("NO THROW")
+		{
+			REQUIRE_NOTHROW( mbc1.Get( 0xBAAA ) );
+		}
+	}
+
+	WHEN("Read Cartridge RAM, in address BANK 1, 0x0000 ( 0xA000 )")
+	{
+		mbc1.Set( 0x6000, 0x1 ); // RAM BANKING MODE로 전환.
+		mbc1.Set( 0x4000, 0x1 ); // 1번 뱅크.
+
+		THEN("THROW")
+		{
+			REQUIRE_THROWS( mbc1.Get( 0xA000 ) );
+		}
+	}
+
+	// TODO : RAM 활성화 끄고, 데이터 접근 했는데 값이 0이 아닌 테스트 작성.
 }
 
 void MBC1SetterTest( MBC1 & mbc1 )
@@ -185,7 +223,21 @@ SCENARIO("Use MBC1.", "[MBC]")
 
 		SECTION("Getter")
 		{
-			MBC1GetterTest( mbc1 );
+			MBC1GetterTest_NORAM(mbc1);
+		}
+	}
+
+	GIVEN("A ram_64kb, USE MBC1.")
+	{
+		Cartridge cart;
+		REQUIRE_NOTHROW( cart.Load( "roms/ram_64kb.gb" ) );
+		REQUIRE( cart.GetCartridgeType() == 0x01 ); // MBC1!
+
+		MBC1 mbc1( std::move(cart) );
+
+		SECTION("Getter")
+		{
+			MBC1GetterTest_WithRAM64( mbc1 );
 		}
 	}
 }

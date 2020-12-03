@@ -90,12 +90,16 @@ BYTE MBC1::getROMBank00(size_t mem_addr) const
 
 BYTE MBC1::getROMSelectedBank(size_t mem_addr) const
 {
-	return mCartridge.GetData( ( getSelectRomBank() * 0x4000 ) + ( mem_addr - 0x4000 )  );
+	constexpr size_t BANK_SIZE = 0x4000;
+	return mCartridge.GetData( ( getSelectRomBank() * BANK_SIZE ) + ( mem_addr - 0x4000 )  );
 }
 
 BYTE MBC1::getRAMSelectedBank(size_t mem_addr) const
 {
-	return 0;
+	if( !mRamEnable ) { return 0; }
+
+	constexpr size_t BANK_SIZE = 0x2000;
+	return mCartridge.GetRamData( ( ( getSelectRamBank() * BANK_SIZE ) + ( mem_addr ) )   );
 }
 
 
