@@ -84,9 +84,8 @@ void MBC1GetterTest_WithRAM64( MBC1 & mbc1 )
 	// TODO : RAM 활성화 끄고, 데이터 접근 했는데 값이 0이 아닌 테스트 작성.
 }
 
-void MBC1SetterTest( MBC1 & mbc1 )
+void MBC1SetterTest_NORAM(MBC1 & mbc1 )
 {
-
 	SECTION( "Set Ram Enabled. (0x0000~0x1fff)" )
 	{
 		WHEN("write to 0x02ff, 0xa.")
@@ -202,7 +201,33 @@ void MBC1SetterTest( MBC1 & mbc1 )
 			REQUIRE(mbc1.GetRomBankNumber() == 0b1110101);
 		}
 	}
+}
 
+void MBC1SetterTest_WithRAM64( MBC1 & mbc1 )
+{
+	// 비활성화 테스트
+	WHEN("NO RAM Active, Set RAM => 0xA700, ( 0x0700 ), 3.")
+	{
+		REQUIRE_NOTHROW( mbc1.Set( 0xA700, 0x3 ) );
+
+		THEN("NO EFFECT.")
+		{
+			REQUIRE( mbc1.Get( 0xA700 ) != 0x3 );
+		}
+	}
+
+	// 램 활성화.
+	mbc1.Set( 0x0000, 0xA );
+
+	WHEN("RAM Active, Set RAM => 0xA700, ( 0x0700 ), 3.")
+	{
+		REQUIRE_NOTHROW( mbc1.Set( 0xA700, 0x3 ) );
+
+		THEN("EFFECT.")
+		{
+			REQUIRE( mbc1.Get( 0xA700 ) == 0x3 );
+		}
+	}
 }
 
 
@@ -218,7 +243,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 
 		SECTION("Setter")
 		{
-			MBC1SetterTest( mbc1 );
+			MBC1SetterTest_NORAM(mbc1);
 		}
 
 		SECTION("Getter")
@@ -234,6 +259,11 @@ SCENARIO("Use MBC1.", "[MBC]")
 		REQUIRE( cart.GetCartridgeType() == 0x03 ); // MBC1 + RAM + BATTERY!
 
 		MBC1 mbc1( std::move(cart) );
+
+		SECTION("Setter")
+		{
+			MBC1SetterTest_WithRAM64( mbc1 );
+		}
 
 		SECTION("Getter")
 		{
