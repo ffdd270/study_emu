@@ -32,6 +32,8 @@ private:
 	[[nodiscard]] BYTE getSelectRomBank() const;
 	[[nodiscard]] BYTE getSelectRamBank() const;
 
+	[[nodiscard]] size_t getCartridgeRamAddress( size_t mem_address ) const;
+
 	[[nodiscard]] BYTE getROMBank00( size_t mem_addr ) const;
 	[[nodiscard]] BYTE getROMSelectedBank( size_t mem_addr ) const;
 	[[nodiscard]] BYTE getRAMSelectedBank( size_t mem_addr ) const;
@@ -40,6 +42,7 @@ private:
 	void setRomBankLeast5Bit( size_t mem_addr, BYTE value );
 	void setBankHigh2Bit(size_t mem_addr, BYTE value );
 	void setBankMode( size_t mem_addr, BYTE value );
+	void setRAM( size_t mem_addr, BYTE value );
 private:
 	Cartridge mCartridge;
 	BankMode mBankMode = BankMode::ROM;
