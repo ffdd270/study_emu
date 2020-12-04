@@ -39,6 +39,12 @@ BYTE Cartridge::GetRamData(size_t mem_pos) const
 	return mRam[mem_pos];
 }
 
+void Cartridge::SetRamData(size_t mem_pos, BYTE value)
+{
+	ramErrorCheck(mem_pos);
+	mRam[mem_pos] = value;
+}
+
 std::string Cartridge::GetTitle() const
 {
 	const size_t TITLE_START_POINT = 0x134;

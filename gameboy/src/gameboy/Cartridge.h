@@ -32,6 +32,7 @@ public:
 	void Load( std::string_view path );
 	[[nodiscard]] BYTE GetData( size_t mem_pos ) const;
 	[[nodiscard]] BYTE GetRamData( size_t mem_pos ) const;
+	void SetRamData( size_t mem_pos, BYTE value );
 	[[nodiscard]] std::vector<BYTE> GetRawCartridgeData() const;
 
 	[[nodiscard]] std::string GetTitle() const;

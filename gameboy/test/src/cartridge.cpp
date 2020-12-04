@@ -89,6 +89,14 @@ SCENARIO( "Cartridge Test", "[CART]" )
 			}
 		}
 
+		WHEN("Write to 'NO RAM' CARTRIDGE.")
+		{
+			THEN("THROW!")
+			{
+				REQUIRE_THROWS(cart.SetRamData(0x0, 0xA));
+			}
+		}
+
 		WHEN("Get Ram Size info.")
 		{
 			CartridgeSizeInfo info;
@@ -131,6 +139,26 @@ SCENARIO( "Cartridge Test", "[CART]" )
 			THEN("Throw")
 			{
 				REQUIRE_THROWS( cart.GetRamData( 0x3000 ) );
+			}
+		}
+
+		WHEN("Write RAM Address, In 0x1500")
+		{
+			REQUIRE_NOTHROW( cart.SetRamData( 0x1500, 0x50 ) );
+
+			THEN("Okay, Set.")
+			{
+				REQUIRE( cart.GetRamData( 0x1500 ) == 0x50 );
+			}
+		}
+
+		WHEN("Write RAM Address, In 0x2500")
+		{
+			REQUIRE_THROWS( cart.SetRamData( 0x2500, 0xf2 ) );
+
+			THEN("Not Set, and getting throw.")
+			{
+				REQUIRE_THROWS( cart.GetRamData( 0x2500 ) );
 			}
 		}
 	}
