@@ -6,6 +6,8 @@
 #define GAMEBOY_MBC1_H
 
 #include "Cartridge.h"
+#include "memory_interface.h"
+
 
 /*
  * Gameboy의 기본적인 Memory Controller.
@@ -17,16 +19,16 @@ enum class BankMode
 	ROM, RAM
 };
 
-class MBC1
+class MBC1 : public MemoryInterface
 {
 public:
 	MBC1( Cartridge && cartridge );
 
-	[[nodiscard]] BYTE Get(size_t mem_addr) const;
-	void Set(size_t mem_addr, BYTE value);
+	[[nodiscard]] BYTE Get(size_t mem_addr) const override;
+	void Set(size_t mem_addr, BYTE value) override;
 
 	[[nodiscard]] bool IsRAMActive() const { return mRamEnable; }
-	[[nodiscard]] BYTE GetRomBankNumber() const { return mSelectBank; }
+	[[nodiscard]] BYTE GetSelectBank() const { return mSelectBank; }
 	[[nodiscard]] BankMode GetBankMode() const {  return mBankMode; }
 private:
 	[[nodiscard]] BYTE getSelectRomBank() const;

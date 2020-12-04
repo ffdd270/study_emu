@@ -21,7 +21,7 @@ void MBC1GetterTest_NORAM(MBC1 & mbc1 )
 	// 기본 뱅크 선택은 1이라서.
 	WHEN("Read Cartridge Type In bank 01, Get 0x4000(0x4000).")
 	{
-		REQUIRE( mbc1.GetRomBankNumber() == 1 );
+		REQUIRE(mbc1.GetSelectBank() == 1 );
 		BYTE result = 0;
 		REQUIRE_NOTHROW(  result = mbc1.Get( 0x4000 ) );
 
@@ -34,7 +34,7 @@ void MBC1GetterTest_NORAM(MBC1 & mbc1 )
 	WHEN("Read Cartridge Type IN bank 03, Get 0x4500( 0x4000 * 3 + 0x500 )")
 	{
 		mbc1.Set( 0x2000, 0x03 );
-		REQUIRE( mbc1.GetRomBankNumber() == 3 );
+		REQUIRE(mbc1.GetSelectBank() == 3 );
 
 		BYTE result = 0;
 		REQUIRE_NOTHROW( result = mbc1.Get( 0x4500 ) );
@@ -130,7 +130,7 @@ void MBC1SetterTest_NORAM(MBC1 & mbc1 )
 
 			THEN("ROM BANK same as expect value.")
 			{
-				REQUIRE( mbc1.GetRomBankNumber() == expect_value );
+				REQUIRE(mbc1.GetSelectBank() == expect_value );
 			}
 		}
 
@@ -139,7 +139,7 @@ void MBC1SetterTest_NORAM(MBC1 & mbc1 )
 			mbc1.Set( 0x2000, 0 );
 			THEN("ROM BANK is 1!")
 			{
-				REQUIRE(mbc1.GetRomBankNumber() == 1);
+				REQUIRE(mbc1.GetSelectBank() == 1);
 			}
 		}
 	}
@@ -155,7 +155,7 @@ void MBC1SetterTest_NORAM(MBC1 & mbc1 )
 			THEN("ROM BANK : ( 0x0f & 0x03 ) << 5u")
 			{
 				// 기본 값 + .
-				REQUIRE( mbc1.GetRomBankNumber() == ( expect_value + 1 ) );
+				REQUIRE(mbc1.GetSelectBank() == (expect_value + 1 ) );
 			}
 		}
 	}
@@ -198,7 +198,7 @@ void MBC1SetterTest_NORAM(MBC1 & mbc1 )
 
 		THEN(" Result => 0b1110101")
 		{
-			REQUIRE(mbc1.GetRomBankNumber() == 0b1110101);
+			REQUIRE(mbc1.GetSelectBank() == 0b1110101);
 		}
 	}
 }
