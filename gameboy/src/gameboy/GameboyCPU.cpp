@@ -39,6 +39,45 @@ GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 	Reset();
 }
 
+
+class MemoryForTest : public MemoryInterface
+{
+public:
+	MemoryForTest() : mMemory( { 0 }  )
+	{
+	}
+
+	[[nodiscard]] BYTE Get(size_t mem_addr) const override
+	{
+		return mMemory[ mem_addr ];
+	}
+
+	void Set(size_t mem_addr, BYTE value) override
+	{
+		mMemory[ mem_addr ] = value;
+	}
+
+	void Reset() override
+	{
+		mMemory.fill( 0 );
+	}
+
+private:
+	std::array<BYTE, 0xFFFF> mMemory;
+};
+
+GameboyCPU GameboyCPU::Create()
+{
+	GameboyCPU cpu;
+
+	cpu.SetMemoryInterface( std::make_shared<MemoryForTest>() );
+}
+
+void GameboyCPU::SetMemoryInterface(std::shared_ptr<MemoryInterface> memory_interface_ptr)
+{
+	mMemoryInterface = std::move( memory_interface_ptr );
+}
+
 void GameboyCPU::Reset()
 {
 	mPC.reg_16 = 0x1000;

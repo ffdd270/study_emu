@@ -5,7 +5,7 @@
 #ifndef GAMEBOY_GAMEBOYCPU_H
 #define GAMEBOY_GAMEBOYCPU_H
 
-
+#include "memory/MemoryInterface.h"
 #include "typedef.h"
 #include <array>
 #include <vector>
@@ -58,6 +58,12 @@ public:
 	friend class BIND_FUNCS;
 
 	GameboyCPU();
+
+	static GameboyCPU Create();
+	static GameboyCPU CreateWithPtrCartridge();
+
+	void SetMemoryInterface(std::shared_ptr<MemoryInterface> memory_interface_ptr );
+
 
 	void Reset();
 
@@ -664,7 +670,7 @@ private:
 	void resetFlags();
 
 private:
-	BYTE mGameMemory[0xFFFF];
+	std::shared_ptr<MemoryInterface> mMemoryInterface;
 
 	bool mHalted;
 
