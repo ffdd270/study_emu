@@ -3,7 +3,7 @@
 
 SCENARIO(  "Gameboy Public Methods", "[PUBLIC METHODS]" )
 {
-	GameboyCPU cpu;
+	GameboyCPU cpu = GameboyCPU::Create();
 
 	GIVEN("Memory")
 	{

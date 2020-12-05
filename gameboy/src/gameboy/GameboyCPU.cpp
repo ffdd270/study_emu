@@ -63,7 +63,7 @@ public:
 	}
 
 private:
-	std::array<BYTE, 0xFFFF> mMemory;
+	std::array<BYTE, 0x10000> mMemory;
 };
 
 GameboyCPU GameboyCPU::Create()
@@ -85,7 +85,11 @@ void GameboyCPU::Reset()
 	mPC.reg_16 = 0x1000;
 	mSP.reg_16 = 0x8000;
 	mDebugInjectionCount.reg_16 = 0x1000;
-	mMemoryInterface->Reset();
+
+	if (mMemoryInterface != nullptr )
+	{
+		mMemoryInterface->Reset();
+	}
 
 	for( Register & ref_register : mRegisters.array )
 	{

@@ -44,8 +44,6 @@ private:
 	std::shared_ptr<MemoryInterface> mMemoryInterface;
 };
 
-
-
 class GameboyCPU
 {
 public:

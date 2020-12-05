@@ -94,7 +94,7 @@ void MemHLFlagTest( GameboyCPU & cpu )
 
 TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 {
-	GameboyCPU cpu;
+	GameboyCPU cpu = GameboyCPU::Create();
 
 	SECTION("ADD A, register")
 	{

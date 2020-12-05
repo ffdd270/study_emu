@@ -4,7 +4,7 @@
 
 TEST_CASE( "BIT SET RESET TEST", "[BIT SET RESET TEST]" )
 {
-	GameboyCPU cpu;
+	GameboyCPU cpu = GameboyCPU::Create();
 
 	SECTION("BIT B, R")
 	{

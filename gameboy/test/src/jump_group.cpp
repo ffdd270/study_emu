@@ -4,7 +4,7 @@
 
 TEST_CASE("JUMP CODE POINT", "[JUMP]")
 {
-	GameboyCPU cpu;
+	GameboyCPU cpu = GameboyCPU::Create();
 
 	SECTION("JP (IF-COND) WORD")
 	{

@@ -18,7 +18,7 @@ SCENARIO( "Gameboy CPU Test.", "[DEBUG]")
 {
 	GIVEN( "CPU, Logic." )
 	{
-		GameboyCPU cpu;
+		GameboyCPU cpu = GameboyCPU::Create();
 
 		constexpr WORD REQUIRE_BC_VALUE = 0x2401;
 		constexpr WORD REQUIRE_A_VALUE = 0x24;

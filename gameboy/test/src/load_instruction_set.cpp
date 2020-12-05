@@ -12,7 +12,7 @@
 
 TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 {
-	GameboyCPU cpu;
+	GameboyCPU cpu = GameboyCPU::Create();
 
 
 	SECTION( "LD B, 0x3") // LD r, n

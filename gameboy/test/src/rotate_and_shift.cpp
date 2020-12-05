@@ -5,7 +5,7 @@
 
 TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 {
-	GameboyCPU cpu;
+	GameboyCPU cpu = GameboyCPU::Create();
 
 	SECTION("RLC m") // Rotate Left Though Carry.
 	{

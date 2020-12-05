@@ -14,7 +14,7 @@ inline void setRegAAndStep(GameboyCPU & cpu, BYTE byte )
 
 TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 {
-	GameboyCPU cpu;
+	GameboyCPU cpu = GameboyCPU::Create();
 
 	SECTION("DAA Test")
 	{
