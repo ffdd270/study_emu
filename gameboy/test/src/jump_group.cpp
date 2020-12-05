@@ -4,7 +4,8 @@
 
 TEST_CASE("JUMP CODE POINT", "[JUMP]")
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 
 	SECTION("JP (IF-COND) WORD")
 	{

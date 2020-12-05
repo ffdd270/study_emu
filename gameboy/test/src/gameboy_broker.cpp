@@ -9,7 +9,8 @@ using namespace HaruCar::CPU;
 
 TEST_CASE( "Gameboy CPU Broker", "[Broker]" )
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 	GameboyCPUBroker broker;
 	std::shared_ptr<CPUProvider> provider_ptr = nullptr;
 

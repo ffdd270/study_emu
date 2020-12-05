@@ -18,7 +18,8 @@ SCENARIO( "Gameboy CPU Test.", "[DEBUG]")
 {
 	GIVEN( "CPU, Logic." )
 	{
-		GameboyCPU cpu = GameboyCPU::Create();
+		std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 
 		constexpr WORD REQUIRE_BC_VALUE = 0x2401;
 		constexpr WORD REQUIRE_A_VALUE = 0x24;

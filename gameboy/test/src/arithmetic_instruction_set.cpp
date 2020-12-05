@@ -94,7 +94,8 @@ void MemHLFlagTest( GameboyCPU & cpu )
 
 TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 
 	SECTION("ADD A, register")
 	{

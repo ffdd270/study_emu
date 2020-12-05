@@ -38,7 +38,8 @@ void check_condition_ret(GameboyCPU & cpu, CheckCondition check_condition, bool 
 
 TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 
 	SECTION("CALL WORD")
 	{
@@ -256,7 +257,8 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 
 TEST_CASE("FIX IN CALL AND RETURN", "[FIX_CALL_AND_RETURN]")
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 
 	// CALL과 RET 이후로 명령어가 제대로 진행되지 않아서 생겼던 문제의 테스트 케이스.
 	SECTION("CALL and RET, After Instruction OK?")

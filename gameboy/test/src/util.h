@@ -253,7 +253,7 @@ inline void decHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
 
 inline void addAtoHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE mem_hl_set_value, BYTE a_set_value )
 {
-	setMemory3Step( cpu, 0, mem_hl_address, mem_hl_set_value );
+	setMemory3Step( cpu, Param8BitIndex::D, mem_hl_address, mem_hl_set_value );
 
 	setRegister8(cpu, Param8BitIndex::A, a_set_value );
 

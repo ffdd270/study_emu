@@ -5,7 +5,8 @@
 
 TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 
 	SECTION("RLC m") // Rotate Left Though Carry.
 	{

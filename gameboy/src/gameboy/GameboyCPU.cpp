@@ -66,11 +66,11 @@ private:
 	std::array<BYTE, 0x10000> mMemory;
 };
 
-GameboyCPU GameboyCPU::Create()
+std::shared_ptr<GameboyCPU> GameboyCPU::Create()
 {
-	GameboyCPU cpu;
+	std::shared_ptr<GameboyCPU> cpu = std::make_shared<GameboyCPU>();
 
-	cpu.SetMemoryInterface( std::make_shared<MemoryForTest>() );
+	cpu->SetMemoryInterface( std::make_shared<MemoryForTest>() );
 
 	return cpu;
 }
@@ -857,13 +857,12 @@ BYTE GameboyCPU::immediateValue()
 
 WORD GameboyCPU::immediateValue16()
 {
-	BYTE value_lo = mMemoryInterface->Get( mPC.reg_16 );
-	BYTE value_hi = mMemoryInterface->Get( mPC.reg_16 + 1);
+	const BYTE value_lo = mMemoryInterface->Get( mPC.reg_16 );
+	const BYTE value_hi = mMemoryInterface->Get( mPC.reg_16 + 1);
 
 	mPC.reg_16 += 2;
 
-	WORD value = static_cast<WORD>( value_hi << 8u ) | value_lo;
-	return value;
+	return  static_cast<WORD>(value_hi << 8u) | value_lo;
 }
 
 void GameboyCPU::setWORDToStack(WORD value)

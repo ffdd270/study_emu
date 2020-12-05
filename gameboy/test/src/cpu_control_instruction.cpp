@@ -14,7 +14,8 @@ inline void setRegAAndStep(GameboyCPU & cpu, BYTE byte )
 
 TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 
 	SECTION("DAA Test")
 	{

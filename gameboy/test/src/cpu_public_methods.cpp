@@ -3,7 +3,8 @@
 
 SCENARIO(  "Gameboy Public Methods", "[PUBLIC METHODS]" )
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+    GameboyCPU & cpu = *(ptr_cpu);;
 
 	GIVEN("Memory")
 	{

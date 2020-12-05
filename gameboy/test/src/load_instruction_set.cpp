@@ -12,7 +12,8 @@
 
 TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 {
-	GameboyCPU cpu = GameboyCPU::Create();
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
+	GameboyCPU & cpu = *(ptr_cpu);
 
 
 	SECTION( "LD B, 0x3") // LD r, n
