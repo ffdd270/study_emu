@@ -868,7 +868,7 @@ WORD GameboyCPU::immediateValue16()
 void GameboyCPU::setWORDToStack(WORD value)
 {
 	mMemoryInterface->Set( mSP.reg_16 - 1, static_cast<BYTE>((value & 0xff00u) >> 8u) );
-	mMemoryInterface->Set( mSP.reg_16 - 1, static_cast<BYTE>(value & 0x00ffu));
+	mMemoryInterface->Set( mSP.reg_16 - 2, static_cast<BYTE>(value & 0x00ffu));
 
 	mSP.reg_16 = mSP.reg_16 - 2;
 }
