@@ -71,6 +71,8 @@ GameboyCPU GameboyCPU::Create()
 	GameboyCPU cpu;
 
 	cpu.SetMemoryInterface( std::make_shared<MemoryForTest>() );
+
+	return cpu;
 }
 
 void GameboyCPU::SetMemoryInterface(std::shared_ptr<MemoryInterface> memory_interface_ptr)
