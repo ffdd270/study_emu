@@ -75,10 +75,13 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/Cartridge.cpp
 		${SRC_PATH}/gameboy/Cartridge.h
 
-		${SRC_PATH}/gameboy/memory_bank_controllers/MBC1.cpp
-		${SRC_PATH}/gameboy/memory_bank_controllers/MBC1.h
+		${SRC_PATH}/gameboy/memory/MBC1.cpp
+		${SRC_PATH}/gameboy/memory/MBC1.h
 
-		${SRC_PATH}/gameboy/memory_bank_controllers/mbc_interface.h)
+		${SRC_PATH}/gameboy/memory/MemoryInterface.h
+
+		${SRC_PATH}/gameboy/memory/MemoryUnit.cpp
+		${SRC_PATH}/gameboy/memory/MemoryUnit.h)
 
 set( UI_SRC
 		${SRC_PATH}/harucar/LuaCommandViewer.cpp

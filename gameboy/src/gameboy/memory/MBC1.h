@@ -6,7 +6,7 @@
 #define GAMEBOY_MBC1_H
 
 #include "Cartridge.h"
-#include "memory_interface.h"
+#include "MemoryInterface.h"
 
 
 /*

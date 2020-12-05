@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "memory_bank_controllers/MBC1.h"
+#include "memory/MBC1.h"
 
 void MBC1GetterTest_NORAM(MBC1 & mbc1 )
 {
