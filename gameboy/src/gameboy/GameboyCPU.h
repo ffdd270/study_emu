@@ -637,12 +637,12 @@ private:
 	void commonAddSetFlag( BYTE origin_value, BYTE add_value, BYTE carry );
 	void commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry );
 
-	void commonRotateRightThroughCarry( BYTE & ref_value );
-	void commonRotateRight( BYTE & ref_value );
+	void commonRotateRightThroughCarry(BYTE & argument_value );
+	void commonRotateRight( BYTE & argument_value );
+	void commonRotateAndShiftFlags(BYTE result_value );
 
 	void commonBitSetFlag();
 
-	void commonRotateAndShiftFlags(const BYTE & result_value );
 	/*
 	 * Util 함수들.
 	*/
