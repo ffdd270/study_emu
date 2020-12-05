@@ -36,6 +36,8 @@ public:
 
 	BYTE GetValue( std::size_t memory_index )
 	{
+		if( memory_index > 0xffff ) { throw std::logic_error("Out of index!"); }
+
 		return mMemoryInterface->Get( memory_index );
 	}
 private:

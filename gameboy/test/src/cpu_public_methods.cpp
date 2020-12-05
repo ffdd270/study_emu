@@ -24,7 +24,7 @@ SCENARIO(  "Gameboy Public Methods", "[PUBLIC METHODS]" )
 
 		WHEN("Out of index")
 		{
-			REQUIRE_THROWS( memory.GetValue( 0xffff ) );
+			REQUIRE_THROWS( memory.GetValue( 0x10000 ) );
 		}
 	}
 }
