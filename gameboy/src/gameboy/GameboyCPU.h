@@ -36,18 +36,12 @@ public:
 
 	BYTE GetValue( std::size_t memory_index )
 	{
-		if ( memory_index >= mSize )
-		{
-			throw std::logic_error("OUT OF INDEX");
-		}
-
-		return mPtrMemory[memory_index];
+		return mMemoryInterface->Get( memory_index );
 	}
 private:
-	GameboyMemory( BYTE * ptr_memory, std::size_t mem_size ) : mPtrMemory( ptr_memory ), mSize( mem_size )  { }
+	GameboyMemory( std::shared_ptr<MemoryInterface> & ref_ptr_interface ) {  mMemoryInterface = ref_ptr_interface; }
 
-	BYTE * mPtrMemory;
-	std::size_t mSize;
+	std::shared_ptr<MemoryInterface> mMemoryInterface;
 };
 
 
@@ -674,7 +668,8 @@ private:
 
 	bool mHalted;
 
-	BYTE& get8BitArgumentValue( BYTE param );
+	BYTE get8BitArgumentValue( BYTE param );
+	void set8BitArgumentValue( BYTE param, BYTE value );
 
 	union Registers{
 		// 레지스터 영역.

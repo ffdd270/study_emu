@@ -85,7 +85,7 @@ void GameboyCPU::Reset()
 	mPC.reg_16 = 0x1000;
 	mSP.reg_16 = 0x8000;
 	mDebugInjectionCount.reg_16 = 0x1000;
-	memset( mGameMemory, 0, sizeof ( mGameMemory ) );
+	mMemoryInterface->Reset();
 
 	for( Register & ref_register : mRegisters.array )
 	{
@@ -117,7 +117,7 @@ void GameboyCPU::NextStep()
 		return;
 	}
 
-	BYTE op_code = mGameMemory[ mPC.reg_16 ];
+	BYTE op_code = mMemoryInterface->Get( mPC.reg_16 );
 	mPC.reg_16 += 1;
 
 	if ( op_code == 0x00 ) // NOP
@@ -130,7 +130,7 @@ void GameboyCPU::NextStep()
 	if ( op_code == 0xCB ) // prefix
 	{
 		isPreFixInstruction = true;
-		op_code = mGameMemory[ mPC.reg_16 ];
+		op_code = mMemoryInterface->Get( mPC.reg_16 );
 		mPC.reg_16 += 1;
 	}
 
@@ -805,18 +805,18 @@ void GameboyCPU::pre0xCBGenerateFuncMap()
 
 void GameboyCPU::InjectionMemory(BYTE injection_byte)
 {
-	mGameMemory[ mDebugInjectionCount.reg_16 ] = injection_byte;
+	mMemoryInterface->Set( mDebugInjectionCount.reg_16, injection_byte );
 	mDebugInjectionCount.reg_16 += 1;
 }
 
 BYTE GameboyCPU::GetMemoryValue(unsigned int mem_index)
 {
-	return mGameMemory[ mem_index ];
+	return mMemoryInterface->Get( mem_index );
 }
 
 GameboyMemory GameboyCPU::GetMemory()
 {
-	return GameboyMemory(mGameMemory, 0xffff);
+	return GameboyMemory(mMemoryInterface);
 }
 
 void GameboyCPU::SetOnInstructionCallback(InstructionCallback callback)
@@ -831,7 +831,7 @@ void GameboyCPU::RemoveInstructionCallback()
 
 void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
 {
-	mGameMemory[ mem_index ] = value;
+	mMemoryInterface->Set( mem_index, value );
 }
 
 void GameboyCPU::addInstructionEvent(const char *name, BYTE opcode)
@@ -846,15 +846,15 @@ void GameboyCPU::addInstructionEvent(const char *name, BYTE opcode)
 
 BYTE GameboyCPU::immediateValue()
 {
-	BYTE value = mGameMemory[mPC.reg_16];
+	BYTE value = mMemoryInterface->Get( mPC.reg_16 );
 	mPC.reg_16 += 1;
 	return value;
 }
 
 WORD GameboyCPU::immediateValue16()
 {
-	BYTE value_lo = mGameMemory[mPC.reg_16];
-	BYTE value_hi = mGameMemory[mPC.reg_16 + 1];
+	BYTE value_lo = mMemoryInterface->Get( mPC.reg_16 );
+	BYTE value_hi = mMemoryInterface->Get( mPC.reg_16 + 1);
 
 	mPC.reg_16 += 2;
 
@@ -864,16 +864,16 @@ WORD GameboyCPU::immediateValue16()
 
 void GameboyCPU::setWORDToStack(WORD value)
 {
-	mGameMemory[ mSP.reg_16 - 1 ] = static_cast<BYTE>((value & 0xff00u) >> 8u); // HI
-	mGameMemory[ mSP.reg_16 - 2 ] = static_cast<BYTE>(value & 0x00ffu); //LO
+	mMemoryInterface->Set( mSP.reg_16 - 1, static_cast<BYTE>((value & 0xff00u) >> 8u) );
+	mMemoryInterface->Set( mSP.reg_16 - 1, static_cast<BYTE>(value & 0x00ffu));
 
 	mSP.reg_16 = mSP.reg_16 - 2;
 }
 
 WORD GameboyCPU::getWORDFromStack()
 {
-	BYTE hi = mGameMemory[ mSP.reg_16 + 1 ];
-	BYTE lo = mGameMemory[ mSP.reg_16 ];
+	BYTE hi = mMemoryInterface->Get( mSP.reg_16 + 1 );
+	BYTE lo = mMemoryInterface->Get( mSP.reg_16 );
 
 	mSP.reg_16 = mSP.reg_16 + 2;
 
@@ -927,7 +927,22 @@ void GameboyCPU::resetFlags()
 	mRegisters.AF.lo = 0;
 }
 
-BYTE &GameboyCPU::get8BitArgumentValue(BYTE param)
+constexpr BYTE MemoryParamIndex = 0b110;
+
+BYTE GameboyCPU::get8BitArgumentValue(BYTE param)
 {
-	return (param == 0b110) ? mGameMemory[mRegisters.HL.reg_16] : m8bitArguments[param].ref;
+	return (param == MemoryParamIndex) ? mMemoryInterface->Get( mRegisters.HL.reg_16 ) : m8bitArguments[param].ref;
 }
+
+void GameboyCPU::set8BitArgumentValue(BYTE param, BYTE value)
+{
+	if ( param == MemoryParamIndex)
+	{
+		mMemoryInterface->Set( mRegisters.HL.reg_16, value );
+	}
+	else
+	{
+		m8bitArguments[param].ref = value;
+	}
+}
+
