@@ -61,7 +61,7 @@ void GameboyCPU::commonAddRegAFromImm8(BYTE op_code, BYTE carry)
 
 void GameboyCPU::commonAddRegAFromMemHL(BYTE op_code, BYTE carry)
 {
-	BYTE mem_value = mGameMemory[ mRegisters.HL.reg_16 ];
+	BYTE mem_value = mMemoryInterface->Get( mRegisters.HL.reg_16 );
 
 	resetFlags();
 
@@ -72,7 +72,7 @@ void GameboyCPU::commonAddRegAFromMemHL(BYTE op_code, BYTE carry)
 
 void GameboyCPU::commonSubRegAFromRegister(BYTE op_code, BYTE carry)
 {
-	BYTE argument = 0b00000111 & op_code;
+	BYTE argument = 0b00000111u & op_code;
 	BYTE & register_value = m8bitArguments[ argument ].ref;
 
 	resetFlags();
@@ -91,8 +91,7 @@ void GameboyCPU::commonSubRegAFromImm8(BYTE op_code, BYTE carry)
 
 void GameboyCPU::commonSubRegAFromMemHL(BYTE op_code, BYTE carry)
 {
-	BYTE mem_value = mGameMemory[ mRegisters.HL.reg_16 ];
-
+	BYTE mem_value = mMemoryInterface->Get( mRegisters.HL.reg_16 );
 	commonSubSetFlag( mRegisters.AF.hi, mem_value, carry );
 	mRegisters.AF.hi -= ( mem_value + carry );
 }
@@ -235,7 +234,7 @@ void GameboyCPU::andRegAFromImm8(BYTE op_code)
 // = Flag = Same as AND (HL)
 void GameboyCPU::andRegAFromMemHL(BYTE op_code)
 {
-	mRegisters.AF.hi = mRegisters.AF.hi & mGameMemory[ mRegisters.HL.reg_16 ];
+	mRegisters.AF.hi &= mMemoryInterface->Get( mRegisters.HL.reg_16 );
 	commonBitSetFlag();
 }
 
@@ -244,7 +243,7 @@ void GameboyCPU::andRegAFromMemHL(BYTE op_code)
 // = Flag = Same as AND r
 void GameboyCPU::orRegAFromRegister(BYTE op_code)
 {
-	BYTE argument = 0b00000111 & op_code;
+	BYTE argument = 0b00000111u & op_code;
 	BYTE & register_value = m8bitArguments[ argument ].ref;
 
 	mRegisters.AF.hi = mRegisters.AF.hi | register_value;
@@ -265,7 +264,7 @@ void GameboyCPU::orRegAFromImm8(BYTE op_code)
 // = Flag = Same as AND r
 void GameboyCPU::orRegAFromMemHL(BYTE op_code)
 {
-	mRegisters.AF.hi = mRegisters.AF.hi |  mGameMemory[ mRegisters.HL.reg_16 ];
+	mRegisters.AF.hi |= mMemoryInterface->Get( mRegisters.HL.reg_16 );
 	commonBitSetFlag();
 }
 
@@ -276,7 +275,7 @@ void GameboyCPU::orRegAFromMemHL(BYTE op_code)
 // else = reset.
 void GameboyCPU::xorRegAFromRegister(BYTE op_code)
 {
-	BYTE argument = 0b00000111 & op_code;
+	BYTE argument = 0b00000111u & op_code;
 	BYTE & register_value = m8bitArguments[ argument ].ref;
 
 	mRegisters.AF.hi = mRegisters.AF.hi ^ register_value;
@@ -297,7 +296,7 @@ void GameboyCPU::xorRegAFromImm8(BYTE op_code)
 // = Flag = Same as XOR r
 void GameboyCPU::xorRegAFromMemHL(BYTE op_code)
 {
-	mRegisters.AF.hi = mRegisters.AF.hi ^ mGameMemory[ mRegisters.HL.reg_16 ];
+	mRegisters.AF.hi ^= mMemoryInterface->Get( mRegisters.HL.reg_16 );
 	commonBitSetFlag();
 }
 
@@ -342,8 +341,9 @@ void GameboyCPU::incRegister(BYTE op_code)
 
 void GameboyCPU::incMemHL(BYTE op_code)
 {
-	commonAddSetFlag( mGameMemory[mRegisters.HL.reg_16], 1, 0 );
-	mGameMemory[ mRegisters.HL.reg_16 ]++;
+	BYTE mem_value = mMemoryInterface->Get( mRegisters.HL.reg_16 );
+	commonAddSetFlag(mem_value, 1, 0 );
+	mMemoryInterface->Set( mRegisters.HL.reg_16, mem_value + 1 );
 }
 
 void GameboyCPU::decRegister(BYTE op_code)
@@ -357,8 +357,10 @@ void GameboyCPU::decRegister(BYTE op_code)
 
 void GameboyCPU::decMemHL(BYTE op_code)
 {
-	commonSubSetFlag( mGameMemory[mRegisters.HL.reg_16], 1, 0 );
-	mGameMemory[ mRegisters.HL.reg_16 ]--;
+	BYTE mem_value = mMemoryInterface->Get( mRegisters.HL.reg_16 );
+
+	commonSubSetFlag( mem_value, 1, 0 );
+	mMemoryInterface->Set( mRegisters.HL.reg_16, mem_value - 1 );
 }
 
 void GameboyCPU::addHLFromReg16(BYTE op_code)
