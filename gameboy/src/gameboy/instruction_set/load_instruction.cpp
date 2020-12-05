@@ -38,9 +38,7 @@ void GameboyCPU::loadRegFromMemHL(BYTE op_code)
 
 	BYTE origin_reg_index = ( (op_code & 0b00111000u) >> 3u );
 	assert( origin_reg_index != 0b110 );
-
-	BYTE & ref_byte_origin = m8bitArguments[origin_reg_index].ref;
-	ref_byte_origin = mGameMemory[ mRegisters.HL.reg_16 ];
+	m8bitArguments[origin_reg_index].ref = mMemoryInterface->Get( mRegisters.HL.reg_16 );
 }
 
 // LD (HL), r
@@ -48,9 +46,7 @@ void GameboyCPU::loadRegFromMemHL(BYTE op_code)
 void GameboyCPU::loadMemHLFromReg(BYTE op_code)
 {
 	BYTE origin_reg_index = (0b00000111u & op_code);
-
-	BYTE &ref_byte_dest = m8bitArguments[origin_reg_index].ref;
-	mGameMemory[ mRegisters.HL.reg_16 ] = ref_byte_dest;
+	mMemoryInterface->Set( mRegisters.HL.reg_16, m8bitArguments[origin_reg_index].ref );
 }
 
 
@@ -59,8 +55,7 @@ void GameboyCPU::loadMemHLFromReg(BYTE op_code)
 // A<-(BC)
 void GameboyCPU::loadRegAFromMemBC(BYTE op_code)
 {
-	BYTE & ref_A = mRegisters.AF.hi;
-	ref_A = mGameMemory[ mRegisters.BC.reg_16 ];
+	mRegisters.AF.hi = mMemoryInterface->Get( mRegisters.BC.reg_16 );
 }
 
 //LD A, (DE)
@@ -68,8 +63,7 @@ void GameboyCPU::loadRegAFromMemBC(BYTE op_code)
 // A<-(DE)
 void GameboyCPU::loadRegAFromMemDE(BYTE op_code)
 {
-	BYTE & ref_A = mRegisters.AF.hi;
-	ref_A = mGameMemory[ mRegisters.DE.reg_16 ];
+	mRegisters.AF.hi = mMemoryInterface->Get( mRegisters.DE.reg_16 );
 }
 
 
@@ -78,7 +72,7 @@ void GameboyCPU::loadRegAFromMemDE(BYTE op_code)
 // A<-(HL) and HL--;
 void GameboyCPU::loadRegAFromMemHLAndDecHL( BYTE op_code )
 {
-	mRegisters.AF.hi = mGameMemory[ mRegisters.HL.reg_16 ];
+	mRegisters.AF.hi = mMemoryInterface->Get( mRegisters.HL.reg_16 );
 	mRegisters.HL.reg_16--;
 }
 
@@ -88,8 +82,7 @@ void GameboyCPU::loadRegAFromMemHLAndDecHL( BYTE op_code )
 // (BC)<-A
 void GameboyCPU::loadMemBCFromRegA(BYTE op_code)
 {
-	BYTE & ref_mem = mGameMemory[ mRegisters.BC.reg_16 ];
-	ref_mem = mRegisters.AF.hi;
+	mMemoryInterface->Set( mRegisters.BC.reg_16, mRegisters.AF.hi );
 }
 
 //LD (DE), A (1)
@@ -97,8 +90,7 @@ void GameboyCPU::loadMemBCFromRegA(BYTE op_code)
 // (DE)<-A
 void GameboyCPU::loadMemDEFromRegA(BYTE op_code)
 {
-	BYTE & ref_mem = mGameMemory[ mRegisters.DE.reg_16 ];
-	ref_mem = mRegisters.AF.hi;
+	mMemoryInterface->Set( mRegisters.DE.reg_16, mRegisters.AF.hi );
 }
 
 //LD (HL+), A ( or LDI HL, A ) (1)
@@ -106,8 +98,7 @@ void GameboyCPU::loadMemDEFromRegA(BYTE op_code)
 // (HL+)<-A and HL<-HL + 1
 void GameboyCPU::loadMemHLFromRegAAndIncHL(BYTE op_code)
 {
-	BYTE & ref_mem = mGameMemory[ mRegisters.HL.reg_16 ];
-	ref_mem = mRegisters.AF.hi;
+	mMemoryInterface->Set( mRegisters.HL.reg_16, mRegisters.AF.hi );
 	mRegisters.HL.reg_16++;
 }
 
@@ -116,7 +107,7 @@ void GameboyCPU::loadMemHLFromRegAAndIncHL(BYTE op_code)
 // A<-(HL), HL<-HL + 1
 void GameboyCPU::loadRegAFromMemHLAndIncHL(BYTE op_code)
 {
-	mRegisters.AF.hi = mGameMemory[ mRegisters.HL.reg_16 ];
+	mRegisters.AF.hi = mMemoryInterface->Get( mRegisters.HL.reg_16 );
 	mRegisters.HL.reg_16++;
 }
 
@@ -126,8 +117,7 @@ void GameboyCPU::loadRegAFromMemHLAndIncHL(BYTE op_code)
 // HL<-A and HL<-HL - 1
 void GameboyCPU::loadMemHLFromRegAAndDecHL(BYTE op_code)
 {
-	BYTE & ref_mem = mGameMemory[ mRegisters.HL.reg_16 ];
-	ref_mem = mRegisters.AF.hi;
+	mMemoryInterface->Set( mRegisters.HL.reg_16, mRegisters.AF.hi );
 	mRegisters.HL.reg_16--;
 }
 
@@ -138,9 +128,8 @@ void GameboyCPU::loadMemHLFromRegAAndDecHL(BYTE op_code)
 //Imm
 void GameboyCPU::loadReg16FromImm16(BYTE op_code)
 {
-	BYTE dest_reg_index = ( op_code & 0b00110000 ) >> 4;
+	BYTE dest_reg_index = ( op_code & 0b00110000u ) >> 4u;
 	WORD & dest_ref_word = m16bitArguments[ dest_reg_index ].ref;
-
 	dest_ref_word = immediateValue16();
 }
 
@@ -157,7 +146,7 @@ void GameboyCPU::loadRegSPFromRegHL(BYTE op_code)
 // (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2
 void GameboyCPU::pushReg16(BYTE op_code)
 {
-	BYTE argument =  ( op_code & 0b00110000 ) >> 4;
+	BYTE argument =  ( op_code & 0b00110000u ) >> 4u;
 	WORD & ref_16 = m16bitArguments[ argument ].ref;
 
 	setWORDToStack( ref_16 );
@@ -169,7 +158,7 @@ void GameboyCPU::pushReg16(BYTE op_code)
 // qqH <- (SP + 1), qqL <- (SP)
 void GameboyCPU::popReg16(BYTE op_code)
 {
-	BYTE argument  = ( op_code & 0b00110000 ) >> 4;
+	BYTE argument  = ( op_code & 0b00110000u ) >> 4u;
 	Register & ref_register = mRegisters.array[ argument ];
 
 	ref_register.reg_16 = getWORDFromStack();
