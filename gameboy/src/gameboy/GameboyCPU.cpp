@@ -75,6 +75,14 @@ std::shared_ptr<GameboyCPU> GameboyCPU::Create()
 	return cpu;
 }
 
+
+std::shared_ptr<GameboyCPU> GameboyCPU::CreateWithPtrCartridge( std::shared_ptr<MemoryInterface> && moved_ptr_memory_interface)
+{
+	std::shared_ptr<GameboyCPU> cpu = std::make_shared<GameboyCPU>();
+	cpu->SetMemoryInterface( std::move( moved_ptr_memory_interface ) );
+	return cpu;
+}
+
 void GameboyCPU::SetMemoryInterface(std::shared_ptr<MemoryInterface> memory_interface_ptr)
 {
 	mMemoryInterface = std::move( memory_interface_ptr );
