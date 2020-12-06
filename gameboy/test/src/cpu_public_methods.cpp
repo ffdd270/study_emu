@@ -13,8 +13,8 @@ SCENARIO(  "Gameboy Public Methods", "[PUBLIC METHODS]" )
 
 		WHEN("Get a Memory")
 		{
-			 REQUIRE_NOTHROW( memory.GetValue( 0x1000 ) );
-			 BYTE memory_value =  memory.GetValue( 0x1000 );
+			 REQUIRE_NOTHROW( memory.GetValue( 0x0100 ) );
+			 BYTE memory_value =  memory.GetValue( 0x0100 );
 
 			 THEN("0x34.")
 			{

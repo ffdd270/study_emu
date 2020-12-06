@@ -90,9 +90,9 @@ void GameboyCPU::SetMemoryInterface(std::shared_ptr<MemoryInterface> memory_inte
 
 void GameboyCPU::Reset()
 {
-	mPC.reg_16 = 0x1000;
+	mPC.reg_16 = 0x0100;
 	mSP.reg_16 = 0x8000;
-	mDebugInjectionCount.reg_16 = 0x1000;
+	mDebugInjectionCount.reg_16 = 0x0100;
 
 	if (mMemoryInterface != nullptr )
 	{

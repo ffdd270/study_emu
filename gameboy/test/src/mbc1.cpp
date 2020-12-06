@@ -280,7 +280,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 
 		std::shared_ptr<MBC1> mbc1 = std::make_shared<MBC1>( std::move( cart ) );
 		std::shared_ptr<GameboyCPU> cpu = GameboyCPU::CreateWithPtrCartridge( std::move( mbc1 ) );
-		
+
 
 	}
 }

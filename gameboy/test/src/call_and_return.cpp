@@ -229,15 +229,15 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 	 	const BYTE param_to_jp_pos[] = { 0x0, 0x8, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38 };
 
 	 	/* SET
-	 	 * 0x1000 => RST 0x0
+	 	 * 0x0100 => RST 0x0
 	 	 * 0x0 => RTN
-	 	 * 0x1001 => RST 0x8
-	 	 * 0x0 => RTN
+	 	 * 0x0101 => RST 0x8
+	 	 * 0x8 => RTN
 	 	 * ...
 	 	 */
 	 	for( BYTE i = 0; i <= 0b111u; i++)
 		{
-	 		cpu.SetInjectionCount( 0x1000 + i );
+	 		cpu.SetInjectionCount( 0x0100 + i );
 			cpu.InjectionMemory( base_op_code | static_cast<BYTE>( i << 3u ) );
 			cpu.SetInjectionCount(  param_to_jp_pos[i] );
 			cpu.InjectionMemory(0xC9); // RTN
@@ -246,7 +246,7 @@ TEST_CASE( "CALL AND RETURN", "[CALL_AND_RETURN]")
 
 	 	for( BYTE i = 0; i <= 0b111u; i++ )
 		{
-			REQUIRE( cpu.GetRegisterPC().reg_16 == 0x1000 + i );
+			REQUIRE( cpu.GetRegisterPC().reg_16 == 0x0100 + i );
 	 		cpu.NextStep(); //RET i
 			REQUIRE( cpu.GetRegisterPC().reg_16 == param_to_jp_pos[i] );
 			cpu.NextStep(); //RTN

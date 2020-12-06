@@ -42,7 +42,7 @@ SCENARIO( "Gameboy CPU Test.", "[DEBUG]")
 
 		WHEN("BP 0x1000")
 		{
-			cpu.AddBreakPoint(0x1000);
+			cpu.AddBreakPoint(0x0100);
 			for (int i = 0; i < 4; i++){ cpu.NextStep(); }
 
 			THEN("NOTHING CHANGED")
@@ -56,7 +56,7 @@ SCENARIO( "Gameboy CPU Test.", "[DEBUG]")
 
 		WHEN("BP 0x1004")
 		{
-			cpu.AddBreakPoint(0x1003);
+			cpu.AddBreakPoint(0x0103);
 			for (int i = 0; i < 4; i++){ cpu.NextStep(); }
 
 			THEN("NOTHING CHANGED")
