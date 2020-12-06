@@ -161,10 +161,10 @@ CartridgeSizeInfo Cartridge::GetSizeInfo() const
 			0, 0, 72, 80, 96
 	};
 
-	constexpr size_t CARTRIDGE_TYPE_POINT = 0x147;
-	basicErrorCheck( CARTRIDGE_TYPE_POINT );
+	constexpr size_t CARTRIDGE_ROM_SIZE_POINT = 0x148;
+	basicErrorCheck( CARTRIDGE_ROM_SIZE_POINT );
 
-	auto value = mBuffer[CARTRIDGE_TYPE_POINT];
+	auto value = mBuffer[CARTRIDGE_ROM_SIZE_POINT];
 	BYTE hi = (value & 0xf0u) >> 4u;
 	BYTE lo = (value & 0x0fu);
 

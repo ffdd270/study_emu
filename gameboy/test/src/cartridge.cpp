@@ -161,5 +161,18 @@ SCENARIO( "Cartridge Test", "[CART]" )
 				REQUIRE_THROWS( cart.GetRamData( 0x2500 ) );
 			}
 		}
+
+		WHEN("Get Rom Size Info")
+		{
+			CartridgeSizeInfo info;
+			REQUIRE_NOTHROW(info = cart.GetSizeInfo());
+
+			THEN("64kb")
+			{
+				REQUIRE(info.bank == 4);
+				REQUIRE(info.size == 0x10000);
+				REQUIRE(cart.GetRealBufferSize() == info.size);
+			}
+		}
 	}
 }
