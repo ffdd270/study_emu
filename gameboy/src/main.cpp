@@ -131,7 +131,7 @@ void InputEvents( std::shared_ptr<GameboyCPU> & ref_ptr_cpu,
 
 int main()
 {
-	std::shared_ptr<GameboyCPU> cpu_ptr = std::make_shared<GameboyCPU>();
+	std::shared_ptr<GameboyCPU> cpu_ptr = GameboyCPU::Create();
 	GameboyCPUBroker broker;
 	TextEditor editor;
 	LuaCommandViewer command_viewer;
