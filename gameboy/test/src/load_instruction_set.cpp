@@ -396,7 +396,16 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 
 	SECTION("LDH (imm8), reg A")
 	{
+		cpu.Reset();
 
+		setRegister8( cpu, Param8BitIndex::A, 0x72 );
+		cpu.NextStep();
+
+		cpu.InjectionMemory( 0xE0 ); // LDH (imm8), reg A
+		cpu.InjectionMemory( 0xAB ); // 0xFF00 | 0x00AB
+		cpu.NextStep();
+
+		REQUIRE( cpu.GetMemoryValue( 0xFFAB ) == 0x72 );
 	}
 
 	SECTION("LDH, reg A,  (imm8)")
