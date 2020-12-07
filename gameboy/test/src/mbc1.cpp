@@ -281,15 +281,27 @@ SCENARIO("Use MBC1.", "[MBC]")
 		std::shared_ptr<MBC1> mbc1 = std::make_shared<MBC1>( std::move( cart ) );
 		std::shared_ptr<GameboyCPU> cpu = GameboyCPU::CreateWithPtrCartridge( std::move( mbc1 ) );
 
-		WHEN("Execute Entry Point")
+		WHEN("Execute Codes.")
 		{
 			// 리틀 엔디안인 걸 기억해랏!
 			cpu->NextStep(); // NOP.
 			cpu->NextStep(); // jumpToWord 0x0637
 
-			THEN("PC = 0x0637")
+			THEN("Proc Entry Point. PC = 0x0637")
 			{
 				REQUIRE( cpu->GetRegisterPC().reg_16 == 0x0637 );
+			}
+
+			cpu->NextStep(); // JumpToWord 0x0430
+
+			THEN("PC = 0x0430.")
+			{
+				REQUIRE( cpu->GetRegisterPC().reg_16 == 0x0430 );
+			}
+
+			for( size_t i = 0; i < 10000; i++ )
+			{
+				cpu->NextStep();
 			}
 		}
 	}

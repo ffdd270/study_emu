@@ -37,6 +37,9 @@ function Util.LogInfo(  self, str )
 	log_info( GetInstanceLogger(), tostring( str ) )
 end
 
+function show_op_code( code )
+	Util:LogInfo( GetInstanceCPU():TestOpCode( code ) )
+end
 
 
 ImGuiInputTextFlags_ = {
