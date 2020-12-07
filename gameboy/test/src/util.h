@@ -40,14 +40,19 @@ inline void check_flags( GameboyCPU & cpu, bool z, bool h, bool n, bool c )
 	REQUIRE( ( result[3] == 1 ) == c );
 }
 
-inline void setRegister16( GameboyCPU & cpu_ref ,BYTE register_index, WORD value )
+inline void addWord(GameboyCPU & cpu_ref, WORD value )
 {
-	BYTE hi = ( 0xFF00 & value ) >> 8; // hi byte,
-	BYTE lo = 0x00FF & value; // lo byte
+	BYTE hi = static_cast<WORD>( 0xFF00u & value ) >> 8u; // hi byte,
+	BYTE lo = 0x00FFu & value; // lo byte
 
-	cpu_ref.InjectionMemory( 0b00000001 | ( register_index << 4 ) );
 	cpu_ref.InjectionMemory( lo );
 	cpu_ref.InjectionMemory( hi );
+}
+
+inline void setRegister16( GameboyCPU & cpu_ref ,BYTE register_index, WORD value )
+{
+	cpu_ref.InjectionMemory( 0b00000001 | ( register_index << 4 ) );
+	addWord(cpu_ref, value);
 }
 
 inline void setRegister8( GameboyCPU & cpu_ref, BYTE register_index, BYTE value )
