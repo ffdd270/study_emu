@@ -394,6 +394,36 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	}
 
 
+	SECTION("LDH (imm8), reg A")
+	{
+
+	}
+
+	SECTION("LDH, reg A,  (imm8)")
+	{
+
+	}
+
+	SECTION("LD (Reg C), Reg A")
+	{
+
+	}
+
+	SECTION("LD Reg A, (Reg C)")
+	{
+
+	}
+
+	SECTION("LD (Imm16), Reg A")
+	{
+
+	}
+
+	SECTION("LD reg A, (imm16)")
+	{
+
+	}
+
 }
 
 
