@@ -200,6 +200,40 @@ private:
 	// SP <- HL
 	void loadRegSPFromRegHL( BYTE op_code );
 
+
+	//여기서 Half Word는 메모리를 0xff00 | imm value 로 로드하겠다는 말.
+
+	//LDH (imm8), A
+	// 0b11100000 ( 0xE0 )
+	// (0xff00 | Imm8) = reg A
+	void loadHalfWordMemImm8FromRegA( BYTE op_code );
+
+	//LDH A, (imm8)
+	// 0b11110000 ( 0xF0 )
+	// reg A = (0xff00 | Imm8)
+	void loadHalfWordRegAFromMemImm8( BYTE op_code );
+
+	//LD (C), A
+	// 0b11100010 ( 0xE2 )
+	// (0xff00 | reg C) = reg A
+	void loadMemCFromRegA( BYTE op_code );
+
+	//LD A, (C)
+	// 0b11110010 ( 0xF2 )
+	// reg A = (0xff00 | reg C)
+	void loadRegAFromMemC( BYTE op_code );
+
+	//LD (Imm16), RegA
+	// 0b11101010 ( 0xEA )
+	// (Imm16) = Reg A
+	void loadMemImm16FromRegA( BYTE op_code );
+
+	//LD RegA, (Imm16)
+	// 0b11111010 ( 0xFA )
+	// Reg A = (Imm16)
+	void loadRegAFromMemImm16( BYTE op_code );
+
+
 	//PUSH qq
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
 	// (SP - 2) <- qqLow, (SP - 1) <- qqHi, SP<-SP - 2

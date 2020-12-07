@@ -164,6 +164,38 @@ void GameboyCPU::popReg16(BYTE op_code)
 	ref_register.reg_16 = getWORDFromStack();
 }
 
+void GameboyCPU::loadHalfWordMemImm8FromRegA(BYTE op_code)
+{
+	BYTE imm8 = immediateValue();
+	mMemoryInterface->Set( 0xff00u | imm8, mRegisters.AF.hi );
+}
+
+void GameboyCPU::loadHalfWordRegAFromMemImm8(BYTE op_code)
+{
+	BYTE imm8 = immediateValue();
+	mRegisters.AF.hi = mMemoryInterface->Get( 0xff00u | imm8 );
+}
+
+void GameboyCPU::loadMemCFromRegA(BYTE op_code)
+{
+	mMemoryInterface->Set( 0xff00u | mRegisters.BC.lo, mRegisters.AF.hi );
+}
+
+void GameboyCPU::loadRegAFromMemC(BYTE op_code)
+{
+	mRegisters.AF.hi = mMemoryInterface->Get( 0xff00u | mRegisters.BC.lo );
+}
+
+void GameboyCPU::loadMemImm16FromRegA(BYTE op_code)
+{
+	mMemoryInterface->Set( immediateValue16(), mRegisters.AF.hi );
+}
+
+void GameboyCPU::loadRegAFromMemImm16(BYTE op_code)
+{
+	mRegisters.AF.hi = mMemoryInterface->Get( immediateValue16() );
+}
+
 void GameboyCPU::complementCarryFlag(BYTE op_code)
 {
 	setFlagH( GetFlagC() );
@@ -177,4 +209,3 @@ void GameboyCPU::setCarryFlag(BYTE op_code)
 	setFlagC( true );
 	setFlagN( false );
 }
-

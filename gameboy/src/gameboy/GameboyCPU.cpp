@@ -133,6 +133,7 @@ void GameboyCPU::NextStep()
 	mPC.reg_16 += 1;
 
 	if ( op_code == 0x00 ) // NOP
+
 	{
 		return;
 	}
@@ -214,6 +215,13 @@ public:
 
 	//load
 	BIND_FUNC( loadRegSPFromRegHL )
+	BIND_FUNC( loadHalfWordMemImm8FromRegA )
+	BIND_FUNC( loadHalfWordRegAFromMemImm8 )
+	BIND_FUNC( loadMemCFromRegA )
+	BIND_FUNC( loadRegAFromMemC )
+	BIND_FUNC( loadMemImm16FromRegA )
+	BIND_FUNC( loadRegAFromMemImm16 )
+
 	BIND_FUNC( pushReg16 )
 	BIND_FUNC( popReg16 )
 
@@ -648,6 +656,24 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//LD SP, HL
 	// 0b11111001 0xF9
 	mFuncMap[ 0b11111001 ] = BIND_FUNCS::loadRegSPFromRegHL;
+
+	//LDH (imm8), A
+	mFuncMap[ 0xE0 ] = BIND_FUNCS::loadHalfWordMemImm8FromRegA;
+
+	//LDH A, (imm8)
+	mFuncMap[ 0xF0 ] = BIND_FUNCS::loadHalfWordRegAFromMemImm8;
+
+	//LD (C), A
+	mFuncMap[ 0xE2 ] = BIND_FUNCS::loadMemCFromRegA;
+
+	//LD A, (C)
+	mFuncMap[ 0xF2 ] = BIND_FUNCS::loadRegAFromMemC;
+
+	//LD (Imm16), RegA
+	mFuncMap[ 0xEA ] = BIND_FUNCS::loadMemImm16FromRegA;
+
+	//LD RegA, (Imm16)
+	mFuncMap[ 0xFA ] = BIND_FUNCS::loadRegAFromMemImm16;
 
 	//PUSH qq
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
