@@ -408,14 +408,25 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		REQUIRE( cpu.GetMemoryValue( 0xFFAB ) == 0x72 );
 	}
 
-	SECTION("LDH, reg A,  (imm8)")
+	SECTION("LDH, reg A, (imm8)")
 	{
+		cpu.Reset();
 
+		BYTE base_address = 0x90u; // 0xFF09
+		BYTE result = 0x76u;
+
+		setMemory3Step( cpu, Param8BitIndex::B, 0xFF00u | base_address, result );
+		for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+
+		cpu.InjectionMemory( 0xF0 ); // LDH (imm8), reg A
+		cpu.InjectionMemory( base_address ); // 0xFF00 | 0x00AB
+		cpu.NextStep();
+
+		REQUIRE( cpu.GetMemoryValue( 0xFF00u | base_address ) == 0x76 );
 	}
 
 	SECTION("LD (Reg C), Reg A")
-	{
-
+	{;
 	}
 
 	SECTION("LD Reg A, (Reg C)")
