@@ -398,8 +398,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister8( cpu, Param8BitIndex::A, 0x72 );
-		cpu.NextStep();
+		callSetRegister8( cpu, Param8BitIndex::A, 0x72 );
 
 		cpu.InjectionMemory( 0xE0 ); // LDH (imm8), reg A
 		cpu.InjectionMemory( 0xAB ); // 0xFF00 | 0x00AB
@@ -415,8 +414,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		BYTE base_address = 0x90u; // 0xFF09
 		BYTE result = 0x76u;
 
-		setMemory3Step( cpu, Param8BitIndex::B, 0xFF00u | base_address, result );
-		for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+		callSetMemory3Step( cpu, Param8BitIndex::B, 0xFF00u | base_address, result );
 
 		cpu.InjectionMemory( 0xF0 ); // LDH (imm8), reg A
 		cpu.InjectionMemory( base_address ); // 0xFF00 | 0x00AB
@@ -432,9 +430,8 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		BYTE base_address = 0x94u; // 0xFF09
 		BYTE result = 0x2au;
 
-		setRegister8( cpu, Param8BitIndex::C, base_address  );
-		setRegister8( cpu, Param8BitIndex::A, result );
-		for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+		callSetRegister8( cpu, Param8BitIndex::C, base_address  );
+		callSetRegister8( cpu, Param8BitIndex::A, result );
 
 		cpu.InjectionMemory( 0xE2 ); // LDH (imm8), reg A
 		cpu.NextStep();
@@ -450,12 +447,10 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		BYTE result = 0x76u;
 
 		// Memory
-		setMemory3Step( cpu, Param8BitIndex::B, 0xFF00u | base_address, result );
-		for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
+		callSetMemory3Step( cpu, Param8BitIndex::B, 0xFF00u | base_address, result );
 
 		// Register C.
-		setRegister8( cpu, Param8BitIndex::C, base_address );
-		cpu.NextStep();
+		callSetRegister8( cpu, Param8BitIndex::C, base_address );
 
 		// Instruction.
 		cpu.InjectionMemory( 0xF2 ); // LDH (imm8), reg A
@@ -472,8 +467,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		BYTE result = 0x32u;
 
 		// Register A.
-		setRegister8( cpu, Param8BitIndex::A, result);
-		cpu.NextStep();
+		callSetRegister8( cpu, Param8BitIndex::A, result);
 
 		// Instruction.
 		cpu.InjectionMemory( 0xEA ); // LDH (imm8), reg A
@@ -493,8 +487,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		callSetMemory3Step( cpu, Param8BitIndex::D, base_address, result );
 
 		// Register A.
-		setRegister8( cpu, Param8BitIndex::A, result);
-		cpu.NextStep();
+		callSetRegister8( cpu, Param8BitIndex::A, result);
 
 		// Instruction.
 		cpu.InjectionMemory( 0xFA ); // LDH (imm8), reg A
