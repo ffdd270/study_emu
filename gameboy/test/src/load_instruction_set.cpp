@@ -426,7 +426,20 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	}
 
 	SECTION("LD (Reg C), Reg A")
-	{;
+	{
+		cpu.Reset();
+
+		BYTE base_address = 0x94u; // 0xFF09
+		BYTE result = 0x2au;
+
+		setRegister8( cpu, Param8BitIndex::C, base_address  );
+		setRegister8( cpu, Param8BitIndex::A, result );
+		for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+		cpu.InjectionMemory( 0xE2 ); // LDH (imm8), reg A
+		cpu.NextStep();
+
+		REQUIRE( cpu.GetMemoryValue( 0xFF00u | base_address ) == result );
 	}
 
 	SECTION("LD Reg A, (Reg C)")
