@@ -301,7 +301,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 
 			for( size_t i = 0; i < 10000; i++ )
 			{
-				cpu->NextStep();
+				REQUIRE_NOTHROW( cpu->NextStep() );
 			}
 		}
 	}

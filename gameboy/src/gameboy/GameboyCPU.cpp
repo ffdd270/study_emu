@@ -5,6 +5,7 @@
 #include "GameboyCPU.h"
 #include <cstring>
 #include <cassert>
+#include <string>
 
 
 GameboyCPU::GameboyCPU() : m8bitArguments( 	{
@@ -150,9 +151,8 @@ void GameboyCPU::NextStep()
 	auto& func = (isPreFixInstruction) ? mPrefixCBFuncMap[ op_code ] : mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
 
 	if( func ==  nullptr )
-	{
-		assert( false );
-		return;
+	 {
+		throw std::logic_error("Not Impl Instruction Set, " + std::to_string( op_code ) );
 	}
 
 	func( this, op_code, true );
@@ -164,8 +164,7 @@ const char * GameboyCPU::TestOpCode(BYTE op_code, bool prefix)
 	auto& func = (prefix) ? mPrefixCBFuncMap[ op_code ] : mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
 	if( func == nullptr )
 	{
-		assert(false);
-		return "";
+		throw std::logic_error("Not Impl Instruction Set, " + std::to_string( op_code ) );
 	}
 
 	return func( this, op_code, false );
