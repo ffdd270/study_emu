@@ -197,12 +197,15 @@ void GameboyCPU::ContinueFromBreakPoint()
 
 // PRE 0b00의 콜백 함수.
 #define BIND_FUNC( func_name ) static const char * func_name\
-( GameboyCPU * cpu, BYTE op_code, bool use_event)\
+( GameboyCPU * cpu, BYTE op_code, bool not_test)\
 {\
-	cpu->func_name\
-	( op_code );\
-	if (use_event) { cpu->addInstructionEvent( #func_name, op_code ); return ""; } \
-	return #func_name;                                                            \
+	if (not_test) {\
+		cpu->func_name\
+		( op_code );\
+		cpu->addInstructionEvent( #func_name, op_code );\
+		return "";\
+	} \
+	return #func_name;\
 }\
 
 

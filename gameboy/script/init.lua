@@ -46,3 +46,16 @@ ImGuiInputTextFlags_ = {
 	None = 0,
 	CharsHexadecimal = 1 << 1
 }
+
+local function _test_op_code_err( err  )
+	Util:LogError( err ) -- TODO : 맨 마지막 글자만 따서 Hex로 뿌리기
+end
+function _test_op_code( code )
+	GetInstanceCPU():TestOpCode( code )
+end
+
+function test_op_code( )
+	for i = 0, 0xff do
+		xpcall( _test_op_code, _test_op_code_err, i )
+	end
+end
