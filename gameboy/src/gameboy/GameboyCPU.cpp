@@ -92,7 +92,7 @@ void GameboyCPU::SetMemoryInterface(std::shared_ptr<MemoryInterface> memory_inte
 void GameboyCPU::Reset()
 {
 	mPC.reg_16 = 0x0100;
-	mSP.reg_16 = 0x8000;
+	mSP.reg_16 = 0xfffe;
 	mDebugInjectionCount.reg_16 = 0x0100;
 
 	if (mMemoryInterface != nullptr )
@@ -300,6 +300,10 @@ public:
 
 	// pre 0b00
 
+	//jump
+	BIND_FUNC( jumpRegister );
+	BIND_FUNC( jumpRegisterIfCondition );
+
 	//load
 	BIND_FUNC( loadRegFromImm8 )
 	BIND_FUNC( loadRegAFromMemBC )
@@ -347,6 +351,16 @@ public:
 
 void GameboyCPU::pre0b00GenerateFuncMap()
 {
+	// JR 'singed value'
+	mFuncMap[ 0x18 ] = BIND_FUNCS::jumpRegister;
+	BYTE opcodes[] = { 0x20, 0x28, 0x30, 0x38 };
+
+	// JR condition 'signed value'
+	for ( auto opcode : opcodes )
+	{
+		mFuncMap[ opcode ] = BIND_FUNCS::jumpRegisterIfCondition;
+	}
+
 	// LD reg8, imm8 :  reg8 load imm 8
 	// 0b000110 ~ 0b111110
 	for(BYTE i = 0b000; i <= 0b111; i++)

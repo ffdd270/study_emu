@@ -5,6 +5,7 @@
 #include "Cartridge.h"
 #include <fstream>
 #include <algorithm>
+#include <string>
 
 void Cartridge::Load(std::string_view path)
 {
@@ -207,5 +208,8 @@ void Cartridge::ramErrorCheck(size_t pos) const
 void Cartridge::basicErrorCheck(const size_t pos) const
 {
 	if( mBuffer.empty() ) { throw std::logic_error("Cartridge Not INITED."); }
-	if( mBuffer.size() <= pos ) { throw std::logic_error("NOT VALID CARTRIDGE."); }
+	if( mBuffer.size() <= pos )
+	{
+		throw std::logic_error("NOT VALID CARTRIDGE ADDRESS : " + std::to_string( pos ) );
+	}
 }

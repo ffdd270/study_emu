@@ -598,6 +598,18 @@ private:
 	// 0xE9
 	void jumpToHL(BYTE op_code);
 
+	//JR 'signed value'
+	// Desc
+	// PC is PC + 'singed bit'.
+	// 0x18
+	void jumpRegister(BYTE op_code);
+
+	//JR cond 'singed value'
+	// Desc
+	// if condition, PC is PC + 'signed bit'
+	// 0x20(NZ), 0x28(Z), 0x30(NC), 0x38(C)
+	void jumpRegisterIfCondition(BYTE op_code);
+
 	//CALL nn
 	// Desc
 	// (SP - 1) = PC High
