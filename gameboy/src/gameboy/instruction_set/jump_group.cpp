@@ -34,7 +34,8 @@ void GameboyCPU::jumpToHL(BYTE op_code)
 
 void GameboyCPU::jumpRegister(BYTE op_code)
 {
-	mPC.reg_16 = mPC.reg_16 + static_cast<char>( immediateValue() );
+	BYTE imm = immediateValue();
+	mPC.reg_16 = mPC.reg_16 + static_cast<char>( imm );
 }
 
 void GameboyCPU::jumpRegisterIfCondition(BYTE op_code)
