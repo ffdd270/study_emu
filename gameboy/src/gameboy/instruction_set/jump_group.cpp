@@ -41,13 +41,16 @@ void GameboyCPU::jumpRegisterIfCondition(BYTE op_code)
 {
 	// 0x20이면 Z. 아니면 C.
 	bool condition = ( op_code & 0xf0u ) == 0x20u ?  GetFlagZ() : GetFlagC();
-	if ( ( op_code & 0x0fu ) == 0x8 )
+
+	if ( ( op_code & 0x0fu ) == 0x0u )
 	{
 		condition = !condition;
 	}
 
+	BYTE imm = immediateValue();
+
 	if( condition )
 	{
-		jumpRegister( op_code );
+		mPC.reg_16 = mPC.reg_16 + static_cast<char>( imm );
 	}
 }

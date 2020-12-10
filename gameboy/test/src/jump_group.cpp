@@ -15,6 +15,23 @@ inline void test_jr( GameboyCPU & cpu, char signed_value )
 	REQUIRE( cpu.GetRegisterPC().reg_16 == prv + signed_value + 2 );
 }
 
+inline void test_jr_cond( GameboyCPU & cpu, BYTE op_code, char signed_value, bool cond )
+{
+	WORD prv = cpu.GetRegisterPC().reg_16;
+
+	cpu.InjectionMemory( op_code );
+	cpu.InjectionMemory( signed_value );
+	cpu.NextStep();
+
+	if ( cond )
+	{
+		REQUIRE( cpu.GetRegisterPC().reg_16 == prv + signed_value + 2 );
+	}
+	else
+	{
+		REQUIRE( cpu.GetRegisterPC().reg_16 == prv + 2 );
+	}
+}
 TEST_CASE("JUMP CODE POINT", "[JUMP]")
 {
 	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
@@ -111,6 +128,69 @@ TEST_CASE("JUMP CODE POINT", "[JUMP]")
 		SECTION("signed_value = -80")
 		{
 			test_jr( cpu, -80 );
+		}
+	}
+
+	SECTION("JR cond signed_value")
+	{
+		SECTION("NZ")
+		{
+			SECTION("OK. singed_value = 0x10")
+			{
+				incR( cpu, Param8BitIndex::B, 0x0 ); // NZ;
+				test_jr_cond( cpu, 0x20, 0x10, true );
+			}
+
+			SECTION("NOT OK")
+			{
+				incR( cpu, Param8BitIndex::B, 0xff ); // Z;
+				test_jr_cond( cpu, 0x20, 0x10, false );
+			}
+		}
+
+		SECTION("Z")
+		{
+			SECTION("OK. singed_value = -0x10")
+			{
+				incR( cpu, Param8BitIndex::B, 0xff ); // Z;
+				test_jr_cond( cpu, 0x28, -0x10, true );
+			}
+
+			SECTION("NOT OK")
+			{
+				incR( cpu, Param8BitIndex::B, 0x0 ); // NZ;
+				test_jr_cond( cpu, 0x28, -0x10, false );
+			}
+		}
+
+		SECTION("NC")
+		{
+			SECTION("OK. singed_value = 0x30")
+			{
+				incR( cpu, Param8BitIndex::B, 0x0 ); // NC;
+				test_jr_cond( cpu, 0x30, 0x30, true );
+			}
+
+			SECTION("NOT OK")
+			{
+				incR( cpu, Param8BitIndex::B, 0xff ); // C;
+				test_jr_cond( cpu, 0x30, -0x30, false );
+			}
+		}
+
+		SECTION("C")
+		{
+			SECTION("OK. singed_value = -0x30")
+			{
+				incR( cpu, Param8BitIndex::B, 0xff ); // C;
+				test_jr_cond( cpu, 0x38, -0x30, true );
+			}
+
+			SECTION("NOT OK")
+			{
+				incR( cpu, Param8BitIndex::B, 0x0 ); // NC;
+				test_jr_cond( cpu, 0x38, -0x30, false );
+			}
 		}
 	}
 }
