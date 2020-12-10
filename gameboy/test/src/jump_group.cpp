@@ -2,6 +2,19 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
+inline void test_jr( GameboyCPU & cpu, char signed_value )
+{
+	signed_value = -80;
+
+	WORD prv = cpu.GetRegisterPC().reg_16;
+
+	cpu.InjectionMemory( 0x18 );
+	cpu.InjectionMemory(signed_value );
+	for( size_t i = 0; i < 2; i++ ) { cpu.NextStep(); }
+
+	REQUIRE( cpu.GetRegisterPC().reg_16 == prv + signed_value + 2 );
+}
+
 TEST_CASE("JUMP CODE POINT", "[JUMP]")
 {
 	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
@@ -86,5 +99,18 @@ TEST_CASE("JUMP CODE POINT", "[JUMP]")
 	SECTION("JP HL")
 	{
 		REQUIRE( 0x4242 == jumpToHL( cpu, 0x4242 ) );
+	}
+
+	SECTION("JR signed_value")
+	{
+		SECTION("signed_value = 125")
+		{
+			test_jr( cpu, 125 );
+		}
+
+		SECTION("signed_value = -80")
+		{
+			test_jr( cpu, -80 );
+		}
 	}
 }
