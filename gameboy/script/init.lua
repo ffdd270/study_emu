@@ -3,6 +3,7 @@ function init_script()
 	MemoryViewer:init()
 	LoggerViewer:init()
 	MemoryWatch:init()
+	LuaCommander:init()
 end
 
 
@@ -32,13 +33,20 @@ function Util.LogWarn( self, str )
 	log_warning( GetInstanceLogger(), tostring( str ) )
 end
 
-
 function Util.LogInfo(  self, str )
 	log_info( GetInstanceLogger(), tostring( str ) )
 end
 
+function info( str )
+	Util:LogInfo( str )
+end
+
 function show_op_code( code )
 	Util:LogInfo( GetInstanceCPU():TestOpCode( code ) )
+end
+
+function TRACE_BACK( err )
+	Util:LogError( err )
 end
 
 
@@ -48,6 +56,8 @@ ImGuiInputTextFlags_ = {
 }
 
 local function _test_op_code_err( err  )
+
+
 	Util:LogError( err ) -- TODO : 맨 마지막 글자만 따서 Hex로 뿌리기
 end
 function _test_op_code( code )

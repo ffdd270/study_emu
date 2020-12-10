@@ -123,6 +123,11 @@ void ImGui_InputText( StringBuf * string_buf )
 	ImGui::InputText( "", string_buf->Get(), string_buf->Size() );
 }
 
+void ImGui_InputTextMultiline( StringBuf * ptr_string_buf )
+{
+	ImGui::InputTextMultiline( "", ptr_string_buf->Get(), ptr_string_buf->Size() );
+}
+
 void ImGui_InputTextWithFlags( const char * label, StringBuf * ptr_string_buf, int flags )
 {
 	label = label == nullptr ? "" : label;
@@ -248,6 +253,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 			.addFunction( "Text", &ImGui_Text )
 			.addFunction( "Columns", &ImGui_Columns )
 			.addFunction( "InputText", &ImGui_InputText )
+			.addFunction( "InputTextMultiline", &ImGui_InputTextMultiline )
 			.addFunction( "InputTextWithFlags", &ImGui_InputTextWithFlags )
 			.addFunction( "NextColumn", &ImGui::NextColumn )
 			.addFunction( "Button", &ImGui_Button )
