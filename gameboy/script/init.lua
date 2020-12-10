@@ -56,9 +56,29 @@ ImGuiInputTextFlags_ = {
 }
 
 local function _test_op_code_err( err  )
+	local begin_index, end_index
+	local inc = 0
 
+	local str = err
 
-	Util:LogError( err ) -- TODO : 맨 마지막 글자만 따서 Hex로 뿌리기
+	for i = 1, 9999 do -- 적당히 빠져 나오도록 =ㅁ=
+		local find_begin, find_end  = string.find( str, "%d+" )
+
+		if not find_begin then
+			break
+		end
+
+		end_index = find_end + begin_index
+		begin_index = find_begin + begin_index
+
+		str = string.sub( str, find_begin )
+	end
+
+	if (not begin_index) or (not end_index) then return end
+
+	local result = string.sub( err, begin_index, end_index )
+
+	Util:LogError( err .. '  :'.. result ) -- TODO : 맨 마지막 글자만 따서 Hex로 뿌리기
 end
 function _test_op_code( code )
 	GetInstanceCPU():TestOpCode( code )
