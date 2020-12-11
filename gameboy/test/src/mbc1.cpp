@@ -301,9 +301,12 @@ SCENARIO("Use MBC1.", "[MBC]")
 				REQUIRE( cpu->GetRegisterPC().reg_16 == 0x0430 );
 			}
 
-			for( size_t i = 0; i < 10000; i++ )
+			THEN( "Step 10000" )
 			{
-				REQUIRE_NOTHROW( cpu->NextStep() );
+				for( size_t i = 0; i < 10000; i++ )
+				{
+					REQUIRE_NOTHROW( cpu->NextStep() );
+				}
 			}
 		}
 	}
