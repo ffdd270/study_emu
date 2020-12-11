@@ -44,6 +44,12 @@ void GameboyCPU::rotateLeftThroughCarry(BYTE op_code)
 	set8BitArgumentValue( param, argument_value );
 }
 
+void GameboyCPU::rotateLeftThroughCarryRegisterA(BYTE op_code)
+{
+	rotateLeftThroughCarry( 0b00000111u );
+	setFlagZ( false );
+}
+
 void GameboyCPU::rotateRightThroughCarry(BYTE op_code)
 {
 	BYTE param = ( 0b00000111u ) & op_code;
@@ -75,6 +81,11 @@ void GameboyCPU::rotateLeft(BYTE op_code)
 
 	commonRotateAndShiftFlags(argument_value);
 	set8BitArgumentValue( param, argument_value );
+}
+
+void GameboyCPU::rotateLeftRegisterA(BYTE op_code)
+{
+	rotateLeft( 0b00000111u );
 }
 
 void GameboyCPU::rotateRight(BYTE op_code)

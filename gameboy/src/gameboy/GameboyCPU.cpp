@@ -256,10 +256,6 @@ public:
 	BIND_FUNC( returnFromInterrupt )
 	BIND_FUNC( restartFromParam )
 
-	//Rotate Register A.
-	BIND_FUNC( rotateRightThroughCarryRegisterA )
-	BIND_FUNC( rotateRightRegisterA )
-
 	// pre 0b10
 	// arth
 	BIND_FUNC( addRegAFromRegister )
@@ -336,6 +332,13 @@ public:
 	BIND_FUNC( complementRegister )
 	BIND_FUNC( complementCarryFlag )
 	BIND_FUNC( setCarryFlag )
+
+	//Rotate Register A.
+	BIND_FUNC( rotateRightThroughCarryRegisterA )
+	BIND_FUNC( rotateLeftThroughCarryRegisterA )
+
+	BIND_FUNC( rotateRightRegisterA )
+	BIND_FUNC( rotateLeftRegisterA )
 
 	// Prefix 0xcb
 	BIND_FUNC( rotateLeftThroughCarry );
@@ -479,8 +482,11 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	}
 
 	// ROTATE A
-	mFuncMap[ 0x0F ] = BIND_FUNCS::rotateRightThroughCarryRegisterA;
+	mFuncMap[ 0x07 ] = BIND_FUNCS::rotateLeftThroughCarryRegisterA;
+ 	mFuncMap[ 0x0F ] = BIND_FUNCS::rotateRightThroughCarryRegisterA;
+
 	mFuncMap[ 0x1F ] = BIND_FUNCS::rotateRightRegisterA;
+	mFuncMap[ 0x17 ] = BIND_FUNCS::rotateLeftRegisterA;
 }
 
 void GameboyCPU::pre0b01GenerateFuncMap()

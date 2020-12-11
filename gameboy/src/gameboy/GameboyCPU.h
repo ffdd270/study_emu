@@ -497,6 +497,12 @@ private:
 	// 0xcb, 0x00000rrr { r = m8BitRegisters } ( HL = 0b110 )
 	void rotateLeftThroughCarry( BYTE op_code );
 
+	//RLCA
+	// Desc
+	// RLC, but Register A, , and Not Prefix. and Z Flag = 0.
+	// 0x07
+	void rotateLeftThroughCarryRegisterA( BYTE op_code );
+
 	//RRC
 	// Decs
 	// Rotate Right. Carry is Bit0, Bit7 is Carry.
@@ -516,6 +522,12 @@ private:
 	// Bit0 is Carry. Carry is Bit7. and Rotate Left.
 	// 0xcb, 0b00010rrr { r = m8BitRegisters }
 	void rotateLeft( BYTE op_code );
+
+	//RLA
+	// Desc
+	// RL, But A. and Z flag = 0.
+	// 0x17
+	void rotateLeftRegisterA( BYTE op_code );
 
 	//RR
 	// Desc
