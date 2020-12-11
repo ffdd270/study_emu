@@ -59,6 +59,12 @@ local function _test_op_code_err( err  )
 	local str = err
 	local len = #str
 	local num_str = string.sub( str, len - 3, len ) --  뒤 3개.
+
+	local begin_index, end_index = string.find( num_str, "%d+" )
+	if not begin_index then return end
+
+	num_str = string.sub( num_str, begin_index, end_index )
+
 	local number = tonumber( num_str )
 	local hex_string = to_hex_string( number )
 
