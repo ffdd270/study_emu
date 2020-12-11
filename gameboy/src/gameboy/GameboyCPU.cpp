@@ -500,7 +500,7 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 	{
 		for( BYTE j = 0b000; j <= 0b111; j++ )
 		{
-			if ( i == j  ) { continue; } // 같은 인자에 대한 연산은 없음. LD rrr, rrr 같이..
+			if ( ( i == j ) && ( i == 0b110 ) ) { continue; } // (HL) (HL)은 없음..
 
 			BYTE op_code = 0b01000000u | static_cast<BYTE>(i << 3u) | j;
 
@@ -516,7 +516,7 @@ void GameboyCPU::pre0b01GenerateFuncMap()
 				continue;
 			}
 
-			// reg load reg, 0brrryyy ( rrr, yyy != 0b110, rrr != yyy )
+			// reg load reg, 0brrryyy ( rrr, yyy != 0b110)
 			mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromReg;
 		}
 	}
