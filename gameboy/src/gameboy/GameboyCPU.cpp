@@ -304,6 +304,7 @@ public:
 	BIND_FUNC( jumpRegisterIfCondition );
 
 	//load
+	BIND_FUNC( loadMemoryImm16FromSP )
 	BIND_FUNC( loadRegFromImm8 )
 	BIND_FUNC( loadRegAFromMemBC )
 	BIND_FUNC( loadRegAFromMemDE )
@@ -375,6 +376,8 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 		mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromImm8;
 	}
 
+	// LD (WORD) SP
+	mFuncMap[ 0x08 ] = BIND_FUNCS::loadMemoryImm16FromSP;
 
 	// LD A, (BC) : A Load (BC)
 	// 0b001010

@@ -145,6 +145,11 @@ private:
 	// (HL)<-r
 	void loadMemHLFromReg(BYTE op_code );
 
+	//LD (WORD) SP
+	// 0x08
+	// (Word) <- SP
+	void loadMemoryImm16FromSP(BYTE op_code);
+
 	//LD A, (BC) (1)
 	// 0b00001010 (0x0A)
 	// A<-(BC)

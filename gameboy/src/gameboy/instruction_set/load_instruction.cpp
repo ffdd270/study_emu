@@ -50,6 +50,11 @@ void GameboyCPU::loadMemHLFromReg(BYTE op_code)
 }
 
 
+void GameboyCPU::loadMemoryImm16FromSP( BYTE op_code )
+{
+	mMemoryInterface->SetWord( immediateValue16(), mSP.reg_16 );
+}
+
 //LD A, (BC) (1)
 // 0b00001010 (0x0A)
 // A<-(BC)
