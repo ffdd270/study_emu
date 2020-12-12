@@ -8,7 +8,14 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
+void test_LD_HL_SP_SingedImm8( GameboyCPU & cpu, char add_value )
+{
+	cpu.InjectionMemory( 0xF8 );
+	cpu.InjectionMemory( add_value );
+	cpu.NextStep();
 
+	REQUIRE( cpu.GetRegisterHL().reg_16 == static_cast<WORD>( cpu.GetRegisterSP().reg_16 + add_value ) );
+}
 
 TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 {
@@ -523,6 +530,42 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 			cpu.NextStep();
 
 			REQUIRE( cpu.GetRegisterValueBy8BitIndex( reg_index ) == reg_index );
+		}
+	}
+
+	SECTION("LD HL, SP + signed 8")
+	{
+		SECTION("NORMAL.")
+		{
+			test_LD_HL_SP_SingedImm8( cpu, 0 );
+			check_flags( cpu, false, false, false, false );
+		}
+
+		SECTION("Value is Minus")
+		{
+			test_LD_HL_SP_SingedImm8( cpu, -10 );
+			check_flags( cpu, false, false, false, false );
+		}
+
+		SECTION("HALF, CARRY.")
+		{
+			// SP = 0xfffe. 1만 더해도 half overflowed.
+			test_LD_HL_SP_SingedImm8( cpu, 2 );
+			check_flags( cpu, false, true, false, true );
+		}
+
+		SECTION("HALF.")
+		{
+			callSetRegister16( cpu, Register16BitIndex::SP, 0xff01 );
+			test_LD_HL_SP_SingedImm8( cpu, 0x0f );
+			check_flags( cpu, false, true, false, false );
+		}
+
+		SECTION("Carry.")
+		{
+			callSetRegister16( cpu, Register16BitIndex::SP, 0xfff0 );
+			test_LD_HL_SP_SingedImm8( cpu, 0x10 );
+			check_flags( cpu, false, false, false, true );
 		}
 	}
 }

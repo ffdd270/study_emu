@@ -27,7 +27,7 @@ enum Register16BitIndex
 	BC = 0b00,
 	DE = 0b01,
 	HL = 0b10,
-	AF = 0b11,
+	SP = 0b11,
 };
 
 inline void check_flags( GameboyCPU & cpu, bool z, bool h, bool n, bool c )
@@ -61,6 +61,12 @@ inline void setRegister16( GameboyCPU & cpu_ref ,BYTE register_index, WORD value
 {
 	cpu_ref.InjectionMemory( 0b00000001 | ( register_index << 4 ) );
 	addWord(cpu_ref, value);
+}
+
+inline void callSetRegister16( GameboyCPU & cpu_ref, BYTE register_index, WORD value )
+{
+	setRegister16( cpu_ref, register_index, value );
+	cpu_ref.NextStep();
 }
 
 inline void setRegister8( GameboyCPU & cpu_ref, BYTE register_index, BYTE value )

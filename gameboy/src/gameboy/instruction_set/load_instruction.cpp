@@ -203,14 +203,25 @@ void GameboyCPU::loadRegAFromMemImm16(BYTE op_code)
 
 void GameboyCPU::loadRegHLFromSPAddSingedImm8(BYTE op_code)
 {
-	BYTE imm8 = immediateValue();
+	char imm8 = static_cast<char>( immediateValue() );
 
 	setFlagZ( false );
 	setFlagN( false );
-	setFlagH( static_cast<int>(imm8 & 0x0fu) + static_cast<int>(mSP.reg_16 & 0x0fu) > 0xf );
-	setFlagH( static_cast<int>(imm8 & 0xffu) + static_cast<int>(mSP.reg_16 & 0xffu) > 0xff );
 
-	mRegisters.HL.reg_16 = mSP.reg_16 +  static_cast<int>(imm8);
+	if( imm8 > 0  )
+	{
+		BYTE check_value = static_cast<BYTE>(imm8);
+
+		setFlagH( static_cast<int>(check_value & 0x0fu) + static_cast<int>(mSP.reg_16 & 0x0fu) > 0xf );
+		setFlagC( static_cast<int>(check_value & 0xffu) + static_cast<int>(mSP.reg_16 & 0xffu) > 0xff );
+	}
+	else
+	{
+		setFlagH(false );
+		setFlagC(false );
+	}
+
+	mRegisters.HL.reg_16 = mSP.reg_16 + imm8;
 }
 
 void GameboyCPU::complementCarryFlag(BYTE op_code)
