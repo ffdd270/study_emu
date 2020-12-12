@@ -508,6 +508,23 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		REQUIRE( cpu.GetMemoryValue( base_address ) == result );
 	}
 
+	SECTION("LD r, r ( Same Registers ) ")
+	{
+		BYTE base_op_code = 0b01000000u;
+
+		for ( BYTE reg_index = 0b000; reg_index <= 0b111u; reg_index++ )
+		{
+			if ( reg_index == 0b110 ) { continue; }
+
+			BYTE op_code = base_op_code | static_cast<BYTE>( reg_index << 3u ) | reg_index;
+			callSetRegister8( cpu, reg_index, reg_index );
+
+			cpu.InjectionMemory( op_code );
+			cpu.NextStep();
+
+			REQUIRE( cpu.GetRegisterValueBy8BitIndex( reg_index ) == reg_index );
+		}
+	}
 }
 
 
