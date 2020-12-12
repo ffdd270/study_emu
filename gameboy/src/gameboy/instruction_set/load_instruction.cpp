@@ -201,6 +201,18 @@ void GameboyCPU::loadRegAFromMemImm16(BYTE op_code)
 	mRegisters.AF.hi = mMemoryInterface->Get( immediateValue16() );
 }
 
+void GameboyCPU::loadRegHLFromSPAddSingedImm8(BYTE op_code)
+{
+	BYTE imm8 = immediateValue();
+
+	setFlagZ( false );
+	setFlagN( false );
+	setFlagH( static_cast<int>(imm8 & 0x0fu) + static_cast<int>(mSP.reg_16 & 0x0fu) > 0xf );
+	setFlagH( static_cast<int>(imm8 & 0xffu) + static_cast<int>(mSP.reg_16 & 0xffu) > 0xff );
+
+	mRegisters.HL.reg_16 = mSP.reg_16 +  static_cast<int>(imm8);
+}
+
 void GameboyCPU::complementCarryFlag(BYTE op_code)
 {
 	setFlagH( GetFlagC() );

@@ -222,6 +222,7 @@ public:
 	BIND_FUNC( loadMemCFromRegA )
 	BIND_FUNC( loadRegAFromMemC )
 	BIND_FUNC( loadMemImm16FromRegA )
+	BIND_FUNC( loadRegHLFromSPAddSingedImm8 )
 	BIND_FUNC( loadRegAFromMemImm16 )
 
 	BIND_FUNC( pushReg16 )
@@ -696,6 +697,9 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 
 	//LD (Imm16), RegA
 	mFuncMap[ 0xEA ] = BIND_FUNCS::loadMemImm16FromRegA;
+
+	//LD HL, SP + singed imm 8.
+	mFuncMap[ 0xF8 ] = BIND_FUNCS::loadRegHLFromSPAddSingedImm8;
 
 	//LD RegA, (Imm16)
 	mFuncMap[ 0xFA ] = BIND_FUNCS::loadRegAFromMemImm16;

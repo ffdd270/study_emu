@@ -238,6 +238,11 @@ private:
 	// Reg A = (Imm16)
 	void loadRegAFromMemImm16( BYTE op_code );
 
+	//LD HL, SP + imm8
+	// 0xF8
+	// Reg HL = SP + singed_value.
+	// Z = 0, N = 0, H = H, C = C
+	void loadRegHLFromSPAddSingedImm8( BYTE op_code );
 
 	//PUSH qq
 	// 0b11qq0101 ( qq = { BC = 00, DE = 01, HL = 10, AF = 11 }
