@@ -27,9 +27,9 @@ SCENARIO( "Gameboy CPU Test.", "[DEBUG]")
 		constexpr WORD REQUIRE_H_VALUE = 0x2;
 
 		setRegister16( cpu, Register16BitIndex::BC, 0x2401 ); // 0x1000~0x1002
-		setRegister8( cpu, Param8BitIndex::A, 0x24 ); // 0x1003~0x1004
+		setRegister8(cpu, Register8BitIndex::A, 0x24 ); // 0x1003~0x1004
 		setRegister16( cpu, Register16BitIndex::DE, 0x2411 ); // 0x1005~0x1007
-		setRegister8( cpu, Param8BitIndex::H, 0x2 ); // 0x1007~0x1008
+		setRegister8(cpu, Register8BitIndex::H, 0x2 ); // 0x1007~0x1008
 
 		WHEN("NO BP")
 		{

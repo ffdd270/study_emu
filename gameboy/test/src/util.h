@@ -10,7 +10,7 @@
 #include "catch.hpp"
 
 
-enum Param8BitIndex
+enum Register8BitIndex
 {
 	B = 0b000,
 	C = 0b001,
@@ -106,7 +106,7 @@ inline void callSetMemory3Step(GameboyCPU & cpu_ref, BYTE reg8_index, WORD mem_a
 
 inline void base_op_code_n(GameboyCPU & cpu, BYTE op_code, BYTE a_value, BYTE n, bool only_injection = false )
 {
-	setRegister8(cpu, Param8BitIndex::A, a_value );
+	setRegister8(cpu, Register8BitIndex::A, a_value );
 	cpu.InjectionMemory( op_code );
 	cpu.InjectionMemory( n );
 
@@ -118,7 +118,7 @@ inline void base_op_code_n(GameboyCPU & cpu, BYTE op_code, BYTE a_value, BYTE n,
 
 inline void base_op_code_reg8(GameboyCPU & cpu, BYTE base_op_code, BYTE a_value, BYTE register_index, BYTE n, bool only_injection = false )
 {
-	setRegister8(cpu, Param8BitIndex::A, a_value );
+	setRegister8(cpu, Register8BitIndex::A, a_value );
 	setRegister8( cpu, register_index, n );
 	cpu.InjectionMemory( ( base_op_code | register_index )  );
 
@@ -130,8 +130,8 @@ inline void base_op_code_reg8(GameboyCPU & cpu, BYTE base_op_code, BYTE a_value,
 
 inline void base_op_code_hl(GameboyCPU & cpu, BYTE op_code, BYTE a_value, WORD mem_hl_address, BYTE n, bool only_injection = false )
 {
-	setMemory3Step(cpu, Param8BitIndex::B, mem_hl_address, n );
-	setRegister8(cpu, Param8BitIndex::A, a_value );
+	setMemory3Step(cpu, Register8BitIndex::B, mem_hl_address, n );
+	setRegister8(cpu, Register8BitIndex::A, a_value );
 	cpu.InjectionMemory( op_code );
 
 	if(!only_injection)
@@ -168,7 +168,7 @@ inline void call_subNC(GameboyCPU & cpu, BYTE a_value, BYTE n )
 
 inline void call_subRC(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10011000, a_value, Param8BitIndex::D, n); // SBC A, D
+	base_op_code_reg8(cpu, 0b10011000, a_value, Register8BitIndex::D, n); // SBC A, D
 }
 
 inline void call_subHLC(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE n )
@@ -188,7 +188,7 @@ inline void call_andHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE
 
 inline void call_andR(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10100000, a_value, Param8BitIndex::D, n);
+	base_op_code_reg8(cpu, 0b10100000, a_value, Register8BitIndex::D, n);
 }
 
 inline void call_orN(GameboyCPU & cpu, BYTE a_value, BYTE n )
@@ -203,7 +203,7 @@ inline void call_orHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE 
 
 inline void call_orR(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10110000, a_value, Param8BitIndex::D, n);
+	base_op_code_reg8(cpu, 0b10110000, a_value, Register8BitIndex::D, n);
 }
 
 inline void call_xorN(GameboyCPU & cpu, BYTE a_value, BYTE n )
@@ -218,7 +218,7 @@ inline void call_xorHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE
 
 inline void call_xorR(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10101000, a_value, Param8BitIndex::D, n);
+	base_op_code_reg8(cpu, 0b10101000, a_value, Register8BitIndex::D, n);
 }
 
 inline void call_cpN(GameboyCPU & cpu, BYTE a_value, BYTE n )
@@ -233,7 +233,7 @@ inline void call_cpHL(GameboyCPU & cpu, BYTE a_value, WORD mem_hl_address, BYTE 
 
 inline void call_cpR(GameboyCPU & cpu, BYTE a_value, BYTE n )
 {
-	base_op_code_reg8(cpu, 0b10111000, a_value, Param8BitIndex::D, n);
+	base_op_code_reg8(cpu, 0b10111000, a_value, Register8BitIndex::D, n);
 }
 
 inline void incR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
@@ -247,7 +247,7 @@ inline void incR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
 
 inline void incHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
 {
-	setMemory3Step(cpu, Param8BitIndex::D, mem_hl_address, set_value );
+	setMemory3Step(cpu, Register8BitIndex::D, mem_hl_address, set_value );
 	cpu.InjectionMemory( 0x34 );
 
 	for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
@@ -264,7 +264,7 @@ inline void decR( GameboyCPU & cpu, BYTE reg_index, BYTE reg_value )
 
 inline void decHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
 {
-	setMemory3Step(cpu, Param8BitIndex::D, mem_hl_address, set_value );
+	setMemory3Step(cpu, Register8BitIndex::D, mem_hl_address, set_value );
 	cpu.InjectionMemory( 0x35 );
 
 	for ( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
@@ -272,9 +272,9 @@ inline void decHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE set_value )
 
 inline void addAtoHL( GameboyCPU & cpu, WORD mem_hl_address, BYTE mem_hl_set_value, BYTE a_set_value )
 {
-	setMemory3Step( cpu, Param8BitIndex::D, mem_hl_address, mem_hl_set_value );
+	setMemory3Step(cpu, Register8BitIndex::D, mem_hl_address, mem_hl_set_value );
 
-	setRegister8(cpu, Param8BitIndex::A, a_set_value );
+	setRegister8(cpu, Register8BitIndex::A, a_set_value );
 
 	cpu.InjectionMemory( 0x86 ); // ADD A, (HL)/
 
@@ -354,7 +354,7 @@ inline void rotateAndShiftRegisterExecute(GameboyCPU & cpu, BYTE op_code, BYTE s
 
 inline void rotateAndShiftMemoryExecute(GameboyCPU & cpu, BYTE op_code, BYTE set_value, WORD mem_address )
 {
-	setMemory3Step(cpu, Param8BitIndex::D, mem_address, set_value );
+	setMemory3Step(cpu, Register8BitIndex::D, mem_address, set_value );
 
 	cpu.InjectionMemory( 0xCB ); // Prefix
 	cpu.InjectionMemory( op_code );
@@ -380,7 +380,7 @@ inline void rrcRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
 
 inline void rrcRegisterA( GameboyCPU & cpu, BYTE set_reg_value  )
 {
-	rotateAndShiftRegisterExecute(cpu, 0x0f, set_reg_value, Param8BitIndex::A);
+	rotateAndShiftRegisterExecute(cpu, 0x0f, set_reg_value, Register8BitIndex::A);
 }
 
 inline void rrcMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
@@ -405,7 +405,7 @@ inline void rrRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
 
 inline void rrRegisterA( GameboyCPU & cpu, BYTE set_reg_value  )
 {
-	rotateAndShiftRegisterExecute(cpu, 0x1f, set_reg_value, Param8BitIndex::A);
+	rotateAndShiftRegisterExecute(cpu, 0x1f, set_reg_value, Register8BitIndex::A);
 }
 
 inline void rrMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address)
@@ -433,7 +433,7 @@ inline void sraMemoryHL( GameboyCPU & cpu, BYTE set_value, WORD mem_address )
 	rotateAndShiftMemoryExecute(cpu, 0b101000u | 0b110u, set_value, mem_address);
 }
 
-inline void swapRegister( GameboyCPU & cpu, BYTE set_value, Param8BitIndex reg_index )
+inline void swapRegister(GameboyCPU & cpu, BYTE set_value, Register8BitIndex reg_index )
 {
 	rotateAndShiftRegisterExecute( cpu, 0b110000u | reg_index, set_value, reg_index );
 }
@@ -466,7 +466,7 @@ inline void bitInstructionExecute( GameboyCPU & cpu, BYTE pre_op_code, BYTE inde
 	cpu.NextStep();
 }
 
-inline BYTE bitTest( GameboyCPU & cpu, Param8BitIndex index, BYTE test_index )
+inline BYTE bitTest(GameboyCPU & cpu, Register8BitIndex index, BYTE test_index )
 {
 	bitInstructionExecute( cpu, 0b01u, index, test_index );
 
@@ -474,9 +474,9 @@ inline BYTE bitTest( GameboyCPU & cpu, Param8BitIndex index, BYTE test_index )
 }
 
 
-inline BYTE setBitByRegister( GameboyCPU & cpu, Param8BitIndex index, BYTE set_index_pos )
+inline BYTE setBitByRegister(GameboyCPU & cpu, Register8BitIndex index, BYTE set_index_pos )
 {
-	REQUIRE( index != Param8BitIndex::MEM_HL );
+	REQUIRE(index != Register8BitIndex::MEM_HL );
 
 	bitInstructionExecute( cpu, 0b11u, index, set_index_pos );
 
@@ -492,9 +492,9 @@ inline BYTE setBitByMemory( GameboyCPU & cpu, WORD mem_address , BYTE set_index_
 	return cpu.GetMemoryValue( mem_address );
 }
 
-inline BYTE resetBitByRegister( GameboyCPU & cpu, Param8BitIndex index, BYTE set_index_pos )
+inline BYTE resetBitByRegister(GameboyCPU & cpu, Register8BitIndex index, BYTE set_index_pos )
 {
-	REQUIRE( index != Param8BitIndex::MEM_HL );
+	REQUIRE(index != Register8BitIndex::MEM_HL );
 
 	bitInstructionExecute( cpu, 0b10u, index, set_index_pos );
 
@@ -549,7 +549,7 @@ inline WORD jumpToWord( GameboyCPU & cpu, WORD jp_mem_address )
 
 inline WORD jumpToHL( GameboyCPU & cpu, WORD jp_mem_address )
 {
-	setRegister16( cpu, Param8BitIndex::D, jp_mem_address );  // Call 1.
+	setRegister16(cpu, Register8BitIndex::D, jp_mem_address );  // Call 1.
 	cpu.InjectionMemory( 0xE9 );
 
 	for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }

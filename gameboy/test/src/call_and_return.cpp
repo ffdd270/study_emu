@@ -263,7 +263,7 @@ TEST_CASE("FIX IN CALL AND RETURN", "[FIX_CALL_AND_RETURN]")
 	// CALL과 RET 이후로 명령어가 제대로 진행되지 않아서 생겼던 문제의 테스트 케이스.
 	SECTION("CALL and RET, After Instruction OK?")
 	{
-		callSetRegister8( cpu, Param8BitIndex::A, 0xA ); // 레지스터 .
+		callSetRegister8(cpu, Register8BitIndex::A, 0xA ); // 레지스터 .
 		callWord( cpu, 0x2460 ); // 함수 호출
 		subN( cpu, 1 );
 

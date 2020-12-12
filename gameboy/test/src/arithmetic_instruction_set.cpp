@@ -58,7 +58,7 @@ void MemHLFlagTest( GameboyCPU & cpu )
 	// 0xA0A0 = 0;
 	// 3 Step.
 
-	setRegister8(cpu, Param8BitIndex::A, 0x0 );
+	setRegister8(cpu, Register8BitIndex::A, 0x0 );
 	// A = 0x0
 	// 4 Step.
 
@@ -67,7 +67,7 @@ void MemHLFlagTest( GameboyCPU & cpu )
 
 	ZeroFlagCheck( cpu );
 
-	setRegister8(cpu, Param8BitIndex::A, 0x08 ); // Half + hafl
+	setRegister8(cpu, Register8BitIndex::A, 0x08 ); // Half + hafl
 	setMemory3Step( cpu, 0, 0xF0F0, 0x08 );
 	// HL = 0xF0F0;
 	// B = 0x0;
@@ -79,7 +79,7 @@ void MemHLFlagTest( GameboyCPU & cpu )
 
 	HalfFlagCheck( cpu );
 
-	setRegister8(cpu, Param8BitIndex::A, 0x88 );
+	setRegister8(cpu, Register8BitIndex::A, 0x88 );
 	setMemory3Step( cpu, 0, 0xD0D0, 0x88 );
 	// HL = 0xD0D0;
 	// B = 0x0;
@@ -103,10 +103,10 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			setRegister8(cpu, Param8BitIndex::D, 0x21 );   // D = 0x21
+			setRegister8(cpu, Register8BitIndex::D, 0x21 );   // D = 0x21
 			// 1 Step.
 
-			setRegister8(cpu, Param8BitIndex::A, 0x04 );  // A = 0x04
+			setRegister8(cpu, Register8BitIndex::A, 0x04 );  // A = 0x04
 			// 2 Step.
 
 			cpu.InjectionMemory( 0b10000010 ); // ADD A, D
@@ -123,11 +123,11 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			NoFlagCheck( cpu );
 
-			setRegister8(cpu, Param8BitIndex::D, 0b10001000 ); // D = 0b10000000;
+			setRegister8(cpu, Register8BitIndex::D, 0b10001000 ); // D = 0b10000000;
 			// 1 Step.
 			// Carry - Half Flags Test.
 
-			setRegister8(cpu, Param8BitIndex::A, 0b10001000 ); // A = 0b1000;
+			setRegister8(cpu, Register8BitIndex::A, 0b10001000 ); // A = 0b1000;
 			// 2 Step.
 			//  0b1000 + 0b1000 = 0b10000 == Half
 			//  0b10000000 + 0b10000000 = 0x100 == Carry
@@ -139,7 +139,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			CarryAndHalfFlagCheck(cpu);
 
-			setRegister8(cpu, Param8BitIndex::D, ~(static_cast<BYTE>(0b00010000)) + 0b1 );
+			setRegister8(cpu, Register8BitIndex::D, ~(static_cast<BYTE>(0b00010000)) + 0b1 );
 			// 0b10111011; + 1
 			// 1 Step.
 
@@ -161,7 +161,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			setRegister8(cpu, Param8BitIndex::A, 0x6 );
+			setRegister8(cpu, Register8BitIndex::A, 0x6 );
 			// 1 Step.
 
 			cpu.InjectionMemory( 0xC6 ); // ADD A, imm8
@@ -179,7 +179,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck( cpu );
 
-			setRegister8(cpu, Param8BitIndex::A, 0x0 );
+			setRegister8(cpu, Register8BitIndex::A, 0x0 );
 			// 1 Step.
 
 			cpu.InjectionMemory( 0xC6 );
@@ -191,7 +191,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			ZeroFlagCheck( cpu );
 
 			// A = 0
-			setRegister8(cpu, Param8BitIndex::A, 0b1000 ); // Half Carry
+			setRegister8(cpu, Register8BitIndex::A, 0b1000 ); // Half Carry
 			// A = 0x08
 			// 1 Step.
 			cpu.InjectionMemory( 0xC6 );
@@ -202,7 +202,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			HalfFlagCheck( cpu );
 			// A = 0x08.
-			setRegister8(cpu, Param8BitIndex::A, 0x88 ); // HALF AND CARRY
+			setRegister8(cpu, Register8BitIndex::A, 0x88 ); // HALF AND CARRY
 			// A = 0x88
 
 			cpu.InjectionMemory( 0xC6 );
@@ -238,10 +238,10 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			setRegister8(cpu, Param8BitIndex::D, 0x80);   // D = 0b10000000
+			setRegister8(cpu, Register8BitIndex::D, 0x80);   // D = 0b10000000
 			// 1 Step.
 
-			setRegister8(cpu, Param8BitIndex::A, 0x80);  // A = 0x80
+			setRegister8(cpu, Register8BitIndex::A, 0x80);  // A = 0x80
 			// 2 Step.
 
 			cpu.InjectionMemory(0b10000010); // ADD A, D
@@ -252,7 +252,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetFlagC() == 1 );
 			int prv_value = cpu.GetRegisterAF().hi;
 
-			setRegister8(cpu, Param8BitIndex::E, 0xA ); // E = A
+			setRegister8(cpu, Register8BitIndex::E, 0xA ); // E = A
 			// 1 Step.
 
 			cpu.InjectionMemory( 0b10001011 ); // ADC A, E
@@ -270,22 +270,22 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 			NoFlagCheck( cpu );
 
-			setRegister8(cpu, Param8BitIndex::D, 0 ); // D = 0;
-			setRegister8(cpu, Param8BitIndex::A, 0 ); // A = 0;
+			setRegister8(cpu, Register8BitIndex::D, 0 ); // D = 0;
+			setRegister8(cpu, Register8BitIndex::A, 0 ); // A = 0;
 			cpu.InjectionMemory( ADC_A_D ); // ADC A, D
 
 			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
 			ZeroFlagCheck( cpu );
 
-			setRegister8(cpu, Param8BitIndex::A, 0x08 );
-			setRegister8(cpu, Param8BitIndex::D, 0x08 ); // D = Half;
+			setRegister8(cpu, Register8BitIndex::A, 0x08 );
+			setRegister8(cpu, Register8BitIndex::D, 0x08 ); // D = Half;
 			cpu.InjectionMemory( ADC_A_D ); // ADC A, D.A = 0b1000
 
 			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
 			HalfFlagCheck( cpu );
 
-			setRegister8(cpu, Param8BitIndex::A, 0x88);
-			setRegister8(cpu, Param8BitIndex::D, 0x88 ); // D = Carry;
+			setRegister8(cpu, Register8BitIndex::A, 0x88);
+			setRegister8(cpu, Register8BitIndex::D, 0x88 ); // D = Carry;
 			cpu.InjectionMemory( ADC_A_D );
 			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
 
@@ -300,7 +300,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			setRegister8(cpu, Param8BitIndex::A, 0x80 );
+			setRegister8(cpu, Register8BitIndex::A, 0x80 );
 			// 1 Step.
 
 			cpu.InjectionMemory( 0xCE ); // ADD A, imm8
@@ -326,7 +326,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			cpu.Reset();
 			NoFlagCheck(  cpu );
 
-			setRegister8(cpu, Param8BitIndex::A, 0 );
+			setRegister8(cpu, Register8BitIndex::A, 0 );
 
 			cpu.InjectionMemory(0xCE);
 			cpu.InjectionMemory( 0x00 ); // Zero
@@ -334,14 +334,14 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			for( int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 			ZeroFlagCheck( cpu );
 
-			setRegister8(cpu, Param8BitIndex::A, 0x08 );
+			setRegister8(cpu, Register8BitIndex::A, 0x08 );
 
 			cpu.InjectionMemory( 0xCE );
 			cpu.InjectionMemory( 0x08 ); // Half
 			for (int i = 0; i < 2; i++ ) { cpu.NextStep(); }
 			HalfFlagCheck( cpu );
 
-			setRegister8(cpu, Param8BitIndex::A, 0x88 );
+			setRegister8(cpu, Register8BitIndex::A, 0x88 );
 			cpu.InjectionMemory( 0xCE );
 			cpu.InjectionMemory( 0x88 ); // Carry
 			for (int i = 0; i < 2; i++ ) { cpu.NextStep(); }
@@ -356,10 +356,10 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("ADD TEST")
 		{
 			cpu.Reset();
-			setMemory3Step(cpu, Param8BitIndex::B, 0x0765, 0x8B );
+			setMemory3Step(cpu, Register8BitIndex::B, 0x0765, 0x8B );
 			// HL = 0x765, B = 0xA,  (0x765) = 0x80 ( Carry )
 
-			setRegister8(cpu, Param8BitIndex::A, 0x80 );
+			setRegister8(cpu, Register8BitIndex::A, 0x80 );
 			// A = 0xB
 
 			cpu.InjectionMemory( 0b10001110 ); // A = 0x80 + 0xB
@@ -369,7 +369,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetRegisterAF().hi == 0xB );
 			REQUIRE( cpu.GetFlagC() == 1 );
 
-			setMemory3Step(cpu, Param8BitIndex::B, 0x765, 0 );
+			setMemory3Step(cpu, Register8BitIndex::B, 0x765, 0 );
 			// HL = 0x765, B = 2, (0x765) = 2.
 
 			cpu.InjectionMemory( 0b10001110 ); // A = 0x8B + 2 + ( Carry )
@@ -392,7 +392,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			setRegister8(cpu, Param8BitIndex::A, 0xA );
+			setRegister8(cpu, Register8BitIndex::A, 0xA );
 			setRegister8( cpu, 0, 0xA );
 			// 2 Step.
 
@@ -409,8 +409,8 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		{
 			cpu.Reset();
 
-			setRegister8(cpu, Param8BitIndex::A, 0xA8 );
-			setRegister8(cpu, Param8BitIndex::B, 0x99 );
+			setRegister8(cpu, Register8BitIndex::A, 0xA8 );
+			setRegister8(cpu, Register8BitIndex::B, 0x99 );
 			cpu.InjectionMemory( 0b10010000 ); // SUB B
 			// 3 Step.
 
@@ -419,8 +419,8 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetRegisterAF().hi == 0xF );
 			REQUIRE( cpu.GetFlagH() == 1 );
 
-			setRegister8(cpu, Param8BitIndex::A, 0xA0 );
-			setRegister8(cpu, Param8BitIndex::D, 0xA1 );
+			setRegister8(cpu, Register8BitIndex::A, 0xA0 );
+			setRegister8(cpu, Register8BitIndex::D, 0xA1 );
 			cpu.InjectionMemory( 0b10010010 ); // SUB D
 			// 3 Step.
 
@@ -430,8 +430,8 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			REQUIRE( cpu.GetFlagC() == 1 );
 			REQUIRE( cpu.GetFlagH() == 1 );
 
-			setRegister8(cpu, Param8BitIndex::A, 0xB0 );
-			setRegister8(cpu, Param8BitIndex::E, 0xB0 );
+			setRegister8(cpu, Register8BitIndex::A, 0xB0 );
+			setRegister8(cpu, Register8BitIndex::E, 0xB0 );
 			cpu.InjectionMemory( 0b10010011 ); // SUB E
 
 			for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }

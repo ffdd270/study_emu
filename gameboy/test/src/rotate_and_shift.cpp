@@ -171,11 +171,11 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 	{
 		SECTION("SWAP B")
 		 {
-			swapRegister( cpu, 0b00101000u, Param8BitIndex::B );
+			swapRegister(cpu, 0b00101000u, Register8BitIndex::B );
 			check_flags( cpu,  false, false, false, false );
 			REQUIRE( cpu.GetRegisterBC().hi == 0b10000010u );
 
-			swapRegister( cpu, 0b0, Param8BitIndex::B );
+			swapRegister(cpu, 0b0, Register8BitIndex::B );
 			check_flags( cpu,  true, false, false, false );
 			REQUIRE( cpu.GetRegisterBC().hi == 0 );
 		}

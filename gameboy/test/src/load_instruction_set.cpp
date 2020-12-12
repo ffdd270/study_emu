@@ -184,7 +184,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setRegister8(cpu, Param8BitIndex::E, 0xBA ); // LD E, 0xBA
+		setRegister8(cpu, Register8BitIndex::E, 0xBA ); // LD E, 0xBA
 		//E = 0xBA. 1 Step.
 
 		setRegister16(  cpu, Register16BitIndex::HL, 0xFAFA ); // LD HL(10), imm16( 0xFAFA )
@@ -230,7 +230,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		cpu.Reset();
 
 		setRegister16( cpu, Register16BitIndex::DE, 0xDAFA ); // LD DE, 0xDAFA
-		setRegister8(cpu, Param8BitIndex::A, 0xA0 ); // LD A, 0xA0
+		setRegister8(cpu, Register8BitIndex::A, 0xA0 ); // LD A, 0xA0
 		cpu.InjectionMemory( 0b00010010 ); //LD (DE), A
 
 		for( int i = 0 ; i < 3; i++ ) { cpu.NextStep(); }
@@ -244,7 +244,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		cpu.Reset();
 
 		setRegister16( cpu, Register16BitIndex::HL, 0xAEAD ); // LD HL, 0xAEAD
-		setRegister8(cpu, Param8BitIndex::A, 0xAD ); // LD A, 0xAD
+		setRegister8(cpu, Register8BitIndex::A, 0xAD ); // LD A, 0xAD
 		cpu.InjectionMemory( 0b00100010 ); //LDI (HL), A
 
 		for ( int i = 0 ; i < 3; i++ ) { cpu.NextStep(); }
@@ -260,7 +260,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		cpu.Reset();
 
 		setRegister16( cpu, Register16BitIndex::HL, 0xDED1 ); // LD HL, 0xDED1
-		setRegister8(cpu, Param8BitIndex::A, 0xDA ); //LD A, 0xDA
+		setRegister8(cpu, Register8BitIndex::A, 0xDA ); //LD A, 0xDA
 		cpu.InjectionMemory( 0b00110010 ); //LDD (HL), A
 
 		for( int i = 0; i < 3; i++ ) { cpu.NextStep(); }
@@ -274,7 +274,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setMemory3Step(cpu, Param8BitIndex::B, 0xE001, 0x10 );  // HL = 0xE001, B = 0x10, (HL) = B.
+		setMemory3Step(cpu, Register8BitIndex::B, 0xE001, 0x10 );  // HL = 0xE001, B = 0x10, (HL) = B.
 		cpu.InjectionMemory( 0b00111010 ); // LDD A,(HL)
 
 		for( int i = 0; i < 4; i++ ){ cpu.NextStep(); }
@@ -287,7 +287,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		setMemory3Step(cpu, Param8BitIndex::B, 0x2FFF, 0x30 );  // HL = 0x2FFF, B = 0x30, (HL) = B.
+		setMemory3Step(cpu, Register8BitIndex::B, 0x2FFF, 0x30 );  // HL = 0x2FFF, B = 0x30, (HL) = B.
 		cpu.InjectionMemory( 0b00101010 ); // LDI A, (HL)
 
 		for( int i = 0; i < 4; i++ ) { cpu.NextStep(); }
@@ -304,7 +304,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		setRegister16( cpu, Register16BitIndex::BC, 0xEAFA ); // LD BC, imm16 ( 0xEAFA  )
 		// BC = 0xEAFA. 1 Step.
 
-		setRegister8(cpu, Param8BitIndex::A, 0xCF ); // LD A, imm8 ( 0xCF )
+		setRegister8(cpu, Register8BitIndex::A, 0xCF ); // LD A, imm8 ( 0xCF )
 		// A = 0xCF. 2 Step.
 
 		cpu.InjectionMemory( 0b00000010 ); // LD ( BC ), A
@@ -416,7 +416,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	{
 		cpu.Reset();
 
-		callSetRegister8( cpu, Param8BitIndex::A, 0x72 );
+		callSetRegister8(cpu, Register8BitIndex::A, 0x72 );
 
 		cpu.InjectionMemory( 0xE0 ); // LDH (imm8), reg A
 		cpu.InjectionMemory( 0xAB ); // 0xFF00 | 0x00AB
@@ -432,7 +432,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		BYTE base_address = 0x90u; // 0xFF09
 		BYTE result = 0x76u;
 
-		callSetMemory3Step( cpu, Param8BitIndex::B, 0xFF00u | base_address, result );
+		callSetMemory3Step(cpu, Register8BitIndex::B, 0xFF00u | base_address, result );
 
 		cpu.InjectionMemory( 0xF0 ); // LDH (imm8), reg A
 		cpu.InjectionMemory( base_address ); // 0xFF00 | 0x00AB
@@ -448,8 +448,8 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		BYTE base_address = 0x94u; // 0xFF09
 		BYTE result = 0x2au;
 
-		callSetRegister8( cpu, Param8BitIndex::C, base_address  );
-		callSetRegister8( cpu, Param8BitIndex::A, result );
+		callSetRegister8(cpu, Register8BitIndex::C, base_address  );
+		callSetRegister8(cpu, Register8BitIndex::A, result );
 
 		cpu.InjectionMemory( 0xE2 ); // LDH (imm8), reg A
 		cpu.NextStep();
@@ -465,10 +465,10 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		BYTE result = 0x76u;
 
 		// Memory
-		callSetMemory3Step( cpu, Param8BitIndex::B, 0xFF00u | base_address, result );
+		callSetMemory3Step(cpu, Register8BitIndex::B, 0xFF00u | base_address, result );
 
 		// Register C.
-		callSetRegister8( cpu, Param8BitIndex::C, base_address );
+		callSetRegister8(cpu, Register8BitIndex::C, base_address );
 
 		// Instruction.
 		cpu.InjectionMemory( 0xF2 ); // LDH (imm8), reg A
@@ -485,7 +485,7 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		BYTE result = 0x32u;
 
 		// Register A.
-		callSetRegister8( cpu, Param8BitIndex::A, result);
+		callSetRegister8(cpu, Register8BitIndex::A, result);
 
 		// Instruction.
 		cpu.InjectionMemory( 0xEA ); // LDH (imm8), reg A
@@ -502,10 +502,10 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 		WORD base_address = 0xbe90u; // 0xFF09
 		BYTE result = 0xeau;
 
-		callSetMemory3Step( cpu, Param8BitIndex::D, base_address, result );
+		callSetMemory3Step(cpu, Register8BitIndex::D, base_address, result );
 
 		// Register A.
-		callSetRegister8( cpu, Param8BitIndex::A, result);
+		callSetRegister8(cpu, Register8BitIndex::A, result);
 
 		// Instruction.
 		cpu.InjectionMemory( 0xFA ); // LDH (imm8), reg A

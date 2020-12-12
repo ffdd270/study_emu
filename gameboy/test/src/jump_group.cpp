@@ -136,13 +136,13 @@ TEST_CASE("JUMP CODE POINT", "[JUMP]")
 		{
 			SECTION("OK. singed_value = 0x10")
 			{
-				incR( cpu, Param8BitIndex::B, 0x0 ); // NZ;
+				incR(cpu, Register8BitIndex::B, 0x0 ); // NZ;
 				test_jr_cond( cpu, 0x20, 0x10, true );
 			}
 
 			SECTION("NOT OK")
 			{
-				incR( cpu, Param8BitIndex::B, 0xff ); // Z;
+				incR(cpu, Register8BitIndex::B, 0xff ); // Z;
 				test_jr_cond( cpu, 0x20, 0x10, false );
 			}
 		}
@@ -151,13 +151,13 @@ TEST_CASE("JUMP CODE POINT", "[JUMP]")
 		{
 			SECTION("OK. singed_value = -0x10")
 			{
-				incR( cpu, Param8BitIndex::B, 0xff ); // Z;
+				incR(cpu, Register8BitIndex::B, 0xff ); // Z;
 				test_jr_cond( cpu, 0x28, -0x10, true );
 			}
 
 			SECTION("NOT OK")
 			{
-				incR( cpu, Param8BitIndex::B, 0x0 ); // NZ;
+				incR(cpu, Register8BitIndex::B, 0x0 ); // NZ;
 				test_jr_cond( cpu, 0x28, -0x10, false );
 			}
 		}
@@ -166,13 +166,13 @@ TEST_CASE("JUMP CODE POINT", "[JUMP]")
 		{
 			SECTION("OK. singed_value = 0x30")
 			{
-				incR( cpu, Param8BitIndex::B, 0x0 ); // NC;
+				incR(cpu, Register8BitIndex::B, 0x0 ); // NC;
 				test_jr_cond( cpu, 0x30, 0x30, true );
 			}
 
 			SECTION("NOT OK")
 			{
-				incR( cpu, Param8BitIndex::B, 0xff ); // C;
+				incR(cpu, Register8BitIndex::B, 0xff ); // C;
 				test_jr_cond( cpu, 0x30, -0x30, false );
 			}
 		}
@@ -181,13 +181,13 @@ TEST_CASE("JUMP CODE POINT", "[JUMP]")
 		{
 			SECTION("OK. singed_value = -0x30")
 			{
-				incR( cpu, Param8BitIndex::B, 0xff ); // C;
+				incR(cpu, Register8BitIndex::B, 0xff ); // C;
 				test_jr_cond( cpu, 0x38, -0x30, true );
 			}
 
 			SECTION("NOT OK")
 			{
-				incR( cpu, Param8BitIndex::B, 0x0 ); // NC;
+				incR(cpu, Register8BitIndex::B, 0x0 ); // NC;
 				test_jr_cond( cpu, 0x38, -0x30, false );
 			}
 		}
