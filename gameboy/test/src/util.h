@@ -49,6 +49,14 @@ inline void addWord(GameboyCPU & cpu_ref, WORD value )
 	cpu_ref.InjectionMemory( hi );
 }
 
+inline WORD getWord( GameboyCPU & cpu_ref, size_t mem_address )
+{
+	BYTE lo = cpu_ref.GetMemoryValue( mem_address );
+	BYTE hi = cpu_ref.GetMemoryValue( mem_address  + 1);
+
+	return ( static_cast<WORD>( static_cast<WORD>(hi) << 8u ) | static_cast<WORD>(lo) );
+}
+
 inline void setRegister16( GameboyCPU & cpu_ref ,BYTE register_index, WORD value )
 {
 	cpu_ref.InjectionMemory( 0b00000001 | ( register_index << 4 ) );

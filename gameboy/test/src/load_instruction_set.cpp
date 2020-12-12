@@ -15,6 +15,17 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
 	GameboyCPU & cpu = *(ptr_cpu);
 
+	SECTION( "LD (WORD) SP ")
+	{
+		cpu.Reset();
+
+		cpu.InjectionMemory( 0x08 );
+		addWord( cpu, 0x2045 );
+		cpu.NextStep();
+
+		WORD result = getWord(cpu, 0x2045);
+		REQUIRE( cpu.GetRegisterSP().reg_16 == result );
+	}
 
 	SECTION( "LD B, 0x3") // LD r, n
 	{
