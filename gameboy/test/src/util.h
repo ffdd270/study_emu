@@ -366,8 +366,15 @@ inline void rlcA( GameboyCPU & cpu, BYTE set_reg_value )
 {
 	callSetRegister8( cpu, Register8BitIndex::A, set_reg_value );
 
-
 	cpu.InjectionMemory( 0x07 );
+	cpu.NextStep();
+}
+
+inline void rlA( GameboyCPU & cpu, BYTE set_reg_value )
+{
+	callSetRegister8( cpu, Register8BitIndex::A, set_reg_value );
+
+	cpu.InjectionMemory( 0x17 );
 	cpu.NextStep();
 }
 

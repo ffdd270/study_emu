@@ -20,6 +20,12 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 		rotate_check_helper( cpu, Register8BitIndex::A, false, false, false, true, 0b00010001 );
 	}
 
+	SECTION("RLA")
+	{
+		rlA( cpu, 0b10001000 );
+		rotate_check_helper( cpu, Register8BitIndex::A, false, false, false, true, 0b00010000 );
+	}
+
 	SECTION("RLC m") // Rotate Left Though Carry.
 	{
 		SECTION( "RLC A" )
@@ -73,9 +79,8 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 	{
 		SECTION("RL A")
 		{
-			rlRegister( cpu, 0b10001000, 0b111 );
-			check_flags( cpu, false, false, false, true );
-			REQUIRE( cpu.GetRegisterAF().hi == 0b00010000 );
+			rlRegister( cpu, 0b10001000, Register8BitIndex::A );
+			rotate_check_helper( cpu, Register8BitIndex::A, false, false, false, true, 0b00010000 );
 
 
 			rlRegister( cpu, 0b01000100, 0b111 );
