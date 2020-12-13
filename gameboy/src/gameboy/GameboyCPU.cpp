@@ -231,6 +231,7 @@ public:
 	// arth
 	BIND_FUNC( addRegAFromImm8 )
 	BIND_FUNC( addRegAFromImm8AndCarry )
+	BIND_FUNC( addRegSPFromSignedImm8Value )
 
 	BIND_FUNC( subRegAFromImm8 )
 	BIND_FUNC( subRegAFromImm8AndCarry )
@@ -727,6 +728,9 @@ void GameboyCPU::pre0b11GenerateFuncMap()
 	//ADC A, n ( Add With Carry. if Carry Set. add + 1 from result value. )
 	// 0b11001110 ( 0xCE )
 	mFuncMap[ 0b11001110 ] = BIND_FUNCS::addRegAFromImm8AndCarry;
+
+	//ADD SP, signed 8bit.
+	mFuncMap[ 0xE8 ] = BIND_FUNCS::addRegSPFromSignedImm8Value;
 
 	//SUB n
 	// 0b11010110 (0xD6)

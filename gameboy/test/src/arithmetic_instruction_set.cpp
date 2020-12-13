@@ -92,6 +92,19 @@ void MemHLFlagTest( GameboyCPU & cpu )
 	CarryAndHalfFlagCheck( cpu );
 }
 
+// SP default value = 0xfffe
+void test_ADD_SP_SingedImm8( GameboyCPU & cpu, char imm8 )
+{
+	WORD prv_sp = cpu.GetRegisterSP().reg_16;
+
+	cpu.InjectionMemory( 0xE8 );
+	cpu.InjectionMemory( imm8 );
+
+	cpu.NextStep();
+
+	REQUIRE( static_cast<WORD>( prv_sp + imm8 ) == cpu.GetRegisterSP().reg_16 );
+}
+
 TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 {
 	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
@@ -983,6 +996,42 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 			decReg16( cpu, 0x00ff, 0b00 );
 			REQUIRE( cpu.GetRegisterBC().reg_16 == 0x00fe );
 			check_flags( cpu, false, false, false, false );
+		}
+	}
+
+	SECTION("ADD SP, singed imm8")
+	{
+		SECTION("NORMAL.")
+		{
+			test_ADD_SP_SingedImm8( cpu, 0 );
+			check_flags( cpu, false, false, false, false );
+		}
+
+		SECTION("Value is Minus")
+		{
+			test_ADD_SP_SingedImm8( cpu, -10 );
+			check_flags( cpu, false, false, false, false );
+		}
+
+		SECTION("HALF, CARRY.")
+		{
+			// SP = 0xfffe. 1만 더해도 half overflowed.
+			test_ADD_SP_SingedImm8( cpu, 2 );
+			check_flags( cpu, false, true, false, true );
+		}
+
+		SECTION("HALF.")
+		{
+			callSetRegister16( cpu, Register16BitIndex::SP, 0xff01 );
+			test_ADD_SP_SingedImm8( cpu, 0x0f );
+			check_flags( cpu, false, true, false, false );
+		}
+
+		SECTION("Carry.")
+		{
+			callSetRegister16( cpu, Register16BitIndex::SP, 0xfff0 );
+			test_ADD_SP_SingedImm8( cpu, 0x10 );
+			check_flags( cpu, false, false, false, true );
 		}
 	}
 
