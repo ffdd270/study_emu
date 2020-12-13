@@ -2,20 +2,30 @@
 #include "GameboyCPU.h"
 #include "util.h"
 
+void rotate_check_helper(GameboyCPU & cpu, BYTE register_index, bool z, bool h, bool n, bool c, BYTE expect_value )
+{
+	check_flags( cpu, z, h, n, c );
+	REQUIRE( cpu.GetRegisterValueBy8BitIndex( register_index ) == expect_value );
+}
 
 TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 {
 	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
-    GameboyCPU & cpu = *(ptr_cpu);;
+    GameboyCPU & cpu = *(ptr_cpu);
+
+    // RLC A, But not prefix 0xcb.
+    SECTION("RLCA")
+	{
+    	rlcA( cpu, 0b10001000 );
+		rotate_check_helper( cpu, Register8BitIndex::A, false, false, false, true, 0b00010001 );
+	}
 
 	SECTION("RLC m") // Rotate Left Though Carry.
 	{
 		SECTION( "RLC A" )
 		{
-			rlcRegister( cpu, 0b10001000, 0b111 );
-			check_flags( cpu, false, false, false, true );
-			REQUIRE( cpu.GetRegisterAF().hi == 0b00010001 );
-
+			rlcRegister( cpu, 0b10001000, Register8BitIndex::A );
+			rotate_check_helper( cpu, Register8BitIndex::A, false, false, false, true, 0b00010001 );
 
 			rlcRegister( cpu, 0b01000100, 0b111 );
 			check_flags( cpu, false, false, false, false );

@@ -362,6 +362,14 @@ inline void rotateAndShiftMemoryExecute(GameboyCPU & cpu, BYTE op_code, BYTE set
 	for( int i = 0; i < 4; i++) { cpu.NextStep(); }
 }
 
+inline void rlcA( GameboyCPU & cpu, BYTE set_reg_value )
+{
+	callSetRegister8( cpu, Register8BitIndex::A, set_reg_value );
+
+
+	cpu.InjectionMemory( 0x07 );
+	cpu.NextStep();
+}
 
 inline void rlcRegister( GameboyCPU & cpu, BYTE set_reg_value, BYTE reg_index )
 {
