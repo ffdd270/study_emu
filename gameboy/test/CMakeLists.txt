@@ -27,7 +27,7 @@ set(TEST
 		src/cpu_public_methods.cpp
 		src/test_for_lua_bind_class.cpp
 		src/cartridge.cpp
-		src/lua_util.h src/mbc1.cpp)
+		src/lua_util.h src/mbc1.cpp src/memory_manager_unit.cpp)
 
 
 add_executable( gb_test
