@@ -156,6 +156,12 @@ void GameboyCPU::addRegAFromMemHLAndCarry(BYTE op_code)
 	commonAddRegAFromMemHL( op_code,GetFlagC() );
 }
 
+void GameboyCPU::addRegSPFromSignedImm8Value(BYTE op_code)
+{
+	char imm8 = static_cast<char>( immediateValue() );
+	commonAddSPInstructionFlags( imm8 );
+	mSP.reg_16 += imm8;
+}
 
 //SUB r
 // 0b10010rrr { r = m8BitArguments }

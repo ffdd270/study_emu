@@ -204,7 +204,7 @@ void GameboyCPU::loadRegAFromMemImm16(BYTE op_code)
 void GameboyCPU::loadRegHLFromSPAddSingedImm8(BYTE op_code)
 {
 	char imm8 = static_cast<char>( immediateValue() );
-
+	commonAddSPInstructionFlags(imm8);
 	setFlagZ( false );
 	setFlagN( false );
 

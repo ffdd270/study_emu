@@ -298,6 +298,10 @@ private:
 	// = Flag = ( Same as ADD A, r )
 	void addRegAFromMemHLAndCarry(BYTE op_code);
 
+	//ADD SP, signed 8bit
+	// 0xE8
+	// = Flag = ( Same as LD HL, SP+singed 8bit)
+	void addRegSPFromSignedImm8Value(BYTE op_code);
 
 	//SUB r
 	// 0b10010rrr { r = m8BitArguments }
@@ -710,6 +714,7 @@ private:
 	void commonRotateRightThroughCarry(BYTE & argument_value );
 	void commonRotateRight( BYTE & argument_value );
 	void commonRotateAndShiftFlags(BYTE result_value );
+	void commonAddSPInstructionFlags(char imm8 );
 
 	void commonBitSetFlag();
 

@@ -1012,3 +1012,23 @@ void GameboyCPU::set8BitArgumentValue(BYTE param, BYTE value)
 	}
 }
 
+// 애매해서 여기 둠.
+void GameboyCPU::commonAddSPInstructionFlags(char imm8)
+{
+	setFlagZ( false );
+	setFlagN( false );
+
+	if( imm8 > 0  )
+	{
+		BYTE check_value = static_cast<BYTE>(imm8);
+
+		setFlagH( static_cast<int>(check_value & 0x0fu) + static_cast<int>(mSP.reg_16 & 0x0fu) > 0xf );
+		setFlagC( static_cast<int>(check_value & 0xffu) + static_cast<int>(mSP.reg_16 & 0xffu) > 0xff );
+	}
+	else
+	{
+		setFlagH(false );
+		setFlagC(false );
+	}
+}
+
