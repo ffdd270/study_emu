@@ -28,6 +28,7 @@ public:
 	}
 
 	virtual void Reset() { } // 정의하던 말던 자유.
+	virtual ~MemoryInterface() {}
 };
 
 
