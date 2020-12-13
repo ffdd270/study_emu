@@ -15,7 +15,7 @@ public:
 
 	void Set(size_t mem_addr, BYTE value) override
 	{
-		mMock[ mem_addr ] = value;
+		// NO SET.
 	}
 private:
 	std::array<BYTE, 0xffff> mMock;
@@ -37,6 +37,22 @@ SCENARIO("Memory Manage Unit", "[MMUNIT]")
 			THEN("and Can Read.")
 			{
 				REQUIRE( ptr_memory_manage_unit->Get( address ) == value );
+			}
+		}
+
+		WHEN("Write to ROM BANK Addresses")
+		{
+			for(int i = 0; i < 0x8000; i++)
+			{
+				ptr_memory_manage_unit->Set( i, i );
+			}
+
+			THEN("Nothing Write.")
+			{
+				for( int i = 0; i < 0x8000; i++ )
+				{
+					REQUIRE( ptr_memory_manage_unit->Get( i ) == 0 );
+				}
 			}
 		}
 	}
