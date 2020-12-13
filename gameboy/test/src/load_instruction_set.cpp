@@ -568,6 +568,19 @@ TEST_CASE( "LOAD INSTRUCTION", "[Load]" )
 			check_flags( cpu, false, false, false, true );
 		}
 	}
+
+	SECTION("LD reg16, imm16")
+	{
+		WORD base_imm16 = 0x2460;
+
+		for ( BYTE index = 0b00; index <= 0b11; index++ )
+		{
+			WORD imm16 = base_imm16 | index;
+
+			callSetRegister16( cpu, index, imm16 );
+			REQUIRE( cpu.GetRegisterValueBy16BitIndex( index ) == imm16 );
+		}
+	}
 }
 
 

@@ -81,6 +81,8 @@ public:
 	GameboyMemory GetMemory();
 
 	BYTE GetRegisterValueBy8BitIndex( BYTE index ) const {  return m8bitArguments[index].ref; }
+	[[nodiscard]] WORD GetRegisterValueBy16BitIndex( BYTE index ) const { return m16bitArguments[index].ref; }
+
 	Register GetRegisterAF() { return mRegisters.array[3]; }
 	Register GetRegisterBC() { return mRegisters.array[0]; }
 	Register GetRegisterDE() { return mRegisters.array[1]; }
