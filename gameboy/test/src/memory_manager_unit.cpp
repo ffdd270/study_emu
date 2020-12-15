@@ -2,7 +2,7 @@
 #include "GameboyCPU.h"
 #include "util.h"
 #include "memory/MemoryManageUnit.h"
-#include "memory/VRAM.h"
+#include "memory/GPU.h"
 
 class MockMemory : public MemoryInterface
 {
@@ -57,7 +57,7 @@ SCENARIO("Memory Manage Unit", "[MMUNIT]")
 			}
 		}
 
-		WHEN("ACCESS VRAM?")
+		WHEN("ACCESS GPU?")
 		{
 			THEN("THROW.")
 			{
@@ -66,14 +66,14 @@ SCENARIO("Memory Manage Unit", "[MMUNIT]")
 		}
 	}
 
-	GIVEN("Memory Manage Unit With VRAM.")
+	GIVEN("Memory Manage Unit With GPU.")
 	{
-		std::shared_ptr<VRAM> ptr_vram = std::make_shared<VRAM>();
+		std::shared_ptr<GPU> ptr_vram = std::make_shared<GPU>();
 
 		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>
 		    (
 				nullptr,
-				std::static_pointer_cast<VRAM>(ptr_vram)
+				std::static_pointer_cast<GPU>(ptr_vram)
 			);
 
 

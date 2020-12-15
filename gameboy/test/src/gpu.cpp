@@ -1,13 +1,13 @@
 #include <catch.hpp>
 #include "GameboyCPU.h"
-#include "memory/VRAM.h"
+#include "memory/GPU.h"
 
 
 SCENARIO("GPU", "[GPU]")
 {
-	GIVEN("A Single VRAM")
+	GIVEN("A Single GPU")
 	{
-		VRAM vram;
+		GPU vram;
 
 		WHEN("Write 0x1200, 3")
 		{

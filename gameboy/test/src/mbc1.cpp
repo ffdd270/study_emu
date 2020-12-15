@@ -2,7 +2,7 @@
 #include <GameboyCPU.h>
 #include "memory/MBC1.h"
 #include "memory/MemoryManageUnit.h"
-#include "memory/VRAM.h"
+#include "memory/GPU.h"
 
 void MBC1GetterTest_NORAM(MBC1 & mbc1 )
 {
@@ -281,7 +281,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 		REQUIRE( cart.GetCartridgeType() == 0x01 ); // MBC1!
 
 		std::shared_ptr<MBC1> ptr_mbc1 = std::make_shared<MBC1>( std::move( cart ) );
-		std::shared_ptr<VRAM> ptr_vram = std::make_shared<VRAM>();
+		std::shared_ptr<GPU> ptr_vram = std::make_shared<GPU>();
 		
 		std::shared_ptr<MemoryManageUnit> mmunit_ptr = std::make_shared<MemoryManageUnit>(
 							std::static_pointer_cast<MemoryInterface>( ptr_mbc1 ),
