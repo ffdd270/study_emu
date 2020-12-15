@@ -83,8 +83,8 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/memory/MemoryManageUnit.cpp
 		${SRC_PATH}/gameboy/memory/MemoryManageUnit.h
 
-		${SRC_PATH}/gameboy/memory/VRAM.cpp
-		${SRC_PATH}/gameboy/memory/VRAM.h)
+		${SRC_PATH}/gameboy/memory/GPU.cpp
+		${SRC_PATH}/gameboy/memory/GPU.h)
 
 set( UI_SRC
 		${SRC_PATH}/harucar/LuaCommandViewer.cpp

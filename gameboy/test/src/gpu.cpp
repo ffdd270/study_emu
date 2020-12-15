@@ -7,31 +7,31 @@ SCENARIO("GPU", "[GPU]")
 {
 	GIVEN("A Single GPU")
 	{
-		GPU vram;
+		GPU gpu;
 
-		WHEN("Write 0x1200, 3")
+		WHEN("Write 0x8200, 3")
 		{
-			vram.Set( 0x1200, 3 );
+			gpu.Set(0x8200, 3 );
 
-			THEN("Read 0x2000 == 3 ")
+			THEN("Read 0x8200 == 3 ")
 			{
-				REQUIRE( vram.Get( 0x1200 ) == 3 );
+				REQUIRE(gpu.Get( 0x8200 ) == 3 );
 			}
 		}
 
-		WHEN("Write 0x2001, 3")
+		WHEN("Write 0xA001, 3")
 		{
 			THEN("THROW.")
 			{
-				REQUIRE_THROWS( vram.Set( 0x2001, 3 ) );
+				REQUIRE_THROWS(gpu.Set(0xA001, 3 ) );
 			}
 		}
 
-		WHEN("Read 0x2001")
+		WHEN("Read 0xA001")
 		{
 			THEN("THROW")
 			{
-				REQUIRE_THROWS( vram.Get(0x2001) );
+				REQUIRE_THROWS(gpu.Get(0xA001) );
 			}
 		}
 	}

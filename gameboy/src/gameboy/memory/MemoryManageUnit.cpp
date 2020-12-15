@@ -21,7 +21,7 @@ BYTE MemoryManageUnit::Get(size_t mem_addr) const
 	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff ) // GPU
 	{
 		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED GPU"); }
-		return mVRAM->Get( mem_addr - 0x8000u );
+		return mVRAM->Get( mem_addr );
 	}
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe ) // HI RAM
 	{
@@ -41,7 +41,7 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff ) // GPU
 	{
 		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED GPU"); }
-		return mVRAM->Set( mem_addr - 0x8000u, value );
+		return mVRAM->Set( mem_addr, value );
 	}
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe )
 	{
