@@ -19,7 +19,7 @@ enum class BankMode
 	ROM, RAM
 };
 
-class MBC1 : public MemoryInterface
+class MBC1 final : public MemoryInterface
 {
 public:
 	MBC1( Cartridge && cartridge );
@@ -30,6 +30,8 @@ public:
 	[[nodiscard]] bool IsRAMActive() const { return mRamEnable; }
 	[[nodiscard]] BYTE GetSelectBank() const { return mSelectBank; }
 	[[nodiscard]] BankMode GetBankMode() const {  return mBankMode; }
+
+	~MBC1() final = default;
 private:
 	[[nodiscard]] BYTE getSelectRomBank() const;
 	[[nodiscard]] BYTE getSelectRamBank() const;

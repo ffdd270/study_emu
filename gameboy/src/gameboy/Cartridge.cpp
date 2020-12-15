@@ -21,6 +21,7 @@ void Cartridge::Load(std::string_view path)
 
 	//RAM 할당
 	mRam.resize( GetRamSizeInfo().size );
+	file.close();
 }
 
 std::vector<BYTE> Cartridge::GetRawCartridgeData() const

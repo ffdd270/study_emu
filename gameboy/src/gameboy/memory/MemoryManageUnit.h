@@ -8,7 +8,7 @@
 #include "memory/MemoryInterface.h"
 #include <array>
 
-class MemoryManageUnit : public MemoryInterface
+class MemoryManageUnit final : public MemoryInterface
 {
 public:
 	explicit MemoryManageUnit(
@@ -17,6 +17,8 @@ public:
 
 	[[nodiscard]] BYTE Get(size_t mem_addr) const override;
 	void Set(size_t mem_addr, BYTE value) override;
+
+	~MemoryManageUnit() final = default;
 private:
 
 	//Hi - Ram.
