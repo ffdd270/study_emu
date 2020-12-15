@@ -4,13 +4,26 @@
 
 #include "MemoryManageUnit.h"
 
+MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridge,
+								   std::shared_ptr<MemoryInterface> ptr_vram)
+{
+	mCartridge = std::move( ptr_cartridge );
+	mVRAM = std::move( ptr_vram );
+}
+
 BYTE MemoryManageUnit::Get(size_t mem_addr) const
 {
-	if( mem_addr < 0xff80u )
+	if( ( mem_addr <= 0x7fffu ) || ( mem_addr >= 0xA000u && mem_addr <= 0xBFFF ) ) // CARTRIDGE ROM || RAM
 	{
+		if ( mCartridge == nullptr ) { throw std::logic_error("NOT LOADED CARTRIDGE."); }
 		return mCartridge->Get( mem_addr );
 	}
-	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe )
+	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff ) // VRAM
+	{
+		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED VRAM"); }
+		return mVRAM->Get( mem_addr - 0x8000u );
+	}
+	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe ) // HI RAM
 	{
 		return mHRAM[ mem_addr - 0xff80u ];
 	}
@@ -20,19 +33,18 @@ BYTE MemoryManageUnit::Get(size_t mem_addr) const
 
 void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 {
-	if( mem_addr < 0xff80u )
+	if( ( mem_addr <= 0x7fffu ) || ( mem_addr >= 0xA000u && mem_addr <= 0xBFFF ) ) // CARTRIDGE ROM || RAM
 	{
+		if ( mCartridge == nullptr ) { throw std::logic_error("NOT LOADED CARTRIDGE."); }
 		mCartridge->Set( mem_addr, value );
+	}
+	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff ) // VRAM
+	{
+		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED VRAM"); }
+		return mVRAM->Set( mem_addr - 0x8000u, value );
 	}
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe )
 	{
 		mHRAM[ mem_addr - 0xff80u ] = value;
 	}
-}
-
-MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridge)
-{
-	if ( ptr_cartridge == nullptr ) { throw std::logic_error("CARTRIDGE SHOULD NOT NULLPTR"); }
-
-	mCartridge = std::move( ptr_cartridge );
 }
