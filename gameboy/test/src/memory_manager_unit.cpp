@@ -2,6 +2,7 @@
 #include "GameboyCPU.h"
 #include "util.h"
 #include "memory/MemoryManageUnit.h"
+#include "memory/VRAM.h"
 
 class MockMemory : public MemoryInterface
 {
@@ -23,7 +24,7 @@ private:
 
 SCENARIO("Memory Manage Unit", "[MMUNIT]")
 {
-	GIVEN("A Single Memory Manage Unit")
+	GIVEN("A Single Memory Manage Unit, with single cartridge.")
 	{
 		std::shared_ptr<MockMemory> ptr_mock_memory = std::make_shared<MockMemory>();
 		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>( std::static_pointer_cast<MemoryInterface>( ptr_mock_memory ) );
@@ -53,6 +54,35 @@ SCENARIO("Memory Manage Unit", "[MMUNIT]")
 				{
 					REQUIRE( ptr_memory_manage_unit->Get( i ) == 0 );
 				}
+			}
+		}
+
+		WHEN("ACCESS VRAM?")
+		{
+			THEN("THROW.")
+			{
+				REQUIRE_THROWS( ptr_memory_manage_unit->Get( 0x8000 ) );
+			}
+		}
+	}
+
+	GIVEN("Memory Manage Unit With VRAM.")
+	{
+		std::shared_ptr<VRAM> ptr_vram = std::make_shared<VRAM>();
+
+		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>
+		    (
+				nullptr,
+				std::static_pointer_cast<VRAM>(ptr_vram)
+			);
+
+
+		WHEN("WRITE 0x8250, 3 ")
+		{
+			ptr_memory_manage_unit->Set( 0x8250, 3 );
+			THEN("READ 0x8250 == 3")
+			{
+				REQUIRE( ptr_memory_manage_unit->Get( 0x8250 ) == 3 );
 			}
 		}
 	}
