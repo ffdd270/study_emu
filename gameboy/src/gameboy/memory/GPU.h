@@ -19,9 +19,21 @@ public:
 	void Set(size_t mem_addr, BYTE value) override;
 
 	~GPU() final = default;
+
+	//LCD Control Register
+	bool IsLCDDisplayEnable(); // BIT 7
+	WORD GetSelectedWindowTileMap(); // BIT 6
+	bool IsWindowDisplayEnable(); // BIT 5
+	WORD GetSelectBGAndWindowTileData(); // BIT 4
+	WORD GetSelectBGTileMapDisplay(); // BIT 3
+	bool IsSpriteSize(); // BIT 2
+	bool IsSpriteDisplayEnable(); // BIT 1
+	bool CheckProperty(); // BIT 0
 private:
 	void checkAddress(size_t mem_addr) const;
 private:
+	BYTE mLCDControlRegister;
+
 	std::array<BYTE, 0x2000> mMemory;
 };
 

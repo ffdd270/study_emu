@@ -21,8 +21,16 @@ BYTE GPU::Get(size_t mem_addr) const
 
 void GPU::Set(size_t mem_addr, BYTE value)
 {
-	checkAddress(mem_addr);
-	mMemory[mem_addr - VRAM_START_ADDRESS] = value;
+	if( mem_addr == 0xff40 ) // LCD Control Register
+	{
+		mLCDControlRegister = value;
+	}
+	else // VRAM
+	{
+		checkAddress(mem_addr);
+		mMemory[mem_addr - VRAM_START_ADDRESS] = value;
+	}
+
 }
 
 void GPU::checkAddress(size_t mem_addr) const
@@ -32,6 +40,57 @@ void GPU::checkAddress(size_t mem_addr) const
 	if (result_relative_address < 0 ) { throw  std::logic_error("UNDERFLOW, ADDRESS"); }
 	if (result_relative_address >= mMemory.size()) { throw std::logic_error("OVERFLOW, ADDRESS."); }
 
+}
+
+inline bool GetBit( BYTE origin, BYTE bit_pos )
+{
+	return ( origin & ( 0b1u << bit_pos ) ) >> bit_pos;
+}
+
+bool GPU::IsLCDDisplayEnable()
+{
+	return GetBit( mLCDControlRegister, 7 ) == 1;
+}
+
+WORD GPU::GetSelectedWindowTileMap()
+{
+	return GetBit( mLCDControlRegister, 6 ) == 1 ?
+		0x9C00u :
+		0x9800u ;
+}
+
+bool GPU::IsWindowDisplayEnable()
+{
+	return GetBit( mLCDControlRegister, 5 ) == 1;
+}
+
+WORD GPU::GetSelectBGAndWindowTileData()
+{
+	return GetBit( mLCDControlRegister, 4 ) == 1 ?
+		0x8000u :
+		0x8800u ;
+}
+
+WORD GPU::GetSelectBGTileMapDisplay()
+{
+	return GetBit( mLCDControlRegister, 3 ) == 1 ?
+		0x9C00u :
+		0x9800u ;
+}
+
+bool GPU::IsSpriteDisplayEnable()
+{
+	return GetBit( mLCDControlRegister, 2 ) == 1;
+}
+
+bool GPU::CheckProperty()
+{
+	return GetBit( mLCDControlRegister, 1 ) == 1;
+}
+
+bool GPU::IsSpriteSize()
+{
+	return GetBit( mLCDControlRegister, 0 ) == 1;
 }
 
 
