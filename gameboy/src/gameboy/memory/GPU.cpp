@@ -78,19 +78,17 @@ WORD GPU::GetSelectBGTileMapDisplay()
 		0x9800u ;
 }
 
-bool GPU::IsSpriteDisplayEnable()
+bool GPU::IsSpriteSize()
 {
 	return GetBit( mLCDControlRegister, 2 ) == 1;
 }
 
-bool GPU::CheckProperty()
+bool GPU::IsSpriteDisplayEnable()
 {
 	return GetBit( mLCDControlRegister, 1 ) == 1;
 }
 
-bool GPU::IsSpriteSize()
+bool GPU::CheckProperty()
 {
 	return GetBit( mLCDControlRegister, 0 ) == 1;
 }
-
-

@@ -34,7 +34,22 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE_THROWS(gpu.Get(0xA001) );
 			}
 		}
+
+		WHEN("Write 0xff40, 0b11011011")
+		{
+			gpu.Set( 0xff40, 0b11010011u );
+
+			THEN("7, 6, 4, 1, 0 SET, Else -> NOT SET")
+			{
+				REQUIRE( gpu.IsLCDDisplayEnable() );
+				REQUIRE( gpu.GetSelectedWindowTileMap() == 0x9C00 );
+				REQUIRE_FALSE( gpu.IsWindowDisplayEnable() );
+				REQUIRE( gpu.GetSelectBGAndWindowTileData() == 0x8000 );
+				REQUIRE( gpu.GetSelectBGTileMapDisplay() == 0x9800 );
+				REQUIRE_FALSE( gpu.IsSpriteSize() );
+				REQUIRE( gpu.IsSpriteDisplayEnable() );
+				REQUIRE( gpu.CheckProperty() );
+			}
+		}
 	}
-
-
 }
