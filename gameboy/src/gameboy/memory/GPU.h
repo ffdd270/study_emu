@@ -29,10 +29,19 @@ public:
 	bool IsSpriteSize(); // BIT 2
 	bool IsSpriteDisplayEnable(); // BIT 1
 	bool CheckProperty(); // BIT 0
+
+	//LCD Status Register
+	bool IsEnableLYCoincidenceInterrupt();  // BIT 6
+	bool IsEnableMode2OAMInterrupt(); // BIT 5
+	bool IsEnableMode1VBlankInterrupt(); // BIT 4
+	bool IsEnableMode0HBlankInterrupt(); // BIT 3
+	bool GettCoincidenceFlag(); // BIT 2
+	BYTE GetModeFlag(); // BIT 1-0
 private:
 	void checkAddress(size_t mem_addr) const;
 private:
 	BYTE mLCDControlRegister;
+	BYTE mLCDStatusRegister;
 
 	std::array<BYTE, 0x2000> mMemory;
 };
