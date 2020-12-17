@@ -35,6 +35,7 @@ public:
 	[[nodiscard]] bool IsEnableMode2OAMInterrupt() const; // BIT 5
 	[[nodiscard]] bool IsEnableMode1VBlankInterrupt() const; // BIT 4
 	[[nodiscard]] bool IsEnableMode0HBlankInterrupt() const; // BIT 3
+	//READ ONLY
 	[[nodiscard]] bool GetCoincidenceFlag() const; // BIT 2
 	[[nodiscard]] BYTE GetModeFlag() const; // BIT 1-0
 private:

@@ -51,5 +51,20 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.CheckProperty() );
 			}
 		}
+
+		WHEN("Write 0xff41, ( LCD Status Register ) , 0b01101111")
+		{
+			gpu.Set( 0xff41, 0b01101111u );
+
+			THEN("6,5,3 Seteed, 2, 1, 0 -> READ ONLY, not chaged." )
+			{
+				REQUIRE( gpu.IsEnableLYCoincidenceInterrupt() );
+				REQUIRE( gpu.IsEnableMode2OAMInterrupt() );
+				REQUIRE( gpu.IsEnableMode1VBlankInterrupt() == false );
+				REQUIRE( gpu.IsEnableMode0HBlankInterrupt() );
+				REQUIRE( gpu.GetCoincidenceFlag() == false );
+				REQUIRE( gpu.GetModeFlag() == 0 );
+			}
+		}
 	}
 }
