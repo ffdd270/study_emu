@@ -5,7 +5,7 @@
 #include "GPU.h"
 
 
-GPU::GPU() : mMemory({0 } )
+GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 )
 {
 
 }
@@ -24,6 +24,11 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	if( mem_addr == 0xff40 ) // LCD Control Register
 	{
 		mLCDControlRegister = value;
+	}
+	else if( mem_addr == 0xff41 )
+	{
+		// 하위 3비트는 READ-ONLY 7번 비트는 존재하지 않음.
+		mLCDStatusRegister = ( value & 0b01111000u );
 	}
 	else // VRAM
 	{
@@ -47,48 +52,85 @@ inline bool GetBit( BYTE origin, BYTE bit_pos )
 	return ( origin & ( 0b1u << bit_pos ) ) >> bit_pos;
 }
 
-bool GPU::IsLCDDisplayEnable()
+//LCD Control Register
+
+bool GPU::IsLCDDisplayEnable() const
 {
 	return GetBit( mLCDControlRegister, 7 ) == 1;
 }
 
-WORD GPU::GetSelectedWindowTileMap()
+WORD GPU::GetSelectedWindowTileMap() const
 {
 	return GetBit( mLCDControlRegister, 6 ) == 1 ?
 		0x9C00u :
 		0x9800u ;
 }
 
-bool GPU::IsWindowDisplayEnable()
+bool GPU::IsWindowDisplayEnable() const
 {
 	return GetBit( mLCDControlRegister, 5 ) == 1;
 }
 
-WORD GPU::GetSelectBGAndWindowTileData()
+WORD GPU::GetSelectBGAndWindowTileData() const
 {
 	return GetBit( mLCDControlRegister, 4 ) == 1 ?
 		0x8000u :
 		0x8800u ;
 }
 
-WORD GPU::GetSelectBGTileMapDisplay()
+WORD GPU::GetSelectBGTileMapDisplay() const
 {
 	return GetBit( mLCDControlRegister, 3 ) == 1 ?
 		0x9C00u :
 		0x9800u ;
 }
 
-bool GPU::IsSpriteSize()
+bool GPU::IsSpriteSize() const
 {
 	return GetBit( mLCDControlRegister, 2 ) == 1;
 }
 
-bool GPU::IsSpriteDisplayEnable()
+bool GPU::IsSpriteDisplayEnable() const
 {
 	return GetBit( mLCDControlRegister, 1 ) == 1;
 }
 
-bool GPU::CheckProperty()
+bool GPU::CheckProperty() const
 {
 	return GetBit( mLCDControlRegister, 0 ) == 1;
+}
+
+//LCD Status Register
+
+bool GPU::IsEnableLYCoincidenceInterrupt() const
+{
+	return GetBit( mLCDStatusRegister, 6 ) == 1;
+}
+
+bool GPU::IsEnableMode2OAMInterrupt() const
+{
+	return GetBit( mLCDStatusRegister, 5 ) == 1;
+}
+
+bool GPU::IsEnableMode1VBlankInterrupt() const
+{
+	return GetBit( mLCDStatusRegister, 4 ) == 1;
+}
+
+bool GPU::IsEnableMode0HBlankInterrupt() const
+{
+	return GetBit( mLCDStatusRegister, 3 ) == 1;
+}
+
+bool GPU::GetCoincidenceFlag() const
+{
+	return GetBit( mLCDStatusRegister, 2 ) == 1;
+}
+
+BYTE GPU::GetModeFlag() const
+{
+	BYTE bit1 = GetBit( mLCDStatusRegister, 1 );
+	BYTE bit0 = GetBit( mLCDStatusRegister, 0 );
+
+	return static_cast<BYTE>( bit1 << 1u ) | bit0 ;
 }
