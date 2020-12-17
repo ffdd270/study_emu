@@ -21,22 +21,22 @@ public:
 	~GPU() final = default;
 
 	//LCD Control Register
-	bool IsLCDDisplayEnable(); // BIT 7
-	WORD GetSelectedWindowTileMap(); // BIT 6
-	bool IsWindowDisplayEnable(); // BIT 5
-	WORD GetSelectBGAndWindowTileData(); // BIT 4
-	WORD GetSelectBGTileMapDisplay(); // BIT 3
-	bool IsSpriteSize(); // BIT 2
-	bool IsSpriteDisplayEnable(); // BIT 1
-	bool CheckProperty(); // BIT 0
+	[[nodiscard]] bool IsLCDDisplayEnable() const; // BIT 7
+	[[nodiscard]] WORD GetSelectedWindowTileMap() const; // BIT 6
+	[[nodiscard]] bool IsWindowDisplayEnable() const; // BIT 5
+	[[nodiscard]] WORD GetSelectBGAndWindowTileData() const; // BIT 4
+	[[nodiscard]] WORD GetSelectBGTileMapDisplay() const; // BIT 3
+	[[nodiscard]] bool IsSpriteSize() const; // BIT 2
+	[[nodiscard]] bool IsSpriteDisplayEnable() const; // BIT 1
+	[[nodiscard]] bool CheckProperty() const; // BIT 0
 
 	//LCD Status Register
-	bool IsEnableLYCoincidenceInterrupt();  // BIT 6
-	bool IsEnableMode2OAMInterrupt(); // BIT 5
-	bool IsEnableMode1VBlankInterrupt(); // BIT 4
-	bool IsEnableMode0HBlankInterrupt(); // BIT 3
-	bool GettCoincidenceFlag(); // BIT 2
-	BYTE GetModeFlag(); // BIT 1-0
+	[[nodiscard]] bool IsEnableLYCoincidenceInterrupt() const;  // BIT 6
+	[[nodiscard]] bool IsEnableMode2OAMInterrupt() const; // BIT 5
+	[[nodiscard]] bool IsEnableMode1VBlankInterrupt() const; // BIT 4
+	[[nodiscard]] bool IsEnableMode0HBlankInterrupt() const; // BIT 3
+	[[nodiscard]] bool GetCoincidenceFlag() const; // BIT 2
+	[[nodiscard]] BYTE GetModeFlag() const; // BIT 1-0
 private:
 	void checkAddress(size_t mem_addr) const;
 private:

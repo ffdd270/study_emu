@@ -54,80 +54,80 @@ inline bool GetBit( BYTE origin, BYTE bit_pos )
 
 //LCD Control Register
 
-bool GPU::IsLCDDisplayEnable()
+bool GPU::IsLCDDisplayEnable() const
 {
 	return GetBit( mLCDControlRegister, 7 ) == 1;
 }
 
-WORD GPU::GetSelectedWindowTileMap()
+WORD GPU::GetSelectedWindowTileMap() const
 {
 	return GetBit( mLCDControlRegister, 6 ) == 1 ?
 		0x9C00u :
 		0x9800u ;
 }
 
-bool GPU::IsWindowDisplayEnable()
+bool GPU::IsWindowDisplayEnable() const
 {
 	return GetBit( mLCDControlRegister, 5 ) == 1;
 }
 
-WORD GPU::GetSelectBGAndWindowTileData()
+WORD GPU::GetSelectBGAndWindowTileData() const
 {
 	return GetBit( mLCDControlRegister, 4 ) == 1 ?
 		0x8000u :
 		0x8800u ;
 }
 
-WORD GPU::GetSelectBGTileMapDisplay()
+WORD GPU::GetSelectBGTileMapDisplay() const
 {
 	return GetBit( mLCDControlRegister, 3 ) == 1 ?
 		0x9C00u :
 		0x9800u ;
 }
 
-bool GPU::IsSpriteSize()
+bool GPU::IsSpriteSize() const
 {
 	return GetBit( mLCDControlRegister, 2 ) == 1;
 }
 
-bool GPU::IsSpriteDisplayEnable()
+bool GPU::IsSpriteDisplayEnable() const
 {
 	return GetBit( mLCDControlRegister, 1 ) == 1;
 }
 
-bool GPU::CheckProperty()
+bool GPU::CheckProperty() const
 {
 	return GetBit( mLCDControlRegister, 0 ) == 1;
 }
 
 //LCD Status Register
 
-bool GPU::IsEnableLYCoincidenceInterrupt()
+bool GPU::IsEnableLYCoincidenceInterrupt() const
 {
 	return GetBit( mLCDStatusRegister, 6 ) == 1;
 }
 
-bool GPU::IsEnableMode2OAMInterrupt()
+bool GPU::IsEnableMode2OAMInterrupt() const
 {
 	return GetBit( mLCDStatusRegister, 5 ) == 1;
 }
 
-bool GPU::IsEnableMode1VBlankInterrupt()
+bool GPU::IsEnableMode1VBlankInterrupt() const
 {
 	return GetBit( mLCDStatusRegister, 4 ) == 1;
 }
 
-bool GPU::IsEnableMode0HBlankInterrupt()
+bool GPU::IsEnableMode0HBlankInterrupt() const
 {
 	return GetBit( mLCDStatusRegister, 3 ) == 1;
 }
 
-bool GPU::GettCoincidenceFlag()
+bool GPU::GetCoincidenceFlag() const
 {
 	return GetBit( mLCDStatusRegister, 2 ) == 1;
 }
 
-BYTE GPU::GetModeFlag()
+BYTE GPU::GetModeFlag() const
 {
 	BYTE bit1 = GetBit( mLCDStatusRegister, 1 );
 	BYTE bit0 = GetBit( mLCDStatusRegister, 0 );
