@@ -12,8 +12,14 @@ find_package(SFML 2 COMPONENTS graphics REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Lua REQUIRED)
 
+if(WIN32)
+	set(HARUCAR_LIB_NAME harucar.lib)
+else()
+	set(HARUCAR_LIB_NAME libharucar.a)
+endif()
+
 find_library(HARUCAR_LIB
-		NAMES harucar.lib
+		NAMES ${HARUCAR_LIB_NAME}
 		HINTS ${HARUCAR_PATH}/cmake-build-debug )
 
 include_directories(
@@ -100,4 +106,4 @@ set( COLOR_TEXT_EDIT
 
 add_subdirectory(test)
 add_executable(gameboy src/main.cpp ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} ${COLOR_TEXT_EDIT} ${UI_SRC} )
-target_link_libraries(gameboy PRIVATE sfml-graphics OpenGL32 ${HARUCAR_LIB} ${LUA_LIBRARIES})
+target_link_libraries(gameboy PRIVATE sfml-graphics ${HARUCAR_LIB} ${LUA_LIBRARIES})
