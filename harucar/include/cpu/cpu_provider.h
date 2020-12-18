@@ -8,6 +8,7 @@
 #include "base/provider_interface.h"
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 
 namespace HaruCar::CPU
