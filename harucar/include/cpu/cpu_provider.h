@@ -18,8 +18,8 @@ namespace HaruCar::CPU
 
 		void UseHiLo(const std::string & ref_hi_reg_name, const std::string & ref_log_reg_name, size_t reg_byte_size )
 		{
-			if ( ( reg_byte_size % 2 ) == 1 )  { throw std::exception("WAS reg_byte_size % 2 == 1."); }
-			if ( ( ( reg_byte_size / 2 ) % 2 ) == 1 && ( reg_byte_size != 2 ) ) { throw std::exception("SHOULD BE 2, 4, .... 2^N"); }
+			if ( ( reg_byte_size % 2 ) == 1 )  { throw std::logic_error("WAS reg_byte_size % 2 == 1."); }
+			if ( ( ( reg_byte_size / 2 ) % 2 ) == 1 && ( reg_byte_size != 2 ) ) { throw std::logic_error("SHOULD BE 2, 4, .... 2^N"); }
 
 			hi_register_name = ref_hi_reg_name;
 			lo_register_name = ref_log_reg_name;
@@ -30,9 +30,9 @@ namespace HaruCar::CPU
 
 		[[nodiscard]] int GetHigh() const
 		{
-			if( !use_hi_lo ) { throw std::exception("NO USE HI LO, BUT ACCESS HI."); }
-			if ( ( register_byte_size % 2 ) == 1 )  { throw std::exception("WAS reg_byte_size % 2 == 1."); }
-			if ( ( register_byte_size / 2 ) % 2 == 1 && ( register_byte_size != 2 ) ) { throw std::exception("SHOULD BE 2, 4, .... 2^N"); }
+			if( !use_hi_lo ) { throw std::logic_error("NO USE HI LO, BUT ACCESS HI."); }
+			if ( ( register_byte_size % 2 ) == 1 )  { throw std::logic_error("WAS reg_byte_size % 2 == 1."); }
+			if ( ( register_byte_size / 2 ) % 2 == 1 && ( register_byte_size != 2 ) ) { throw std::logic_error("SHOULD BE 2, 4, .... 2^N"); }
 			size_t half = register_byte_size / 2;
 
 			int and_value = getBitMaskValue(half);
@@ -44,9 +44,9 @@ namespace HaruCar::CPU
 
 		[[nodiscard]] int GetLow() const
 		{
-			if( !use_hi_lo ) { throw std::exception("NO USE HI LO, BUT ACCESS HI."); }
-			if ( ( register_byte_size % 2 ) == 1 )   { throw std::exception("WAS reg_byte_size % 2 == 1."); }
-			if ( ( register_byte_size / 2 ) % 2 == 1 && ( register_byte_size != 2 ) ) { throw std::exception("SHOULD BE 2, 4, .... 2^N"); }
+			if( !use_hi_lo ) { throw std::logic_error("NO USE HI LO, BUT ACCESS HI."); }
+			if ( ( register_byte_size % 2 ) == 1 )   { throw std::logic_error("WAS reg_byte_size % 2 == 1."); }
+			if ( ( register_byte_size / 2 ) % 2 == 1 && ( register_byte_size != 2 ) ) { throw std::logic_error("SHOULD BE 2, 4, .... 2^N"); }
 			size_t half = register_byte_size / 2;
 
 			int or_value = getBitMaskValue(half);

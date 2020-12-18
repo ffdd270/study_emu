@@ -36,4 +36,4 @@ set(DEMO_SRC
 
 add_executable(harucar-demo ${DEMO_SRC} ${IMGUI} ${IMGUI_SFML})
 
-target_link_libraries( harucar-demo PRIVATE harucar sfml-graphics OpenGL32 )
+target_link_libraries( harucar-demo PRIVATE harucar sfml-graphics )
