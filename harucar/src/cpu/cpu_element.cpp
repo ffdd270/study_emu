@@ -12,7 +12,7 @@ void CPU::Elements::RenderFlags(const std::vector<std::string> &flag_names, cons
 {
 	if( flag_names.size() != flags.size() )
 	{
-		throw std::exception("FLAG NAMES SIZE SHOULD BE SAME AS FLAGS.");
+		throw std::logic_error("FLAG NAMES SIZE SHOULD BE SAME AS FLAGS.");
 	}
 
 	ImGui::Columns( 2, "CPU Flags Column" ); // Name, Flag
@@ -51,7 +51,7 @@ void CPU::Elements::RenderRegister(const std::vector<std::string> &register_name
 {
 	if( register_names.size() != values.size() )
 	{
-		throw std::exception("FLAG NAMES SIZE SHOULD BE SAME AS FLAGS.");
+		throw std::logic_error("FLAG NAMES SIZE SHOULD BE SAME AS FLAGS.");
 	}
 
 	if ( register_names.empty() )
@@ -102,7 +102,7 @@ void CPU::Elements::RenderInstructions(const std::vector<std::string> &instructi
 {
 	if( instructions.size() != opcodes.size() )
 	{
-		throw std::exception("OPCODES NAMES SIZE SHOULD BE SAME AS INSTRUCTIONS");
+		throw std::logic_error("OPCODES NAMES SIZE SHOULD BE SAME AS INSTRUCTIONS");
 	}
 
 	if ( instructions.empty() ) { return; }

@@ -10,6 +10,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <memory>
+#include <cassert>
 
 typedef size_t LuaContextRefId;
 typedef int LuaRefId;
@@ -24,7 +25,7 @@ public:
 
 	};
 
-	static const LuaContextRefId REF_NIL = 0x1000000000000;
+	static const LuaContextRefId REF_NIL;
 
 	LuaContext();
 
@@ -84,7 +85,7 @@ private:
 template<typename Type>
 inline bool CheckLuaType(lua_State * lua_state, int stack)
 {
-	static_assert( false, "Template Special REQ!" );
+	assert( false && "Template Special REQ!" );
 }
 
 template<>
@@ -103,7 +104,7 @@ inline bool CheckLuaType<const char *>(lua_State * lua_state, int stack)
 template<LuaContext::LuaSpecialTypes SpecialType>
 inline bool CheckLuaType(lua_State * lua_state, int stack)
 {
-	static_assert( false, "Template Special REQ!" );
+	assert( false && "Template Special REQ!" );
 }
 
 template<>

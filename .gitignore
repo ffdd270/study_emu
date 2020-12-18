@@ -39,3 +39,5 @@ gameboy/cmake-build-release
 gameboy/.vs
 gameboy/bin
 gameboy/out
+gameboy/builds
+harucar/builds

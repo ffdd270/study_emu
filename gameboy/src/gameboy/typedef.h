@@ -5,6 +5,8 @@
 #ifndef GAMEBOY_TYPEDEF_H
 #define GAMEBOY_TYPEDEF_H
 
+#include <cstddef>
+
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 

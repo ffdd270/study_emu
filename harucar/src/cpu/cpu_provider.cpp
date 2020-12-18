@@ -88,14 +88,14 @@ const std::vector<int> & CPUProvider::GetOpCodes() const
 
 const std::string & CPUProvider::GetRegisterName(size_t index) const
 {
-	if ( mRegisterNames.size() <= index ) {  throw std::exception("Register Names Out of Index"); }
+	if ( mRegisterNames.size() <= index ) {  throw std::logic_error("Register Names Out of Index"); }
 
 	return mRegisterNames[index];
 }
 
 const ProviderRegister & CPUProvider::GetRegisterValue(size_t index) const
 {
-	if ( mRegisters.size() <= index ) { throw std::exception("Register Out of Index"); }
+	if ( mRegisters.size() <= index ) { throw std::logic_error("Register Out of Index"); }
 
 	return mRegisters[index];
 }
@@ -112,14 +112,14 @@ int CPUProvider::FindRegisterIndex(const std::string &register_name) const
 
 const std::string & CPUProvider::GetFlagName(size_t index) const
 {
-	if ( mFlagNames.size() <= index ) { throw std::exception("Flag Names Out of Index"); }
+	if ( mFlagNames.size() <= index ) { throw std::logic_error("Flag Names Out of Index"); }
 
 	return mFlagNames[index];
 }
 
 bool CPUProvider::GetFlag(size_t index) const
 {
-	if ( mFlags.size() <= index ) { throw std::exception("Flag Out of Index"); }
+	if ( mFlags.size() <= index ) { throw std::logic_error("Flag Out of Index"); }
 
 	return mFlags[index];
 }
@@ -137,27 +137,27 @@ int CPUProvider::FindFlagIndex(const std::string &flag_name) const
 
 const std::string & CPUProvider::GetInstruction(size_t index) const
 {
-	if ( mInstructions.size() <= index ) { throw std::exception("Instruction Out of Index`"); }
+	if ( mInstructions.size() <= index ) { throw std::logic_error("Instruction Out of Index`"); }
 
 	return mInstructions[index];
 }
 
 int CPUProvider::GetOpCode(size_t index) const
 {
-	if ( mOpCodes.size() <= index ) { throw std::exception("OpCode Out of Index`"); }
+	if ( mOpCodes.size() <= index ) { throw std::logic_error("OpCode Out of Index`"); }
 
 	return mOpCodes[index];
 }
 
 const std::string &CPUProvider::GetLastInstruction() const
 {
-	if( mInstructions.empty() ) { throw std::exception("SIZE ZERO, BUT ACCESS TO LAST INSTRUCTION"); }
+	if( mInstructions.empty() ) { throw std::logic_error("SIZE ZERO, BUT ACCESS TO LAST INSTRUCTION"); }
 	return mInstructions[ mInstructions.size() - 1 ];
 }
 
 int CPUProvider::GetLastOpCode() const
 {
-	if( mOpCodes.empty() ) { throw std::exception("SIZE ZERO, BUT ACCESS TO LAST OPCODES"); }
+	if( mOpCodes.empty() ) { throw std::logic_error("SIZE ZERO, BUT ACCESS TO LAST OPCODES"); }
 	return mOpCodes[ mOpCodes.size() - 1 ];
 }
 

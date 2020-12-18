@@ -1,6 +1,7 @@
 #include <catch.hpp>
 #include "GameboyCPU.h"
 #include "lua_util.h"
+#include <string.h>
 
 SCENARIO("Usage of StringBuf", "[BIND]")
 {
@@ -22,7 +23,12 @@ SCENARIO("Usage of StringBuf", "[BIND]")
 		REQUIRE(memcmp( ptr_buf->Get(), arr, 100 ) == 0);
 
 		const char * source = "StringBuf";
-		strcpy_s( ptr_buf->Get(), ptr_buf->Size(), source );
+
+		#ifdef _WIN32
+			strcpy_s( ptr_buf->Get(), ptr_buf->Size(), source );
+		#else
+			strcpy( ptr_buf->Get(), source );
+		#endif
 
 		WHEN("Get Value From Lua")
 		{
