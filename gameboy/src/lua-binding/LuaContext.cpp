@@ -5,6 +5,7 @@
 #include "LuaContext.h"
 #include "gameboy_luabinding.h"
 
+const LuaContextRefId LuaContext::REF_NIL = 0x1000000000000;
 
 LuaContext::LuaContext()
 {
