@@ -102,8 +102,12 @@ set( COLOR_TEXT_EDIT
 		external/color_text_edit/TextEditor.cpp
 		external/color_text_edit/TextEditor.h )
 
+if(WIN32)
+	set( PLATFORM_LIBRARY OpenGL32 ) # Mac OS는 안 해줘야 '함'
+endif()
+
 
 
 add_subdirectory(test)
 add_executable(gameboy src/main.cpp ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} ${COLOR_TEXT_EDIT} ${UI_SRC} )
-target_link_libraries(gameboy PRIVATE sfml-graphics ${HARUCAR_LIB} ${LUA_LIBRARIES})
+target_link_libraries(gameboy PRIVATE sfml-graphics ${PLATFORM_LIBRARY} ${HARUCAR_LIB} ${LUA_LIBRARIES})
