@@ -36,4 +36,10 @@ set(DEMO_SRC
 
 add_executable(harucar-demo ${DEMO_SRC} ${IMGUI} ${IMGUI_SFML})
 
-target_link_libraries( harucar-demo PRIVATE harucar sfml-graphics )
+
+
+if(WIN32)
+	set( PLATFORM_LIBRARY OpenGL32 ) # Mac OS는 안 해줘야 '함'
+endif()
+
+target_link_libraries( harucar-demo PRIVATE harucar ${PLATFORM_LIBRARY} sfml-graphics )

@@ -41,3 +41,4 @@ gameboy/bin
 gameboy/out
 gameboy/builds
 harucar/builds
+gameboy/test/out
