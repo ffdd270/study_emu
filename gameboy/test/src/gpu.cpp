@@ -5,7 +5,7 @@
 
 SCENARIO("GPU", "[GPU]")
 {
-	GIVEN("A Single GPU")
+	GIVEN("A Single GPU, Test Memory Access.")
 	{
 		GPU gpu;
 
