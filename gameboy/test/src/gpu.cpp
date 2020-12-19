@@ -5,7 +5,7 @@
 
 SCENARIO("GPU", "[GPU]")
 {
-	GIVEN("A Single GPU")
+	GIVEN("A Single GPU, Test Memory Access.")
 	{
 		GPU gpu;
 
@@ -64,6 +64,28 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.IsEnableMode0HBlankInterrupt() );
 				REQUIRE( gpu.GetCoincidenceFlag() == false );
 				REQUIRE( gpu.GetModeFlag() == 0 );
+			}
+		}
+	}
+
+	GIVEN("A Single GPU, Test NextStep")
+	{
+		GPU gpu;
+
+		REQUIRE( gpu.GetModeFlag() == 0 );
+		REQUIRE( gpu.IsEnableMode1VBlankInterrupt() == false );
+
+		WHEN("Clock = 114 * 144 After.")
+		{
+			constexpr size_t ONE_LINE_DRAW_CLOCK = 456;
+			constexpr size_t MAX_SCANLINE = 144;
+
+			gpu.NextStep( ONE_LINE_DRAW_CLOCK * MAX_SCANLINE );
+
+			THEN(", VBLANK is Active.")
+			{
+				REQUIRE( gpu.GetModeFlag() == 1 );
+				REQUIRE( gpu.IsEnableMode1VBlankInterrupt() );
 			}
 		}
 	}
