@@ -37,12 +37,12 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	}
 }
 
-void GPU::NextStep(size_t cycle)
+void GPU::NextStep(size_t clock)
 {
 	// 1 Cycle = 4 Clock, 114 Cycle = 456 Dots = One Line.
 	// Line == LY
 
-	if (cycle == 0)
+	if (clock == 0)
 	{
 		return;
 	}
@@ -54,7 +54,7 @@ void GPU::NextStep(size_t cycle)
 
 	// LY가 144가 넘어가면 v-blank가 올라간다.
 
-	int clock = ( static_cast<int>( cycle - 1 ) / 80 ) + 1; // 왜 80인가? 라고 물으면..
+	int loop_target = (static_cast<int>( clock - 1 ) / 80 ) + 1; // 왜 80인가? 라고 물으면..
 	// 현대 컴퓨터에서 이걸 일일히 다 따라하기보단, 그냥 모드 전환만 적당히 되면 되서 그런 거 아닐까?
 	// 그럼 더 큰값은 안 되냐고 생각할 지도 모르겠지만. 모드 2의 유지 기간이 80이라서. 80으로 해야 모든 모드들에 진입할 수 있다.
 
@@ -62,11 +62,11 @@ void GPU::NextStep(size_t cycle)
 	constexpr size_t REAL_SCANLINE_END = 144;
 	constexpr size_t MAX_SCANLINE = 154;
 
-	for( int i = 0; i < clock; i++ )
+	for( int i = 0; i < loop_target; i++ )
 	{
 		if ( i == ( clock - 1 ) ) // 마지막이면 80의 나머지 숫자를.
 		{
-			mDots += cycle % 80;
+			mDots += clock % 80;
 		}
 		else // 아니라면 그냥 몫만큼 더하면 됨.
 		{
@@ -202,15 +202,15 @@ void GPU::checkAddress(size_t mem_addr) const
 
 void GPU::enableVBlank()
 {
-	SetBit( mLCDControlRegister, 4 );
+	SetBit(mLCDStatusRegister, 4 );
 }
 
 void GPU::setLCDMode(BYTE mode)
 {
-	mLCDControlRegister |= mode;
+	mLCDStatusRegister |= mode;
 }
 
 void GPU::disableVBlank()
 {
-	OffBit( mLCDControlRegister, 4 );
+	OffBit(mLCDStatusRegister, 4 );
 }
