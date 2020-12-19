@@ -18,6 +18,8 @@ public:
 	[[nodiscard]] BYTE Get(size_t mem_addr) const override;
 	void Set(size_t mem_addr, BYTE value) override;
 
+	void NextStep(size_t cycle);
+
 	~GPU() final = default;
 
 	//LCD Control Register
@@ -40,9 +42,18 @@ public:
 	[[nodiscard]] BYTE GetModeFlag() const; // BIT 1-0
 private:
 	void checkAddress(size_t mem_addr) const;
+
+	void enableVBlank();
+	// 마더보드는 이걸 접근 가능함.
+	void disableVBlank();
+
+	void setLCDMode( BYTE mode );
 private:
 	BYTE mLCDControlRegister;
 	BYTE mLCDStatusRegister;
+
+	size_t mDots; // 점 찍는 중..
+	size_t mScanLineY; // 스캔 라인..
 
 	std::array<BYTE, 0x2000> mMemory;
 };
