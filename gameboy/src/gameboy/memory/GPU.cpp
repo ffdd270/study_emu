@@ -89,7 +89,7 @@ bool GPURegisterHelper::IsEnableMode0HBlankInterrupt(BYTE value)
 	return GetBit( value, 3 ) == 1;
 }
 
-bool GPURegisterHelper::IsConincidence(BYTE value)
+bool GPURegisterHelper::IsCoincidence(BYTE value)
 {
 	return GetBit( value, 2 ) == 1;
 }
@@ -319,7 +319,7 @@ bool GPU::IsEnableMode0HBlankInterrupt() const
 
 bool GPU::IsCoincidence() const
 {
-	return GPURegisterHelper::IsConincidence( mLCDStatusRegister );
+	return GPURegisterHelper::IsCoincidence(mLCDStatusRegister);
 }
 
 BYTE GPU::GetModeFlag() const

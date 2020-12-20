@@ -25,7 +25,7 @@ namespace GPURegisterHelper
 	[[nodiscard]] bool IsEnableMode2OAMInterrupt(BYTE value); // BIT 5
 	[[nodiscard]] bool IsEnableMode1VBlankInterrupt(BYTE value); // BIT 4
 	[[nodiscard]] bool IsEnableMode0HBlankInterrupt(BYTE value); // BIT 3
-	[[nodiscard]] bool IsConincidence(BYTE value); // BIT 2
+	[[nodiscard]] bool IsCoincidence(BYTE value); // BIT 2
 	[[nodiscard]] BYTE GetModeFlag(BYTE value); // BIT 1-0
 }
 

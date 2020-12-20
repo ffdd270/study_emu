@@ -60,12 +60,14 @@ SCENARIO("GPU", "[GPU]")
 
 			THEN("6,5,3 Seteed, 2, 1, 0 -> READ ONLY, not chaged." )
 			{
-				REQUIRE( gpu.IsEnableLYCoincidenceInterrupt() );
-				REQUIRE( gpu.IsEnableMode2OAMInterrupt() );
-				REQUIRE( gpu.IsEnableMode1VBlankInterrupt() == false );
-				REQUIRE( gpu.IsEnableMode0HBlankInterrupt() );
-				REQUIRE(gpu.IsCoincidence() == false );
-				REQUIRE( gpu.GetModeFlag() == 0 );
+				BYTE LCDStatusRegister = gpu.Get( 0xff41 );
+
+				REQUIRE( GPURegisterHelper::IsEnableLYCoincidenceInterrupt( LCDStatusRegister ) );
+				REQUIRE( GPURegisterHelper::IsEnableMode2OAMInterrupt( LCDStatusRegister ) );
+				REQUIRE( GPURegisterHelper::IsEnableMode1VBlankInterrupt( LCDStatusRegister ) == false );
+				REQUIRE( GPURegisterHelper::IsEnableMode0HBlankInterrupt( LCDStatusRegister ) );
+				REQUIRE( GPURegisterHelper::IsCoincidence( LCDStatusRegister ) == false );
+				REQUIRE( GPURegisterHelper::GetModeFlag( LCDStatusRegister ) == 0 );
 			}
 		}
 
