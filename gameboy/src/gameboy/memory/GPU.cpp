@@ -14,7 +14,15 @@ constexpr size_t VRAM_START_ADDRESS = 0x8000;
 // 0x8000~0x9fff
 BYTE GPU::Get(size_t mem_addr) const
 {
-	if( mem_addr == 0xff42 ) // SCY
+	if( mem_addr == 0xff40 ) // LCD Control Register
+	{
+		return mLCDControlRegister;
+	}
+	else if( mem_addr == 0xff41 ) // LCD Status
+	{
+		return mLCDStatusRegister;
+	}
+	else if( mem_addr == 0xff42 ) // SCY
 	{
 		return mScrollY;
 	}
