@@ -5,7 +5,104 @@
 #include "GPU.h"
 
 
-GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 )
+inline bool GetBit( BYTE origin, BYTE bit_pos )
+{
+	return ( origin & ( 0b1u << bit_pos ) ) >> bit_pos;
+}
+
+inline void SetBit( BYTE & origin, BYTE bit_pos )
+{
+	origin = ( origin | ( 1u << bit_pos ) );
+}
+
+inline void OffBit( BYTE & origin, BYTE bit_pos )
+{
+	origin & ( 0xFFu ^ ( 0b1u << bit_pos ) );
+}
+
+
+bool GPURegisterHelper::IsLCDDisplayEnable(BYTE value)
+{
+	return GetBit( value, 7 ) == 1;
+}
+WORD GPURegisterHelper::GetSelectedWindowTileMap(BYTE value)
+{
+	return GetBit( value, 6 ) == 1 ?
+		   0x9C00u :
+		   0x9800u ;
+}
+
+
+bool GPURegisterHelper::IsWindowDisplayEnable(BYTE value)
+{
+	return GetBit( value, 5 ) == 1;
+}
+
+WORD GPURegisterHelper::GetSelectBGAndWindowTileData(BYTE value)
+{
+	return GetBit( value, 4 ) == 1 ?
+		   0x8000u :
+		   0x8800u ;
+}
+
+WORD GPURegisterHelper::GetSelectBGTileMapDisplay(BYTE value)
+{
+	return GetBit( value, 3 ) == 1 ?
+		   0x9C00u :
+		   0x9800u ;
+}
+bool GPURegisterHelper::IsSpriteSize(BYTE value)
+{
+	return GetBit( value, 2 ) == 1;
+}
+
+bool GPURegisterHelper::IsSpriteDisplayEnable(BYTE value)
+{
+	return GetBit( value, 1 ) == 1;
+}
+
+bool GPURegisterHelper::CheckProperty(BYTE value)
+{
+	return GetBit( value, 0 ) == 1;
+}
+
+//LCD Status Register
+
+bool GPURegisterHelper::IsEnableLYCoincidenceInterrupt(BYTE value)
+{
+	return GetBit( value, 6 ) == 1;
+}
+
+bool GPURegisterHelper::IsEnableMode2OAMInterrupt(BYTE value)
+{
+	return GetBit( value, 5 ) == 1;
+}
+
+
+bool GPURegisterHelper::IsEnableMode1VBlankInterrupt(BYTE value)
+{
+	return GetBit( value, 4 ) == 1;
+}
+
+bool GPURegisterHelper::IsEnableMode0HBlankInterrupt(BYTE value)
+{
+	return GetBit( value, 3 ) == 1;
+}
+
+bool GPURegisterHelper::IsCoincidence(BYTE value)
+{
+	return GetBit( value, 2 ) == 1;
+}
+
+BYTE GPURegisterHelper::GetModeFlag(BYTE value)
+{
+	BYTE bit1 = GetBit( value, 1 );
+	BYTE bit0 = GetBit( value, 0 );
+
+	return static_cast<BYTE>( bit1 << 1u ) | bit0 ;
+}
+
+GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 ), mScrollX( 0 ), mScrollY( 0 ), mLYC( 0 )
 {
 
 }
@@ -14,8 +111,43 @@ constexpr size_t VRAM_START_ADDRESS = 0x8000;
 // 0x8000~0x9fff
 BYTE GPU::Get(size_t mem_addr) const
 {
-	checkAddress(mem_addr);
-	return mMemory[mem_addr - VRAM_START_ADDRESS];
+	if( mem_addr == 0xff40 ) // LCD Control Register
+	{
+		return mLCDControlRegister;
+	}
+	else if( mem_addr == 0xff41 ) // LCD Status
+	{
+		return mLCDStatusRegister;
+	}
+	else if( mem_addr == 0xff42 ) // SCY
+	{
+		return mScrollY;
+	}
+	else if( mem_addr == 0xff43 ) // SCX
+	{
+		return mScrollX;
+	}
+	else if( mem_addr == 0xff44 ) // LY
+	{
+		return mScanLineY;
+	}
+	else if( mem_addr == 0xff45 ) // LYC
+	{
+		return mLYC;
+	}
+	else if( mem_addr == 0xff4a ) // WY
+	{
+		return mWY;
+	}
+	else if( mem_addr == 0xff4b ) // WX
+	{
+		return mWX;
+	}
+	else // VRAM
+	{
+		checkAddress(mem_addr);
+		return mMemory[mem_addr - VRAM_START_ADDRESS];
+	}
 }
 
 
@@ -25,10 +157,31 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	{
 		mLCDControlRegister = value;
 	}
-	else if( mem_addr == 0xff41 )
+	else if( mem_addr == 0xff41 ) // LCD Status
 	{
 		// 하위 3비트는 READ-ONLY 7번 비트는 존재하지 않음.
-		mLCDStatusRegister = ( value & 0b01111000u );
+		// 그렇다고 날리면 안 됨 =ㅁ=.
+		mLCDStatusRegister = ( value & 0b01111000u ) | ( mLCDStatusRegister & 0b10000111u );
+	}
+	else if( mem_addr == 0xff42 ) // SCY
+	{
+		mScrollY = value;
+	}
+	else if( mem_addr == 0xff43 ) // SCX
+	{
+		mScrollX = value;
+	}
+	else if( mem_addr == 0xff45 ) // LYC
+	{
+		mLYC = value;
+	}
+	else if( mem_addr == 0xff4a ) // WY
+	{
+		mWY = value;
+	}
+	else if( mem_addr == 0xff4b ) // WX
+	{
+		mWX = value;
 	}
 	else // VRAM
 	{
@@ -79,6 +232,11 @@ void GPU::NextStep(size_t clock)
 		if ( prv_bots != mDots ) // 이게 다르다는 게 무슨 뜻이냐면, 라인이 넘어갔다는 뜻이다.
 		{
 			mScanLineY = ( mScanLineY + 1 ) % MAX_SCANLINE; // 스캔라인은 154까지 있다.
+
+			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
+			{
+				setCoincidenceInterrupt(mScanLineY == mLYC); // LYC랑 같으면 인터럽트 발생.
+			}
 		}
 
 		if ( mScanLineY >= REAL_SCANLINE_END ) //  V-BLANK 이벤트. 이미 스캔라인은 다 그렸지만, CPU들이 VRAM에 접근할 수 있도록
@@ -94,102 +252,79 @@ void GPU::NextStep(size_t clock)
 	}
 }
 
-inline bool GetBit( BYTE origin, BYTE bit_pos )
-{
-	return ( origin & ( 0b1u << bit_pos ) ) >> bit_pos;
-}
-
-inline void SetBit( BYTE & origin, BYTE bit_pos )
-{
-	origin = ( origin | ( 1u << bit_pos ) );
-}
-
-inline void OffBit( BYTE & origin, BYTE bit_pos )
-{
-	origin & ( 0xFFu ^ ( 0b1u << bit_pos ) );
-}
 
 //LCD Control Register
 
 bool GPU::IsLCDDisplayEnable() const
 {
-	return GetBit( mLCDControlRegister, 7 ) == 1;
+	return GPURegisterHelper::IsLCDDisplayEnable( mLCDControlRegister );
 }
 
 WORD GPU::GetSelectedWindowTileMap() const
 {
-	return GetBit( mLCDControlRegister, 6 ) == 1 ?
-		0x9C00u :
-		0x9800u ;
+	return GPURegisterHelper::GetSelectedWindowTileMap( mLCDControlRegister );
 }
 
 bool GPU::IsWindowDisplayEnable() const
 {
-	return GetBit( mLCDControlRegister, 5 ) == 1;
+	return GPURegisterHelper::IsWindowDisplayEnable( mLCDControlRegister );
 }
 
 WORD GPU::GetSelectBGAndWindowTileData() const
 {
-	return GetBit( mLCDControlRegister, 4 ) == 1 ?
-		0x8000u :
-		0x8800u ;
+	return GPURegisterHelper::GetSelectBGAndWindowTileData( mLCDControlRegister );
 }
 
 WORD GPU::GetSelectBGTileMapDisplay() const
 {
-	return GetBit( mLCDControlRegister, 3 ) == 1 ?
-		0x9C00u :
-		0x9800u ;
+	return GPURegisterHelper::GetSelectBGTileMapDisplay( mLCDControlRegister );
 }
 
 bool GPU::IsSpriteSize() const
 {
-	return GetBit( mLCDControlRegister, 2 ) == 1;
+	return GPURegisterHelper::IsSpriteSize( mLCDControlRegister );
 }
 
 bool GPU::IsSpriteDisplayEnable() const
 {
-	return GetBit( mLCDControlRegister, 1 ) == 1;
+	return GPURegisterHelper::IsSpriteDisplayEnable( mLCDControlRegister );
 }
 
 bool GPU::CheckProperty() const
 {
-	return GetBit( mLCDControlRegister, 0 ) == 1;
+	return GPURegisterHelper::CheckProperty( mLCDControlRegister );
 }
 
 //LCD Status Register
 
 bool GPU::IsEnableLYCoincidenceInterrupt() const
 {
-	return GetBit( mLCDStatusRegister, 6 ) == 1;
+	return GPURegisterHelper::IsEnableLYCoincidenceInterrupt( mLCDStatusRegister );
 }
 
 bool GPU::IsEnableMode2OAMInterrupt() const
 {
-	return GetBit( mLCDStatusRegister, 5 ) == 1;
+	return GPURegisterHelper::IsEnableMode2OAMInterrupt( mLCDStatusRegister );
 }
 
 bool GPU::IsEnableMode1VBlankInterrupt() const
 {
-	return GetBit( mLCDStatusRegister, 4 ) == 1;
+	return GPURegisterHelper::IsEnableMode1VBlankInterrupt( mLCDStatusRegister );
 }
 
 bool GPU::IsEnableMode0HBlankInterrupt() const
 {
-	return GetBit( mLCDStatusRegister, 3 ) == 1;
+	return GPURegisterHelper::IsEnableMode0HBlankInterrupt( mLCDStatusRegister );
 }
 
-bool GPU::GetCoincidenceFlag() const
+bool GPU::IsCoincidence() const
 {
-	return GetBit( mLCDStatusRegister, 2 ) == 1;
+	return GPURegisterHelper::IsCoincidence(mLCDStatusRegister);
 }
 
 BYTE GPU::GetModeFlag() const
 {
-	BYTE bit1 = GetBit( mLCDStatusRegister, 1 );
-	BYTE bit0 = GetBit( mLCDStatusRegister, 0 );
-
-	return static_cast<BYTE>( bit1 << 1u ) | bit0 ;
+	return GPURegisterHelper::GetModeFlag( mLCDStatusRegister );
 }
 
 void GPU::checkAddress(size_t mem_addr) const
@@ -205,12 +340,24 @@ void GPU::enableVBlank()
 	SetBit(mLCDStatusRegister, 4 );
 }
 
-void GPU::setLCDMode(BYTE mode)
-{
-	mLCDStatusRegister |= mode;
-}
-
 void GPU::disableVBlank()
 {
 	OffBit(mLCDStatusRegister, 4 );
+}
+
+void GPU::setCoincidenceInterrupt(bool value)
+{
+	if ( value )
+	{
+		SetBit( mLCDStatusRegister, 2 );
+	}
+	else
+	{
+		OffBit( mLCDStatusRegister, 2 );
+	}
+}
+
+void GPU::setLCDMode(BYTE mode)
+{
+	mLCDStatusRegister |= mode;
 }
