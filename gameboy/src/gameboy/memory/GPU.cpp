@@ -5,7 +5,7 @@
 #include "GPU.h"
 
 
-GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 )
+GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 ), mScrollX( 0 ), mScrollY( 0 )
 {
 
 }
@@ -14,8 +14,19 @@ constexpr size_t VRAM_START_ADDRESS = 0x8000;
 // 0x8000~0x9fff
 BYTE GPU::Get(size_t mem_addr) const
 {
-	checkAddress(mem_addr);
-	return mMemory[mem_addr - VRAM_START_ADDRESS];
+	if( mem_addr == 0xff44 )
+	{
+		return mScrollX;
+	}
+	else if( mem_addr == 0xff43 )
+	{
+		return mScrollY;
+	}
+	else
+	{
+		checkAddress(mem_addr);
+		return mMemory[mem_addr - VRAM_START_ADDRESS];
+	}
 }
 
 
@@ -29,6 +40,14 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	{
 		// 하위 3비트는 READ-ONLY 7번 비트는 존재하지 않음.
 		mLCDStatusRegister = ( value & 0b01111000u );
+	}
+	else if( mem_addr == 0xff44 )
+	{
+		mScrollX = value;
+	}
+	else if( mem_addr == 0xff43 )
+	{
+		mScrollY = value;
 	}
 	else // VRAM
 	{

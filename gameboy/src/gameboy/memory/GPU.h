@@ -52,6 +52,11 @@ private:
 	BYTE mLCDControlRegister;
 	BYTE mLCDStatusRegister;
 
+	// LCD가 스크롤 될 디스플레이 좌표.
+	// 끝에 도달하면 자동으로 끝으로 맵핑을 시켜준다.
+	BYTE mScrollY;
+	BYTE mScrollX;
+
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..
 
