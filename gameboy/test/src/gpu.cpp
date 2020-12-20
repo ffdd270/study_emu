@@ -99,6 +99,11 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.GetModeFlag() == 1 );
 				REQUIRE( gpu.IsEnableMode1VBlankInterrupt() );
 			}
+			
+			THEN("LY = 144")
+			{
+				REQUIRE( gpu.Get( 0xff44 ) == 144 );
+			}
 		}
 	}
 }
