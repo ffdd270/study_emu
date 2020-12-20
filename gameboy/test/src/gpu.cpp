@@ -78,6 +78,19 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.Get( 0xff43 ) == 30 );
 			}
 		}
+
+		WHEN("Write 0xff4a, 0xff4b, ( WY, WX ), 45, 51 ")
+		{
+			gpu.Set( 0xff4a, 45 );
+			gpu.Set( 0xff4b, 51 );
+
+			THEN("Get 0xff4a, 0xff4b, 45, 51")
+			{
+				REQUIRE( gpu.Get( 0xff4a ) == 45 );
+				REQUIRE( gpu.Get( 0xff4b ) == 51 );
+			}
+
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")
