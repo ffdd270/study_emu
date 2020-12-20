@@ -47,6 +47,8 @@ private:
 	// 마더보드는 이걸 접근 가능함.
 	void disableVBlank();
 
+	void setCoincidenceInterrupt( bool value );
+
 	void setLCDMode( BYTE mode );
 private:
 	BYTE mLCDControlRegister;
@@ -56,6 +58,9 @@ private:
 	// 끝에 도달하면 자동으로 끝으로 맵핑을 시켜준다.
 	BYTE mScrollY;
 	BYTE mScrollX;
+
+	// LYC -> LY와 비교해서, 같다면 LCDC의 2번 비트, STAT 인터럽트를 발생시킨다.
+	BYTE mLYC;
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..

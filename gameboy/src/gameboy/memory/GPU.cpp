@@ -5,7 +5,7 @@
 #include "GPU.h"
 
 
-GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 ), mScrollX( 0 ), mScrollY( 0 )
+GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 ), mScrollX( 0 ), mScrollY( 0 ), mLYC( 0 )
 {
 
 }
@@ -25,6 +25,11 @@ BYTE GPU::Get(size_t mem_addr) const
 	else if( mem_addr == 0xff44 ) // LY
 	{
 		return mScanLineY;
+	}
+
+	else if( mem_addr == 0xff45 ) // LYC
+	{
+		return mLYC;
 	}
 	else // VRAM
 	{
@@ -52,6 +57,10 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	else if( mem_addr == 0xff43 ) // SCX
 	{
 		mScrollX = value;
+	}
+	else if( mem_addr == 0xff45 ) // LYC
+	{
+		mLYC = value;
 	}
 	else // VRAM
 	{
@@ -102,6 +111,7 @@ void GPU::NextStep(size_t clock)
 		if ( prv_bots != mDots ) // 이게 다르다는 게 무슨 뜻이냐면, 라인이 넘어갔다는 뜻이다.
 		{
 			mScanLineY = ( mScanLineY + 1 ) % MAX_SCANLINE; // 스캔라인은 154까지 있다.
+			setCoincidenceInterrupt(mScanLineY == mLYC ); // LYC랑 같으면 인터럽트 발생.
 		}
 
 		if ( mScanLineY >= REAL_SCANLINE_END ) //  V-BLANK 이벤트. 이미 스캔라인은 다 그렸지만, CPU들이 VRAM에 접근할 수 있도록
@@ -228,12 +238,24 @@ void GPU::enableVBlank()
 	SetBit(mLCDStatusRegister, 4 );
 }
 
-void GPU::setLCDMode(BYTE mode)
-{
-	mLCDStatusRegister |= mode;
-}
-
 void GPU::disableVBlank()
 {
 	OffBit(mLCDStatusRegister, 4 );
+}
+
+void GPU::setCoincidenceInterrupt(bool value)
+{
+	if ( value )
+	{
+		SetBit( mLCDStatusRegister, 2 );
+	}
+	else
+	{
+		OffBit( mLCDStatusRegister, 2 );
+	}
+}
+
+void GPU::setLCDMode(BYTE mode)
+{
+	mLCDStatusRegister |= mode;
 }
