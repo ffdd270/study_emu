@@ -41,14 +41,16 @@ SCENARIO("GPU", "[GPU]")
 
 			THEN("7, 6, 4, 1, 0 SET, Else -> NOT SET")
 			{
-				REQUIRE( gpu.IsLCDDisplayEnable() );
-				REQUIRE( gpu.GetSelectedWindowTileMap() == 0x9C00 );
-				REQUIRE_FALSE( gpu.IsWindowDisplayEnable() );
-				REQUIRE( gpu.GetSelectBGAndWindowTileData() == 0x8000 );
-				REQUIRE( gpu.GetSelectBGTileMapDisplay() == 0x9800 );
-				REQUIRE_FALSE( gpu.IsSpriteSize() );
-				REQUIRE( gpu.IsSpriteDisplayEnable() );
-				REQUIRE( gpu.CheckProperty() );
+				BYTE LCDC = gpu.Get( 0xff40 );
+
+				REQUIRE( GPURegisterHelper::IsLCDDisplayEnable( LCDC ) );
+				REQUIRE( GPURegisterHelper::GetSelectedWindowTileMap( LCDC )  == 0x9C00 );
+				REQUIRE_FALSE( GPURegisterHelper::IsWindowDisplayEnable( LCDC ) );
+				REQUIRE( GPURegisterHelper::GetSelectBGAndWindowTileData( LCDC ) == 0x8000 );
+				REQUIRE( GPURegisterHelper::GetSelectBGTileMapDisplay( LCDC )  == 0x9800 );
+				REQUIRE_FALSE( GPURegisterHelper::IsSpriteSize( LCDC ) );
+				REQUIRE( GPURegisterHelper::IsSpriteDisplayEnable( LCDC ) );
+				REQUIRE( GPURegisterHelper::CheckProperty( LCDC ) );
 			}
 		}
 
@@ -89,7 +91,6 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.Get( 0xff4a ) == 45 );
 				REQUIRE( gpu.Get( 0xff4b ) == 51 );
 			}
-
 		}
 	}
 
