@@ -14,15 +14,19 @@ constexpr size_t VRAM_START_ADDRESS = 0x8000;
 // 0x8000~0x9fff
 BYTE GPU::Get(size_t mem_addr) const
 {
-	if( mem_addr == 0xff42 )
+	if( mem_addr == 0xff42 ) // SCY
 	{
 		return mScrollY;
 	}
-	else if( mem_addr == 0xff43 )
+	else if( mem_addr == 0xff43 ) // SCX
 	{
 		return mScrollX;
 	}
-	else
+	else if( mem_addr == 0xff44 ) // LY
+	{
+		return mScanLineY;
+	}
+	else // VRAM
 	{
 		checkAddress(mem_addr);
 		return mMemory[mem_addr - VRAM_START_ADDRESS];
@@ -36,16 +40,16 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	{
 		mLCDControlRegister = value;
 	}
-	else if( mem_addr == 0xff41 )
+	else if( mem_addr == 0xff41 ) // LCD Status
 	{
 		// 하위 3비트는 READ-ONLY 7번 비트는 존재하지 않음.
 		mLCDStatusRegister = ( value & 0b01111000u );
 	}
-	else if( mem_addr == 0xff42 )
+	else if( mem_addr == 0xff42 ) // SCY
 	{
 		mScrollY = value;
 	}
-	else if( mem_addr == 0xff43 )
+	else if( mem_addr == 0xff43 ) // SCX
 	{
 		mScrollX = value;
 	}
