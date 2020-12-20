@@ -62,7 +62,7 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.IsEnableMode2OAMInterrupt() );
 				REQUIRE( gpu.IsEnableMode1VBlankInterrupt() == false );
 				REQUIRE( gpu.IsEnableMode0HBlankInterrupt() );
-				REQUIRE( gpu.GetCoincidenceFlag() == false );
+				REQUIRE(gpu.IsCoincidence() == false );
 				REQUIRE( gpu.GetModeFlag() == 0 );
 			}
 		}
@@ -87,9 +87,10 @@ SCENARIO("GPU", "[GPU]")
 		REQUIRE( gpu.GetModeFlag() == 0 );
 		REQUIRE( gpu.IsEnableMode1VBlankInterrupt() == false );
 
+		constexpr size_t ONE_LINE_DRAW_CLOCK = 456;
+
 		WHEN("Clock = 114 * 144 After.")
 		{
-			constexpr size_t ONE_LINE_DRAW_CLOCK = 456;
 			constexpr size_t MAX_SCANLINE = 144;
 
 			gpu.NextStep( ONE_LINE_DRAW_CLOCK * MAX_SCANLINE );
@@ -99,10 +100,29 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.GetModeFlag() == 1 );
 				REQUIRE( gpu.IsEnableMode1VBlankInterrupt() );
 			}
-			
+
 			THEN("LY = 144")
 			{
 				REQUIRE( gpu.Get( 0xff44 ) == 144 );
+			}
+		}
+
+		WHEN("LYC = 100, Step 114 * 100, -> LYC == LY Interrupt.")
+		{
+			gpu.Set( 0xff41, 0b1u << 6u ); // Set Enable LY Coincidence Interrupt BIT 6.
+			REQUIRE( gpu.IsEnableLYCoincidenceInterrupt() );
+
+			constexpr size_t LYC = 100;
+			gpu.Set( 0xff45, LYC );
+
+			REQUIRE( gpu.Get( 0xff45 ) == LYC );
+			REQUIRE( gpu.IsCoincidence() == false );
+
+			gpu.NextStep( ONE_LINE_DRAW_CLOCK * LYC  );
+
+			THEN(", LY Interrupt On.")
+			{
+				REQUIRE( gpu.IsCoincidence() );
 			}
 		}
 	}

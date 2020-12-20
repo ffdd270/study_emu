@@ -89,7 +89,7 @@ bool GPURegisterHelper::IsEnableMode0HBlankInterrupt(BYTE value)
 	return GetBit( value, 3 ) == 1;
 }
 
-bool GPURegisterHelper::GetCoincidenceFlag(BYTE value)
+bool GPURegisterHelper::IsConincidence(BYTE value)
 {
 	return GetBit( value, 2 ) == 1;
 }
@@ -160,7 +160,8 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	else if( mem_addr == 0xff41 ) // LCD Status
 	{
 		// 하위 3비트는 READ-ONLY 7번 비트는 존재하지 않음.
-		mLCDStatusRegister = ( value & 0b01111000u );
+		// 그렇다고 날리면 안 됨 =ㅁ=.
+		mLCDStatusRegister = ( value & 0b01111000u ) | ( mLCDStatusRegister & 0b10000111u );
 	}
 	else if( mem_addr == 0xff42 ) // SCY
 	{
@@ -231,7 +232,11 @@ void GPU::NextStep(size_t clock)
 		if ( prv_bots != mDots ) // 이게 다르다는 게 무슨 뜻이냐면, 라인이 넘어갔다는 뜻이다.
 		{
 			mScanLineY = ( mScanLineY + 1 ) % MAX_SCANLINE; // 스캔라인은 154까지 있다.
-			setCoincidenceInterrupt(mScanLineY == mLYC ); // LYC랑 같으면 인터럽트 발생.
+
+			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
+			{
+				setCoincidenceInterrupt(mScanLineY == mLYC); // LYC랑 같으면 인터럽트 발생.
+			}
 		}
 
 		if ( mScanLineY >= REAL_SCANLINE_END ) //  V-BLANK 이벤트. 이미 스캔라인은 다 그렸지만, CPU들이 VRAM에 접근할 수 있도록
@@ -312,9 +317,9 @@ bool GPU::IsEnableMode0HBlankInterrupt() const
 	return GPURegisterHelper::IsEnableMode0HBlankInterrupt( mLCDStatusRegister );
 }
 
-bool GPU::GetCoincidenceFlag() const
+bool GPU::IsCoincidence() const
 {
-	return GPURegisterHelper::GetCoincidenceFlag( mLCDStatusRegister );
+	return GPURegisterHelper::IsConincidence( mLCDStatusRegister );
 }
 
 BYTE GPU::GetModeFlag() const

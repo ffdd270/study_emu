@@ -25,7 +25,7 @@ namespace GPURegisterHelper
 	[[nodiscard]] bool IsEnableMode2OAMInterrupt(BYTE value); // BIT 5
 	[[nodiscard]] bool IsEnableMode1VBlankInterrupt(BYTE value); // BIT 4
 	[[nodiscard]] bool IsEnableMode0HBlankInterrupt(BYTE value); // BIT 3
-	[[nodiscard]] bool GetCoincidenceFlag(BYTE value); // BIT 2
+	[[nodiscard]] bool IsConincidence(BYTE value); // BIT 2
 	[[nodiscard]] BYTE GetModeFlag(BYTE value); // BIT 1-0
 }
 
@@ -60,7 +60,7 @@ public:
 	[[nodiscard]] bool IsEnableMode1VBlankInterrupt() const; // BIT 4
 	[[nodiscard]] bool IsEnableMode0HBlankInterrupt() const; // BIT 3
 	//READ ONLY
-	[[nodiscard]] bool GetCoincidenceFlag() const; // BIT 2
+	[[nodiscard]] bool IsCoincidence() const; // BIT 2
 	[[nodiscard]] BYTE GetModeFlag() const; // BIT 1-0
 private:
 	void checkAddress(size_t mem_addr) const;
@@ -69,7 +69,7 @@ private:
 	// 마더보드는 이걸 접근 가능함.
 	void disableVBlank();
 
-	void setCoincidenceInterrupt( bool value );
+	void setCoincidenceInterrupt(bool value );
 
 	void setLCDMode( BYTE mode );
 private:
