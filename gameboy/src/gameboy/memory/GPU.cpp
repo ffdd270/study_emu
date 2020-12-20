@@ -26,10 +26,17 @@ BYTE GPU::Get(size_t mem_addr) const
 	{
 		return mScanLineY;
 	}
-
 	else if( mem_addr == 0xff45 ) // LYC
 	{
 		return mLYC;
+	}
+	else if( mem_addr == 0xff4a ) // WY
+	{
+		return mWY;
+	}
+	else if( mem_addr == 0xff4b ) // WX
+	{
+		return mWX;
 	}
 	else // VRAM
 	{
@@ -61,6 +68,14 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	else if( mem_addr == 0xff45 ) // LYC
 	{
 		mLYC = value;
+	}
+	else if( mem_addr == 0xff4a ) // WY
+	{
+		mWY = value;
+	}
+	else if( mem_addr == 0xff4b ) // WX
+	{
+		mWX = value;
 	}
 	else // VRAM
 	{
