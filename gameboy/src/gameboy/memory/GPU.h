@@ -8,6 +8,28 @@
 #include "memory/MemoryInterface.h"
 #include <array>
 
+namespace GPURegisterHelper
+{
+	//LCD Control Register
+	[[nodiscard]] bool IsLCDDisplayEnable(BYTE value); // BIT 7
+	[[nodiscard]] WORD GetSelectedWindowTileMap(BYTE value); // BIT 6
+	[[nodiscard]] bool IsWindowDisplayEnable(BYTE value); // BIT 5
+	[[nodiscard]] WORD GetSelectBGAndWindowTileData(BYTE value); // BIT 4
+	[[nodiscard]] WORD GetSelectBGTileMapDisplay(BYTE value); // BIT 3
+	[[nodiscard]] bool IsSpriteSize(BYTE value); // BIT 2
+	[[nodiscard]] bool IsSpriteDisplayEnable(BYTE value); // BIT 1
+	[[nodiscard]] bool CheckProperty(BYTE value); // BIT 0
+
+	//LCD Status Register
+	[[nodiscard]] bool IsEnableLYCoincidenceInterrupt(BYTE value);  // BIT 6
+	[[nodiscard]] bool IsEnableMode2OAMInterrupt(BYTE value); // BIT 5
+	[[nodiscard]] bool IsEnableMode1VBlankInterrupt(BYTE value); // BIT 4
+	[[nodiscard]] bool IsEnableMode0HBlankInterrupt(BYTE value); // BIT 3
+	[[nodiscard]] bool GetCoincidenceFlag(BYTE value); // BIT 2
+	[[nodiscard]] BYTE GetModeFlag(BYTE value); // BIT 1-0
+}
+
+
 // Video RAM
 // 0x8000~0x9fff
 class GPU final : public MemoryInterface
