@@ -66,6 +66,18 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.GetModeFlag() == 0 );
 			}
 		}
+
+		WHEN("Write 0xff42, 0xff43. ( SCY, SCX ) 20, 30")
+		{
+			gpu.Set( 0xff42, 20 );
+			gpu.Set( 0xff43, 30 );
+
+			THEN("Get 0xff42, 0xff43 , 20, 30.")
+			{
+				REQUIRE( gpu.Get( 0xff42 ) == 20 );
+				REQUIRE( gpu.Get( 0xff43 ) == 30 );
+			}
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")
