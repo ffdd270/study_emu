@@ -43,14 +43,14 @@ SCENARIO("GPU", "[GPU]")
 			{
 				BYTE LCDC = gpu.Get( 0xff40 );
 
-				REQUIRE( GPURegisterHelper::IsLCDDisplayEnable( LCDC ) );
-				REQUIRE( GPURegisterHelper::GetSelectedWindowTileMap( LCDC )  == 0x9C00 );
-				REQUIRE_FALSE( GPURegisterHelper::IsWindowDisplayEnable( LCDC ) );
-				REQUIRE( GPURegisterHelper::GetSelectBGAndWindowTileData( LCDC ) == 0x8000 );
-				REQUIRE( GPURegisterHelper::GetSelectBGTileMapDisplay( LCDC )  == 0x9800 );
-				REQUIRE_FALSE( GPURegisterHelper::IsSpriteSize( LCDC ) );
-				REQUIRE( GPURegisterHelper::IsSpriteDisplayEnable( LCDC ) );
-				REQUIRE( GPURegisterHelper::CheckProperty( LCDC ) );
+				REQUIRE(GPUHelper::IsLCDDisplayEnable(LCDC ) );
+				REQUIRE(GPUHelper::GetSelectedWindowTileMap(LCDC ) == 0x9C00 );
+				REQUIRE_FALSE(GPUHelper::IsWindowDisplayEnable(LCDC ) );
+				REQUIRE(GPUHelper::GetSelectBGAndWindowTileData(LCDC ) == 0x8000 );
+				REQUIRE(GPUHelper::GetSelectBGTileMapDisplay(LCDC ) == 0x9800 );
+				REQUIRE_FALSE(GPUHelper::IsSpriteSize(LCDC ) );
+				REQUIRE(GPUHelper::IsSpriteDisplayEnable(LCDC ) );
+				REQUIRE(GPUHelper::CheckProperty(LCDC ) );
 			}
 		}
 
@@ -62,12 +62,12 @@ SCENARIO("GPU", "[GPU]")
 			{
 				BYTE LCDStatusRegister = gpu.Get( 0xff41 );
 
-				REQUIRE( GPURegisterHelper::IsEnableLYCoincidenceInterrupt( LCDStatusRegister ) );
-				REQUIRE( GPURegisterHelper::IsEnableMode2OAMInterrupt( LCDStatusRegister ) );
-				REQUIRE( GPURegisterHelper::IsEnableMode1VBlankInterrupt( LCDStatusRegister ) == false );
-				REQUIRE( GPURegisterHelper::IsEnableMode0HBlankInterrupt( LCDStatusRegister ) );
-				REQUIRE( GPURegisterHelper::IsCoincidence( LCDStatusRegister ) == false );
-				REQUIRE( GPURegisterHelper::GetModeFlag( LCDStatusRegister ) == 0 );
+				REQUIRE(GPUHelper::IsEnableLYCoincidenceInterrupt(LCDStatusRegister ) );
+				REQUIRE(GPUHelper::IsEnableMode2OAMInterrupt(LCDStatusRegister ) );
+				REQUIRE(GPUHelper::IsEnableMode1VBlankInterrupt(LCDStatusRegister ) == false );
+				REQUIRE(GPUHelper::IsEnableMode0HBlankInterrupt(LCDStatusRegister ) );
+				REQUIRE(GPUHelper::IsCoincidence(LCDStatusRegister ) == false );
+				REQUIRE(GPUHelper::GetModeFlag(LCDStatusRegister ) == 0 );
 			}
 		}
 
