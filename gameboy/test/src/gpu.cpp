@@ -94,6 +94,35 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.Get( 0xff4b ) == 51 );
 			}
 		}
+
+		WHEN ("Write 0xff47`0xff49 (Mono Pallet)")
+		{
+			gpu.Set( 0xff47, 0b11100100 ); // BLACK, DARK GRAY, LIGHT GRAY, WHITE.
+			gpu.Set( 0xff48, 0xff ); // ALL BLACK.
+			gpu.Set( 0xff49, 0x0 ); // ALL WHITE.
+
+			THEN("Check Color Result : Ok")
+			{
+				BYTE bg = gpu.Get( 0xff47 );
+
+				REQUIRE( GPUHelper::GetPalletData( bg, 0 ) == GPUHelper::MonoPallet::WHITE );
+				REQUIRE( GPUHelper::GetPalletData( bg, 1 ) == GPUHelper::MonoPallet::LIGHT_GRAY );
+				REQUIRE( GPUHelper::GetPalletData( bg, 2 ) == GPUHelper::MonoPallet::DARK_GRAY );
+				REQUIRE( GPUHelper::GetPalletData( bg, 3 ) == GPUHelper::MonoPallet::BLACK );
+
+				BYTE obj0 = gpu.Get( 0xff48 );
+				for( int i = 0; i < 4; i++ )
+				{
+					REQUIRE( GPUHelper::GetPalletData( obj0, i ) == GPUHelper::MonoPallet::BLACK );
+				}
+
+				BYTE obj1 = gpu.Get( 0xff49 );
+				for( int i = 0; i < 4; i++ )
+				{
+					REQUIRE( GPUHelper::GetPalletData( obj1, i ) == GPUHelper::MonoPallet::WHITE );
+				}
+			}
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")
