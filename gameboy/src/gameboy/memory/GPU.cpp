@@ -21,11 +21,11 @@ inline void OffBit( BYTE & origin, BYTE bit_pos )
 }
 
 
-bool GPURegisterHelper::IsLCDDisplayEnable(BYTE value)
+bool GPUHelper::IsLCDDisplayEnable(BYTE value)
 {
 	return GetBit( value, 7 ) == 1;
 }
-WORD GPURegisterHelper::GetSelectedWindowTileMap(BYTE value)
+WORD GPUHelper::GetSelectedWindowTileMap(BYTE value)
 {
 	return GetBit( value, 6 ) == 1 ?
 		   0x9C00u :
@@ -33,73 +33,79 @@ WORD GPURegisterHelper::GetSelectedWindowTileMap(BYTE value)
 }
 
 
-bool GPURegisterHelper::IsWindowDisplayEnable(BYTE value)
+bool GPUHelper::IsWindowDisplayEnable(BYTE value)
 {
 	return GetBit( value, 5 ) == 1;
 }
 
-WORD GPURegisterHelper::GetSelectBGAndWindowTileData(BYTE value)
+WORD GPUHelper::GetSelectBGAndWindowTileData(BYTE value)
 {
 	return GetBit( value, 4 ) == 1 ?
 		   0x8000u :
 		   0x8800u ;
 }
 
-WORD GPURegisterHelper::GetSelectBGTileMapDisplay(BYTE value)
+WORD GPUHelper::GetSelectBGTileMapDisplay(BYTE value)
 {
 	return GetBit( value, 3 ) == 1 ?
 		   0x9C00u :
 		   0x9800u ;
 }
-bool GPURegisterHelper::IsSpriteSize(BYTE value)
+bool GPUHelper::IsSpriteSize(BYTE value)
 {
 	return GetBit( value, 2 ) == 1;
 }
 
-bool GPURegisterHelper::IsSpriteDisplayEnable(BYTE value)
+bool GPUHelper::IsSpriteDisplayEnable(BYTE value)
 {
 	return GetBit( value, 1 ) == 1;
 }
 
-bool GPURegisterHelper::CheckProperty(BYTE value)
+bool GPUHelper::CheckProperty(BYTE value)
 {
 	return GetBit( value, 0 ) == 1;
 }
 
 //LCD Status Register
 
-bool GPURegisterHelper::IsEnableLYCoincidenceInterrupt(BYTE value)
+bool GPUHelper::IsEnableLYCoincidenceInterrupt(BYTE value)
 {
 	return GetBit( value, 6 ) == 1;
 }
 
-bool GPURegisterHelper::IsEnableMode2OAMInterrupt(BYTE value)
+bool GPUHelper::IsEnableMode2OAMInterrupt(BYTE value)
 {
 	return GetBit( value, 5 ) == 1;
 }
 
 
-bool GPURegisterHelper::IsEnableMode1VBlankInterrupt(BYTE value)
+bool GPUHelper::IsEnableMode1VBlankInterrupt(BYTE value)
 {
 	return GetBit( value, 4 ) == 1;
 }
 
-bool GPURegisterHelper::IsEnableMode0HBlankInterrupt(BYTE value)
+bool GPUHelper::IsEnableMode0HBlankInterrupt(BYTE value)
 {
 	return GetBit( value, 3 ) == 1;
 }
 
-bool GPURegisterHelper::IsCoincidence(BYTE value)
+bool GPUHelper::IsCoincidence(BYTE value)
 {
 	return GetBit( value, 2 ) == 1;
 }
 
-BYTE GPURegisterHelper::GetModeFlag(BYTE value)
+BYTE GPUHelper::GetModeFlag(BYTE value)
 {
 	BYTE bit1 = GetBit( value, 1 );
 	BYTE bit0 = GetBit( value, 0 );
 
 	return static_cast<BYTE>( bit1 << 1u ) | bit0 ;
+}
+
+GPUHelper::MonoPallet GPUHelper::GetPalletData(BYTE pallet_data, size_t pos)
+{
+ 	BYTE result = pallet_data & 0b11u << ( pos * 2 );
+	return static_cast<GPUHelper::MonoPallet>( result >> pos * 2 );
 }
 
 GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 ), mScrollX( 0 ), mScrollY( 0 ), mLYC( 0 )
@@ -134,6 +140,18 @@ BYTE GPU::Get(size_t mem_addr) const
 	else if( mem_addr == 0xff45 ) // LYC
 	{
 		return mLYC;
+	}
+	else if (mem_addr == 0xff47 )
+	{
+		return mBGMonoPallet;
+	}
+	else if (mem_addr == 0xff48 )
+	{
+		return mOBJMonoPallet0;
+	}
+	else if ( mem_addr == 0xff49 )
+	{
+		return mOBJMonoPallet1;
 	}
 	else if( mem_addr == 0xff4a ) // WY
 	{
@@ -174,6 +192,18 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	else if( mem_addr == 0xff45 ) // LYC
 	{
 		mLYC = value;
+	}
+	else if (mem_addr == 0xff47 )
+	{
+		mBGMonoPallet = value;
+	}
+	else if (mem_addr == 0xff48 )
+	{
+		mOBJMonoPallet0 = value;
+	}
+	else if ( mem_addr == 0xff49 )
+	{
+		mOBJMonoPallet1 = value;
 	}
 	else if( mem_addr == 0xff4a ) // WY
 	{
@@ -257,74 +287,74 @@ void GPU::NextStep(size_t clock)
 
 bool GPU::IsLCDDisplayEnable() const
 {
-	return GPURegisterHelper::IsLCDDisplayEnable( mLCDControlRegister );
+	return GPUHelper::IsLCDDisplayEnable(mLCDControlRegister );
 }
 
 WORD GPU::GetSelectedWindowTileMap() const
 {
-	return GPURegisterHelper::GetSelectedWindowTileMap( mLCDControlRegister );
+	return GPUHelper::GetSelectedWindowTileMap(mLCDControlRegister );
 }
 
 bool GPU::IsWindowDisplayEnable() const
 {
-	return GPURegisterHelper::IsWindowDisplayEnable( mLCDControlRegister );
+	return GPUHelper::IsWindowDisplayEnable(mLCDControlRegister );
 }
 
 WORD GPU::GetSelectBGAndWindowTileData() const
 {
-	return GPURegisterHelper::GetSelectBGAndWindowTileData( mLCDControlRegister );
+	return GPUHelper::GetSelectBGAndWindowTileData(mLCDControlRegister );
 }
 
 WORD GPU::GetSelectBGTileMapDisplay() const
 {
-	return GPURegisterHelper::GetSelectBGTileMapDisplay( mLCDControlRegister );
+	return GPUHelper::GetSelectBGTileMapDisplay(mLCDControlRegister );
 }
 
 bool GPU::IsSpriteSize() const
 {
-	return GPURegisterHelper::IsSpriteSize( mLCDControlRegister );
+	return GPUHelper::IsSpriteSize(mLCDControlRegister );
 }
 
 bool GPU::IsSpriteDisplayEnable() const
 {
-	return GPURegisterHelper::IsSpriteDisplayEnable( mLCDControlRegister );
+	return GPUHelper::IsSpriteDisplayEnable(mLCDControlRegister );
 }
 
 bool GPU::CheckProperty() const
 {
-	return GPURegisterHelper::CheckProperty( mLCDControlRegister );
+	return GPUHelper::CheckProperty(mLCDControlRegister );
 }
 
 //LCD Status Register
 
 bool GPU::IsEnableLYCoincidenceInterrupt() const
 {
-	return GPURegisterHelper::IsEnableLYCoincidenceInterrupt( mLCDStatusRegister );
+	return GPUHelper::IsEnableLYCoincidenceInterrupt(mLCDStatusRegister );
 }
 
 bool GPU::IsEnableMode2OAMInterrupt() const
 {
-	return GPURegisterHelper::IsEnableMode2OAMInterrupt( mLCDStatusRegister );
+	return GPUHelper::IsEnableMode2OAMInterrupt(mLCDStatusRegister );
 }
 
 bool GPU::IsEnableMode1VBlankInterrupt() const
 {
-	return GPURegisterHelper::IsEnableMode1VBlankInterrupt( mLCDStatusRegister );
+	return GPUHelper::IsEnableMode1VBlankInterrupt(mLCDStatusRegister );
 }
 
 bool GPU::IsEnableMode0HBlankInterrupt() const
 {
-	return GPURegisterHelper::IsEnableMode0HBlankInterrupt( mLCDStatusRegister );
+	return GPUHelper::IsEnableMode0HBlankInterrupt(mLCDStatusRegister );
 }
 
 bool GPU::IsCoincidence() const
 {
-	return GPURegisterHelper::IsCoincidence(mLCDStatusRegister);
+	return GPUHelper::IsCoincidence(mLCDStatusRegister);
 }
 
 BYTE GPU::GetModeFlag() const
 {
-	return GPURegisterHelper::GetModeFlag( mLCDStatusRegister );
+	return GPUHelper::GetModeFlag(mLCDStatusRegister );
 }
 
 void GPU::checkAddress(size_t mem_addr) const

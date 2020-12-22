@@ -8,7 +8,7 @@
 #include "memory/MemoryInterface.h"
 #include <array>
 
-namespace GPURegisterHelper
+namespace GPUHelper
 {
 	//LCD Control Register
 	[[nodiscard]] bool IsLCDDisplayEnable(BYTE value); // BIT 7
@@ -26,7 +26,18 @@ namespace GPURegisterHelper
 	[[nodiscard]] bool IsEnableMode1VBlankInterrupt(BYTE value); // BIT 4
 	[[nodiscard]] bool IsEnableMode0HBlankInterrupt(BYTE value); // BIT 3
 	[[nodiscard]] bool IsCoincidence(BYTE value); // BIT 2
-	[[nodiscard]] BYTE GetModeFlag(BYTE value); // BIT 1-0
+	[[nodiscard]] BYTE GetModeFlag(BYTE value); // BIT 1-
+
+	// Mono Pallet Decode
+	enum class MonoPallet
+	{
+		WHITE = 0,
+		LIGHT_GRAY = 1,
+		DARK_GRAY = 2,
+		BLACK = 3,
+	};
+
+	[[nodiscard]] MonoPallet GetPalletData( BYTE pallet_data, size_t pos );
 }
 
 
@@ -88,6 +99,9 @@ private:
 	// WX는 0~166. WY는 0~143 범위 안에 설정되면 창이 표시됨. WX = 7, WY = 0는 왼쪽 상단에 있는 창을 찾은 다음 일반 배경을 완전히 덮음.
 	// WX 0~6과 166은 하드웨어 버그로 인해신뢰할 수 없음. WX가 0이라면 SCX가 변경 될 때 창이 수평으로 더듬음.
 	BYTE mWY, mWX;
+
+	// 컬러 게임보이 아닌 것만 쓸 수 있음.
+	BYTE mBGMonoPallet, mOBJMonoPallet0, mOBJMonoPallet1;
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..

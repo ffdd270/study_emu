@@ -43,14 +43,14 @@ SCENARIO("GPU", "[GPU]")
 			{
 				BYTE LCDC = gpu.Get( 0xff40 );
 
-				REQUIRE( GPURegisterHelper::IsLCDDisplayEnable( LCDC ) );
-				REQUIRE( GPURegisterHelper::GetSelectedWindowTileMap( LCDC )  == 0x9C00 );
-				REQUIRE_FALSE( GPURegisterHelper::IsWindowDisplayEnable( LCDC ) );
-				REQUIRE( GPURegisterHelper::GetSelectBGAndWindowTileData( LCDC ) == 0x8000 );
-				REQUIRE( GPURegisterHelper::GetSelectBGTileMapDisplay( LCDC )  == 0x9800 );
-				REQUIRE_FALSE( GPURegisterHelper::IsSpriteSize( LCDC ) );
-				REQUIRE( GPURegisterHelper::IsSpriteDisplayEnable( LCDC ) );
-				REQUIRE( GPURegisterHelper::CheckProperty( LCDC ) );
+				REQUIRE(GPUHelper::IsLCDDisplayEnable(LCDC ) );
+				REQUIRE(GPUHelper::GetSelectedWindowTileMap(LCDC ) == 0x9C00 );
+				REQUIRE_FALSE(GPUHelper::IsWindowDisplayEnable(LCDC ) );
+				REQUIRE(GPUHelper::GetSelectBGAndWindowTileData(LCDC ) == 0x8000 );
+				REQUIRE(GPUHelper::GetSelectBGTileMapDisplay(LCDC ) == 0x9800 );
+				REQUIRE_FALSE(GPUHelper::IsSpriteSize(LCDC ) );
+				REQUIRE(GPUHelper::IsSpriteDisplayEnable(LCDC ) );
+				REQUIRE(GPUHelper::CheckProperty(LCDC ) );
 			}
 		}
 
@@ -62,12 +62,12 @@ SCENARIO("GPU", "[GPU]")
 			{
 				BYTE LCDStatusRegister = gpu.Get( 0xff41 );
 
-				REQUIRE( GPURegisterHelper::IsEnableLYCoincidenceInterrupt( LCDStatusRegister ) );
-				REQUIRE( GPURegisterHelper::IsEnableMode2OAMInterrupt( LCDStatusRegister ) );
-				REQUIRE( GPURegisterHelper::IsEnableMode1VBlankInterrupt( LCDStatusRegister ) == false );
-				REQUIRE( GPURegisterHelper::IsEnableMode0HBlankInterrupt( LCDStatusRegister ) );
-				REQUIRE( GPURegisterHelper::IsCoincidence( LCDStatusRegister ) == false );
-				REQUIRE( GPURegisterHelper::GetModeFlag( LCDStatusRegister ) == 0 );
+				REQUIRE(GPUHelper::IsEnableLYCoincidenceInterrupt(LCDStatusRegister ) );
+				REQUIRE(GPUHelper::IsEnableMode2OAMInterrupt(LCDStatusRegister ) );
+				REQUIRE(GPUHelper::IsEnableMode1VBlankInterrupt(LCDStatusRegister ) == false );
+				REQUIRE(GPUHelper::IsEnableMode0HBlankInterrupt(LCDStatusRegister ) );
+				REQUIRE(GPUHelper::IsCoincidence(LCDStatusRegister ) == false );
+				REQUIRE(GPUHelper::GetModeFlag(LCDStatusRegister ) == 0 );
 			}
 		}
 
@@ -92,6 +92,35 @@ SCENARIO("GPU", "[GPU]")
 			{
 				REQUIRE( gpu.Get( 0xff4a ) == 45 );
 				REQUIRE( gpu.Get( 0xff4b ) == 51 );
+			}
+		}
+
+		WHEN ("Write 0xff47`0xff49 (Mono Pallet)")
+		{
+			gpu.Set( 0xff47, 0b11100100 ); // BLACK, DARK GRAY, LIGHT GRAY, WHITE.
+			gpu.Set( 0xff48, 0xff ); // ALL BLACK.
+			gpu.Set( 0xff49, 0x0 ); // ALL WHITE.
+
+			THEN("Check Color Result : Ok")
+			{
+				BYTE bg = gpu.Get( 0xff47 );
+
+				REQUIRE( GPUHelper::GetPalletData( bg, 0 ) == GPUHelper::MonoPallet::WHITE );
+				REQUIRE( GPUHelper::GetPalletData( bg, 1 ) == GPUHelper::MonoPallet::LIGHT_GRAY );
+				REQUIRE( GPUHelper::GetPalletData( bg, 2 ) == GPUHelper::MonoPallet::DARK_GRAY );
+				REQUIRE( GPUHelper::GetPalletData( bg, 3 ) == GPUHelper::MonoPallet::BLACK );
+
+				BYTE obj0 = gpu.Get( 0xff48 );
+				for( int i = 0; i < 4; i++ )
+				{
+					REQUIRE( GPUHelper::GetPalletData( obj0, i ) == GPUHelper::MonoPallet::BLACK );
+				}
+
+				BYTE obj1 = gpu.Get( 0xff49 );
+				for( int i = 0; i < 4; i++ )
+				{
+					REQUIRE( GPUHelper::GetPalletData( obj1, i ) == GPUHelper::MonoPallet::WHITE );
+				}
 			}
 		}
 	}
