@@ -161,6 +161,10 @@ BYTE GPU::Get(size_t mem_addr) const
 	{
 		return mWX;
 	}
+	else if ( mem_addr == 0xff68 )
+	{
+		return mBGColorPalletIndex;
+	}
 	else if ( mem_addr == 0xff69 )
 	{
 		BYTE pallet_index = mBGColorPalletIndex & 0x3fu; // 실제로는 3f만 쓸 수 있음.
