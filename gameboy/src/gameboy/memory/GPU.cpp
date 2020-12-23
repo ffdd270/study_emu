@@ -217,6 +217,30 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	{
 		mBGColorPalletIndex = value;
 	}
+	else if ( mem_addr == 0xff69  ) // BG Pallet
+	{
+		// 팔렛트 BYTE []
+		// 0 -> ( gggrrrrr )
+		// 1- > ( 0bbbbbgg )
+		// Bit 0-4   Red Intensity   (00-1F)
+		// Bit 5-9   Green Intensity (00-1F)
+		// Bit 10-14 Blue Intensity  (00-1F)
+		// 이건 쓸때랑 받을떄 알아서 해석할 것 = ㅁ=
+
+		bool isLo = mBGColorPalletIndex % 2 == 0;
+		BYTE index = isLo ? ( mBGColorPalletIndex / 2 ) : ( mBGColorPalletIndex - 1 ) / 2;
+
+		if ( isLo )
+		{
+			mBGColorPallet[ index ].SetLo( value );
+		}
+		else
+		{
+			mBGColorPallet[ index ].SetHi( value );
+		}
+
+		autoIncrementPalletIndex( mBGColorPalletIndex );
+	}
 	else if ( mem_addr == 0xff6A ) // Object Pallet Index Select
 	{
 		mObjectPalletIndex = value;

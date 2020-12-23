@@ -38,6 +38,37 @@ namespace GPUHelper
 	};
 
 	[[nodiscard]] MonoPallet GetPalletData( BYTE pallet_data, size_t pos );
+
+	struct ColorPallet
+	{
+		[[nodiscard]] BYTE Red() const // BIT 0~4;
+		{
+			return mLo & 0x1fu; // (Lo) Bit 0~4;
+		}
+
+		[[nodiscard]] BYTE Green() const // BIT 5~9;
+		{
+			return (  ( mHi & 0x03u ) << 3u ) |  ( mLo & 0xe0u ); // ( Hi )Bit 0~2 << 3 | ( Lo )Bit 3~7
+		}
+
+		[[nodiscard]] BYTE Blue() const
+		{
+			return ( mHi & 0xf8u ) >> 3u; // ( Hi )Bit 3~7) >> 3
+		}
+
+		void SetHi( BYTE hi )
+		{
+			mHi = hi;
+		}
+
+		void SetLo( BYTE lo )
+		{
+			mLo = lo;
+		}
+	private:
+		BYTE mHi = 0, mLo = 0;
+	};
+
 }
 
 
@@ -109,7 +140,7 @@ private:
 	// 배경 팔렛트 인덱스
 	BYTE mBGColorPalletIndex; // Bit 0~5 -> index, Bit 7 -> auto increament, 0 = disable
 	// 임시 팔렛트
-	BYTE mTempBGColorPallet[0x40]; //  FIX-ME
+	GPUHelper::ColorPallet mBGColorPallet[ 0x20 ];
 
 	// 오브젝트 팔렛트 인덱스
 	BYTE mObjectPalletIndex; // same as
