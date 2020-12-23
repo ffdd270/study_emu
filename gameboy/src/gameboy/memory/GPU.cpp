@@ -399,3 +399,13 @@ void GPU::setLCDMode(BYTE mode)
 {
 	mLCDStatusRegister |= mode;
 }
+
+void GPU::autoIncrementPalletIndex(BYTE &pallet_index)
+{
+	bool auto_increment = ( pallet_index & 0b10000000u ) == 0b10000000u;
+
+	if ( auto_increment )
+	{
+		pallet_index++;
+	}
+}

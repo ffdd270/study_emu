@@ -83,6 +83,8 @@ private:
 	void setCoincidenceInterrupt(bool value );
 
 	void setLCDMode( BYTE mode );
+
+	static void autoIncrementPalletIndex(BYTE & pallet_index);
 private:
 	BYTE mLCDControlRegister;
 	BYTE mLCDStatusRegister;
