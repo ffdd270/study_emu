@@ -213,6 +213,14 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	{
 		mWX = value;
 	}
+	else if ( mem_addr == 0xff68 ) // BG Pallet Index Select
+	{
+		mBGColorPalletIndex = value;
+	}
+	else if ( mem_addr == 0xff6A ) // Object Pallet Index Select
+	{
+		mObjectPalletIndex = value;
+	}
 	else // VRAM
 	{
 		checkAddress(mem_addr);

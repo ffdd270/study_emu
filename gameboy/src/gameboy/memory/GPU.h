@@ -103,6 +103,18 @@ private:
 	// 컬러 게임보이 아닌 것만 쓸 수 있음.
 	BYTE mBGMonoPallet, mOBJMonoPallet0, mOBJMonoPallet1;
 
+	// 컬러 게임보이만 쓸 수 있음
+	// 배경 팔렛트 인덱스
+	BYTE mBGColorPalletIndex; // Bit 0~5 -> index, Bit 7 -> auto increament, 0 = disable
+	// 임시 팔렛트
+	BYTE mTempBGColorPallet[0x40]; //  FIX-ME
+
+	// 오브젝트 팔렛트 인덱스
+	BYTE mObjectPalletIndex; // same as
+	// 임시 팔렛트
+	BYTE mTempObjectColorPallet[0x40]; // 괜찮은 생각이 나올 때까지 이걸로 버티기. FIX-ME
+
+
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..
 
