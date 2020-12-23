@@ -48,12 +48,12 @@ namespace GPUHelper
 
 		[[nodiscard]] BYTE Green() const // BIT 5~9;
 		{
-			return (  ( mHi & 0x03u ) << 3u ) |  ( mLo & 0xe0u ); // ( Hi )Bit 0~2 << 3 | ( Lo )Bit 3~7
+			return (  ( mHi & 0x03u ) << 3u ) | ( ( mLo & 0xe0u  ) >> 5u ); // ( Hi )Bit 0~1 << 3 | ( Lo )Bit 5~7
 		}
 
 		[[nodiscard]] BYTE Blue() const
 		{
-			return ( mHi & 0xf8u ) >> 3u; // ( Hi )Bit 3~7) >> 3
+			return ( mHi & 0b01111100u ) >> 2u; // ( Hi )Bit 3~7) >>  3
 		}
 
 		void SetHi( BYTE hi )

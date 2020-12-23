@@ -123,6 +123,50 @@ SCENARIO("GPU", "[GPU]")
 				}
 			}
 		}
+
+		WHEN("Set BG Pallet R = 0x1f, G = 0x0f, B = 0x10")
+		{
+			//Bit 0-4   Red Intensity   (00-1F)
+			//Bit 5-9   Green Intensity (00-1F)
+			//Bit 10-14 Blue Intensity  (00-1F)
+			BYTE red = 0x1f;
+			BYTE green = 0x0f;
+			BYTE blue = 0x10;
+
+			// PalletIndex = 0x2, Auto increment. = 0x80 ( BIT 7 )
+			gpu.Set( 0xff68, 0x82 );
+
+			// PalletIndex == 2?
+			REQUIRE( ( gpu.Get( 0xff68 ) & 0x1fu ) == 0x2 );
+
+			// Green Lo 3 Bit | red 5 bit.
+			gpu.Set( 0xff69, ( green & 0x07u ) << 5u | red );
+			// Auto increment.
+			REQUIRE( ( gpu.Get( 0xff68 ) & 0x1fu ) == 0x3 );
+
+			// blue 5bit. | Green hi 2 bit
+			gpu.Set( 0xff69, static_cast<BYTE>( blue << 0x2 ) | ( static_cast<BYTE>( green & 0x18u ) >> 3u ) );
+			REQUIRE( ( gpu.Get( 0xff68 ) & 0x1fu ) == 0x4 );
+
+			THEN("Get Pallet, Then R = 0x1f, G = 0x0f, B = 0x10")
+			{
+				gpu.Set( 0xff68, 0x82 ); // Pallet Index = 0x2, Auto Increment
+				BYTE lo = gpu.Get( 0xff69 );
+				REQUIRE(( gpu.Get( 0xff68 ) & 0x1fu ) == 0x02 ); // Get methods no auto increment.
+
+				gpu.Set( 0xff68, 0x03 ); // Pallet Index = 0x3.
+				BYTE hi = gpu.Get( 0xff69 );
+				REQUIRE( gpu.Get( 0xff68 ) == 0x03 );
+
+				GPUHelper::ColorPallet pallet;
+				pallet.SetLo( lo );
+				pallet.SetHi( hi );
+
+				REQUIRE( pallet.Red() == 0x1f );
+				REQUIRE( pallet.Green() == 0x0f );
+				REQUIRE( pallet.Blue() == 0x10 );
+			}
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")
