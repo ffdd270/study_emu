@@ -161,6 +161,23 @@ BYTE GPU::Get(size_t mem_addr) const
 	{
 		return mWX;
 	}
+	else if ( mem_addr == 0xff69 )
+	{
+		BYTE pallet_index = mBGColorPalletIndex & 0x3fu; // 실제로는 3f만 쓸 수 있음.
+
+		bool isLo = pallet_index % 2 == 0;
+		BYTE index = isLo ? ( pallet_index / 2 ) : ( pallet_index - 1 ) / 2;
+
+		if (isLo)
+		{
+			return mBGColorPallet[ index ].GetLo();
+		}
+		else
+		{
+			return mBGColorPallet[ index ].GetHi();
+		}
+
+	}
 	else // VRAM
 	{
 		checkAddress(mem_addr);

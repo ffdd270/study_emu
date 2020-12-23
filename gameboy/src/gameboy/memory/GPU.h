@@ -65,6 +65,16 @@ namespace GPUHelper
 		{
 			mLo = lo;
 		}
+
+		[[nodiscard]] BYTE GetLo() const
+		{
+			return mLo;
+		}
+
+		[[nodiscard]] BYTE GetHi() const
+		{
+			return mHi;
+		}
 	private:
 		BYTE mHi = 0, mLo = 0;
 	};
