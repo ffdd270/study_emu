@@ -244,8 +244,10 @@ void GPU::Set(size_t mem_addr, BYTE value)
 		// Bit 10-14 Blue Intensity  (00-1F)
 		// 이건 쓸때랑 받을떄 알아서 해석할 것 = ㅁ=
 
-		bool isLo = mBGColorPalletIndex % 2 == 0;
-		BYTE index = isLo ? ( mBGColorPalletIndex / 2 ) : ( mBGColorPalletIndex - 1 ) / 2;
+
+		BYTE pallet_index = mBGColorPalletIndex & 0x3fu; // 실제로는 3f만 쓸 수 있음.
+		bool isLo = pallet_index % 2 == 0;
+		BYTE index = isLo ? ( pallet_index / 2 ) : ( pallet_index - 1 ) / 2;
 
 		if ( isLo )
 		{
