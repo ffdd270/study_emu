@@ -6,7 +6,7 @@
 #define GAMEBOY_GPU_H
 
 #include "memory/MemoryInterface.h"
-#include <array>
+#include <array>s
 
 namespace GPUHelper
 {
@@ -149,8 +149,8 @@ private:
 	// 컬러 게임보이만 쓸 수 있음
 	// 배경 팔렛트 인덱스
 	BYTE mBGColorPalletIndex; // Bit 0~5 -> index, Bit 7 -> auto increament, 0 = disable
-	// 임시 팔렛트
-	GPUHelper::ColorPallet mBGColorPallet[ 0x20 ];
+	// 팔렛트 8개, 팔렛트 별 색상 4개씩.
+	std::array<std::array<GPUHelper::ColorPallet, 4>, 8> mBGColorPallet;
 
 	// 오브젝트 팔렛트 인덱스
 	BYTE mObjectPalletIndex; // same as

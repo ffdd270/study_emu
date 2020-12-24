@@ -167,18 +167,20 @@ BYTE GPU::Get(size_t mem_addr) const
 	}
 	else if ( mem_addr == 0xff69 )
 	{
-		BYTE pallet_index = mBGColorPalletIndex & 0x3fu; // 실제로는 3f만 쓸 수 있음.
+		BYTE only_pallet_index = mBGColorPalletIndex & 0x3fu; // 실제로는 3f만 쓸 수 있음.
 
-		bool isLo = pallet_index % 2 == 0;
-		BYTE index = isLo ? ( pallet_index / 2 ) : ( pallet_index - 1 ) / 2;
+		BYTE to_color_index =  only_pallet_index % 4;
+		BYTE to_pallet = ( only_pallet_index - ( to_color_index ) ) / 4;
+
+		bool isLo = only_pallet_index % 2 == 0;
 
 		if (isLo)
 		{
-			return mBGColorPallet[ index ].GetLo();
+			return mBGColorPallet[ to_pallet ][ to_color_index ].GetLo();
 		}
 		else
 		{
-			return mBGColorPallet[ index ].GetHi();
+			return mBGColorPallet[ to_pallet ][ to_color_index ].GetHi();
 		}
 
 	}
@@ -249,17 +251,20 @@ void GPU::Set(size_t mem_addr, BYTE value)
 		// 이건 쓸때랑 받을떄 알아서 해석할 것 = ㅁ=
 
 
-		BYTE pallet_index = mBGColorPalletIndex & 0x3fu; // 실제로는 3f만 쓸 수 있음.
-		bool isLo = pallet_index % 2 == 0;
-		BYTE index = isLo ? ( pallet_index / 2 ) : ( pallet_index - 1 ) / 2;
+		BYTE only_pallet_index = mBGColorPalletIndex & 0x3fu; // 실제로는 3f만 쓸 수 있음.
+
+		BYTE to_color_index =  only_pallet_index % 4;
+		BYTE to_pallet = ( only_pallet_index - ( to_color_index ) ) / 4;
+
+		bool isLo = only_pallet_index % 2 == 0;
 
 		if ( isLo )
 		{
-			mBGColorPallet[ index ].SetLo( value );
+			mBGColorPallet[ to_pallet ][ to_color_index ].SetLo( value );
 		}
 		else
 		{
-			mBGColorPallet[ index ].SetHi( value );
+			mBGColorPallet[ to_pallet ][ to_color_index ].SetHi( value );
 		}
 
 		autoIncrementPalletIndex( mBGColorPalletIndex );
