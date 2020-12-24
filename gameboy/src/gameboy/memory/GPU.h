@@ -6,7 +6,7 @@
 #define GAMEBOY_GPU_H
 
 #include "memory/MemoryInterface.h"
-#include <array>
+#include <array>s
 
 namespace GPUHelper
 {
@@ -38,6 +38,47 @@ namespace GPUHelper
 	};
 
 	[[nodiscard]] MonoPallet GetPalletData( BYTE pallet_data, size_t pos );
+
+	struct ColorPallet
+	{
+		[[nodiscard]] BYTE Red() const // BIT 0~4;
+		{
+			return mLo & 0x1fu; // (Lo) Bit 0~4;
+		}
+
+		[[nodiscard]] BYTE Green() const // BIT 5~9;
+		{
+			return (  ( mHi & 0x03u ) << 3u ) | ( ( mLo & 0xe0u  ) >> 5u ); // ( Hi )Bit 0~1 << 3 | ( Lo )Bit 5~7
+		}
+
+		[[nodiscard]] BYTE Blue() const
+		{
+			return ( mHi & 0b01111100u ) >> 2u; // ( Hi )Bit 3~7) >>  3
+		}
+
+		void SetHi( BYTE hi )
+		{
+			mHi = hi;
+		}
+
+		void SetLo( BYTE lo )
+		{
+			mLo = lo;
+		}
+
+		[[nodiscard]] BYTE GetLo() const
+		{
+			return mLo;
+		}
+
+		[[nodiscard]] BYTE GetHi() const
+		{
+			return mHi;
+		}
+	private:
+		BYTE mHi = 0, mLo = 0;
+	};
+
 }
 
 
@@ -83,6 +124,15 @@ private:
 	void setCoincidenceInterrupt(bool value );
 
 	void setLCDMode( BYTE mode );
+
+	static void autoIncrementPalletIndex(BYTE & pallet_index);
+
+	// Pallet Index에는 auto increment 값도 섞여 있는데, 그걸 빼줘야 함. 뺀 값을 only_pallet_index라고 부름.
+	static BYTE toOnlyPalletIndex( BYTE pallet_index );
+	static BYTE toColorIndex( BYTE only_pallet_index );
+	static BYTE toPalletIndex( BYTE only_pallet_index, BYTE color_index );
+
+
 private:
 	BYTE mLCDControlRegister;
 	BYTE mLCDStatusRegister;
@@ -102,6 +152,18 @@ private:
 
 	// 컬러 게임보이 아닌 것만 쓸 수 있음.
 	BYTE mBGMonoPallet, mOBJMonoPallet0, mOBJMonoPallet1;
+
+	// 컬러 게임보이만 쓸 수 있음
+	// 배경 팔렛트 인덱스
+	BYTE mBGColorPalletIndex; // Bit 0~5 -> index, Bit 7 -> auto increament, 0 = disable
+	// 팔렛트 8개, 팔렛트 별 색상 4개씩.
+	std::array<std::array<GPUHelper::ColorPallet, 4>, 8> mBGColorPallet;
+
+	// 오브젝트 팔렛트 인덱스
+	BYTE mObjectColorPalletIndex; // same as
+	// 팔렛트 8개. 팔렛트 별 색상 4개씩. 첫 색상은 투명.
+	std::array<std::array<GPUHelper::ColorPallet, 4>, 8> mObjectColorPallet; // 괜찮은 생각이 나올 때까지 이걸로 버티기. FIX-ME
+
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..

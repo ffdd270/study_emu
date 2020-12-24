@@ -161,6 +161,49 @@ BYTE GPU::Get(size_t mem_addr) const
 	{
 		return mWX;
 	}
+	else if ( mem_addr == 0xff68 )
+	{
+		return mBGColorPalletIndex;
+	}
+	else if ( mem_addr == 0xff69 )
+	{
+		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+		BYTE to_color_index = toColorIndex( only_pallet_index );
+		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
+
+		bool isLo = only_pallet_index % 2 == 0;
+
+		if (isLo)
+		{
+			return mBGColorPallet[ to_pallet ][ to_color_index ].GetLo();
+		}
+		else
+		{
+			return mBGColorPallet[ to_pallet ][ to_color_index ].GetHi();
+		}
+
+	}
+	else if ( mem_addr == 0xff6a )
+	{
+		return mObjectColorPalletIndex;
+	}
+	else if( mem_addr == 0xff6b )
+	{
+		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+		BYTE to_color_index = toColorIndex( only_pallet_index );
+		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
+
+		bool isLo = only_pallet_index % 2 == 0;
+
+		if (isLo)
+		{
+			return mObjectColorPallet[ to_pallet ][ to_color_index ].GetLo();
+		}
+		else
+		{
+			return mObjectColorPallet[ to_pallet ][ to_color_index ].GetHi();
+		}
+	}
 	else // VRAM
 	{
 		checkAddress(mem_addr);
@@ -212,6 +255,59 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	else if( mem_addr == 0xff4b ) // WX
 	{
 		mWX = value;
+	}
+	else if ( mem_addr == 0xff68 ) // BG Pallet Index Select
+	{
+		mBGColorPalletIndex = value;
+	}
+	else if ( mem_addr == 0xff69  ) // BG Pallet
+	{
+		// 팔렛트 BYTE []
+		// 0 -> ( gggrrrrr )
+		// 1- > ( 0bbbbbgg )
+		// Bit 0-4   Red Intensity   (00-1F)
+		// Bit 5-9   Green Intensity (00-1F)
+		// Bit 10-14 Blue Intensity  (00-1F)
+		// 이건 쓸때랑 받을떄 알아서 해석할 것 = ㅁ=
+		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+		BYTE to_color_index = toColorIndex( only_pallet_index );
+		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
+
+		bool isLo = only_pallet_index % 2 == 0;
+
+		if ( isLo )
+		{
+			mBGColorPallet[ to_pallet ][ to_color_index ].SetLo( value );
+		}
+		else
+		{
+			mBGColorPallet[ to_pallet ][ to_color_index ].SetHi( value );
+		}
+
+		autoIncrementPalletIndex( mBGColorPalletIndex );
+	}
+	else if ( mem_addr == 0xff6a ) // Object Pallet Index Select
+	{
+		mObjectColorPalletIndex = value;
+	}
+	else if ( mem_addr == 0xff6b )
+	{
+		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+		BYTE to_color_index = toColorIndex( only_pallet_index );
+		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
+
+		bool isLo = only_pallet_index % 2 == 0;
+
+		if ( isLo )
+		{
+			mObjectColorPallet[ to_pallet ][ to_color_index ].SetLo( value );
+		}
+		else
+		{
+			mObjectColorPallet[ to_pallet ][ to_color_index ].SetHi( value );
+		}
+
+		autoIncrementPalletIndex( mObjectColorPalletIndex );
 	}
 	else // VRAM
 	{
@@ -390,4 +486,29 @@ void GPU::setCoincidenceInterrupt(bool value)
 void GPU::setLCDMode(BYTE mode)
 {
 	mLCDStatusRegister |= mode;
+}
+
+void GPU::autoIncrementPalletIndex(BYTE &pallet_index)
+{
+	bool auto_increment = ( pallet_index & 0b10000000u ) == 0b10000000u;
+
+	if ( auto_increment )
+	{
+		pallet_index++;
+	}
+}
+
+BYTE GPU::toOnlyPalletIndex(BYTE pallet_index)
+{
+	return pallet_index & 0x3fu;
+}
+
+BYTE GPU::toColorIndex(BYTE only_pallet_index)
+{
+	return only_pallet_index % 4;
+}
+
+BYTE GPU::toPalletIndex(BYTE only_pallet_index, BYTE color_index)
+{
+	return ( only_pallet_index - ( color_index ) ) / 4;
 }
