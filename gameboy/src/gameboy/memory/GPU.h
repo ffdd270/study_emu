@@ -126,6 +126,13 @@ private:
 	void setLCDMode( BYTE mode );
 
 	static void autoIncrementPalletIndex(BYTE & pallet_index);
+
+	// Pallet Index에는 auto increment 값도 섞여 있는데, 그걸 빼줘야 함. 뺀 값을 only_pallet_index라고 부름.
+	static BYTE toOnlyPalletIndex( BYTE pallet_index );
+	static BYTE toColorIndex( BYTE only_pallet_index );
+	static BYTE toPalletIndex( BYTE only_pallet_index, BYTE color_index );
+
+
 private:
 	BYTE mLCDControlRegister;
 	BYTE mLCDStatusRegister;
@@ -153,9 +160,9 @@ private:
 	std::array<std::array<GPUHelper::ColorPallet, 4>, 8> mBGColorPallet;
 
 	// 오브젝트 팔렛트 인덱스
-	BYTE mObjectPalletIndex; // same as
-	// 임시 팔렛트
-	BYTE mTempObjectColorPallet[0x40]; // 괜찮은 생각이 나올 때까지 이걸로 버티기. FIX-ME
+	BYTE mObjectColorPalletIndex; // same as
+	// 팔렛트 8개. 팔렛트 별 색상 4개씩. 첫 색상은 투명.
+	std::array<std::array<GPUHelper::ColorPallet, 4>, 8> mObjectColorPallet; // 괜찮은 생각이 나올 때까지 이걸로 버티기. FIX-ME
 
 
 	size_t mDots; // 점 찍는 중..
