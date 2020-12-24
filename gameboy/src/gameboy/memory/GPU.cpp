@@ -184,6 +184,10 @@ BYTE GPU::Get(size_t mem_addr) const
 		}
 
 	}
+	else if ( mem_addr == 0xff6a )
+	{
+		return mObjectPalletIndex;
+	}
 	else // VRAM
 	{
 		checkAddress(mem_addr);
