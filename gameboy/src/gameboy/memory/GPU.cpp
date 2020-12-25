@@ -491,6 +491,16 @@ BYTE GPU::GetModeFlag() const
 	return GPUHelper::GetModeFlag(mLCDStatusRegister );
 }
 
+WORD GPU::GetDMASource() const
+{
+	return static_cast<WORD>( static_cast<WORD>(mHDMASourceHi) << 8u ) | mHDMADestLo;
+}
+
+WORD GPU::GetDMADest() const
+{
+	return static_cast<WORD>( static_cast<WORD>(mHDMADestHi) << 8u ) | mHDMADestLo;
+}
+
 void GPU::checkAddress(size_t mem_addr) const
 {
 	int result_relative_address = static_cast<int>( mem_addr ) - static_cast<int>( VRAM_START_ADDRESS );

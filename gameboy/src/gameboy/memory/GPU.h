@@ -114,6 +114,10 @@ public:
 	//READ ONLY
 	[[nodiscard]] bool IsCoincidence() const; // BIT 2
 	[[nodiscard]] BYTE GetModeFlag() const; // BIT 1-0
+
+	// HDMA
+	[[nodiscard]] WORD GetDMASource() const;
+	[[nodiscard]] WORD GetDMADest() const;
 private:
 	void checkAddress(size_t mem_addr) const;
 
