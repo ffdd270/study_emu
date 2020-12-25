@@ -168,6 +168,8 @@ private:
 	// DMA Source
 	BYTE mHDMASourceHi,  mHDMASourceLo;
 
+	// DMA Dest
+	BYTE mHDMADestHi, mHDMADestLo;
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..

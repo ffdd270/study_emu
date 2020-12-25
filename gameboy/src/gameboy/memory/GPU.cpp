@@ -109,11 +109,12 @@ GPUHelper::MonoPallet GPUHelper::GetPalletData(BYTE pallet_data, size_t pos)
 }
 
 GPU::GPU() :
-mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
-mDots( 0 ), mScanLineY( 0 ),
-mScrollX( 0 ), mScrollY( 0 ),
-mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
-mHDMASourceHi( 0 ), mHDMASourceLo( 0 )
+		mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
+		mDots( 0 ), mScanLineY( 0 ),
+		mScrollX( 0 ), mScrollY( 0 ),
+		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
+		mHDMASourceHi( 0 ), mHDMASourceLo( 0 ),
+		mHDMADestHi( 0 ), mHDMADestLo(0 )
 {
 
 }
@@ -166,13 +167,21 @@ BYTE GPU::Get(size_t mem_addr) const
 	{
 		return mWX;
 	}
-	else if ( mem_addr == 0xff51 ) // DMA Hi
+	else if ( mem_addr == 0xff51 ) // DMA Source Hi
 	{
 		return mHDMASourceHi;
 	}
-	else if ( mem_addr == 0xff52 ) // DMA Lo
+	else if ( mem_addr == 0xff52 ) // DMA Source Lo
 	{
 		return mHDMASourceLo;
+	}
+	else if ( mem_addr == 0xff53 ) // DMA Dest Hi
+	{
+		return mHDMADestHi;
+	}
+	else if ( mem_addr == 0xff54 ) // DMA Dest Lo
+	{
+		return mHDMADestLo;
 	}
 	else if ( mem_addr == 0xff68 )
 	{
@@ -276,6 +285,14 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	else if ( mem_addr == 0xff52 )
 	{
 		mHDMASourceLo = value;
+	}
+	else if ( mem_addr == 0xff53 )
+	{
+		mHDMADestHi = value;
+	}
+	else if ( mem_addr == 0xff54 )
+	{
+		mHDMADestLo = value;
 	}
 	else if ( mem_addr == 0xff68 ) // BG Pallet Index Select
 	{
