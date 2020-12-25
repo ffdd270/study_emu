@@ -114,7 +114,8 @@ GPU::GPU() :
 		mScrollX( 0 ), mScrollY( 0 ),
 		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
 		mHDMASourceHi( 0 ), mHDMASourceLo( 0 ),
-		mHDMADestHi( 0 ), mHDMADestLo(0 )
+		mHDMADestHi( 0 ), mHDMADestLo(0 ),
+		mHDMAStatus( 0 ), mIsDMAStart( false )
 {
 
 }
@@ -182,6 +183,17 @@ BYTE GPU::Get(size_t mem_addr) const
 	else if ( mem_addr == 0xff54 ) // DMA Dest Lo
 	{
 		return mHDMADestLo;
+	}
+	else if ( mem_addr == 0xff55 ) // DMA 끝났는지 알 수 있는 7번 비트
+	{
+		if ( mIsDMAStart )
+		{
+			return 0x80;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 	else if ( mem_addr == 0xff68 )
 	{
@@ -294,6 +306,11 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	{
 		mHDMADestLo = value;
 	}
+	else if ( mem_addr == 0xff55 )
+	{
+		mHDMAStatus = value;
+		mIsDMAStart = true;
+	}
 	else if ( mem_addr == 0xff68 ) // BG Pallet Index Select
 	{
 		mBGColorPalletIndex = value;
@@ -353,6 +370,23 @@ void GPU::Set(size_t mem_addr, BYTE value)
 		mMemory[mem_addr - VRAM_START_ADDRESS] = value;
 	}
 }
+
+bool GPU::IsReportedInterrupt() const
+{
+	return mIsDMAStart;
+}
+
+WORD GPU::GetReportedInterrupt() const
+{
+	return 0xff55u; // 일단 터지면 여기에서만 터지니 우선 이렇게..
+}
+
+
+void GPU::ResolveInterrupt(WORD resolve_interrupt_address)
+{
+	mIsDMAStart = false;
+}
+
 
 void GPU::NextStep(size_t clock)
 {

@@ -92,6 +92,10 @@ public:
 	[[nodiscard]] BYTE Get(size_t mem_addr) const override;
 	void Set(size_t mem_addr, BYTE value) override;
 
+	[[nodiscard]] bool IsReportedInterrupt() const override;
+	[[nodiscard]] WORD GetReportedInterrupt() const override;
+	void ResolveInterrupt(WORD resolve_interrupt_address) override;
+
 	void NextStep(size_t clock);
 
 	~GPU() final = default;
@@ -174,6 +178,11 @@ private:
 
 	// DMA Dest
 	BYTE mHDMADestHi, mHDMADestLo;
+
+	// DAM Start, Mode, Lenght
+	// 여기 쓰면 시작됨.
+	BYTE mHDMAStatus;
+	bool mIsDMAStart;
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..
