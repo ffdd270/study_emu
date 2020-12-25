@@ -164,6 +164,10 @@ private:
 	// 팔렛트 8개. 팔렛트 별 색상 4개씩. 첫 색상은 투명.
 	std::array<std::array<GPUHelper::ColorPallet, 4>, 8> mObjectColorPallet; // 괜찮은 생각이 나올 때까지 이걸로 버티기. FIX-ME
 
+	// HDMA -> 메모리 전송
+	// DMA Source
+	BYTE mHDMASourceHi,  mHDMASourceLo;
+
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..

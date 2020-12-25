@@ -112,7 +112,8 @@ GPU::GPU() :
 mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
 mDots( 0 ), mScanLineY( 0 ),
 mScrollX( 0 ), mScrollY( 0 ),
-mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 )
+mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
+mHDMASourceHi( 0 ), mHDMASourceLo( 0 )
 {
 
 }
@@ -164,6 +165,14 @@ BYTE GPU::Get(size_t mem_addr) const
 	else if( mem_addr == 0xff4b ) // WX
 	{
 		return mWX;
+	}
+	else if ( mem_addr == 0xff51 ) // DMA Hi
+	{
+		return mHDMASourceHi;
+	}
+	else if ( mem_addr == 0xff52 ) // DMA Lo
+	{
+		return mHDMASourceLo;
 	}
 	else if ( mem_addr == 0xff68 )
 	{
@@ -259,6 +268,14 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	else if( mem_addr == 0xff4b ) // WX
 	{
 		mWX = value;
+	}
+	else if( mem_addr == 0xff51 )
+	{
+		mHDMASourceHi = value;
+	}
+	else if ( mem_addr == 0xff52 )
+	{
+		mHDMASourceLo = value;
 	}
 	else if ( mem_addr == 0xff68 ) // BG Pallet Index Select
 	{
