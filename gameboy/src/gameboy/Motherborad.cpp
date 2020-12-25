@@ -53,6 +53,7 @@ void Motherborad::Step()
 
 void Motherborad::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
 {
+	mInterfaces[ Interface_ROM ] = ptr_cartridge;
 	std::static_pointer_cast<MemoryManageUnit>( mInterfaces[ Interface_MMUNIT ] )->SetCartridge( std::move( ptr_cartridge ) );
 }
 
