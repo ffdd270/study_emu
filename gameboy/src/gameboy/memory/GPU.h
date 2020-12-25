@@ -122,6 +122,11 @@ public:
 	// HDMA
 	[[nodiscard]] WORD GetDMASource() const;
 	[[nodiscard]] WORD GetDMADest() const;
+	[[nodiscard]] BYTE GetRemainDMA() const;
+	[[nodiscard]] BYTE GetDMAMode() const;
+
+	void SetDMAAddresses( WORD source, WORD dest );
+	void SetRemainDMA( BYTE remain );
 private:
 	void checkAddress(size_t mem_addr) const;
 

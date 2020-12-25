@@ -537,6 +537,30 @@ WORD GPU::GetDMADest() const
 	return addr & 0x1ff0u; // 상위 3비트, 하위 4비트 버림.
 }
 
+BYTE GPU::GetRemainDMA() const
+{
+	return mHDMAStatus & 0x7fu;
+}
+
+BYTE GPU::GetDMAMode() const
+{
+	return ( mHDMAStatus & 0x80u ) >> 7u ;
+}
+
+void GPU::SetDMAAddresses(WORD source, WORD dest)
+{
+	mHDMASourceHi = ( source & 0xff00u ) >> 8u;
+	mHDMASourceLo = ( source & 0x00f0u ); // 하위 비트는 무시한다.
+
+	mHDMADestHi = ( dest & 0x1f00u ) >> 8u; // 상위 3비트는 무시된다.
+	mHDMADestLo = ( dest & 0x00f0u ); // 하위 비트는 무시한다.
+}
+
+void GPU::SetRemainDMA(BYTE remain)
+{
+	mHDMAStatus = ( mHDMAStatus & 0x80u ) | ( remain & 0x7fu );
+}
+
 void GPU::checkAddress(size_t mem_addr) const
 {
 	int result_relative_address = static_cast<int>( mem_addr ) - static_cast<int>( VRAM_START_ADDRESS );
