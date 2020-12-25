@@ -108,7 +108,11 @@ GPUHelper::MonoPallet GPUHelper::GetPalletData(BYTE pallet_data, size_t pos)
 	return static_cast<GPUHelper::MonoPallet>( result >> pos * 2 );
 }
 
-GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 ), mScrollX( 0 ), mScrollY( 0 ), mLYC( 0 )
+GPU::GPU() :
+mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
+mDots( 0 ), mScanLineY( 0 ),
+mScrollX( 0 ), mScrollY( 0 ),
+mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 )
 {
 
 }
