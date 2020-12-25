@@ -92,6 +92,10 @@ public:
 	[[nodiscard]] BYTE Get(size_t mem_addr) const override;
 	void Set(size_t mem_addr, BYTE value) override;
 
+	[[nodiscard]] bool IsReportedInterrupt() const override;
+	[[nodiscard]] WORD GetReportedInterrupt() const override;
+	void ResolveInterrupt(WORD resolve_interrupt_address) override;
+
 	void NextStep(size_t clock);
 
 	~GPU() final = default;
@@ -114,6 +118,15 @@ public:
 	//READ ONLY
 	[[nodiscard]] bool IsCoincidence() const; // BIT 2
 	[[nodiscard]] BYTE GetModeFlag() const; // BIT 1-0
+
+	// HDMA
+	[[nodiscard]] WORD GetDMASource() const;
+	[[nodiscard]] WORD GetDMADest() const;
+	[[nodiscard]] BYTE GetRemainDMA() const;
+	[[nodiscard]] BYTE GetDMAMode() const;
+
+	void SetDMAAddresses( WORD source, WORD dest );
+	void SetRemainDMA( BYTE remain );
 private:
 	void checkAddress(size_t mem_addr) const;
 
@@ -164,6 +177,17 @@ private:
 	// 팔렛트 8개. 팔렛트 별 색상 4개씩. 첫 색상은 투명.
 	std::array<std::array<GPUHelper::ColorPallet, 4>, 8> mObjectColorPallet; // 괜찮은 생각이 나올 때까지 이걸로 버티기. FIX-ME
 
+	// HDMA -> 메모리 전송
+	// DMA Source
+	BYTE mHDMASourceHi,  mHDMASourceLo;
+
+	// DMA Dest
+	BYTE mHDMADestHi, mHDMADestLo;
+
+	// DAM Start, Mode, Lenght
+	// 여기 쓰면 시작됨.
+	BYTE mHDMAStatus;
+	bool mIsDMAStart;
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..

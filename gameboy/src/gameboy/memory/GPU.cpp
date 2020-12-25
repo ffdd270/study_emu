@@ -108,7 +108,14 @@ GPUHelper::MonoPallet GPUHelper::GetPalletData(BYTE pallet_data, size_t pos)
 	return static_cast<GPUHelper::MonoPallet>( result >> pos * 2 );
 }
 
-GPU::GPU() : mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ), mDots( 0 ), mScanLineY( 0 ), mScrollX( 0 ), mScrollY( 0 ), mLYC( 0 )
+GPU::GPU() :
+		mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
+		mDots( 0 ), mScanLineY( 0 ),
+		mScrollX( 0 ), mScrollY( 0 ),
+		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
+		mHDMASourceHi( 0 ), mHDMASourceLo( 0 ),
+		mHDMADestHi( 0 ), mHDMADestLo(0 ),
+		mHDMAStatus( 0 ), mIsDMAStart( false )
 {
 
 }
@@ -161,6 +168,33 @@ BYTE GPU::Get(size_t mem_addr) const
 	{
 		return mWX;
 	}
+	else if ( mem_addr == 0xff51 ) // DMA Source Hi
+	{
+		return mHDMASourceHi;
+	}
+	else if ( mem_addr == 0xff52 ) // DMA Source Lo
+	{
+		return mHDMASourceLo;
+	}
+	else if ( mem_addr == 0xff53 ) // DMA Dest Hi
+	{
+		return mHDMADestHi;
+	}
+	else if ( mem_addr == 0xff54 ) // DMA Dest Lo
+	{
+		return mHDMADestLo;
+	}
+	else if ( mem_addr == 0xff55 ) // DMA 끝났는지 알 수 있는 7번 비트
+	{
+		if ( mIsDMAStart )
+		{
+			return 0x80;
+		}
+		else
+		{
+			return 0;
+		}
+	}
 	else if ( mem_addr == 0xff68 )
 	{
 		return mBGColorPalletIndex;
@@ -189,7 +223,7 @@ BYTE GPU::Get(size_t mem_addr) const
 	}
 	else if( mem_addr == 0xff6b )
 	{
-		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+		BYTE only_pallet_index = toOnlyPalletIndex(mObjectColorPalletIndex); // 실제로는 3f만 쓸 수 있음.
 		BYTE to_color_index = toColorIndex( only_pallet_index );
 		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
 
@@ -256,6 +290,27 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	{
 		mWX = value;
 	}
+	else if( mem_addr == 0xff51 )
+	{
+		mHDMASourceHi = value;
+	}
+	else if ( mem_addr == 0xff52 )
+	{
+		mHDMASourceLo = value;
+	}
+	else if ( mem_addr == 0xff53 )
+	{
+		mHDMADestHi = value;
+	}
+	else if ( mem_addr == 0xff54 )
+	{
+		mHDMADestLo = value;
+	}
+	else if ( mem_addr == 0xff55 )
+	{
+		mHDMAStatus = value;
+		mIsDMAStart = true;
+	}
 	else if ( mem_addr == 0xff68 ) // BG Pallet Index Select
 	{
 		mBGColorPalletIndex = value;
@@ -292,7 +347,7 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	}
 	else if ( mem_addr == 0xff6b )
 	{
-		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+		BYTE only_pallet_index = toOnlyPalletIndex(mObjectColorPalletIndex); // 실제로는 3f만 쓸 수 있음.
 		BYTE to_color_index = toColorIndex( only_pallet_index );
 		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
 
@@ -315,6 +370,23 @@ void GPU::Set(size_t mem_addr, BYTE value)
 		mMemory[mem_addr - VRAM_START_ADDRESS] = value;
 	}
 }
+
+bool GPU::IsReportedInterrupt() const
+{
+	return mIsDMAStart;
+}
+
+WORD GPU::GetReportedInterrupt() const
+{
+	return 0xff55u; // 일단 터지면 여기에서만 터지니 우선 이렇게..
+}
+
+
+void GPU::ResolveInterrupt(WORD resolve_interrupt_address)
+{
+	mIsDMAStart = false;
+}
+
 
 void GPU::NextStep(size_t clock)
 {
@@ -451,6 +523,42 @@ bool GPU::IsCoincidence() const
 BYTE GPU::GetModeFlag() const
 {
 	return GPUHelper::GetModeFlag(mLCDStatusRegister );
+}
+
+WORD GPU::GetDMASource() const
+{
+	WORD addr = static_cast<WORD>( static_cast<WORD>(mHDMASourceHi) << 8u ) | mHDMASourceLo;
+	return addr & 0xfff0u; // 하위 4비트 버림.
+}
+
+WORD GPU::GetDMADest() const
+{
+	WORD addr = static_cast<WORD>( static_cast<WORD>(mHDMADestHi) << 8u ) | mHDMADestLo;
+	return addr & 0x1ff0u; // 상위 3비트, 하위 4비트 버림.
+}
+
+BYTE GPU::GetRemainDMA() const
+{
+	return mHDMAStatus & 0x7fu;
+}
+
+BYTE GPU::GetDMAMode() const
+{
+	return ( mHDMAStatus & 0x80u ) >> 7u ;
+}
+
+void GPU::SetDMAAddresses(WORD source, WORD dest)
+{
+	mHDMASourceHi = ( source & 0xff00u ) >> 8u;
+	mHDMASourceLo = ( source & 0x00f0u ); // 하위 비트는 무시한다.
+
+	mHDMADestHi = ( dest & 0x1f00u ) >> 8u; // 상위 3비트는 무시된다.
+	mHDMADestLo = ( dest & 0x00f0u ); // 하위 비트는 무시한다.
+}
+
+void GPU::SetRemainDMA(BYTE remain)
+{
+	mHDMAStatus = ( mHDMAStatus & 0x80u ) | ( remain & 0x7fu );
 }
 
 void GPU::checkAddress(size_t mem_addr) const

@@ -28,6 +28,16 @@ public:
 	}
 
 	virtual void Reset() { } // 정의하던 말던 자유.
+
+	// IsReportedInterrupt -> 마더보드에게 처리를 요청할 인터럽트가 있었나?
+	[[nodiscard]] virtual bool IsReportedInterrupt() const { return false; }
+
+	virtual void ResolveInterrupt(WORD resolve_interrupt_address) {  }
+
+	// GetReportedInterrupt -> 보고된 인터럽트의 메모리 주소. 이 주소를 기반으로 마더보드가 문제를 처리함.
+	[[nodiscard]] virtual WORD GetReportedInterrupt() const { return 0; }
+
+
 	virtual ~MemoryInterface() {};
 };
 
