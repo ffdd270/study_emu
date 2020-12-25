@@ -48,3 +48,8 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 		mHRAM[ mem_addr - 0xff80u ] = value;
 	}
 }
+
+void MemoryManageUnit::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
+{
+	mCartridge = std::move( ptr_cartridge );
+}
