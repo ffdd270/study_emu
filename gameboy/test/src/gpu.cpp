@@ -165,6 +165,11 @@ SCENARIO("GPU", "[GPU]")
 		{
 			pallet_test( gpu, 0xff68u, 0xff69u, 0x1f, 0x0f, 0x10 );
 		}
+
+		WHEN("Set Obj Pallet R = 0x02, G = 0x07, B = 0x04")
+		{
+			pallet_test( gpu, 0xff6au, 0xff6bu, 0x02, 0x07, 0x04 );
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")

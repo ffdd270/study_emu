@@ -189,7 +189,7 @@ BYTE GPU::Get(size_t mem_addr) const
 	}
 	else if( mem_addr == 0xff6b )
 	{
-		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+		BYTE only_pallet_index = toOnlyPalletIndex(mObjectColorPalletIndex); // 실제로는 3f만 쓸 수 있음.
 		BYTE to_color_index = toColorIndex( only_pallet_index );
 		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
 
@@ -292,7 +292,7 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	}
 	else if ( mem_addr == 0xff6b )
 	{
-		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+		BYTE only_pallet_index = toOnlyPalletIndex(mObjectColorPalletIndex); // 실제로는 3f만 쓸 수 있음.
 		BYTE to_color_index = toColorIndex( only_pallet_index );
 		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
 

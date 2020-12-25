@@ -27,7 +27,7 @@ SCENARIO("Memory Manage Unit", "[MMUNIT]")
 	GIVEN("A Single Memory Manage Unit, with single cartridge.")
 	{
 		std::shared_ptr<MockMemory> ptr_mock_memory = std::make_shared<MockMemory>();
-		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>( std::static_pointer_cast<MemoryInterface>( ptr_mock_memory ) );
+		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>( std::static_pointer_cast<MemoryInterface>( ptr_mock_memory ), nullptr );
 
 		WHEN("Write to High - RAM Address.")
 		{
