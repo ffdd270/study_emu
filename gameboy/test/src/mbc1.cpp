@@ -308,6 +308,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 				REQUIRE( cpu->GetRegisterPC().reg_16 == 0x0430 );
 			}
 
+			/* TODO : GPU 다 짜고 생각하자.
 			THEN( "Step 10000" )
 			{
 				for( size_t i = 0; i < 10000; i++ )
@@ -317,6 +318,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 
 				cpu->NextStep();
 ;			}
+			 */
 		}
 	}
 }
