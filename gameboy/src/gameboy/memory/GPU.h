@@ -119,15 +119,23 @@ public:
 	[[nodiscard]] bool IsCoincidence() const; // BIT 2
 	[[nodiscard]] BYTE GetModeFlag() const; // BIT 1-0
 
-	// HDMA
+	// DMA -> OAM 복사 함수.
 	[[nodiscard]] WORD GetDMASource() const;
-	[[nodiscard]] WORD GetDMADest() const;
-	[[nodiscard]] BYTE GetRemainDMA() const;
-	[[nodiscard]] BYTE GetDMAMode() const;
+	[[nodiscard]] static WORD GetDMADest() { return 0xfe00; }
+	[[nodiscard]] static WORD GetDMALength() { return 0xa0; }
 
-	void SetDMAAddresses( WORD source, WORD dest );
-	void SetRemainDMA( BYTE remain );
+	// HDMA
+	[[nodiscard]] WORD GetHDMASource() const;
+	[[nodiscard]] WORD GetHDMADest() const;
+	[[nodiscard]] BYTE GetRemainHDMA() const;
+	[[nodiscard]] BYTE GetHDMAMode() const;
+
+	void SetHDMAAddresses( WORD source, WORD dest );
+	void SetRemainHDMA(BYTE remain );
 private:
+	void procInterruptsOnSet( size_t mem_addr, BYTE value );
+	[[nodiscard]] BYTE procInterruptsOnGet( size_t mem_addr ) const;
+
 	void checkAddress(size_t mem_addr) const;
 
 	void enableVBlank();
@@ -177,6 +185,10 @@ private:
 	// 팔렛트 8개. 팔렛트 별 색상 4개씩. 첫 색상은 투명.
 	std::array<std::array<GPUHelper::ColorPallet, 4>, 8> mObjectColorPallet; // 괜찮은 생각이 나올 때까지 이걸로 버티기. FIX-ME
 
+	// DMA -> Memory to OAM 무조건 0x100 복사.
+	BYTE mDMASourceHi;
+	bool mIsDMAStart;
+
 	// HDMA -> 메모리 전송
 	// DMA Source
 	BYTE mHDMASourceHi,  mHDMASourceLo;
@@ -187,7 +199,7 @@ private:
 	// DAM Start, Mode, Lenght
 	// 여기 쓰면 시작됨.
 	BYTE mHDMAStatus;
-	bool mIsDMAStart;
+	bool mIsHDMAStart;
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..

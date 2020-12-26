@@ -18,7 +18,7 @@ BYTE MemoryManageUnit::Get(size_t mem_addr) const
 		if ( mCartridge == nullptr ) { throw std::logic_error("NOT LOADED CARTRIDGE."); }
 		return mCartridge->Get( mem_addr );
 	}
-	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff ) // GPU
+	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff || ( mem_addr >= 0xff00 && mem_addr <= 0xff7f )  ) // GPU
 	{
 		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED GPU"); }
 		return mVRAM->Get( mem_addr );
