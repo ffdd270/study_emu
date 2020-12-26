@@ -44,11 +44,15 @@ void Motherboard::Step()
 
 	for( auto & ref_interface : mInterfaces )
 	{
+		if (ref_interface == nullptr) { continue; }
+		
 		if ( ref_interface->IsReportedInterrupt() )
 		{
 			interrupt_array[interrupt_len] = ref_interface->GetReportedInterrupt();
 		}
 	}
+
+	procInterrupts( interrupt_array, interrupt_len );
 }
 
 void Motherboard::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
