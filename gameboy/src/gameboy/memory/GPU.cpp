@@ -528,13 +528,13 @@ BYTE GPU::GetModeFlag() const
 WORD GPU::GetDMASource() const
 {
 	WORD addr = static_cast<WORD>( static_cast<WORD>(mHDMASourceHi) << 8u ) | mHDMASourceLo;
-	return addr & 0xfff0u; // 하위 4비트 버림.
+	return( addr & 0xfff0u ); // 하위 4비트 버림.
 }
 
 WORD GPU::GetDMADest() const
 {
 	WORD addr = static_cast<WORD>( static_cast<WORD>(mHDMADestHi) << 8u ) | mHDMADestLo;
-	return addr & 0x1ff0u; // 상위 3비트, 하위 4비트 버림.
+	return( ( addr & 0x1ff0u ) + 0x8000 ); // 상위 3비트, 하위 4비트 버림. 무조건 0x8000번 기준임.
 }
 
 BYTE GPU::GetRemainDMA() const

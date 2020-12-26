@@ -2,16 +2,16 @@
 // Created by nhy20 on 2020-12-25.
 //
 
-#include "Motherborad.h"
+#include "Motherboard.h"
 #include <memory/MemoryManageUnit.h>
 #include <memory/GPU.h>
 
-Motherborad::Motherborad()
+Motherboard::Motherboard()
 {
 	Boot();
 }
 
-void Motherborad::Boot()
+void Motherboard::Boot()
 {
 	// 인터페이스 폭파
 	mInterfaces = { nullptr };
@@ -33,7 +33,7 @@ void Motherborad::Boot()
 	mCPU = GameboyCPU::CreateWithMemoryInterface( mInterfaces[ Interface_MMUNIT ] );
 }
 
-void Motherborad::Step()
+void Motherboard::Step()
 {
 	mCPU->NextStep();
 	std::static_pointer_cast<GPU>(mInterfaces[ Interface_GPU ] )->NextStep( 0 );
@@ -44,20 +44,30 @@ void Motherborad::Step()
 
 	for( auto & ref_interface : mInterfaces )
 	{
+		if (ref_interface == nullptr) { continue; }
+		
 		if ( ref_interface->IsReportedInterrupt() )
 		{
 			interrupt_array[interrupt_len] = ref_interface->GetReportedInterrupt();
+			interrupt_len++;
 		}
 	}
+
+	procInterrupts( interrupt_array, interrupt_len );
 }
 
-void Motherborad::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
+void Motherboard::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
 {
 	mInterfaces[ Interface_ROM ] = ptr_cartridge;
 	std::static_pointer_cast<MemoryManageUnit>( mInterfaces[ Interface_MMUNIT ] )->SetCartridge( std::move( ptr_cartridge ) );
 }
 
-void Motherborad::procInterrupts(std::array<WORD, 10> &array_interrupt, size_t interrupt_len)
+std::shared_ptr<MemoryInterface> Motherboard::GetInterface(Motherboard::Interfaces selected_interface)
+{
+	return mInterfaces[ selected_interface ];
+}
+
+void Motherboard::procInterrupts(std::array<WORD, 10> &array_interrupt, size_t interrupt_len)
 {
 	if ( interrupt_len == 0 ) { return; }
 
@@ -74,16 +84,16 @@ void proc_dma_step( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryMa
 
 	for( size_t i = 0; i < 0x10; i++ )
 	{
-		ref_ptr_gpu->Set( dest_address + i, ref_ptr_mmunit->Get( source_address + i ) );
+		ref_ptr_mmunit->Set( dest_address + i, ref_ptr_mmunit->Get( source_address + i ) );
 	}
 
-	BYTE remain = ref_ptr_gpu->GetRemainDMA();
-	ref_ptr_gpu->SetRemainDMA( remain - 1 );
-	if ( ref_ptr_gpu->GetRemainDMA() == 0 )
+	if ( ref_ptr_gpu->GetRemainDMA() == 0 ) // 0 == 0x10이라서, 뺼샘을 뒤로 미뤄야 한다.
 	{
 		ref_ptr_gpu->SetRemainDMA( 0x7fu );
 	}
-
+	
+	BYTE remain = ref_ptr_gpu->GetRemainDMA();
+	ref_ptr_gpu->SetRemainDMA(remain - 1);
 	ref_ptr_gpu->SetDMAAddresses( source_address + 0x10, dest_address + 0x10 );
 }
 
@@ -97,7 +107,7 @@ bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<Memo
 		// 모든 데이터 전송.
 		BYTE len = ref_ptr_gpu->GetRemainDMA();
 
-		for ( int i = 0; i < len; i++ )
+		for ( int i = 0; i < len + 1; i++ ) // 0 == 0x10이라서.  1을 더해준다.
 		{
 			proc_dma_step(ref_ptr_gpu, ref_ptr_mmunit );
 		}
@@ -121,7 +131,7 @@ bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<Memo
 	return false;
 }
 
-void Motherborad::procInterrupt(WORD interrupt_address)
+void Motherboard::procInterrupt(WORD interrupt_address)
 {
 	if ( interrupt_address == 0xff55u ) // DMA Interrupt.
 	{
