@@ -116,7 +116,8 @@ GPU::GPU() :
 		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
 		mHDMASourceHi( 0 ), mHDMASourceLo( 0 ),
 		mHDMADestHi( 0 ), mHDMADestLo(0 ),
-		mHDMAStatus( 0 ), mIsHDMAStart(false )
+		mHDMAStatus( 0 ), mIsHDMAStart(false ),
+		mDMASourceHi( 0 ), mIsDMAStart( false )
 {
 
 }
@@ -152,12 +153,20 @@ void GPU::Set(size_t mem_addr, BYTE value)
 
 bool GPU::IsReportedInterrupt() const
 {
-	return mIsHDMAStart;
+	return mIsHDMAStart || mIsDMAStart;
 }
 
 WORD GPU::GetReportedInterrupt() const
 {
-	return 0xff55u; // 일단 터지면 여기에서만 터지니 우선 이렇게..
+	if ( mIsDMAStart )
+	{
+		return 0xff46u;
+	}
+	else
+	{
+		return 0xff55u;
+	}
+
 }
 
 
@@ -372,6 +381,12 @@ void GPU::procInterruptsOnSet( size_t mem_addr, BYTE value )
 			mLYC = value;
 			break;
 		}
+		case 0xff46: // DMA
+		{
+			mDMASourceHi = value; // High Values;
+			mIsDMAStart = true;
+			break;
+		}
 		case 0xff47:
 		{
 			mBGMonoPallet = value;
@@ -514,6 +529,10 @@ BYTE GPU::procInterruptsOnGet(size_t mem_addr) const
 		case 0xff45: // LYC
 		{
 			return mLYC;
+		}
+		case 0xff46: // DMA Get, -> DO NOTHING.
+		{
+			return 0;
 		}
 		case 0xff47:
 		{
@@ -677,4 +696,9 @@ BYTE GPU::toColorIndex(BYTE only_pallet_index)
 BYTE GPU::toPalletIndex(BYTE only_pallet_index, BYTE color_index)
 {
 	return ( only_pallet_index - ( color_index ) ) / 4;
+}
+
+WORD GPU::GetDMASource() const
+{
+	return ( static_cast<WORD>(mHDMASourceHi) << 8u );
 }

@@ -122,7 +122,7 @@ public:
 	// DMA -> OAM 복사 함수.
 	[[nodiscard]] WORD GetDMASource() const;
 	[[nodiscard]] static WORD GetDMADest() { return 0xfe00; }
-	[[nodiscard]] static WORD GetDMALength() { return 0x100; }
+	[[nodiscard]] static WORD GetDMALength() { return 0xa0; }
 
 	// HDMA
 	[[nodiscard]] WORD GetHDMASource() const;
@@ -187,7 +187,7 @@ private:
 
 	// DMA -> Memory to OAM 무조건 0x100 복사.
 	BYTE mDMASourceHi;
-
+	bool mIsDMAStart;
 
 	// HDMA -> 메모리 전송
 	// DMA Source

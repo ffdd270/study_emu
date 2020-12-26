@@ -5,6 +5,7 @@
 #include "Motherboard.h"
 #include <memory/MemoryManageUnit.h>
 #include <memory/GPU.h>
+#include <string>
 
 Motherboard::Motherboard()
 {
@@ -99,7 +100,7 @@ void proc_dma_step( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryMa
 	ref_ptr_gpu->SetRemainHDMA(remain - 1);
 }
 
-bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit )
+bool proc_hdma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit )
 {
 	// 모드 판단하기.
 	BYTE dma_mode = ref_ptr_gpu->GetHDMAMode();
@@ -133,15 +134,44 @@ bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<Memo
 	return false;
 }
 
+bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> &  ref_ptr_mmunit)
+{
+	WORD source_address = ref_ptr_gpu->GetDMASource();
+	WORD dest_address = ref_ptr_gpu->GetDMADest();
+
+	for( size_t i = 0; i < ref_ptr_gpu->GetDMALength(); i++ )
+	{
+		ref_ptr_mmunit->Set( dest_address + i, ref_ptr_mmunit->Get( source_address + i ) );
+	}
+
+	return true;
+}
+
 void Motherboard::procInterrupt(WORD interrupt_address)
 {
-	if ( interrupt_address == 0xff55u ) // DMA Interrupt.
+	bool interrupt_resolved = false;
+
+	std::shared_ptr<GPU> gpu_ptr = std::static_pointer_cast<GPU>( mInterfaces[ Interface_GPU ] );
+	std::shared_ptr<MemoryManageUnit> mmunit_ptr = std::static_pointer_cast<MemoryManageUnit>( mInterfaces[ Interface_MMUNIT ] );
+
+	switch ( interrupt_address )
 	{
-		std::shared_ptr<GPU> gpu_ptr = std::static_pointer_cast<GPU>( mInterfaces[ Interface_GPU ] );
-		std::shared_ptr<MemoryManageUnit> mmunit_ptr = std::static_pointer_cast<MemoryManageUnit>( mInterfaces[ Interface_MMUNIT ] );
+		case 0xff46u:
+		{
+			interrupt_resolved = proc_dma_interrupt( gpu_ptr, mmunit_ptr );
+			break;
+		}
+		case 0xff55u:
+		{
+			interrupt_resolved = proc_hdma_interrupt(gpu_ptr, mmunit_ptr);
+			break;
+		}
+		default:
+			throw std::logic_error("Not Impl Interrupt : " + std::to_string( interrupt_address ) );
+	}
 
-		bool interrupt_end = proc_dma_interrupt( gpu_ptr, mmunit_ptr );
-
-		if ( interrupt_end )  { gpu_ptr->ResolveInterrupt( 0xff55u ); }
+	if ( interrupt_resolved )
+	{
+		gpu_ptr->ResolveInterrupt( interrupt_address );
 	}
 }
