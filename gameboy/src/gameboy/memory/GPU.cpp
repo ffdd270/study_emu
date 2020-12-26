@@ -186,7 +186,7 @@ BYTE GPU::Get(size_t mem_addr) const
 	}
 	else if ( mem_addr == 0xff55 ) // DMA 끝났는지 알 수 있는 7번 비트
 	{
-		if ( mIsDMAStart )
+		if ( !mIsDMAStart )
 		{
 			return 0x80;
 		}
@@ -565,8 +565,14 @@ void GPU::checkAddress(size_t mem_addr) const
 {
 	int result_relative_address = static_cast<int>( mem_addr ) - static_cast<int>( VRAM_START_ADDRESS );
 
-	if (result_relative_address < 0 ) { throw  std::logic_error("UNDERFLOW, ADDRESS"); }
-	if (result_relative_address >= mMemory.size()) { throw std::logic_error("OVERFLOW, ADDRESS."); }
+	if (result_relative_address < 0 )
+	{
+		throw std::logic_error("UNDERFLOW, ADDRESS");
+	}
+	if (result_relative_address >= mMemory.size())
+	{
+		throw std::logic_error("OVERFLOW, ADDRESS.");
+	}
 }
 
 void GPU::enableVBlank()
