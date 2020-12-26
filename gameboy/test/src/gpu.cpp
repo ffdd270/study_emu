@@ -357,6 +357,25 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( mmunit_ptr->Get(0xff55) == 0x80 );
 			}
 		}
+
+		WHEN("DMA, 0xff46. Source 0xee00, Dest 0xfe00, length = 0xa0")
+		{
+			for ( size_t i = 0; i < 0xa0; i++)
+			{
+				mmunit_ptr->Set( 0xee00 + i, i + 1 );
+			}
+
+			REQUIRE_NOTHROW( mmunit_ptr->Set( 0xff46, 0xee ) );
+			REQUIRE_NOTHROW( motherboard.Step() );
+
+			THEN("0xee00~0xeea0 == 0xfe00~0xfea0")
+			{
+				for ( size_t i = 0; i < 0xa0; i++ )
+				{
+					REQUIRE( mmunit_ptr->Get( 0xee00 + i ) == mmunit_ptr->Get( 0xfe00 + i ) );
+				}
+			}
+		}
 	}
 
 }
