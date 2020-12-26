@@ -5,6 +5,9 @@
 #include "memory/GPU.h"
 #include <iostream>
 
+
+constexpr BYTE NOT_SET_VALUE_ON_DMA = 0;
+
 inline void pallet_test( GPU & gpu, WORD pallet_index_address, WORD pallet_address, BYTE red, BYTE green, BYTE blue )
 {
 	// PalletIndex = 0x2, Auto increment. = 0x80 ( BIT 7 )
@@ -49,7 +52,7 @@ void dma_prepare(Motherboard & motherboard, std::shared_ptr<GPU> & ref_ptr_gpu, 
 
 	for( size_t i = 0; i < dma_real_length; i++ ) // Source에 데이터 Set.
 	{
-		ref_ptr_mmunit->Set(source_addr + i, static_cast<BYTE>( i % 0xff ) );
+		ref_ptr_mmunit->Set(source_addr + i, static_cast<BYTE>( i % ( 0xfe + 1 ) ) ); // 0x00은 체크용.
 	}
 
 	// GDMA 1,2. Source 설정.
@@ -68,6 +71,8 @@ void dma_prepare(Motherboard & motherboard, std::shared_ptr<GPU> & ref_ptr_gpu, 
 	ref_ptr_mmunit->Set(0xff55, dma_status_value ); // GDMA, Len = 0x800.
 	REQUIRE(ref_ptr_gpu->GetRemainDMA() == dma_length );
 	REQUIRE(ref_ptr_gpu->GetDMAMode() == dma_mode );
+	REQUIRE(ref_ptr_gpu->IsReportedInterrupt()); // 인터럽트 시작되어야 함.
+	REQUIRE(ref_ptr_mmunit->Get(0xff55) == 0x00); // 활성화 상태.
 }
 
 void dma_check( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit,
@@ -91,9 +96,15 @@ void dma_check( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManage
 class DummyMemory : public MemoryInterface
 {
 public:
-	DummyMemory() : mDummyMemory( { 0 } )
+	DummyMemory() : mDummyMemory()
 	{
+		mDummyMemory.fill( 0xff ); // VRAM은 0x0으로 초기화하니까, 얘는 완전 다른 값으로..
 
+		// 0x100부터 0x3100까지는 CPU를 위해 텅텅 비워놓는다. NOP만 타게..
+		for ( size_t i = 0; i < 0x3000; i++ )
+		{
+			mDummyMemory[ 0x100 + i ] = 0;
+		}
 	}
 
 	[[nodiscard]] BYTE Get( size_t mem_addr ) const override
@@ -307,17 +318,44 @@ SCENARIO("GPU", "[GPU]")
 			BYTE dma_length = 0x7f;
 
 			dma_prepare(motherboard, gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length, 0x0);
-
 			REQUIRE_NOTHROW( motherboard.Step() ); // 인터럽트 발생, 이제 값이 옮겨짐.
 
 			THEN("0x3000~0x3800 == 0x8000~0x8800")
 			{
 				dma_check( gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length );
+				REQUIRE( gpu_ptr->IsReportedInterrupt() == false ); // 인터럽트 종료되어야 함.
+				REQUIRE( mmunit_ptr->Get(0xff55) == 0x80 ); // 비활성화 상태.
+				REQUIRE( gpu_ptr->GetRemainDMA() == 0x7f ); // 끝난 상태.
 			}
 		}
 
 		WHEN("HDMA, Source 0x4050, 0x4550. Dest 0x9050, 0x9550.")
 		{
+			WORD source_addr = 0x3400;
+			WORD dest_addr = 0x9050;
+			BYTE dma_length = 0x4f; // 0x500만큼.
+
+			dma_prepare(motherboard, gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length, 0x1); // HDMA Mode
+
+			THEN("One Step = Copy 0x10.")
+			{
+				WORD copyed_source_addr = source_addr;
+				WORD copyed_dest_addr = dest_addr;
+
+				for(size_t i = 0x0; i < dma_length + 1; i++ )
+				{
+					REQUIRE_NOTHROW( motherboard.Step() );
+
+					dma_check( gpu_ptr, mmunit_ptr, copyed_source_addr, copyed_dest_addr, 0x0 ); // 한번에 0x1만큼만 옮겨진다.
+					REQUIRE(gpu_ptr->Get( copyed_dest_addr + 0x11 ) == NOT_SET_VALUE_ON_DMA );
+
+					copyed_dest_addr += 0x10;
+					copyed_source_addr += 0x10;
+				}
+
+				REQUIRE( gpu_ptr->IsReportedInterrupt() == false );
+				REQUIRE( mmunit_ptr->Get(0xff55) == 0x80 );
+			}
 		}
 	}
 
