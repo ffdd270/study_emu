@@ -57,6 +57,11 @@ void Motherboard::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
 	std::static_pointer_cast<MemoryManageUnit>( mInterfaces[ Interface_MMUNIT ] )->SetCartridge( std::move( ptr_cartridge ) );
 }
 
+std::shared_ptr<MemoryInterface> Motherboard::GetInterface(Motherboard::Interfaces selected_interface)
+{
+	return mInterfaces[ selected_interface ];
+}
+
 void Motherboard::procInterrupts(std::array<WORD, 10> &array_interrupt, size_t interrupt_len)
 {
 	if ( interrupt_len == 0 ) { return; }
