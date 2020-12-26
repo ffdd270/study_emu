@@ -87,14 +87,16 @@ void proc_dma_step( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryMa
 		ref_ptr_mmunit->Set( dest_address + i, ref_ptr_mmunit->Get( source_address + i ) );
 	}
 
+	ref_ptr_gpu->SetDMAAddresses(source_address + 0x10, dest_address + 0x10);
+	
 	if ( ref_ptr_gpu->GetRemainDMA() == 0 ) // 0 == 0x10이라서, 뺼샘을 뒤로 미뤄야 한다.
 	{
 		ref_ptr_gpu->SetRemainDMA( 0x7fu );
+		return;
 	}
 	
 	BYTE remain = ref_ptr_gpu->GetRemainDMA();
 	ref_ptr_gpu->SetRemainDMA(remain - 1);
-	ref_ptr_gpu->SetDMAAddresses( source_address + 0x10, dest_address + 0x10 );
 }
 
 bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit )
