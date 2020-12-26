@@ -134,6 +134,7 @@ public:
 	void SetRemainHDMA(BYTE remain );
 private:
 	void procInterruptsOnSet( size_t mem_addr, BYTE value );
+	[[nodiscard]] BYTE procInterruptsOnGet( size_t mem_addr ) const;
 
 	void checkAddress(size_t mem_addr) const;
 
