@@ -199,7 +199,7 @@ private:
 	// DAM Start, Mode, Lenght
 	// 여기 쓰면 시작됨.
 	BYTE mHDMAStatus;
-	bool mIsDMAStart;
+	bool mIsHDMAStart;
 
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..

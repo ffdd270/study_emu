@@ -116,7 +116,7 @@ GPU::GPU() :
 		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
 		mHDMASourceHi( 0 ), mHDMASourceLo( 0 ),
 		mHDMADestHi( 0 ), mHDMADestLo(0 ),
-		mHDMAStatus( 0 ), mIsDMAStart( false )
+		mHDMAStatus( 0 ), mIsHDMAStart(false )
 {
 
 }
@@ -152,7 +152,7 @@ void GPU::Set(size_t mem_addr, BYTE value)
 
 bool GPU::IsReportedInterrupt() const
 {
-	return mIsDMAStart;
+	return mIsHDMAStart;
 }
 
 WORD GPU::GetReportedInterrupt() const
@@ -163,7 +163,7 @@ WORD GPU::GetReportedInterrupt() const
 
 void GPU::ResolveInterrupt(WORD resolve_interrupt_address)
 {
-	mIsDMAStart = false;
+	mIsHDMAStart = false;
 }
 
 
@@ -420,7 +420,7 @@ void GPU::procInterruptsOnSet( size_t mem_addr, BYTE value )
 		case 0xff55:
 		{
 			mHDMAStatus = value;
-			mIsDMAStart = true;
+			mIsHDMAStart = true;
 			break;
 		}
 		case 0xff68: // BG Pallet Index Select
@@ -553,7 +553,7 @@ BYTE GPU::procInterruptsOnGet(size_t mem_addr) const
 		}
 		case 0xff55: // DMA 끝났는지 알 수 있는 7번 비트
 		{
-			if ( !mIsDMAStart )
+			if ( !mIsHDMAStart )
 			{
 				return 0x80;
 			}
