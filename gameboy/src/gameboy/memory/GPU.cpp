@@ -350,85 +350,85 @@ void GPU::procInterruptsOnSet( size_t mem_addr, BYTE value )
 			mLCDControlRegister = value;
 			break;
 		}
-		case  0xff41: // LCD Status
+		case 0xff41: // LCD Status
 		{
 			// 하위 3비트는 READ-ONLY 7번 비트는 존재하지 않음.
 			// 그렇다고 날리면 안 됨 =ㅁ=.
 			mLCDStatusRegister = ( value & 0b01111000u ) | ( mLCDStatusRegister & 0b10000111u );
 			break;
 		}
-		case  0xff42: // SCY
+		case 0xff42: // SCY
 		{
 			mScrollY = value;
 			break;
 		}
-		case  0xff43: // SCX
+		case 0xff43: // SCX
 		{
 			mScrollX = value;
 			break;
 		}
-		case  0xff45: // LYC
+		case 0xff45: // LYC
 		{
 			mLYC = value;
 			break;
 		}
-		case  0xff47:
+		case 0xff47:
 		{
 			mBGMonoPallet = value;
 			break;
 		}
-		case  0xff48:
+		case 0xff48:
 		{
 			mOBJMonoPallet0 = value;
 			break;
 		}
-		case  0xff49:
+		case 0xff49:
 		{
 			mOBJMonoPallet1 = value;
 			break;
 		}
-		case  0xff4a: // WY
+		case 0xff4a: // WY
 		{
 			mWY = value;
 			break;
 		}
-		case  0xff4b: // WX
+		case 0xff4b: // WX
 		{
 			mWX = value;
 			break;
 		}
-		case  0xff51:
+		case 0xff51:
 		{
 			mHDMASourceHi = value;
 			break;
 		}
-		case  0xff52:
+		case 0xff52:
 		{
 			mHDMASourceLo = value;
 			break;
 		}
-		case  0xff53:
+		case 0xff53:
 		{
 			mHDMADestHi = value;
 			break;
 		}
-		case  0xff54:
+		case 0xff54:
 		{
 			mHDMADestLo = value;
 			break;
 		}
-		case  0xff55:
+		case 0xff55:
 		{
 			mHDMAStatus = value;
 			mIsDMAStart = true;
 			break;
 		}
-		case  0xff68: // BG Pallet Index Select
+		case 0xff68: // BG Pallet Index Select
 		{
 			mBGColorPalletIndex = value;
 			break;
 		}
-		case  0xff69: // BG Pallet
+		case 0xff69: // BG Pallet
 		{
 			// 팔렛트 BYTE []
 			// 0 -> ( gggrrrrr )
@@ -455,12 +455,12 @@ void GPU::procInterruptsOnSet( size_t mem_addr, BYTE value )
 			autoIncrementPalletIndex( mBGColorPalletIndex );
 			break;
 		}
-		case  0xff6a: // Object Pallet Index Select
+		case 0xff6a: // Object Pallet Index Select
 		{
 			mObjectColorPalletIndex = value;
 			break;
 		}
-		case  0xff6b:
+		case 0xff6b:
 		{
 			BYTE only_pallet_index = toOnlyPalletIndex(mObjectColorPalletIndex); // 실제로는 3f만 쓸 수 있음.
 			BYTE to_color_index = toColorIndex( only_pallet_index );
