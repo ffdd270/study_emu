@@ -1,6 +1,9 @@
 #include <catch.hpp>
+#include "Motherboard.h"
 #include "GameboyCPU.h"
+#include "memory/MemoryManageUnit.h"
 #include "memory/GPU.h"
+#include <iostream>
 
 inline void pallet_test( GPU & gpu, WORD pallet_index_address, WORD pallet_address, BYTE red, BYTE green, BYTE blue )
 {
@@ -38,6 +41,27 @@ inline void pallet_test( GPU & gpu, WORD pallet_index_address, WORD pallet_addre
 		REQUIRE( pallet.Blue() == blue );
 	}
 }
+
+class DummyMemory : public MemoryInterface
+{
+public:
+	DummyMemory() : mDummyMemory( { 0 } )
+	{
+
+	}
+
+	[[nodiscard]] BYTE Get( size_t mem_addr ) const override
+	{
+		return mDummyMemory[ mem_addr ];
+	}
+
+	void Set( size_t mem_addr, BYTE value ) override
+	{
+		mDummyMemory[ mem_addr ] = value;
+	}
+private:
+	std::array<BYTE, 0xffff> mDummyMemory;
+};
 
 
 SCENARIO("GPU", "[GPU]")
@@ -218,4 +242,64 @@ SCENARIO("GPU", "[GPU]")
 			}
 		}
 	}
+
+
+	GIVEN("A Single Motherboard")
+	{
+		Motherboard motherboard;
+
+		std::shared_ptr<MemoryInterface> dummy_memory_ptr = std::make_shared<DummyMemory>();
+		motherboard.SetCartridge( dummy_memory_ptr );
+
+		std::shared_ptr<GPU> gpu_ptr = std::static_pointer_cast<GPU>( motherboard.GetInterface( Motherboard::Interface_GPU ) );
+		std::shared_ptr<MemoryManageUnit> mmunit_ptr = std::static_pointer_cast<MemoryManageUnit>( motherboard.GetInterface( Motherboard::Interface_MMUNIT ) );
+
+		WHEN("GDMA, Source 0x3000~0x3800, Dest 0x8000~0x8800, Len = 0x800")
+		{
+			const WORD source_addr = 0x3000;
+			const WORD dest_addr = 0x8000;
+
+			for( size_t i = 0; i < 0x800; i++ ) // Source에 데이터 Set.
+			{
+				mmunit_ptr->Set( source_addr + i,  static_cast<BYTE>( i % 0xff ) );
+			}
+
+			// GDMA 1,2. Source 설정.
+			mmunit_ptr->Set( 0xff51, ( source_addr & 0xff00u ) >> 8u ); // Source Hi, 0x30.
+			mmunit_ptr->Set( 0xff52, ( source_addr & 0xffu )); // Source Lo, 0x0f. but low 4bit ignored. 0x3000.
+			REQUIRE( gpu_ptr->GetDMASource() == source_addr );
+
+			// GDMA 3,4. Dest 설정.
+			mmunit_ptr->Set( 0xff53, ( dest_addr & 0xff00u ) >> 8u ); // Source Hi, 0x80.
+			mmunit_ptr->Set( 0xff54, ( dest_addr & 0xffu ) ); // Source Lo. 0x00.
+			REQUIRE( gpu_ptr->GetDMADest() == dest_addr );
+
+			// GDMA 5. DMA Start, Length 0x7f == 0x800.
+			mmunit_ptr->Set( 0xff55, 0x7f ); // GDMA, Len = 0x800.
+			REQUIRE( gpu_ptr->GetRemainDMA() == 0x7f );
+
+			REQUIRE_NOTHROW( motherboard.Step() ); // 인터럽트 발생, 이제 값이 옮겨짐.
+
+			THEN("0x3000~0x3800 == 0x8000~0x8800")
+			{
+				for( size_t i = 0; i < 0x800; i++ )
+				{
+					BYTE source_value = 0, dest_value = 1;
+
+					REQUIRE_NOTHROW( source_value = mmunit_ptr->Get( source_addr + i )  );
+					REQUIRE_NOTHROW( dest_value = mmunit_ptr->Get( dest_addr + i ) );
+
+					REQUIRE( source_value == dest_value );
+				}
+			}
+		}
+
+		WHEN("HDMA, Source 0x4050, 0x4550. Dest 0x9050, 0x9550.")
+		{
+
+		}
+
+
+	}
+
 }
