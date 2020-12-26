@@ -38,7 +38,7 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 		if ( mCartridge == nullptr ) { throw std::logic_error("NOT LOADED CARTRIDGE."); }
 		mCartridge->Set( mem_addr, value );
 	}
-	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff ) // GPU
+	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff || ( mem_addr >= 0xff00 && mem_addr <= 0xff7f ) ) // GPU
 	{
 		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED GPU"); }
 		return mVRAM->Set( mem_addr, value );
