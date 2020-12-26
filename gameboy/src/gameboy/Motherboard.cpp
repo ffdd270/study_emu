@@ -49,6 +49,7 @@ void Motherboard::Step()
 		if ( ref_interface->IsReportedInterrupt() )
 		{
 			interrupt_array[interrupt_len] = ref_interface->GetReportedInterrupt();
+			interrupt_len++;
 		}
 	}
 
