@@ -58,19 +58,19 @@ void dma_prepare(Motherboard & motherboard, std::shared_ptr<GPU> & ref_ptr_gpu, 
 	// GDMA 1,2. Source 설정.
 	ref_ptr_mmunit->Set(0xff51, (source_addr & 0xff00u ) >> 8u ); // Source Hi, 0x30.
 	ref_ptr_mmunit->Set(0xff52, (source_addr & 0xffu )); // Source Lo, 0x0f. but low 4bit ignored. 0x3000.
-	REQUIRE(ref_ptr_gpu->GetDMASource() == source_addr );
+	REQUIRE(ref_ptr_gpu->GetHDMASource() == source_addr );
 
 	// GDMA 3,4. Dest 설정.
 	ref_ptr_mmunit->Set(0xff53, (dest_addr & 0xff00u ) >> 8u ); // Source Hi, 0x80.
 	ref_ptr_mmunit->Set(0xff54, (dest_addr & 0xffu ) ); // Source Lo. 0x00.
-	REQUIRE(ref_ptr_gpu->GetDMADest() == dest_addr );
+	REQUIRE(ref_ptr_gpu->GetHDMADest() == dest_addr );
 
 	// GDMA 5. DMA Start, Length 0x7f == 0x800.
 	BYTE dma_status_value = dma_length | ( ( dma_mode & 0x1u ) << 7u );
 
 	ref_ptr_mmunit->Set(0xff55, dma_status_value ); // GDMA, Len = 0x800.
-	REQUIRE(ref_ptr_gpu->GetRemainDMA() == dma_length );
-	REQUIRE(ref_ptr_gpu->GetDMAMode() == dma_mode );
+	REQUIRE(ref_ptr_gpu->GetRemainHDMA() == dma_length );
+	REQUIRE(ref_ptr_gpu->GetHDMAMode() == dma_mode );
 	REQUIRE(ref_ptr_gpu->IsReportedInterrupt()); // 인터럽트 시작되어야 함.
 	REQUIRE(ref_ptr_mmunit->Get(0xff55) == 0x00); // 활성화 상태.
 }
@@ -325,7 +325,7 @@ SCENARIO("GPU", "[GPU]")
 				dma_check( gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length );
 				REQUIRE( gpu_ptr->IsReportedInterrupt() == false ); // 인터럽트 종료되어야 함.
 				REQUIRE( mmunit_ptr->Get(0xff55) == 0x80 ); // 비활성화 상태.
-				REQUIRE( gpu_ptr->GetRemainDMA() == 0x7f ); // 끝난 상태.
+				REQUIRE(gpu_ptr->GetRemainHDMA() == 0x7f ); // 끝난 상태.
 			}
 		}
 

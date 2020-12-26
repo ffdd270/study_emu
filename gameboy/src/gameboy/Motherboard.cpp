@@ -79,35 +79,35 @@ void Motherboard::procInterrupts(std::array<WORD, 10> &array_interrupt, size_t i
 
 void proc_dma_step( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit )
 {
-	WORD source_address = ref_ptr_gpu->GetDMASource();
-	WORD dest_address = ref_ptr_gpu->GetDMADest();
+	WORD source_address = ref_ptr_gpu->GetHDMASource();
+	WORD dest_address = ref_ptr_gpu->GetHDMADest();
 
 	for( size_t i = 0; i < 0x10; i++ )
 	{
 		ref_ptr_mmunit->Set( dest_address + i, ref_ptr_mmunit->Get( source_address + i ) );
 	}
 
-	ref_ptr_gpu->SetDMAAddresses(source_address + 0x10, dest_address + 0x10);
+	ref_ptr_gpu->SetHDMAAddresses(source_address + 0x10, dest_address + 0x10);
 	
-	if ( ref_ptr_gpu->GetRemainDMA() == 0 ) // 0 == 0x10이라서, 뺼샘을 뒤로 미뤄야 한다.
+	if (ref_ptr_gpu->GetRemainHDMA() == 0 ) // 0 == 0x10이라서, 뺼샘을 뒤로 미뤄야 한다.
 	{
-		ref_ptr_gpu->SetRemainDMA( 0x7fu );
+		ref_ptr_gpu->SetRemainHDMA(0x7fu);
 		return;
 	}
 	
-	BYTE remain = ref_ptr_gpu->GetRemainDMA();
-	ref_ptr_gpu->SetRemainDMA(remain - 1);
+	BYTE remain = ref_ptr_gpu->GetRemainHDMA();
+	ref_ptr_gpu->SetRemainHDMA(remain - 1);
 }
 
 bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit )
 {
 	// 모드 판단하기.
-	BYTE dma_mode = ref_ptr_gpu->GetDMAMode();
+	BYTE dma_mode = ref_ptr_gpu->GetHDMAMode();
 
 	if( dma_mode == 0x0 ) // GDMA
 	{
 		// 모든 데이터 전송.
-		BYTE len = ref_ptr_gpu->GetRemainDMA();
+		BYTE len = ref_ptr_gpu->GetRemainHDMA();
 
 		for ( int i = 0; i < len + 1; i++ ) // 0 == 0x10이라서.  1을 더해준다.
 		{
@@ -122,7 +122,7 @@ bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<Memo
 
 		proc_dma_step( ref_ptr_gpu, ref_ptr_mmunit );
 
-		BYTE len = ref_ptr_gpu->GetRemainDMA();
+		BYTE len = ref_ptr_gpu->GetRemainHDMA();
 
 		if( len == 0x7f ) // 모든 비트가 111111111.
 		{

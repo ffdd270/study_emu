@@ -525,29 +525,29 @@ BYTE GPU::GetModeFlag() const
 	return GPUHelper::GetModeFlag(mLCDStatusRegister );
 }
 
-WORD GPU::GetDMASource() const
+WORD GPU::GetHDMASource() const
 {
 	WORD addr = static_cast<WORD>( static_cast<WORD>(mHDMASourceHi) << 8u ) | mHDMASourceLo;
 	return( addr & 0xfff0u ); // 하위 4비트 버림.
 }
 
-WORD GPU::GetDMADest() const
+WORD GPU::GetHDMADest() const
 {
 	WORD addr = static_cast<WORD>( static_cast<WORD>(mHDMADestHi) << 8u ) | mHDMADestLo;
 	return( ( addr & 0x1ff0u ) + 0x8000 ); // 상위 3비트, 하위 4비트 버림. 무조건 0x8000번 기준임.
 }
 
-BYTE GPU::GetRemainDMA() const
+BYTE GPU::GetRemainHDMA() const
 {
 	return mHDMAStatus & 0x7fu;
 }
 
-BYTE GPU::GetDMAMode() const
+BYTE GPU::GetHDMAMode() const
 {
 	return ( mHDMAStatus & 0x80u ) >> 7u ;
 }
 
-void GPU::SetDMAAddresses(WORD source, WORD dest)
+void GPU::SetHDMAAddresses(WORD source, WORD dest)
 {
 	mHDMASourceHi = ( source & 0xff00u ) >> 8u;
 	mHDMASourceLo = ( source & 0x00f0u ); // 하위 비트는 무시한다.
@@ -556,7 +556,7 @@ void GPU::SetDMAAddresses(WORD source, WORD dest)
 	mHDMADestLo = ( dest & 0x00f0u ); // 하위 비트는 무시한다.
 }
 
-void GPU::SetRemainDMA(BYTE remain)
+void GPU::SetRemainHDMA(BYTE remain)
 {
 	mHDMAStatus = ( mHDMAStatus & 0x80u ) | ( remain & 0x7fu );
 }
