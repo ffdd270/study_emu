@@ -2,16 +2,16 @@
 // Created by nhy20 on 2020-12-25.
 //
 
-#include "Motherborad.h"
+#include "Motherboard.h"
 #include <memory/MemoryManageUnit.h>
 #include <memory/GPU.h>
 
-Motherborad::Motherborad()
+Motherboard::Motherboard()
 {
 	Boot();
 }
 
-void Motherborad::Boot()
+void Motherboard::Boot()
 {
 	// 인터페이스 폭파
 	mInterfaces = { nullptr };
@@ -33,7 +33,7 @@ void Motherborad::Boot()
 	mCPU = GameboyCPU::CreateWithMemoryInterface( mInterfaces[ Interface_MMUNIT ] );
 }
 
-void Motherborad::Step()
+void Motherboard::Step()
 {
 	mCPU->NextStep();
 	std::static_pointer_cast<GPU>(mInterfaces[ Interface_GPU ] )->NextStep( 0 );
@@ -51,13 +51,13 @@ void Motherborad::Step()
 	}
 }
 
-void Motherborad::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
+void Motherboard::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
 {
 	mInterfaces[ Interface_ROM ] = ptr_cartridge;
 	std::static_pointer_cast<MemoryManageUnit>( mInterfaces[ Interface_MMUNIT ] )->SetCartridge( std::move( ptr_cartridge ) );
 }
 
-void Motherborad::procInterrupts(std::array<WORD, 10> &array_interrupt, size_t interrupt_len)
+void Motherboard::procInterrupts(std::array<WORD, 10> &array_interrupt, size_t interrupt_len)
 {
 	if ( interrupt_len == 0 ) { return; }
 
@@ -121,7 +121,7 @@ bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<Memo
 	return false;
 }
 
-void Motherborad::procInterrupt(WORD interrupt_address)
+void Motherboard::procInterrupt(WORD interrupt_address)
 {
 	if ( interrupt_address == 0xff55u ) // DMA Interrupt.
 	{

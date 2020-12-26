@@ -2,8 +2,8 @@
 // Created by nhy20 on 2020-12-25.
 //
 
-#ifndef GAMEBOY_MOTHERBORAD_H
-#define GAMEBOY_MOTHERBORAD_H
+#ifndef GAMEBOY_MOTHERBOARD_H
+#define GAMEBOY_MOTHERBOARD_H
 
 #include "memory/MemoryInterface.h"
 #include <GameboyCPU.h>
@@ -11,10 +11,10 @@
 #include <memory>
 #include <array>
 
-class Motherborad
+class Motherboard
 {
 public:
-	Motherborad();
+	Motherboard();
 
 	void Boot();
 	void Step();
@@ -37,4 +37,4 @@ private:
 };
 
 
-#endif //GAMEBOY_MOTHERBORAD_H
+#endif //GAMEBOY_MOTHERBOARD_H

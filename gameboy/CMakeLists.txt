@@ -92,8 +92,8 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/memory/GPU.cpp
 		${SRC_PATH}/gameboy/memory/GPU.h
 
-		${SRC_PATH}/gameboy/Motherborad.cpp
-		${SRC_PATH}/gameboy/Motherborad.h)
+		${SRC_PATH}/gameboy/Motherboard.cpp
+		${SRC_PATH}/gameboy/Motherboard.h)
 
 set( UI_SRC
 		${SRC_PATH}/harucar/LuaCommandViewer.cpp
