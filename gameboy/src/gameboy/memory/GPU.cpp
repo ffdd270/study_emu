@@ -534,7 +534,7 @@ WORD GPU::GetDMASource() const
 WORD GPU::GetDMADest() const
 {
 	WORD addr = static_cast<WORD>( static_cast<WORD>(mHDMADestHi) << 8u ) | mHDMADestLo;
-	return( addr & 0x1ff0u + 0x8000 ); // 상위 3비트, 하위 4비트 버림. 무조건 0x8000번 기준임.
+	return( ( addr & 0x1ff0u ) + 0x8000 ); // 상위 3비트, 하위 4비트 버림. 무조건 0x8000번 기준임.
 }
 
 BYTE GPU::GetRemainDMA() const
