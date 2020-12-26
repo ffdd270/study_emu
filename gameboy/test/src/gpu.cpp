@@ -42,6 +42,52 @@ inline void pallet_test( GPU & gpu, WORD pallet_index_address, WORD pallet_addre
 	}
 }
 
+void dma_prepare(Motherboard & motherboard, std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit,
+						const WORD source_addr, const WORD dest_addr, const BYTE dma_length, const BYTE dma_mode )
+{
+	WORD dma_real_length = ( dma_length + 1 ) * 0x10;
+
+	for( size_t i = 0; i < dma_real_length; i++ ) // Source에 데이터 Set.
+	{
+		ref_ptr_mmunit->Set(source_addr + i, static_cast<BYTE>( i % 0xff ) );
+	}
+
+	// GDMA 1,2. Source 설정.
+	ref_ptr_mmunit->Set(0xff51, (source_addr & 0xff00u ) >> 8u ); // Source Hi, 0x30.
+	ref_ptr_mmunit->Set(0xff52, (source_addr & 0xffu )); // Source Lo, 0x0f. but low 4bit ignored. 0x3000.
+	REQUIRE(ref_ptr_gpu->GetDMASource() == source_addr );
+
+	// GDMA 3,4. Dest 설정.
+	ref_ptr_mmunit->Set(0xff53, (dest_addr & 0xff00u ) >> 8u ); // Source Hi, 0x80.
+	ref_ptr_mmunit->Set(0xff54, (dest_addr & 0xffu ) ); // Source Lo. 0x00.
+	REQUIRE(ref_ptr_gpu->GetDMADest() == dest_addr );
+
+	// GDMA 5. DMA Start, Length 0x7f == 0x800.
+	BYTE dma_status_value = dma_length | ( ( dma_mode & 0x1u ) << 7u );
+
+	ref_ptr_mmunit->Set(0xff55, dma_status_value ); // GDMA, Len = 0x800.
+	REQUIRE(ref_ptr_gpu->GetRemainDMA() == dma_length );
+	REQUIRE(ref_ptr_gpu->GetDMAMode() == dma_mode );
+}
+
+void dma_check( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit,
+				const WORD source_addr, const WORD dest_addr, const BYTE dma_length )
+{
+	WORD dma_real_length = ( dma_length + 1 ) * 0x10;
+
+	for( size_t i = 0; i < dma_real_length; i++ )
+	{
+		BYTE source_value = 0, dest_value = 1;
+
+		REQUIRE_NOTHROW( source_value = ref_ptr_mmunit->Get(source_addr + i )  );
+		REQUIRE_NOTHROW( dest_value = ref_ptr_mmunit->Get(dest_addr + i ) );
+
+		REQUIRE( source_value == dest_value );
+	}
+}
+
+
+
 class DummyMemory : public MemoryInterface
 {
 public:
@@ -256,50 +302,23 @@ SCENARIO("GPU", "[GPU]")
 
 		WHEN("GDMA, Source 0x3000~0x3800, Dest 0x8000~0x8800, Len = 0x800")
 		{
-			const WORD source_addr = 0x3000;
-			const WORD dest_addr = 0x8000;
+			WORD source_addr = 0x3000;
+			WORD dest_addr = 0x8000;
+			BYTE dma_length = 0x7f;
 
-			for( size_t i = 0; i < 0x800; i++ ) // Source에 데이터 Set.
-			{
-				mmunit_ptr->Set( source_addr + i,  static_cast<BYTE>( i % 0xff ) );
-			}
-
-			// GDMA 1,2. Source 설정.
-			mmunit_ptr->Set( 0xff51, ( source_addr & 0xff00u ) >> 8u ); // Source Hi, 0x30.
-			mmunit_ptr->Set( 0xff52, ( source_addr & 0xffu )); // Source Lo, 0x0f. but low 4bit ignored. 0x3000.
-			REQUIRE( gpu_ptr->GetDMASource() == source_addr );
-
-			// GDMA 3,4. Dest 설정.
-			mmunit_ptr->Set( 0xff53, ( dest_addr & 0xff00u ) >> 8u ); // Source Hi, 0x80.
-			mmunit_ptr->Set( 0xff54, ( dest_addr & 0xffu ) ); // Source Lo. 0x00.
-			REQUIRE( gpu_ptr->GetDMADest() == dest_addr );
-
-			// GDMA 5. DMA Start, Length 0x7f == 0x800.
-			mmunit_ptr->Set( 0xff55, 0x7f ); // GDMA, Len = 0x800.
-			REQUIRE( gpu_ptr->GetRemainDMA() == 0x7f );
+			dma_prepare(motherboard, gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length, 0x0);
 
 			REQUIRE_NOTHROW( motherboard.Step() ); // 인터럽트 발생, 이제 값이 옮겨짐.
 
 			THEN("0x3000~0x3800 == 0x8000~0x8800")
 			{
-				for( size_t i = 0; i < 0x800; i++ )
-				{
-					BYTE source_value = 0, dest_value = 1;
-
-					REQUIRE_NOTHROW( source_value = mmunit_ptr->Get( source_addr + i )  );
-					REQUIRE_NOTHROW( dest_value = mmunit_ptr->Get( dest_addr + i ) );
-
-					REQUIRE( source_value == dest_value );
-				}
+				dma_check( gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length );
 			}
 		}
 
 		WHEN("HDMA, Source 0x4050, 0x4550. Dest 0x9050, 0x9550.")
 		{
-
 		}
-
-
 	}
 
 }
