@@ -45,8 +45,8 @@ inline void pallet_test( GPU & gpu, WORD pallet_index_address, WORD pallet_addre
 	}
 }
 
-void dma_prepare(Motherboard & motherboard, std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit,
-						const WORD source_addr, const WORD dest_addr, const BYTE dma_length, const BYTE dma_mode )
+void hdma_prepare(Motherboard & motherboard, std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit,
+				  const WORD source_addr, const WORD dest_addr, const BYTE dma_length, const BYTE dma_mode )
 {
 	WORD dma_real_length = ( dma_length + 1 ) * 0x10;
 
@@ -75,7 +75,7 @@ void dma_prepare(Motherboard & motherboard, std::shared_ptr<GPU> & ref_ptr_gpu, 
 	REQUIRE(ref_ptr_mmunit->Get(0xff55) == 0x00); // 활성화 상태.
 }
 
-void dma_check( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit,
+void hdma_check(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManageUnit> & ref_ptr_mmunit,
 				const WORD source_addr, const WORD dest_addr, const BYTE dma_length )
 {
 	WORD dma_real_length = ( dma_length + 1 ) * 0x10;
@@ -317,12 +317,12 @@ SCENARIO("GPU", "[GPU]")
 			WORD dest_addr = 0x8000;
 			BYTE dma_length = 0x7f;
 
-			dma_prepare(motherboard, gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length, 0x0);
+			hdma_prepare(motherboard, gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length, 0x0);
 			REQUIRE_NOTHROW( motherboard.Step() ); // 인터럽트 발생, 이제 값이 옮겨짐.
 
 			THEN("0x3000~0x3800 == 0x8000~0x8800")
 			{
-				dma_check( gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length );
+				hdma_check(gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length);
 				REQUIRE( gpu_ptr->IsReportedInterrupt() == false ); // 인터럽트 종료되어야 함.
 				REQUIRE( mmunit_ptr->Get(0xff55) == 0x80 ); // 비활성화 상태.
 				REQUIRE(gpu_ptr->GetRemainHDMA() == 0x7f ); // 끝난 상태.
@@ -335,7 +335,7 @@ SCENARIO("GPU", "[GPU]")
 			WORD dest_addr = 0x9050;
 			BYTE dma_length = 0x4f; // 0x500만큼.
 
-			dma_prepare(motherboard, gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length, 0x1); // HDMA Mode
+			hdma_prepare(motherboard, gpu_ptr, mmunit_ptr, source_addr, dest_addr, dma_length, 0x1); // HDMA Mode
 
 			THEN("One Step = Copy 0x10.")
 			{
@@ -346,7 +346,7 @@ SCENARIO("GPU", "[GPU]")
 				{
 					REQUIRE_NOTHROW( motherboard.Step() );
 
-					dma_check( gpu_ptr, mmunit_ptr, copyed_source_addr, copyed_dest_addr, 0x0 ); // 한번에 0x1만큼만 옮겨진다.
+					hdma_check(gpu_ptr, mmunit_ptr, copyed_source_addr, copyed_dest_addr, 0x0); // 한번에 0x1만큼만 옮겨진다.
 					REQUIRE(gpu_ptr->Get( copyed_dest_addr + 0x11 ) == NOT_SET_VALUE_ON_DMA );
 
 					copyed_dest_addr += 0x10;
