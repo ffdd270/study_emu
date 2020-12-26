@@ -133,6 +133,8 @@ public:
 	void SetHDMAAddresses( WORD source, WORD dest );
 	void SetRemainHDMA(BYTE remain );
 private:
+	void procInterruptsOnSet( size_t mem_addr, BYTE value );
+
 	void checkAddress(size_t mem_addr) const;
 
 	void enableVBlank();

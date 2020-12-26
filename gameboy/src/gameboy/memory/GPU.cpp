@@ -2,6 +2,7 @@
 // Created by HaruGakkaP on 2020-12-15.
 //
 
+#include <string>
 #include "GPU.h"
 
 
@@ -248,126 +249,14 @@ BYTE GPU::Get(size_t mem_addr) const
 
 void GPU::Set(size_t mem_addr, BYTE value)
 {
-	if( mem_addr == 0xff40 ) // LCD Control Register
-	{
-		mLCDControlRegister = value;
-	}
-	else if( mem_addr == 0xff41 ) // LCD Status
-	{
-		// 하위 3비트는 READ-ONLY 7번 비트는 존재하지 않음.
-		// 그렇다고 날리면 안 됨 =ㅁ=.
-		mLCDStatusRegister = ( value & 0b01111000u ) | ( mLCDStatusRegister & 0b10000111u );
-	}
-	else if( mem_addr == 0xff42 ) // SCY
-	{
-		mScrollY = value;
-	}
-	else if( mem_addr == 0xff43 ) // SCX
-	{
-		mScrollX = value;
-	}
-	else if( mem_addr == 0xff45 ) // LYC
-	{
-		mLYC = value;
-	}
-	else if (mem_addr == 0xff47 )
-	{
-		mBGMonoPallet = value;
-	}
-	else if (mem_addr == 0xff48 )
-	{
-		mOBJMonoPallet0 = value;
-	}
-	else if ( mem_addr == 0xff49 )
-	{
-		mOBJMonoPallet1 = value;
-	}
-	else if( mem_addr == 0xff4a ) // WY
-	{
-		mWY = value;
-	}
-	else if( mem_addr == 0xff4b ) // WX
-	{
-		mWX = value;
-	}
-	else if( mem_addr == 0xff51 )
-	{
-		mHDMASourceHi = value;
-	}
-	else if ( mem_addr == 0xff52 )
-	{
-		mHDMASourceLo = value;
-	}
-	else if ( mem_addr == 0xff53 )
-	{
-		mHDMADestHi = value;
-	}
-	else if ( mem_addr == 0xff54 )
-	{
-		mHDMADestLo = value;
-	}
-	else if ( mem_addr == 0xff55 )
-	{
-		mHDMAStatus = value;
-		mIsDMAStart = true;
-	}
-	else if ( mem_addr == 0xff68 ) // BG Pallet Index Select
-	{
-		mBGColorPalletIndex = value;
-	}
-	else if ( mem_addr == 0xff69  ) // BG Pallet
-	{
-		// 팔렛트 BYTE []
-		// 0 -> ( gggrrrrr )
-		// 1- > ( 0bbbbbgg )
-		// Bit 0-4   Red Intensity   (00-1F)
-		// Bit 5-9   Green Intensity (00-1F)
-		// Bit 10-14 Blue Intensity  (00-1F)
-		// 이건 쓸때랑 받을떄 알아서 해석할 것 = ㅁ=
-		BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
-		BYTE to_color_index = toColorIndex( only_pallet_index );
-		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
-
-		bool isLo = only_pallet_index % 2 == 0;
-
-		if ( isLo )
-		{
-			mBGColorPallet[ to_pallet ][ to_color_index ].SetLo( value );
-		}
-		else
-		{
-			mBGColorPallet[ to_pallet ][ to_color_index ].SetHi( value );
-		}
-
-		autoIncrementPalletIndex( mBGColorPalletIndex );
-	}
-	else if ( mem_addr == 0xff6a ) // Object Pallet Index Select
-	{
-		mObjectColorPalletIndex = value;
-	}
-	else if ( mem_addr == 0xff6b )
-	{
-		BYTE only_pallet_index = toOnlyPalletIndex(mObjectColorPalletIndex); // 실제로는 3f만 쓸 수 있음.
-		BYTE to_color_index = toColorIndex( only_pallet_index );
-		BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
-
-		bool isLo = only_pallet_index % 2 == 0;
-
-		if ( isLo )
-		{
-			mObjectColorPallet[ to_pallet ][ to_color_index ].SetLo( value );
-		}
-		else
-		{
-			mObjectColorPallet[ to_pallet ][ to_color_index ].SetHi( value );
-		}
-
-		autoIncrementPalletIndex( mObjectColorPalletIndex );
-	}
-	else // VRAM
+	if( mem_addr >= 0x8000 && mem_addr <= 0x9fff )
 	{
 		checkAddress(mem_addr);
 		mMemory[mem_addr - VRAM_START_ADDRESS] = value;
+	}
+	else
+	{
+		procInterruptsOnSet( mem_addr, value );
 	}
 }
 
@@ -559,6 +448,152 @@ void GPU::SetHDMAAddresses(WORD source, WORD dest)
 void GPU::SetRemainHDMA(BYTE remain)
 {
 	mHDMAStatus = ( mHDMAStatus & 0x80u ) | ( remain & 0x7fu );
+}
+
+
+void GPU::procInterruptsOnSet( size_t mem_addr, BYTE value )
+{
+	switch ( mem_addr )
+	{
+		case 0xff40: // LCD Control Register
+		{
+			mLCDControlRegister = value;
+			break;
+		}
+		case  0xff41: // LCD Status
+		{
+			// 하위 3비트는 READ-ONLY 7번 비트는 존재하지 않음.
+			// 그렇다고 날리면 안 됨 =ㅁ=.
+			mLCDStatusRegister = ( value & 0b01111000u ) | ( mLCDStatusRegister & 0b10000111u );
+			break;
+		}
+		case  0xff42: // SCY
+		{
+			mScrollY = value;
+			break;
+		}
+		case  0xff43: // SCX
+		{
+			mScrollX = value;
+			break;
+		}
+		case  0xff45: // LYC
+		{
+			mLYC = value;
+			break;
+		}
+		case  0xff47:
+		{
+			mBGMonoPallet = value;
+			break;
+		}
+		case  0xff48:
+		{
+			mOBJMonoPallet0 = value;
+			break;
+		}
+		case  0xff49:
+		{
+			mOBJMonoPallet1 = value;
+			break;
+		}
+		case  0xff4a: // WY
+		{
+			mWY = value;
+			break;
+		}
+		case  0xff4b: // WX
+		{
+			mWX = value;
+			break;
+		}
+		case  0xff51:
+		{
+			mHDMASourceHi = value;
+			break;
+		}
+		case  0xff52:
+		{
+			mHDMASourceLo = value;
+			break;
+		}
+		case  0xff53:
+		{
+			mHDMADestHi = value;
+			break;
+		}
+		case  0xff54:
+		{
+			mHDMADestLo = value;
+			break;
+		}
+		case  0xff55:
+		{
+			mHDMAStatus = value;
+			mIsDMAStart = true;
+			break;
+		}
+		case  0xff68: // BG Pallet Index Select
+		{
+			mBGColorPalletIndex = value;
+			break;
+		}
+		case  0xff69: // BG Pallet
+		{
+			// 팔렛트 BYTE []
+			// 0 -> ( gggrrrrr )
+			// 1- > ( 0bbbbbgg )
+			// Bit 0-4   Red Intensity   (00-1F)
+			// Bit 5-9   Green Intensity (00-1F)
+			// Bit 10-14 Blue Intensity  (00-1F)
+			// 이건 쓸때랑 받을떄 알아서 해석할 것 = ㅁ=
+			BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
+			BYTE to_color_index = toColorIndex( only_pallet_index );
+			BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
+
+			bool isLo = only_pallet_index % 2 == 0;
+
+			if ( isLo )
+			{
+				mBGColorPallet[ to_pallet ][ to_color_index ].SetLo( value );
+			}
+			else
+			{
+				mBGColorPallet[ to_pallet ][ to_color_index ].SetHi( value );
+			}
+
+			autoIncrementPalletIndex( mBGColorPalletIndex );
+			break;
+		}
+		case  0xff6a: // Object Pallet Index Select
+		{
+			mObjectColorPalletIndex = value;
+			break;
+		}
+		case  0xff6b:
+		{
+			BYTE only_pallet_index = toOnlyPalletIndex(mObjectColorPalletIndex); // 실제로는 3f만 쓸 수 있음.
+			BYTE to_color_index = toColorIndex( only_pallet_index );
+			BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
+
+			bool isLo = only_pallet_index % 2 == 0;
+
+			if ( isLo )
+			{
+				mObjectColorPallet[ to_pallet ][ to_color_index ].SetLo( value );
+			}
+			else
+			{
+				mObjectColorPallet[ to_pallet ][ to_color_index ].SetHi( value );
+			}
+
+			autoIncrementPalletIndex( mObjectColorPalletIndex );
+			break;
+		}
+		default:
+			throw std::logic_error("Not Impl Interrupt : " + std::to_string( mem_addr ) );
+			break;
+	}
 }
 
 void GPU::checkAddress(size_t mem_addr) const
