@@ -52,7 +52,7 @@ void dma_prepare(Motherboard & motherboard, std::shared_ptr<GPU> & ref_ptr_gpu, 
 
 	for( size_t i = 0; i < dma_real_length; i++ ) // Source에 데이터 Set.
 	{
-		ref_ptr_mmunit->Set(source_addr + i, static_cast<BYTE>( i % ( 0xfe + 1 ) ) ); // 0x00은 체크용.
+		ref_ptr_mmunit->Set(source_addr + i, static_cast<BYTE>( ( i % ( 0xfe ) ) + 1 ) ); // 0x00은 체크용.
 	}
 
 	// GDMA 1,2. Source 설정.
