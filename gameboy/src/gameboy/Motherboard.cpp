@@ -84,16 +84,16 @@ void proc_dma_step( std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryMa
 
 	for( size_t i = 0; i < 0x10; i++ )
 	{
-		ref_ptr_gpu->Set( dest_address + i, ref_ptr_mmunit->Get( source_address + i ) );
+		ref_ptr_mmunit->Set( dest_address + i, ref_ptr_mmunit->Get( source_address + i ) );
 	}
 
-	BYTE remain = ref_ptr_gpu->GetRemainDMA();
-	ref_ptr_gpu->SetRemainDMA( remain - 1 );
-	if ( ref_ptr_gpu->GetRemainDMA() == 0 )
+	if ( ref_ptr_gpu->GetRemainDMA() == 0 ) // 0 == 0x10이라서, 뺼샘을 뒤로 미뤄야 한다.
 	{
 		ref_ptr_gpu->SetRemainDMA( 0x7fu );
 	}
-
+	
+	BYTE remain = ref_ptr_gpu->GetRemainDMA();
+	ref_ptr_gpu->SetRemainDMA(remain - 1);
 	ref_ptr_gpu->SetDMAAddresses( source_address + 0x10, dest_address + 0x10 );
 }
 
@@ -107,7 +107,7 @@ bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<Memo
 		// 모든 데이터 전송.
 		BYTE len = ref_ptr_gpu->GetRemainDMA();
 
-		for ( int i = 0; i < len; i++ )
+		for ( int i = 0; i < len + 1; i++ ) // 0 == 0x10이라서.  1을 더해준다.
 		{
 			proc_dma_step(ref_ptr_gpu, ref_ptr_mmunit );
 		}
