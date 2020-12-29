@@ -79,6 +79,8 @@ namespace GPUHelper
 		BYTE mHi = 0, mLo = 0;
 	};
 
+	// 2바이트를 타일 1라인으로 바꿔줌.
+	[[nodiscard]] std::array<BYTE, 8> ToTileData( BYTE hi, BYTE lo );
 }
 
 

@@ -109,6 +109,21 @@ GPUHelper::MonoPallet GPUHelper::GetPalletData(BYTE pallet_data, size_t pos)
 	return static_cast<GPUHelper::MonoPallet>( result >> pos * 2 );
 }
 
+std::array<BYTE, 8> GPUHelper::ToTileData(BYTE lo, BYTE hi)
+{
+	std::array<BYTE, 8> tile = {};
+
+	for( size_t i = 0; i < 8; i++ )
+	{
+		BYTE lo_bit = GetBit( lo, i );
+		BYTE hi_bit = GetBit( hi, i );
+
+		tile[i] = static_cast<BYTE>( hi_bit << 1u ) | lo_bit;
+	}
+
+	return tile;
+}
+
 GPU::GPU() :
 		mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
 		mDots( 0 ), mScanLineY( 0 ),
