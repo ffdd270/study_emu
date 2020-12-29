@@ -6,7 +6,7 @@
 #define GAMEBOY_GPU_H
 
 #include "memory/MemoryInterface.h"
-#include <array>s
+#include <array>
 
 namespace GPUHelper
 {
@@ -80,7 +80,7 @@ namespace GPUHelper
 	};
 
 	// 2바이트를 타일 1라인으로 바꿔줌.
-	[[nodiscard]] std::array<BYTE, 8> ToTileData( BYTE hi, BYTE lo );
+	[[nodiscard]] std::array<BYTE, 8> ToTileData( BYTE lo, BYTE hi );
 }
 
 
