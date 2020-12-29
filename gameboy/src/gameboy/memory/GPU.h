@@ -134,6 +134,12 @@ public:
 
 	void SetHDMAAddresses( WORD source, WORD dest );
 	void SetRemainHDMA(BYTE remain );
+
+	// 타일 시작 주소 리턴.
+	// 타일은 8*8임.
+	// 2바이트가 1라인이니, 8이면 1 타일당 16바이트임.
+	[[nodiscard]] WORD GetSelectedTileAddress( BYTE tile_index ) const;
+
 private:
 	void procInterruptsOnSet( size_t mem_addr, BYTE value );
 	[[nodiscard]] BYTE procInterruptsOnGet( size_t mem_addr ) const;

@@ -351,6 +351,15 @@ BYTE GPU::GetHDMAMode() const
 	return ( mHDMAStatus & 0x80u ) >> 7u ;
 }
 
+
+WORD GPU::GetSelectedTileAddress(BYTE tile_index) const
+{
+	WORD start_address = GetSelectBGAndWindowTileData();
+	WORD tile_index_word = tile_index;
+
+	return start_address + ( tile_index_word * 16 );
+}
+
 void GPU::SetHDMAAddresses(WORD source, WORD dest)
 {
 	mHDMASourceHi = ( source & 0xff00u ) >> 8u;
