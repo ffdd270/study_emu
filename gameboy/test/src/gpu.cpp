@@ -368,6 +368,26 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( gpu.GetSelectedTileAddress( tile_index ) == 0x8800 + ( tile_index * 16 )  );
 			}
 		}
+
+		WHEN("BG Display  Address = 1, BG Set, Draw.")
+		{
+			BYTE select_tile_index = 3;
+
+			for (size_t i = 0; i < TILE_TEST_DATA.size(); i++ )
+			{
+				gpu.Set( gpu.GetSelectedTileAddress( select_tile_index ) + i, TILE_TEST_DATA[i] );
+			}
+
+			//LCDC BIT 4=  	0=9800-9BFF, 1=9C00-9FFF
+			gpu.Set( 0xff40, 0b00001000 ); // Seted.
+			gpu.Set( 0x9C00, select_tile_index );
+
+			THEN("( TileStartAddress ) = 0x3. and tile get OK.")
+			{
+				RequireColors require_colors = get_require_color_tile_test_data();
+				check_colors( gpu, gpu.GetSelectedTileAddress( gpu.Get( gpu.GetSelectBGTileMapDisplay() ) ), require_colors );
+			}
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")
