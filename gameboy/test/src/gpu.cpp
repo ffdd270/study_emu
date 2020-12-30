@@ -326,6 +326,30 @@ SCENARIO("GPU", "[GPU]")
 				}
 			}
 		}
+
+		WHEN ("Select Tile Data 1.")
+		{
+			// start from 0x8000;
+			gpu.Set(0xff40, 0b00010000u);
+
+			THEN("Tile Data 3, => 0x8000 + 3 * 16 ")
+			{
+				constexpr BYTE tile_index = 0x3;
+				REQUIRE( gpu.GetSelectedTileAddress( tile_index ) == 0x8000 + ( tile_index * 16 )  );
+			}
+		}
+
+		WHEN ("Select Tile Data 0.")
+		{
+			// start from 0x8800;
+			gpu.Set(0xff40, 0b00000000u);
+
+			THEN("Tile Data 5, => 0x8000 + 3 * 16 ")
+			{
+				constexpr BYTE tile_index = 0x5;
+				REQUIRE( gpu.GetSelectedTileAddress( tile_index ) == 0x8800 + ( tile_index * 16 )  );
+			}
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")
