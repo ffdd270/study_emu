@@ -272,6 +272,60 @@ SCENARIO("GPU", "[GPU]")
 		{
 			pallet_test( gpu, 0xff6au, 0xff6bu, 0x02, 0x07, 0x04 );
 		}
+
+		WHEN("FF 00 7E FF 85 81 89 83 93 85 A5 8B C9 97 7E FF -> Tile Test. 0x8000~0x800f ")
+		{
+			// https://www.huderlem.com/demos/gameboy2bpp.html  여기 최하단에 있는 걸로 만든
+			std::array< BYTE, 16 > bytes = {  0xFF, 0x00,
+											  0x00, 0xFF,
+											  0x00, 0x00,
+											  0xFF, 0xFF,
+											  0xF0, 0x0F,
+											  0x0F, 0xF0,
+											  0xF0, 0x0F,
+											  0x0F, 0x0F};
+			// 1 => LIGHT_GRAY 8.
+			// 2 => DARK_GRAY 8,
+			// 3 => WHITE 8
+			// 4 => BLACK 8
+			// 5 => LIGHT_GRAY 4, BLACK_GRAY 4
+			// 6 => BLACK_GRAY 4, LIGHT_GRAY 4
+			// 7 => LIGHT_GRAY 4, BLACK GRAY 4
+			// 8 => WHITE 4, BLACK 4
+
+			for ( size_t i = 0; i < bytes.size(); i++ )
+			{
+				gpu.Set( 0x8000 + i, bytes[i] );
+			}
+
+			THEN("right colors.")
+			{
+				std::array< std::array< BYTE, 8 >, 8 > require_colors = {};
+
+				all_color_set( require_colors[0], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY) );
+				all_color_set( require_colors[1], static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
+				all_color_set(require_colors[2], static_cast<BYTE>(GPUHelper::MonoPallet::WHITE));
+				all_color_set( require_colors[3], static_cast<BYTE>(GPUHelper::MonoPallet::BLACK) );
+				half_color_set( require_colors[4], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
+				half_color_set( require_colors[5], static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY) );
+				half_color_set( require_colors[6], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
+				half_color_set( require_colors[7], static_cast<BYTE>(GPUHelper::MonoPallet::WHITE),  static_cast<BYTE>(GPUHelper::MonoPallet::BLACK) );
+
+				for ( size_t tile_line = 1; tile_line <= 8; tile_line++ )
+				{
+					size_t mem_add = ( ( tile_line - 1 ) * 2 );
+
+					BYTE lo = gpu.Get( 0x8000 + mem_add  );
+					BYTE hi = gpu.Get( 0x8000 + ( mem_add + 1 ) );
+
+					std::array<BYTE, 8> pallets = GPUHelper::ToTileData( lo, hi );
+					for( size_t pallet = 0; pallet < 8; pallet++ )
+					{
+						REQUIRE( pallets[pallet] == require_colors[ tile_line - 1 ][ pallet ] );
+					}
+				}
+			}
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")
@@ -317,60 +371,6 @@ SCENARIO("GPU", "[GPU]")
 			THEN(", LY Interrupt On.")
 			{
 				REQUIRE( gpu.IsCoincidence() );
-			}
-		}
-
-		WHEN("FF 00 7E FF 85 81 89 83 93 85 A5 8B C9 97 7E FF -> Tile Test. 0x8000~0x800f ")
-		{
-			// https://www.huderlem.com/demos/gameboy2bpp.html  여기 최하단에 있는 걸로 만든
-			std::array< BYTE, 16 > bytes = {  0xFF, 0x00,
-									   0x00, 0xFF,
-									   0x00, 0x00,
-									   0xFF, 0xFF,
-									   0xF0, 0x0F,
-									 0x0F, 0xF0,
-									 0xF0, 0x0F,
-									 0x0F, 0x0F};
-			// 1 => LIGHT_GRAY 8.
-			// 2 => DARK_GRAY 8,
-			// 3 => WHITE 8
-			// 4 => BLACK 8
-			// 5 => LIGHT_GRAY 4, BLACK_GRAY 4
-			// 6 => BLACK_GRAY 4, LIGHT_GRAY 4
-			// 7 => LIGHT_GRAY 4, BLACK GRAY 4
-			// 8 => WHITE 4, BLACK 4
-
-			for ( size_t i = 0; i < bytes.size(); i++ )
-			{
-				gpu.Set( 0x8000 + i, bytes[i] );
-			}
-
-			THEN("right colors.")
-			{
-				std::array< std::array< BYTE, 8 >, 8 > require_colors = {};
-
-				all_color_set( require_colors[0], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY) );
-				all_color_set( require_colors[1], static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
-				all_color_set(require_colors[2], static_cast<BYTE>(GPUHelper::MonoPallet::WHITE));
-				all_color_set( require_colors[3], static_cast<BYTE>(GPUHelper::MonoPallet::BLACK) );
-				half_color_set( require_colors[4], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
-				half_color_set( require_colors[5], static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY) );
-				half_color_set( require_colors[6], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
-				half_color_set( require_colors[7], static_cast<BYTE>(GPUHelper::MonoPallet::WHITE),  static_cast<BYTE>(GPUHelper::MonoPallet::BLACK) );
-
-				for ( size_t tile_line = 1; tile_line <= 8; tile_line++ )
-				{
-					size_t mem_add = ( ( tile_line - 1 ) * 2 );
-
-					BYTE lo = gpu.Get( 0x8000 + mem_add  );
-					BYTE hi = gpu.Get( 0x8000 + ( mem_add + 1 ) );
-
-					std::array<BYTE, 8> pallets = GPUHelper::ToTileData( lo, hi );
-					for( size_t pallet = 0; pallet < 8; pallet++ )
-					{
-						REQUIRE( pallets[pallet] == require_colors[ tile_line - 1 ][ pallet ] );
-					}
-				}
 			}
 		}
 	}
