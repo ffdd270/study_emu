@@ -300,7 +300,7 @@ SCENARIO("GPU", "[GPU]")
 
 			THEN("right colors.")
 			{
-				std::array< std::array< BYTE, 8 >, 8 > require_colors = {};
+				std::array< std::array< BYTE, GPUHelper::TileDataWidth >, GPUHelper::TileDataHeight > require_colors = {};
 
 				all_color_set( require_colors[0], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY) );
 				all_color_set( require_colors[1], static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
@@ -311,7 +311,7 @@ SCENARIO("GPU", "[GPU]")
 				half_color_set( require_colors[6], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
 				half_color_set( require_colors[7], static_cast<BYTE>(GPUHelper::MonoPallet::WHITE),  static_cast<BYTE>(GPUHelper::MonoPallet::BLACK) );
 
-				for ( size_t tile_line = 1; tile_line <= 8; tile_line++ )
+				for ( size_t tile_line = 1; tile_line <= GPUHelper::TileDataHeight; tile_line++ )
 				{
 					size_t mem_add = ( ( tile_line - 1 ) * 2 );
 
@@ -319,7 +319,7 @@ SCENARIO("GPU", "[GPU]")
 					BYTE hi = gpu.Get( 0x8000 + ( mem_add + 1 ) );
 
 					std::array<BYTE, 8> pallets = GPUHelper::ToTileData( lo, hi );
-					for( size_t pallet = 0; pallet < 8; pallet++ )
+					for( size_t pallet = 0; pallet < GPUHelper::TileDataWidth; pallet++ )
 					{
 						REQUIRE( pallets[pallet] == require_colors[ tile_line - 1 ][ pallet ] );
 					}

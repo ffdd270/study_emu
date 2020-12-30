@@ -81,6 +81,11 @@ namespace GPUHelper
 
 	// 2바이트를 타일 1라인으로 바꿔줌.
 	[[nodiscard]] std::array<BYTE, 8> ToTileData( BYTE lo, BYTE hi );
+
+	constexpr BYTE TileDataLSize = 16;
+	constexpr BYTE TileDataOneLineSize = 2;
+	constexpr BYTE TileDataWidth = 8;
+	constexpr BYTE TileDataHeight = 8;
 }
 
 

@@ -112,9 +112,9 @@ GPUHelper::MonoPallet GPUHelper::GetPalletData(BYTE pallet_data, size_t pos)
 // 거꾸로 뒤집혀 있다.
 std::array<BYTE, 8> GPUHelper::ToTileData(BYTE lo, BYTE hi)
 {
-	std::array<BYTE, 8> tile = {};
+	std::array<BYTE, TileDataWidth> tile = {};
 
-	for( size_t i = 0; i < 8; i++ )
+	for( size_t i = 0; i < TileDataWidth; i++ )
 	{
 		BYTE lo_bit = GetBit( lo, 7 - i );
 		BYTE hi_bit = GetBit( hi, 7 - i );
