@@ -86,6 +86,8 @@ namespace GPUHelper
 	constexpr BYTE TileDataOneLineSize = 2;
 	constexpr BYTE TileDataWidth = 8;
 	constexpr BYTE TileDataHeight = 8;
+
+	constexpr WORD BGMapSize = 32 * 32;  // 32개의 타일들을 32개의 열로 선택할 수 있음.
 }
 
 
