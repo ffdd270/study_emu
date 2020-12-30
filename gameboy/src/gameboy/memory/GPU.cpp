@@ -109,6 +109,22 @@ GPUHelper::MonoPallet GPUHelper::GetPalletData(BYTE pallet_data, size_t pos)
 	return static_cast<GPUHelper::MonoPallet>( result >> pos * 2 );
 }
 
+// 거꾸로 뒤집혀 있다.
+std::array<BYTE, 8> GPUHelper::ToTileData(BYTE lo, BYTE hi)
+{
+	std::array<BYTE, TileDataWidth> tile = {};
+
+	for( size_t i = 0; i < TileDataWidth; i++ )
+	{
+		BYTE lo_bit = GetBit( lo, 7 - i );
+		BYTE hi_bit = GetBit( hi, 7 - i );
+
+		tile[i] = static_cast<BYTE>( hi_bit << 1u ) | lo_bit;
+	}
+
+	return tile;
+}
+
 GPU::GPU() :
 		mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
 		mDots( 0 ), mScanLineY( 0 ),
@@ -333,6 +349,15 @@ BYTE GPU::GetRemainHDMA() const
 BYTE GPU::GetHDMAMode() const
 {
 	return ( mHDMAStatus & 0x80u ) >> 7u ;
+}
+
+
+WORD GPU::GetSelectedTileAddress(BYTE tile_index) const
+{
+	WORD start_address = GetSelectBGAndWindowTileData();
+	WORD tile_index_word = tile_index;
+
+	return start_address + ( tile_index_word * 16 );
 }
 
 void GPU::SetHDMAAddresses(WORD source, WORD dest)

@@ -5,6 +5,85 @@
 #include "memory/GPU.h"
 #include <iostream>
 
+// https://www.huderlem.com/demos/gameboy2bpp.html  여기 최하단에 있는 걸로 만든
+// CGB 기준으로
+// 1 => LIGHT_GRAY 8.
+// 2 => DARK_GRAY 8,
+// 3 => WHITE 8
+// 4 => BLACK 8
+// 5 => LIGHT_GRAY 4, BLACK_GRAY 4
+// 6 => BLACK_GRAY 4, LIGHT_GRAY 4
+// 7 => LIGHT_GRAY 4, BLACK GRAY 4
+// 8 => WHITE 4, BLACK 4
+
+
+constexpr std::array< BYTE, 16 > TILE_TEST_DATA = {0xFF, 0x00,
+										 0x00, 0xFF,
+										 0x00, 0x00,
+										 0xFF, 0xFF,
+										 0xF0, 0x0F,
+										 0x0F, 0xF0,
+										 0xF0, 0x0F,
+										 0x0F, 0x0F};
+
+
+void all_color_set ( std::array<BYTE, 8> & pallet_line, BYTE set_pallet )
+{
+	for(BYTE & i : pallet_line)
+	{
+		i = set_pallet;
+	}
+}
+
+void half_color_set( std::array<BYTE, 8> & pallet_line, BYTE pallet_1, BYTE pallet_2 )
+{
+	for( size_t i = 0; i < 4; i++ )
+	{
+		pallet_line[i] = pallet_1;
+	}
+
+	for( size_t i = 4; i < 8; i++ )
+	{
+		pallet_line[i] = pallet_2;
+	}
+}
+
+
+using RequireColors = std::array< std::array< BYTE, GPUHelper::TileDataWidth >, GPUHelper::TileDataHeight >;
+
+RequireColors get_require_color_tile_test_data()
+{
+	RequireColors require_colors = {};
+
+	all_color_set( require_colors[0], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY) );
+	all_color_set( require_colors[1], static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
+	all_color_set(require_colors[2], static_cast<BYTE>(GPUHelper::MonoPallet::WHITE));
+	all_color_set( require_colors[3], static_cast<BYTE>(GPUHelper::MonoPallet::BLACK) );
+	half_color_set( require_colors[4], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
+	half_color_set( require_colors[5], static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY) );
+	half_color_set( require_colors[6], static_cast<BYTE>(GPUHelper::MonoPallet::LIGHT_GRAY),  static_cast<BYTE>(GPUHelper::MonoPallet::DARK_GRAY) );
+	half_color_set( require_colors[7], static_cast<BYTE>(GPUHelper::MonoPallet::WHITE),  static_cast<BYTE>(GPUHelper::MonoPallet::BLACK) );
+
+	return require_colors;
+}
+
+void check_colors( GPU & ref_gpu, WORD base_address, RequireColors & ref_require_colors )
+{
+	for ( size_t tile_line = 1; tile_line <= GPUHelper::TileDataHeight; tile_line++ )
+	{
+		size_t mem_add = ( ( tile_line - 1 ) * 2 );
+
+		BYTE lo = ref_gpu.Get(base_address + mem_add  );
+		BYTE hi = ref_gpu.Get(base_address + (mem_add + 1 ) );
+
+		std::array<BYTE, 8> pallets = GPUHelper::ToTileData( lo, hi );
+		for( size_t pallet = 0; pallet < GPUHelper::TileDataWidth; pallet++ )
+		{
+			REQUIRE(pallets[pallet] == ref_require_colors[tile_line - 1 ][ pallet ] );
+		}
+	}
+}
+
 
 constexpr BYTE NOT_SET_VALUE_ON_DMA = 0;
 
@@ -250,6 +329,64 @@ SCENARIO("GPU", "[GPU]")
 		WHEN("Set Obj Pallet R = 0x02, G = 0x07, B = 0x04")
 		{
 			pallet_test( gpu, 0xff6au, 0xff6bu, 0x02, 0x07, 0x04 );
+		}
+
+		WHEN("FF 00 7E FF 85 81 89 83 93 85 A5 8B C9 97 7E FF -> Tile Test. 0x8000~0x800f ")
+		{
+			for (size_t i = 0; i < TILE_TEST_DATA.size(); i++ )
+			{
+				gpu.Set( 0x8000 + i, TILE_TEST_DATA[i] );
+			}
+
+			THEN("right colors.")
+			{
+				RequireColors require_colors = get_require_color_tile_test_data();
+				check_colors( gpu, 0x8000, require_colors );
+			}
+		}
+
+		WHEN ("Select Tile Data 1.")
+		{
+			// start from 0x8000;
+			gpu.Set(0xff40, 0b00010000u);
+
+			THEN("Tile Data 3, => 0x8000 + 3 * 16 ")
+			{
+				constexpr BYTE tile_index = 0x3;
+				REQUIRE( gpu.GetSelectedTileAddress( tile_index ) == 0x8000 + ( tile_index * 16 )  );
+			}
+		}
+
+		WHEN ("Select Tile Data 0.")
+		{
+			// start from 0x8800;
+			gpu.Set(0xff40, 0b00000000u);
+
+			THEN("Tile Data 5, => 0x8000 + 3 * 16 ")
+			{
+				constexpr BYTE tile_index = 0x5;
+				REQUIRE( gpu.GetSelectedTileAddress( tile_index ) == 0x8800 + ( tile_index * 16 )  );
+			}
+		}
+
+		WHEN("BG Display  Address = 1, BG Set, Draw.")
+		{
+			BYTE select_tile_index = 3;
+
+			for (size_t i = 0; i < TILE_TEST_DATA.size(); i++ )
+			{
+				gpu.Set( gpu.GetSelectedTileAddress( select_tile_index ) + i, TILE_TEST_DATA[i] );
+			}
+
+			//LCDC BIT 4=  	0=9800-9BFF, 1=9C00-9FFF
+			gpu.Set( 0xff40, 0b00001000 ); // Seted.
+			gpu.Set( 0x9C00, select_tile_index );
+
+			THEN("( TileStartAddress ) = 0x3. and tile get OK.")
+			{
+				RequireColors require_colors = get_require_color_tile_test_data();
+				check_colors( gpu, gpu.GetSelectedTileAddress( gpu.Get( gpu.GetSelectBGTileMapDisplay() ) ), require_colors );
+			}
 		}
 	}
 

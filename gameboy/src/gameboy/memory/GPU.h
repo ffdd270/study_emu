@@ -6,7 +6,7 @@
 #define GAMEBOY_GPU_H
 
 #include "memory/MemoryInterface.h"
-#include <array>s
+#include <array>
 
 namespace GPUHelper
 {
@@ -79,6 +79,15 @@ namespace GPUHelper
 		BYTE mHi = 0, mLo = 0;
 	};
 
+	// 2바이트를 타일 1라인으로 바꿔줌.
+	[[nodiscard]] std::array<BYTE, 8> ToTileData( BYTE lo, BYTE hi );
+
+	constexpr BYTE TileDataLSize = 16;
+	constexpr BYTE TileDataOneLineSize = 2;
+	constexpr BYTE TileDataWidth = 8;
+	constexpr BYTE TileDataHeight = 8;
+
+	constexpr WORD BGMapSize = 32 * 32;  // 32개의 타일들을 32개의 열로 선택할 수 있음.
 }
 
 
@@ -132,6 +141,12 @@ public:
 
 	void SetHDMAAddresses( WORD source, WORD dest );
 	void SetRemainHDMA(BYTE remain );
+
+	// 타일 시작 주소 리턴.
+	// 타일은 8*8임.
+	// 2바이트가 1라인이니, 8이면 1 타일당 16바이트임.
+	[[nodiscard]] WORD GetSelectedTileAddress( BYTE tile_index ) const;
+
 private:
 	void procInterruptsOnSet( size_t mem_addr, BYTE value );
 	[[nodiscard]] BYTE procInterruptsOnGet( size_t mem_addr ) const;
