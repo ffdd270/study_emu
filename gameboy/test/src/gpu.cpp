@@ -170,8 +170,8 @@ void hdma_check(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManage
 	}
 }
 
-void test_bg_attribute( GPUHelper::BGMapAttribute attribute, BYTE bg_pallet_number, BYTE tile_vram_bank_number,
-						BYTE horizontal_flip, BYTE vertical_flip, BYTE bg_to_oam_priority  )
+void test_bg_attribute(GPUHelper::SpriteDataAttribute attribute, BYTE bg_pallet_number, BYTE tile_vram_bank_number,
+					   BYTE horizontal_flip, BYTE vertical_flip, BYTE bg_to_oam_priority  )
 {
 	REQUIRE( attribute.bg_pallet_number == bg_pallet_number );
 	REQUIRE( attribute.tile_vram_bank_number == tile_vram_bank_number );
@@ -566,7 +566,7 @@ SCENARIO("GPU", "[GPU]")
 
 	GIVEN("BG Map Attribute")
 	{
-		GPUHelper::BGMapAttribute attribute {};
+		GPUHelper::SpriteDataAttribute attribute {};
 		REQUIRE( sizeof( attribute ) == sizeof( BYTE ) ); // 바이트와 동일한 크기여야 함.
 
 		attribute.data = 0;

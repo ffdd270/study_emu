@@ -89,7 +89,7 @@ namespace GPUHelper
 
 	constexpr WORD BGMapSize = 32 * 32;  // 32개의 타일들을 32개의 열로 선택할 수 있음.
 
-	union BGMapAttribute
+	union SpriteDataAttribute
 	{
 		struct
 		{
