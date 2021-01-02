@@ -216,10 +216,14 @@ private:
 	BYTE mHDMAStatus;
 	bool mIsHDMAStart;
 
+	//Select Bank
+	BYTE mSelectVRAMBank;
+
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..
 
-	std::array<BYTE, 0x2000> mMemory;
+	// 뱅크가 2개임.
+	std::array<std::array<BYTE, 0x2000>, 2> mMemory{};
 };
 
 
