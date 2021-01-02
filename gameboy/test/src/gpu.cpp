@@ -544,21 +544,25 @@ SCENARIO("GPU", "[GPU]")
 			}
 		}
 
-		WHEN("DMA, 0xff46. Source 0xee00, Dest 0xfe00, length = 0xa0")
+		WHEN("DMA, 0xff46. Source 0x8000, Dest 0xfe00, length = 0xa0")
 		{
+			const WORD source_address = 0x8000;
+			const WORD dest_address = 0xfe00;
+
 			for ( size_t i = 0; i < 0xa0; i++)
 			{
-				mmunit_ptr->Set( 0xee00 + i, i + 1 );
+				mmunit_ptr->Set( source_address + i, i + 1 );
 			}
 
-			REQUIRE_NOTHROW( mmunit_ptr->Set( 0xff46, 0xee ) );
+			REQUIRE_NOTHROW( mmunit_ptr->Set( 0xff46, ( source_address & 0xff00u ) >> 8u ) );
 			REQUIRE_NOTHROW( motherboard.Step() );
 
-			THEN("0xee00~0xeea0 == 0xfe00~0xfea0")
+			THEN("0x8000~0x809f == 0xfe00~0xfea0")
 			{
 				for ( size_t i = 0; i < 0xa0; i++ )
 				{
-					REQUIRE( mmunit_ptr->Get( 0xee00 + i ) == mmunit_ptr->Get( 0xfe00 + i ) );
+					REQUIRE( mmunit_ptr->Get( source_address + i ) == mmunit_ptr->Get( dest_address + i ) );
+					REQUIRE( mmunit_ptr->Get( source_address + i ) != 0 );
 				}
 			}
 		}
