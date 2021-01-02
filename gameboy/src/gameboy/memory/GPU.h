@@ -89,7 +89,7 @@ namespace GPUHelper
 
 	constexpr WORD BGMapSize = 32 * 32;  // 32개의 타일들을 32개의 열로 선택할 수 있음.
 
-	union BGMapAttribute
+	union SpriteDataAttribute
 	{
 		struct
 		{
@@ -102,6 +102,19 @@ namespace GPUHelper
 		};
 
 		BYTE data;
+	};
+
+	union ObjectAttribute
+	{
+		struct
+		{
+			BYTE y_position; // 바이트 0
+			BYTE x_position; // 바이트 1
+			BYTE sprite_tile_number; // 바이트 2
+			SpriteDataAttribute attributes; // 바이트 3
+		};
+
+		BYTE data[4];
 	};
 }
 
@@ -237,8 +250,12 @@ private:
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..
 
+	// OAM
+	std::array<BYTE, 0x100> mObjectAttributeMemory {};
+
 	// 뱅크가 2개임.
 	std::array<std::array<BYTE, 0x2000>, 2> mMemory{};
+
 };
 
 

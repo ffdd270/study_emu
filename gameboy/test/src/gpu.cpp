@@ -170,8 +170,8 @@ void hdma_check(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManage
 	}
 }
 
-void test_bg_attribute( GPUHelper::BGMapAttribute attribute, BYTE bg_pallet_number, BYTE tile_vram_bank_number,
-						BYTE horizontal_flip, BYTE vertical_flip, BYTE bg_to_oam_priority  )
+void test_bg_attribute(GPUHelper::SpriteDataAttribute attribute, BYTE bg_pallet_number, BYTE tile_vram_bank_number,
+					   BYTE horizontal_flip, BYTE vertical_flip, BYTE bg_to_oam_priority  )
 {
 	REQUIRE( attribute.bg_pallet_number == bg_pallet_number );
 	REQUIRE( attribute.tile_vram_bank_number == tile_vram_bank_number );
@@ -544,29 +544,33 @@ SCENARIO("GPU", "[GPU]")
 			}
 		}
 
-		WHEN("DMA, 0xff46. Source 0xee00, Dest 0xfe00, length = 0xa0")
+		WHEN("DMA, 0xff46. Source 0x8000, Dest 0xfe00, length = 0xa0")
 		{
+			const WORD source_address = 0x8000;
+			const WORD dest_address = 0xfe00;
+
 			for ( size_t i = 0; i < 0xa0; i++)
 			{
-				mmunit_ptr->Set( 0xee00 + i, i + 1 );
+				mmunit_ptr->Set( source_address + i, i + 1 );
 			}
 
-			REQUIRE_NOTHROW( mmunit_ptr->Set( 0xff46, 0xee ) );
+			REQUIRE_NOTHROW( mmunit_ptr->Set( 0xff46, ( source_address & 0xff00u ) >> 8u ) );
 			REQUIRE_NOTHROW( motherboard.Step() );
 
-			THEN("0xee00~0xeea0 == 0xfe00~0xfea0")
+			THEN("0x8000~0x809f == 0xfe00~0xfea0")
 			{
 				for ( size_t i = 0; i < 0xa0; i++ )
 				{
-					REQUIRE( mmunit_ptr->Get( 0xee00 + i ) == mmunit_ptr->Get( 0xfe00 + i ) );
+					REQUIRE( mmunit_ptr->Get( source_address + i ) == mmunit_ptr->Get( dest_address + i ) );
+					REQUIRE( mmunit_ptr->Get( source_address + i ) != 0 );
 				}
 			}
 		}
 	}
 
-	GIVEN("BG Map Attribute")
+	GIVEN("Sprite Data Attribute")
 	{
-		GPUHelper::BGMapAttribute attribute {};
+		GPUHelper::SpriteDataAttribute attribute {};
 		REQUIRE( sizeof( attribute ) == sizeof( BYTE ) ); // 바이트와 동일한 크기여야 함.
 
 		attribute.data = 0;
@@ -585,6 +589,33 @@ SCENARIO("GPU", "[GPU]")
 			THEN("Check Unions.")
 			{
 				test_bg_attribute( attribute, pallet, vram_bank, horizontal_flip, vertical_flip, bg_to_oam_priority );
+			}
+		}
+	}
+
+	GIVEN("Object Attribute")
+	{
+		GPUHelper::ObjectAttribute attribute{};
+		REQUIRE( sizeof( attribute ) == 4 ); // 반드시 4바이트여야 함.
+
+		WHEN(" Y = 0x15,  X = 0x23, Tile = 0x32, Attribute = 0 ")
+		{
+			BYTE y = 0x15;
+			BYTE x = 0x23;
+			BYTE tile = 0x32;
+			BYTE att = 0;
+
+			attribute.data[0] = y;
+			attribute.data[1] = x;
+			attribute.data[2] = tile;
+			attribute.data[3] = att;
+
+			THEN("Same to Attributes.")
+			{
+				REQUIRE( attribute.y_position == y );
+				REQUIRE( attribute.x_position == x );
+				REQUIRE( attribute.sprite_tile_number == tile );
+				REQUIRE( attribute.attributes.data == att );
 			}
 		}
 	}

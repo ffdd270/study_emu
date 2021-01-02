@@ -140,13 +140,22 @@ GPU::GPU() :
 }
 
 constexpr size_t VRAM_START_ADDRESS = 0x8000;
+constexpr size_t VRAM_END_ADDRESS = 0x9fff;
 // 0x8000~0x9fff
+
+constexpr size_t OAM_START_ADDRESS = 0xfe00;
+constexpr size_t OAM_END_ADDRESS = 0xfe9f;
+
 BYTE GPU::Get(size_t mem_addr) const
 {
-	if( mem_addr >= 0x8000 && mem_addr <= 0x9fff ) // VRAM
+	if( mem_addr >= VRAM_START_ADDRESS && mem_addr <= VRAM_END_ADDRESS ) // VRAM
 	{
 		checkAddress(mem_addr);
 		return mMemory[mSelectVRAMBank][mem_addr - VRAM_START_ADDRESS];
+	}
+	else if( mem_addr >= OAM_START_ADDRESS && mem_addr <= OAM_END_ADDRESS )
+	{
+		return mObjectAttributeMemory[mem_addr - OAM_START_ADDRESS];
 	}
 	else
 	{
@@ -157,10 +166,14 @@ BYTE GPU::Get(size_t mem_addr) const
 
 void GPU::Set(size_t mem_addr, BYTE value)
 {
-	if( mem_addr >= 0x8000 && mem_addr <= 0x9fff )
+	if( mem_addr >= VRAM_START_ADDRESS && mem_addr <= VRAM_END_ADDRESS )
 	{
 		checkAddress(mem_addr);
 		mMemory[mSelectVRAMBank][mem_addr - VRAM_START_ADDRESS] = value;
+	}
+	else if( mem_addr >= OAM_START_ADDRESS && mem_addr <= OAM_END_ADDRESS )
+	{
+		mObjectAttributeMemory[mem_addr - OAM_START_ADDRESS] = value;
 	}
 	else
 	{
@@ -735,5 +748,5 @@ BYTE GPU::toPalletIndex(BYTE only_pallet_index, BYTE color_index)
 
 WORD GPU::GetDMASource() const
 {
-	return ( static_cast<WORD>(mHDMASourceHi) << 8u );
+	return ( static_cast<WORD>(mDMASourceHi) << 8u );
 }
