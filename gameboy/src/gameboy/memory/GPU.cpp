@@ -126,14 +126,15 @@ std::array<BYTE, 8> GPUHelper::ToTileData(BYTE lo, BYTE hi)
 }
 
 GPU::GPU() :
-		mMemory( { 0 } ), mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
+	mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
 		mDots( 0 ), mScanLineY( 0 ),
 		mScrollX( 0 ), mScrollY( 0 ),
 		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
 		mHDMASourceHi( 0 ), mHDMASourceLo( 0 ),
 		mHDMADestHi( 0 ), mHDMADestLo(0 ),
 		mHDMAStatus( 0 ), mIsHDMAStart(false ),
-		mDMASourceHi( 0 ), mIsDMAStart( false )
+		mDMASourceHi( 0 ), mIsDMAStart( false ),
+		mSelectVRAMBank(0 )
 {
 
 }
@@ -145,7 +146,7 @@ BYTE GPU::Get(size_t mem_addr) const
 	if( mem_addr >= 0x8000 && mem_addr <= 0x9fff ) // VRAM
 	{
 		checkAddress(mem_addr);
-		return mMemory[mem_addr - VRAM_START_ADDRESS];
+		return mMemory[mSelectVRAMBank][mem_addr - VRAM_START_ADDRESS];
 	}
 	else
 	{
@@ -159,7 +160,7 @@ void GPU::Set(size_t mem_addr, BYTE value)
 	if( mem_addr >= 0x8000 && mem_addr <= 0x9fff )
 	{
 		checkAddress(mem_addr);
-		mMemory[mem_addr - VRAM_START_ADDRESS] = value;
+		mMemory[mSelectVRAMBank][mem_addr - VRAM_START_ADDRESS] = value;
 	}
 	else
 	{
@@ -437,6 +438,11 @@ void GPU::procInterruptsOnSet( size_t mem_addr, BYTE value )
 			mWX = value;
 			break;
 		}
+		case 0xff4f:
+		{
+			mSelectVRAMBank = ( value & 0x01u );
+			break;
+		}
 		case 0xff51:
 		{
 			mHDMASourceHi = value;
@@ -579,6 +585,10 @@ BYTE GPU::procInterruptsOnGet(size_t mem_addr) const
 		{
 			return mWX;
 		}
+		case 0xff4f: // RAM BANK
+		{
+			return ( 0xfeu ) | ( mSelectVRAMBank );
+		}
 		case 0xff51: // DMA Source Hi
 		{
 			return mHDMASourceHi;
@@ -665,7 +675,7 @@ void GPU::checkAddress(size_t mem_addr) const
 	{
 		throw std::logic_error("UNDERFLOW, ADDRESS");
 	}
-	if (result_relative_address >= mMemory.size())
+	if (result_relative_address >= mMemory[mSelectVRAMBank].size())
 	{
 		throw std::logic_error("OVERFLOW, ADDRESS.");
 	}
