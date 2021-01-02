@@ -388,6 +388,27 @@ SCENARIO("GPU", "[GPU]")
 				check_colors( gpu, gpu.GetSelectedTileAddress( gpu.Get( gpu.GetSelectBGTileMapDisplay() ) ), require_colors );
 			}
 		}
+
+		WHEN("VRAM BANK Select Test, Write Data BANK 0, 0x8000, 3. ")
+		{
+			BYTE test_byte = 3;
+			REQUIRE( gpu.Get( 0xff4f ) == 0xfe ); // 0번 뱅크.
+			gpu.Set( 0x8000, test_byte );
+
+			THEN("Bank 1, 0x8000 != 3.")
+			{
+				gpu.Set( 0xff4f, 1 ); // 1번 뱅크.
+				REQUIRE( gpu.Get( 0xff4f ) == 0xff );
+				REQUIRE( gpu.Get( 0x8000 ) != test_byte );
+			}
+
+			THEN("Bank 0, 0x8000 == 3 ")
+			{
+				gpu.Set( 0xff4f, 0 ); // 0번 뱅크.
+				REQUIRE( gpu.Get( 0xff4f ) == 0xfe );
+				REQUIRE( gpu.Get( 0x8000 ) == test_byte );
+			}
+		}
 	}
 
 	GIVEN("A Single GPU, Test NextStep")
