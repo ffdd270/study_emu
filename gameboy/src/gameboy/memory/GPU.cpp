@@ -140,6 +140,7 @@ GPU::GPU() :
 }
 
 constexpr size_t VRAM_START_ADDRESS = 0x8000;
+constexpr size_t VRAM_END_ADDRESS = 0x9fff;
 // 0x8000~0x9fff
 BYTE GPU::Get(size_t mem_addr) const
 {
@@ -157,7 +158,7 @@ BYTE GPU::Get(size_t mem_addr) const
 
 void GPU::Set(size_t mem_addr, BYTE value)
 {
-	if( mem_addr >= 0x8000 && mem_addr <= 0x9fff )
+	if( mem_addr >= VRAM_START_ADDRESS && mem_addr <= VRAM_END_ADDRESS )
 	{
 		checkAddress(mem_addr);
 		mMemory[mSelectVRAMBank][mem_addr - VRAM_START_ADDRESS] = value;
