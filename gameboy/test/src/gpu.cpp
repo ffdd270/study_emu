@@ -564,7 +564,7 @@ SCENARIO("GPU", "[GPU]")
 		}
 	}
 
-	GIVEN("BG Map Attribute")
+	GIVEN("Sprite Data Attribute")
 	{
 		GPUHelper::SpriteDataAttribute attribute {};
 		REQUIRE( sizeof( attribute ) == sizeof( BYTE ) ); // 바이트와 동일한 크기여야 함.
