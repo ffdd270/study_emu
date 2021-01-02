@@ -88,6 +88,21 @@ namespace GPUHelper
 	constexpr BYTE TileDataHeight = 8;
 
 	constexpr WORD BGMapSize = 32 * 32;  // 32개의 타일들을 32개의 열로 선택할 수 있음.
+
+	union BGMapAttribute
+	{
+		struct
+		{
+			BYTE bg_pallet_number:2;
+			BYTE tile_vram_bank_number:1;
+			BYTE not_used:1;
+			BYTE horizontal_flip:1;  // 0 -> Normal, 1 -> Mirror.
+			BYTE vertical_flip:1; // 0 Normal, 1 -> Mirror
+			BYTE bg_to_oam_priority:1; // 0 -> Use OAM priority bit, 1 -> bg priority
+		};
+
+		BYTE data;
+	};
 }
 
 
