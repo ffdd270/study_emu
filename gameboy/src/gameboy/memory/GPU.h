@@ -237,8 +237,12 @@ private:
 	size_t mDots; // 점 찍는 중..
 	size_t mScanLineY; // 스캔 라인..
 
+	// OAM
+	std::array<BYTE, 0x100> mObjectAttributeMemory {};
+
 	// 뱅크가 2개임.
 	std::array<std::array<BYTE, 0x2000>, 2> mMemory{};
+
 };
 
 
