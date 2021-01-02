@@ -301,10 +301,10 @@ SCENARIO("Use MBC1.", "[MBC]")
 				REQUIRE( cpu->GetRegisterPC().reg_16 == 0x0637 );
 			}
 
-			cpu->NextStep(); // JumpToWord 0x0430
 
 			THEN("PC = 0x0430.")
 			{
+				cpu->NextStep(); // JumpToWord 0x0430
 				REQUIRE( cpu->GetRegisterPC().reg_16 == 0x0430 );
 			}
 
