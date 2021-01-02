@@ -588,4 +588,31 @@ SCENARIO("GPU", "[GPU]")
 			}
 		}
 	}
+
+	GIVEN("Object Attribute")
+	{
+		GPUHelper::ObjectAttribute attribute{};
+		REQUIRE( sizeof( attribute ) == 4 ); // 반드시 4바이트여야 함.
+
+		WHEN(" Y = 0x15,  X = 0x23, Tile = 0x32, Attribute = 0 ")
+		{
+			BYTE y = 0x15;
+			BYTE x = 0x23;
+			BYTE tile = 0x32;
+			BYTE att = 0;
+
+			attribute.data[0] = y;
+			attribute.data[1] = x;
+			attribute.data[2] = tile;
+			attribute.data[3] = att;
+
+			THEN("Same to Attributes.")
+			{
+				REQUIRE( attribute.y_position == y );
+				REQUIRE( attribute.x_position == x );
+				REQUIRE( attribute.sprite_tile_number == tile );
+				REQUIRE( attribute.attributes.data == att );
+			}
+		}
+	}
 }
