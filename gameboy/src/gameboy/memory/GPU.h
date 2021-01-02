@@ -103,6 +103,19 @@ namespace GPUHelper
 
 		BYTE data;
 	};
+
+	union ObjectAttribute
+	{
+		struct
+		{
+			BYTE y_position; // 바이트 0
+			BYTE x_position; // 바이트 1
+			BYTE sprite_tile_number; // 바이트 2
+			SpriteDataAttribute attributes; // 바이트 3
+		};
+
+		BYTE data[4];
+	};
 }
 
 
