@@ -170,6 +170,34 @@ void hdma_check(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<MemoryManage
 	}
 }
 
+void test_bg_attribute( GPUHelper::BGMapAttribute attribute, BYTE bg_pallet_number, BYTE tile_vram_bank_number,
+						BYTE horizontal_flip, BYTE vertical_flip, BYTE bg_to_oam_priority  )
+{
+	REQUIRE( attribute.bg_pallet_number == bg_pallet_number );
+	REQUIRE( attribute.tile_vram_bank_number == tile_vram_bank_number );
+	REQUIRE( attribute.horizontal_flip == horizontal_flip );
+	REQUIRE( attribute.vertical_flip == vertical_flip );
+	REQUIRE( attribute.bg_to_oam_priority == bg_to_oam_priority );
+}
+
+
+BYTE generate_bg_map_attribute(BYTE bg_pallet_number, BYTE tile_vram_bank_number,
+							   BYTE horizontal_flip, BYTE vertical_flip, BYTE bg_to_oam_priority )
+{
+	/*
+	Bit 0-2  Background Palette number  (BGP0-7)
+	Bit 3    Tile VRAM Bank number      (0=Bank 0, 1=Bank 1)
+	Bit 4    Not used
+	Bit 5    Horizontal Flip            (0=Normal, 1=Mirror horizontally)
+	Bit 6    Vertical Flip              (0=Normal, 1=Mirror vertically)
+	Bit 7    BG-to-OAM Priority         (0=Use OAM priority bit, 1=BG Priority
+	 */
+	return static_cast<BYTE>( bg_pallet_number |
+		static_cast<BYTE>( tile_vram_bank_number << 2u ) |
+		static_cast<BYTE>( horizontal_flip << 4u ) |
+		static_cast<BYTE>( vertical_flip << 5u ) |
+		static_cast<BYTE>( bg_to_oam_priority << 6u ) );
+}
 
 
 class DummyMemory : public MemoryInterface
@@ -536,4 +564,28 @@ SCENARIO("GPU", "[GPU]")
 		}
 	}
 
+	GIVEN("BG Map Attribute")
+	{
+		GPUHelper::BGMapAttribute attribute {};
+		REQUIRE( sizeof( attribute ) == sizeof( BYTE ) ); // 바이트와 동일한 크기여야 함.
+
+		attribute.data = 0;
+		test_bg_attribute( attribute, 0, 0, 0, 0, 0 );
+
+		WHEN("Pallet = 3, Vram  = 1, horizontal flip = 0, vertical flip = 1, bg_to_oam_priority = 1")
+		{
+			BYTE pallet = 3;
+			BYTE vram_bank = 1;
+			BYTE horizontal_flip = 0;
+			BYTE vertical_flip = 1;
+			BYTE bg_to_oam_priority = 1;
+
+			attribute.data = generate_bg_map_attribute( pallet, vram_bank, horizontal_flip, vertical_flip, bg_to_oam_priority );
+
+			THEN("Check Unions.")
+			{
+				test_bg_attribute( attribute, pallet, vram_bank, horizontal_flip, vertical_flip, bg_to_oam_priority );
+			}
+		}
+	}
 }
