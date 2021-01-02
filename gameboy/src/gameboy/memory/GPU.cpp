@@ -748,5 +748,5 @@ BYTE GPU::toPalletIndex(BYTE only_pallet_index, BYTE color_index)
 
 WORD GPU::GetDMASource() const
 {
-	return ( static_cast<WORD>(mHDMASourceHi) << 8u );
+	return ( static_cast<WORD>(mDMASourceHi) << 8u );
 }
