@@ -42,3 +42,10 @@ gameboy/out
 gameboy/builds
 harucar/builds
 gameboy/test/out
+gameboy/CMakeFiles
+gameboy/cmake-build-x64_debug
+gameboy/gameboy
+gameboy/gb_test
+gameboy/.DS_Store
+*.ini
+.DS_Store
