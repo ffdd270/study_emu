@@ -18,7 +18,7 @@ inline void SetBit( BYTE & origin, BYTE bit_pos )
 
 inline void OffBit( BYTE & origin, BYTE bit_pos )
 {
-	origin & ( 0xFFu ^ ( 0b1u << bit_pos ) );
+	origin = origin & ( 0xFFu ^ ( 0b1u << bit_pos ) );
 }
 
 
