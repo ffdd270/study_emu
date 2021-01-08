@@ -208,6 +208,8 @@ void GPU::ResolveInterrupt(WORD resolve_interrupt_address)
 
 void GPU::NextStep(size_t clock)
 {
+	disableHBlank();
+
 	// 1 Cycle = 4 Clock, 114 Cycle = 456 Dots = One Line.
 	// Line == LY
 
@@ -264,6 +266,31 @@ void GPU::NextStep(size_t clock)
 
 			setLCDMode(1);
 			enableVBlank();
+		}
+		else if ( mDots <= 80 ) // Searching Object / OAM 접근 불가.
+		{
+			if ( GetModeFlag() == 2 )
+			{
+				continue;
+			}
+
+			setLCDMode( 2 );
+		}
+		else if( mDots <= 80 + 172 ) // Drawing, VRAM / OAM 접근 불가.
+		{
+			setLCDMode( 3 );
+		}
+		else if( mDots > 80 + 172 ) // HBLANK
+		{
+			if ( GetModeFlag() == 0  )
+			{
+				continue; // 계속.
+			}
+
+			setLCDMode( 0 );
+			enableHBlank();
+
+			// TODO : 이제 실제로 그리면 됨.
 		}
 	}
 }
@@ -702,6 +729,16 @@ void GPU::enableVBlank()
 void GPU::disableVBlank()
 {
 	OffBit(mLCDStatusRegister, 4 );
+}
+
+void GPU::enableHBlank()
+{
+	SetBit( mLCDStatusRegister, 3 );
+}
+
+void GPU::disableHBlank()
+{
+	OffBit( mLCDStatusRegister, 3 );
 }
 
 void GPU::setCoincidenceInterrupt(bool value)
