@@ -637,15 +637,18 @@ TEST_CASE("GPU / LCD MODE start to end")
 	REQUIRE( gpu.GetModeFlag() == 3 );
 
 	gpu.NextStep( 172 );
-	REQUIRE( gpu.GetModeFlag() == 0 ); // H-VLANK
-
-	std::cout << "gpu.IsEnableMode0HBlankInterrupt()" << " " << gpu.IsEnableMode0HBlankInterrupt() << std::endl;
+	REQUIRE( gpu.GetModeFlag() == 0 ); // H-BLANK 시작.
 	REQUIRE( gpu.IsEnableMode0HBlankInterrupt() );
 
-	gpu.NextStep( 87 );
-	REQUIRE( gpu.GetModeFlag() == 2 );
-	std::cout << "gpu.IsEnableMode0HBlankInterrupt()" << " " << gpu.IsEnableMode0HBlankInterrupt() << std::endl;
-	REQUIRE_FALSE( gpu.IsEnableMode0HBlankInterrupt() );
+	gpu.NextStep( 204 ); // H-BLANK 종료.
+	REQUIRE( gpu.GetModeFlag() == 2 ); // 다시 처음으로.
+
+	// 이미 스캔라인 한번은 돌았으니까, 143번만 돌린다.
+	gpu.NextStep(  (MAX_SCANLINE - 1 )  * ONE_LINE_DRAW_CLOCK );
+	REQUIRE( gpu.GetModeFlag() == 1 );
+
+	gpu.NextStep( (RE_INITED_SCANLINE - MAX_SCANLINE + 1) * ONE_LINE_DRAW_CLOCK ); // V-BLANK 시간을 끝까지 돌리고,. 다시 1번 라인 드로우 시작.
+	REQUIRE( gpu.GetModeFlag() == 2 );  // 이제 다시 처음으로
 
 
 }
