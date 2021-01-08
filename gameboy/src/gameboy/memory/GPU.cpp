@@ -718,7 +718,7 @@ void GPU::setCoincidenceInterrupt(bool value)
 
 void GPU::setLCDMode(BYTE mode)
 {
-	mLCDStatusRegister |= mode;
+	mLCDStatusRegister = ( mLCDStatusRegister & 0xfc ) | mode;
 }
 
 void GPU::autoIncrementPalletIndex(BYTE &pallet_index)
