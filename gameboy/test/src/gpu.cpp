@@ -620,3 +620,45 @@ SCENARIO("GPU", "[GPU]")
 		}
 	}
 }
+
+
+// LCD MODE 버그 터진거 검증용.
+TEST_CASE("GPU / LCD MODE start to end")
+{
+	GPU gpu;
+	constexpr size_t ONE_LINE_DRAW_CLOCK = 456;
+	constexpr size_t MAX_SCANLINE = 144;
+	constexpr size_t RE_INITED_SCANLINE = 153;
+
+	// 라인 검증용 LY
+	gpu.Set( 0xff41, 0b1u << 6u ); // Set Enable LY Coincidence Interrupt BIT 6.
+	REQUIRE( gpu.IsEnableLYCoincidenceInterrupt() );
+
+	gpu.NextStep( 1 );;
+	REQUIRE( gpu.GetModeFlag() == 2 );
+
+	gpu.NextStep( 80 );
+	REQUIRE( gpu.GetModeFlag() == 3 );
+
+	gpu.NextStep( 172 );
+	REQUIRE( gpu.GetModeFlag() == 0 ); // H-BLANK 시작.
+	REQUIRE( gpu.IsEnableMode0HBlankInterrupt() );
+
+	// 이제 다음 라인이겠지? LY Set.
+	gpu.Set( 0xff45, 1 );
+	gpu.NextStep( 204 ); // H-BLANK 종료.
+	REQUIRE( gpu.GetModeFlag() == 2 ); // 다시 처음으로.
+	REQUIRE( gpu.IsCoincidence() );
+
+	// 이미 스캔라인 한번은 돌았으니까, 143번만 돌린다. 그러면 144 라인이겠지?
+	gpu.Set( 0xff45, 144 );
+	gpu.NextStep(  (MAX_SCANLINE - 1 )  * ONE_LINE_DRAW_CLOCK );
+	REQUIRE( gpu.GetModeFlag() == 1 );
+	REQUIRE( gpu.IsCoincidence() );
+
+	// 이건 부정검사. 실제로는 1번임.
+	gpu.Set( 0xff45, 155 );
+	gpu.NextStep( (RE_INITED_SCANLINE - MAX_SCANLINE + 1) * ONE_LINE_DRAW_CLOCK ); // V-BLANK 시간을 끝까지 돌리고,. 다시 1번 라인 드로우 시작.
+	REQUIRE( gpu.GetModeFlag() == 2 );  // 이제 다시 처음으로
+	REQUIRE_FALSE( gpu.IsCoincidence() );
+}

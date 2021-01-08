@@ -18,7 +18,7 @@ inline void SetBit( BYTE & origin, BYTE bit_pos )
 
 inline void OffBit( BYTE & origin, BYTE bit_pos )
 {
-	origin & ( 0xFFu ^ ( 0b1u << bit_pos ) );
+	origin = origin & ( 0xFFu ^ ( 0b1u << bit_pos ) );
 }
 
 
@@ -208,6 +208,8 @@ void GPU::ResolveInterrupt(WORD resolve_interrupt_address)
 
 void GPU::NextStep(size_t clock)
 {
+	disableHBlank();
+
 	// 1 Cycle = 4 Clock, 114 Cycle = 456 Dots = One Line.
 	// Line == LY
 
@@ -223,7 +225,7 @@ void GPU::NextStep(size_t clock)
 
 	// LY가 144가 넘어가면 v-blank가 올라간다.
 
-	int loop_target = (static_cast<int>( clock - 1 ) / 80 ) + 1; // 왜 80인가? 라고 물으면..
+	int loop_target = (static_cast<int>( clock ) / 80 ) + 1; // 왜 80인가? 라고 물으면..
 	// 현대 컴퓨터에서 이걸 일일히 다 따라하기보단, 그냥 모드 전환만 적당히 되면 되서 그런 거 아닐까?
 	// 그럼 더 큰값은 안 되냐고 생각할 지도 모르겠지만. 모드 2의 유지 기간이 80이라서. 80으로 해야 모든 모드들에 진입할 수 있다.
 
@@ -233,7 +235,7 @@ void GPU::NextStep(size_t clock)
 
 	for( int i = 0; i < loop_target; i++ )
 	{
-		if ( i == ( clock - 1 ) ) // 마지막이면 80의 나머지 숫자를.
+		if ( i == (loop_target - 1 ) ) // 마지막이면 80의 나머지 숫자를.
 		{
 			mDots += clock % 80;
 		}
@@ -242,10 +244,10 @@ void GPU::NextStep(size_t clock)
 			mDots += 80;
 		}
 
-		size_t prv_bots = mDots;
+		size_t prv_dots = mDots;
 		mDots = mDots % LINE_PER_DOTS;
 
-		if ( prv_bots != mDots ) // 이게 다르다는 게 무슨 뜻이냐면, 라인이 넘어갔다는 뜻이다.
+		if ( prv_dots != mDots ) // 이게 다르다는 게 무슨 뜻이냐면, 라인이 넘어갔다는 뜻이다.
 		{
 			mScanLineY = ( mScanLineY + 1 ) % MAX_SCANLINE; // 스캔라인은 154까지 있다.
 
@@ -264,6 +266,31 @@ void GPU::NextStep(size_t clock)
 
 			setLCDMode(1);
 			enableVBlank();
+		}
+		else if ( mDots <= 80 ) // Searching Object / OAM 접근 불가.
+		{
+			if ( GetModeFlag() == 2 )
+			{
+				continue;
+			}
+
+			setLCDMode( 2 );
+		}
+		else if( mDots <= 80 + 172 ) // Drawing, VRAM / OAM 접근 불가.
+		{
+			setLCDMode( 3 );
+		}
+		else if( mDots > 80 + 172 ) // HBLANK
+		{
+			if ( GetModeFlag() == 0  )
+			{
+				continue; // 계속.
+			}
+
+			setLCDMode( 0 );
+			enableHBlank();
+
+			// TODO : 이제 실제로 그리면 됨.
 		}
 	}
 }
@@ -704,6 +731,16 @@ void GPU::disableVBlank()
 	OffBit(mLCDStatusRegister, 4 );
 }
 
+void GPU::enableHBlank()
+{
+	SetBit( mLCDStatusRegister, 3 );
+}
+
+void GPU::disableHBlank()
+{
+	OffBit( mLCDStatusRegister, 3 );
+}
+
 void GPU::setCoincidenceInterrupt(bool value)
 {
 	if ( value )
@@ -718,7 +755,7 @@ void GPU::setCoincidenceInterrupt(bool value)
 
 void GPU::setLCDMode(BYTE mode)
 {
-	mLCDStatusRegister |= mode;
+	mLCDStatusRegister = ( mLCDStatusRegister & 0xfc ) | mode;
 }
 
 void GPU::autoIncrementPalletIndex(BYTE &pallet_index)

@@ -185,6 +185,9 @@ private:
 	// 마더보드는 이걸 접근 가능함.
 	void disableVBlank();
 
+	void enableHBlank();
+	void disableHBlank();
+
 	void setCoincidenceInterrupt(bool value );
 
 	void setLCDMode( BYTE mode );
