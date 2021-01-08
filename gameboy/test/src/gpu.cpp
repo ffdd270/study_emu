@@ -620,3 +620,32 @@ SCENARIO("GPU", "[GPU]")
 		}
 	}
 }
+
+
+// LCD MODE 버그 터진거 검증용.
+TEST_CASE("GPU / LCD MODE start to end")
+{
+	GPU gpu;
+	constexpr size_t ONE_LINE_DRAW_CLOCK = 456;
+	constexpr size_t MAX_SCANLINE = 144;
+	constexpr size_t RE_INITED_SCANLINE = 153;
+
+	gpu.NextStep( 1 );
+	REQUIRE( gpu.GetModeFlag() == 2 );
+
+	gpu.NextStep( 80 );
+	REQUIRE( gpu.GetModeFlag() == 3 );
+
+	gpu.NextStep( 172 );
+	REQUIRE( gpu.GetModeFlag() == 0 ); // H-VLANK
+
+	std::cout << "gpu.IsEnableMode0HBlankInterrupt()" << " " << gpu.IsEnableMode0HBlankInterrupt() << std::endl;
+	REQUIRE( gpu.IsEnableMode0HBlankInterrupt() );
+
+	gpu.NextStep( 87 );
+	REQUIRE( gpu.GetModeFlag() == 2 );
+	std::cout << "gpu.IsEnableMode0HBlankInterrupt()" << " " << gpu.IsEnableMode0HBlankInterrupt() << std::endl;
+	REQUIRE_FALSE( gpu.IsEnableMode0HBlankInterrupt() );
+
+
+}
