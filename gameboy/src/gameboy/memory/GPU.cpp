@@ -758,6 +758,31 @@ void GPU::setLCDMode(BYTE mode)
 	mLCDStatusRegister = ( mLCDStatusRegister & 0xfc ) | mode;
 }
 
+void GPU::setRgb(GPUHelper::ColorPallet pallet, BYTE x)
+{
+	mColorScreen[mScanLineY][x] = pallet;
+}
+
+void GPU::drawBackground()
+{
+	// -7 뺴는 것이 국룰.
+	BYTE window_x = mWX - 7;
+	BYTE window_y = mWY;
+	
+	for ( int i = 0; i < GPUHelper::ScreenWidth; i++ )
+	{
+		WORD base_tile_map  = 0x9800u;
+
+		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && i > window_x ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
+				( GetSelectedWindowTileMap() == 0x9C00u && i <= window_x ) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례입ㅁ.
+		{
+			base_tile_map = 0x9C00u;
+		}
+		// TODO : 좌표 패쳐 작성
+	}
+
+}
+
 void GPU::autoIncrementPalletIndex(BYTE &pallet_index)
 {
 	bool auto_increment = ( pallet_index & 0b10000000u ) == 0b10000000u;
@@ -787,3 +812,4 @@ WORD GPU::GetDMASource() const
 {
 	return ( static_cast<WORD>(mDMASourceHi) << 8u );
 }
+
