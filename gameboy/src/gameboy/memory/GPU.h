@@ -86,6 +86,8 @@ namespace GPUHelper
 	constexpr BYTE TileDataOneLineSize = 2;
 	constexpr BYTE TileDataWidth = 8;
 	constexpr BYTE TileDataHeight = 8;
+	constexpr BYTE ScreenWidth = 160;
+	constexpr BYTE ScreenHeight = 144;
 
 	constexpr WORD BGMapSize = 32 * 32;  // 32개의 타일들을 32개의 열로 선택할 수 있음.
 
@@ -191,6 +193,8 @@ private:
 	void setCoincidenceInterrupt(bool value );
 
 	void setLCDMode( BYTE mode );
+	void setRgb( GPUHelper::ColorPallet pallet, BYTE x );
+	void drawBackground();
 
 	static void autoIncrementPalletIndex(BYTE & pallet_index);
 
@@ -198,8 +202,6 @@ private:
 	static BYTE toOnlyPalletIndex( BYTE pallet_index );
 	static BYTE toColorIndex( BYTE only_pallet_index );
 	static BYTE toPalletIndex( BYTE only_pallet_index, BYTE color_index );
-
-
 private:
 	BYTE mLCDControlRegister;
 	BYTE mLCDStatusRegister;
@@ -259,6 +261,8 @@ private:
 	// 뱅크가 2개임.
 	std::array<std::array<BYTE, 0x2000>, 2> mMemory{};
 
+	// 실제 스크린.
+	std::array<std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>, GPUHelper::ScreenHeight> mColorScreen;
 };
 
 
