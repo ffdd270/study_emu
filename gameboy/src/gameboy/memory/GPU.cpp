@@ -768,17 +768,21 @@ void GPU::drawBackground()
 	// -7 뺴는 것이 국룰.
 	BYTE window_x = mWX - 7;
 	BYTE window_y = mWY;
-	
+
+	bool window_enable = IsWindowDisplayEnable() && mScanLineY >= window_y; // 현재 스캔 라인이 윈도우보다 크면
+
 	for ( int i = 0; i < GPUHelper::ScreenWidth; i++ )
 	{
 		WORD base_tile_map  = 0x9800u;
 
-		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && i > window_x ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
-				( GetSelectedWindowTileMap() == 0x9C00u && i <= window_x ) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례입ㅁ.
+		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && ( i > window_x || !window_enable ) ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
+				( GetSelectedWindowTileMap() == 0x9C00u && i <= window_x && window_enable ) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례임.
 		{
 			base_tile_map = 0x9C00u;
 		}
 		// TODO : 좌표 패쳐 작성
+
+
 	}
 
 }
