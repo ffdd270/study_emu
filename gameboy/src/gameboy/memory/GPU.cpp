@@ -769,6 +769,10 @@ void GPU::drawBackground()
 	BYTE window_x = mWX - 7;
 	BYTE window_y = mWY;
 
+	// W 좌표 계산
+	BYTE pixel_y = mScrollY + mScanLineY;
+	BYTE tile_y = ( pixel_y - ( pixel_y % 8 ) ) / 8;
+
 	bool window_enable = IsWindowDisplayEnable() && mScanLineY >= window_y; // 현재 스캔 라인이 윈도우보다 크면
 
 	for ( int i = 0; i < GPUHelper::ScreenWidth; i++ )
@@ -780,8 +784,14 @@ void GPU::drawBackground()
 		{
 			base_tile_map = 0x9C00u;
 		}
-		// TODO : 좌표 패쳐 작성
 
+		BYTE pixel_x = mScrollX + i;
+		// 256x256 ->  32 x 32
+		// 8을 버리고, 8을 나눠서 0~32로.
+		BYTE tile_x = ( pixel_x - ( pixel_x % 8 ) ) / 8;
+
+		// [WIP] 이게 타일이다. 
+		mMemory[ mSelectVRAMBank ][ base_tile_map + tile_x ];
 
 	}
 
