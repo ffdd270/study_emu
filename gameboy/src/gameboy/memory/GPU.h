@@ -123,6 +123,9 @@ namespace GPUHelper
 using ColorScreenLine = std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>;
 using ColorScreenBits = std::array<ColorScreenLine, GPUHelper::ScreenHeight>;
 
+using MonoScreenLine = std::array<GPUHelper::MonoPallet, GPUHelper::ScreenWidth>;
+using MonoScreenBits = std::array<MonoScreenLine, GPUHelper::ScreenHeight>;
+
 
 // Video RAM
 // 0x8000~0x9fff
@@ -176,6 +179,7 @@ public:
 	void SetRemainHDMA(BYTE remain );
 
 	[[nodiscard]] const ColorScreenBits * GetColorScreenData() const;
+	[[nodiscard]] const MonoScreenBits *  GetMonoScreenData() const;
 
 	// 타일 시작 주소 리턴.
 	// 타일은 8*8임.
@@ -267,6 +271,9 @@ private:
 	std::array<std::array<BYTE, 0x2000>, 2> mMemory{};
 
 	// 실제 스크린.
+	// 모노 게임 보이
+	MonoScreenBits mMonoScreen;
+
 	// 컬러 게임 보이
 	ColorScreenBits mColorScreen;
 };
