@@ -46,7 +46,7 @@ public:
 
 	void renderColor()
 	{
-		const ColorScreenBits * ptr_bits = gpu.GetScreenData();
+		const ColorScreenBits * ptr_bits = gpu.GetColorScreenData();
 		const ColorScreenBits & ref_bits = (*ptr_bits);
 
 		// 이게 Draw 로직임.
