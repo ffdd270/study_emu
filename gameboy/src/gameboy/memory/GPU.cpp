@@ -136,6 +136,15 @@ GPU::GPU() :
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
 		mSelectVRAMBank(0 )
 {
+	for( std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth> & line : mColorScreen )
+	{
+		for( GPUHelper::ColorPallet & pallet : line )
+		{
+			pallet.SetLo( 0x7f );
+			pallet.SetHi( 0x7f );
+		}
+	}
+
 
 }
 
@@ -805,7 +814,7 @@ void GPU::drawBackground()
 													   mMemory[ mSelectVRAMBank ][ tile_addr + 1 ] );
 
 		// 일단 모노만 짜놓고 생각하자
-		pallets[pixel_x % 8]
+		//pallets[pixel_x % 8]
 
 
 	}
@@ -840,5 +849,10 @@ BYTE GPU::toPalletIndex(BYTE only_pallet_index, BYTE color_index)
 WORD GPU::GetDMASource() const
 {
 	return ( static_cast<WORD>(mDMASourceHi) << 8u );
+}
+
+const ColorScreenBits *GPU::GetScreenData() const
+{
+	return &mColorScreen;
 }
 

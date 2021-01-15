@@ -121,6 +121,8 @@ namespace GPUHelper
 }
 
 
+using ColorScreenBits = std::array<std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>, GPUHelper::ScreenHeight>;
+
 // Video RAM
 // 0x8000~0x9fff
 class GPU final : public MemoryInterface
@@ -171,6 +173,8 @@ public:
 
 	void SetHDMAAddresses( WORD source, WORD dest );
 	void SetRemainHDMA(BYTE remain );
+
+	[[nodiscard]] const ColorScreenBits * GetScreenData() const;
 
 	// 타일 시작 주소 리턴.
 	// 타일은 8*8임.
