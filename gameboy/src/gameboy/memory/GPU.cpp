@@ -136,6 +136,15 @@ GPU::GPU() :
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
 		mSelectVRAMBank(0 )
 {
+	for( std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth> & line : mColorScreen )
+	{
+		for( GPUHelper::ColorPallet & pallet : line )
+		{
+			pallet.SetLo( 0x7f );
+			pallet.SetHi( 0x7f );
+		}
+	}
+
 
 }
 
@@ -771,6 +780,8 @@ void GPU::drawBackground()
 
 	// W 좌표 계산
 	BYTE pixel_y = mScrollY + mScanLineY;
+
+	// 0~31로 사상됨
 	BYTE tile_y = ( pixel_y - ( pixel_y % 8 ) ) / 8;
 
 	bool window_enable = IsWindowDisplayEnable() && mScanLineY >= window_y; // 현재 스캔 라인이 윈도우보다 크면
@@ -790,8 +801,21 @@ void GPU::drawBackground()
 		// 8을 버리고, 8을 나눠서 0~32로.
 		BYTE tile_x = ( pixel_x - ( pixel_x % 8 ) ) / 8;
 
-		// [WIP] 이게 타일이다. 
-		mMemory[ mSelectVRAMBank ][ base_tile_map + tile_x ];
+		/* 2바이트 == 8 비트만큼 Width, BG는 아래와 같이 되어있음.
+		 * [0]  ( 2바이트 ) * 16 [31]
+		 * [32] ( 2바이트 ) * 16 [63]
+		 * ....
+		 */
+
+		BYTE tile_index = mMemory[ mSelectVRAMBank ][ base_tile_map + tile_x + ( tile_y * 32 ) ];
+		WORD tile_addr = GetSelectedTileAddress( tile_index );
+
+		std::array<BYTE, 8> pallets = GPUHelper::ToTileData( mMemory[ mSelectVRAMBank ][ tile_addr  ],
+													   mMemory[ mSelectVRAMBank ][ tile_addr + 1 ] );
+
+		// 일단 모노만 짜놓고 생각하자
+		//pallets[pixel_x % 8]
+
 
 	}
 
@@ -825,5 +849,10 @@ BYTE GPU::toPalletIndex(BYTE only_pallet_index, BYTE color_index)
 WORD GPU::GetDMASource() const
 {
 	return ( static_cast<WORD>(mDMASourceHi) << 8u );
+}
+
+const ColorScreenBits *GPU::GetScreenData() const
+{
+	return &mColorScreen;
 }
 
