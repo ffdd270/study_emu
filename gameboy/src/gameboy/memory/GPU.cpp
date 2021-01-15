@@ -136,7 +136,7 @@ GPU::GPU() :
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
 		mSelectVRAMBank(0 )
 {
-	for( std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth> & line : mColorScreen )
+	for(ColorScreenLine & line : mColorScreen )
 	{
 		for( GPUHelper::ColorPallet & pallet : line )
 		{
@@ -851,7 +851,12 @@ WORD GPU::GetDMASource() const
 	return ( static_cast<WORD>(mDMASourceHi) << 8u );
 }
 
-const ColorScreenBits *GPU::GetScreenData() const
+const MonoScreenBits *GPU::GetMonoScreenData() const
+{
+	return &mMonoScreen;
+}
+
+const ColorScreenBits *GPU::GetColorScreenData() const
 {
 	return &mColorScreen;
 }
