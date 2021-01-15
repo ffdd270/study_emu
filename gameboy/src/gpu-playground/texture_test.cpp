@@ -40,6 +40,23 @@ public:
 	{
 		mTexture.create( GPUHelper::ScreenWidth, GPUHelper::ScreenHeight );
 		mPixels.fill( 255 );
+
+		// 타일 맵
+		WORD tile_map_start = gpu.GetSelectBGTileMapDisplay();
+
+		// BG 타일 맵은 32 * 32다. 개당 8비트를 표현하는 타일맵이니 256*256이 됨.
+		for ( int i = 0; i < 32 * 32; i++ )
+		{
+			gpu.Set( tile_map_start + i, 0 ); // 1번 타일
+		}
+
+		// 타일이 실제로 있는 곳
+		WORD tile_data_start = gpu.GetSelectBGAndWindowTileData();
+
+		for ( int i = 0; i < TILE_TEST_DATA.size(); i++ )
+		{
+			gpu.Set( tile_data_start + i, TILE_TEST_DATA[i] ); // 이게 1번 타일
+		}
 	}
 
 	using Pixels = std::array< BYTE, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
