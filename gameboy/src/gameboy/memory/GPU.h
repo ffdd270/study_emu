@@ -267,7 +267,8 @@ private:
 	std::array<std::array<BYTE, 0x2000>, 2> mMemory{};
 
 	// 실제 스크린.
-	std::array<std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>, GPUHelper::ScreenHeight> mColorScreen;
+	// 컬러 게임 보이
+	ColorScreenBits mColorScreen;
 };
 
 
