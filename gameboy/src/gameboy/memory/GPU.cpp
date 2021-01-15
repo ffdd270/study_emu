@@ -136,6 +136,15 @@ GPU::GPU() :
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
 		mSelectVRAMBank(0 )
 {
+	for(ColorScreenLine & line : mColorScreen )
+	{
+		for( GPUHelper::ColorPallet & pallet : line )
+		{
+			pallet.SetLo( 0x7f );
+			pallet.SetHi( 0x7f );
+		}
+	}
+
 
 }
 
@@ -768,17 +777,46 @@ void GPU::drawBackground()
 	// -7 뺴는 것이 국룰.
 	BYTE window_x = mWX - 7;
 	BYTE window_y = mWY;
-	
+
+	// W 좌표 계산
+	BYTE pixel_y = mScrollY + mScanLineY;
+
+	// 0~31로 사상됨
+	BYTE tile_y = ( pixel_y - ( pixel_y % 8 ) ) / 8;
+
+	bool window_enable = IsWindowDisplayEnable() && mScanLineY >= window_y; // 현재 스캔 라인이 윈도우보다 크면
+
 	for ( int i = 0; i < GPUHelper::ScreenWidth; i++ )
 	{
 		WORD base_tile_map  = 0x9800u;
 
-		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && i > window_x ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
-				( GetSelectedWindowTileMap() == 0x9C00u && i <= window_x ) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례입ㅁ.
+		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && ( i > window_x || !window_enable ) ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
+				( GetSelectedWindowTileMap() == 0x9C00u && i <= window_x && window_enable ) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례임.
 		{
 			base_tile_map = 0x9C00u;
 		}
-		// TODO : 좌표 패쳐 작성
+
+		BYTE pixel_x = mScrollX + i;
+		// 256x256 ->  32 x 32
+		// 8을 버리고, 8을 나눠서 0~32로.
+		BYTE tile_x = ( pixel_x - ( pixel_x % 8 ) ) / 8;
+
+		/* 2바이트 == 8 비트만큼 Width, BG는 아래와 같이 되어있음.
+		 * [0]  ( 2바이트 ) * 16 [31]
+		 * [32] ( 2바이트 ) * 16 [63]
+		 * ....
+		 */
+
+		BYTE tile_index = mMemory[ mSelectVRAMBank ][ base_tile_map + tile_x + ( tile_y * 32 ) ];
+		WORD tile_addr = GetSelectedTileAddress( tile_index );
+
+		std::array<BYTE, 8> pallets = GPUHelper::ToTileData( mMemory[ mSelectVRAMBank ][ tile_addr  ],
+													   mMemory[ mSelectVRAMBank ][ tile_addr + 1 ] );
+
+		// 일단 모노만 짜놓고 생각하자
+		//pallets[pixel_x % 8]
+
+
 	}
 
 }
@@ -811,5 +849,15 @@ BYTE GPU::toPalletIndex(BYTE only_pallet_index, BYTE color_index)
 WORD GPU::GetDMASource() const
 {
 	return ( static_cast<WORD>(mDMASourceHi) << 8u );
+}
+
+const MonoScreenBits *GPU::GetMonoScreenData() const
+{
+	return &mMonoScreen;
+}
+
+const ColorScreenBits *GPU::GetColorScreenData() const
+{
+	return &mColorScreen;
 }
 
