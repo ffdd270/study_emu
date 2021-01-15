@@ -6,6 +6,32 @@
 #include <SFML/OpenGL.hpp>
 #include <memory/GPU.h>
 
+// https://www.huderlem.com/demos/gameboy2bpp.html  여기 최하단에 있는 걸로 만든
+// CGB 기준으로
+// 1 => LIGHT_GRAY 8.
+// 2 => DARK_GRAY 8,
+// 3 => WHITE 8
+// 4 => BLACK 8
+// 5 => LIGHT_GRAY 4, BLACK_GRAY 4
+// 6 => BLACK_GRAY 4, LIGHT_GRAY 4
+// 7 => LIGHT_GRAY 4, BLACK GRAY 4
+// 8 => WHITE 4, BLACK 4
+
+constexpr std::array< BYTE, 16 > TILE_TEST_DATA = {0xFF, 0x00,
+												   0x00, 0xFF,
+												   0x00, 0x00,
+												   0xFF, 0xFF,
+												   0xF0, 0x0F,
+												   0x0F, 0xF0,
+												   0xF0, 0x0F,
+												   0x0F, 0x0F};
+
+constexpr std::array< std::array< BYTE, 3 >, 4 > MONO_RGB_VALUE ={
+		std::array<BYTE, 3>({ 8, 24, 32 }),
+		std::array<BYTE, 3>({ 52, 104, 86 }),
+		std::array<BYTE, 3>({ 136, 192, 112 }),
+		std::array<BYTE, 3>({ 224, 248, 208 }),
+};
 
 class TextureTest
 {
@@ -14,17 +40,12 @@ public:
 	{
 		mTexture.create( GPUHelper::ScreenWidth, GPUHelper::ScreenHeight );
 		mPixels.fill( 255 );
-
 	}
 
-	using Pixels = std::array< UINT8, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
-	using ScreenLine = std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>;
+	using Pixels = std::array< BYTE, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
 
-	void render()
+	void renderColor()
 	{
-		gpu.NextStep( 1 );
-
-
 		const ColorScreenBits * ptr_bits = gpu.GetScreenData();
 		const ColorScreenBits & ref_bits = (*ptr_bits);
 
@@ -44,7 +65,16 @@ public:
 				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 3 ] = 255;
 			}
 		}
+	}
 
+	void renderMono( )
+	{
+
+	}
+
+	void render()
+	{
+		gpu.NextStep( 1 );
 		mTexture.update( mPixels.data() );
 	}
 
