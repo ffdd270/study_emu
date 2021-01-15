@@ -1,17 +1,19 @@
 #include <iostream>
 #include <fstream>
 
-#include "imgui.h"
-#include "imgui-SFML.h"
 
 #include "common/common_logger.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
+#include "imgui.h"
+#include "imgui-SFML.h"
+
 #include "util/util_string.h"
 #include "gameboy/GameboyCPU.h"
 #include "gameboy/GameboyCPUBroker.h"
 
+#include "gpu-playground/texture_test.h"
 #include "cpu/cpu_viewer.h"
 #include "harucar/LuaCommandViewer.h"
 
@@ -165,7 +167,6 @@ int main()
 	gameboy_lua_binding_imgui_handler( handler_ptr );
 
 	loadLuaFiles( *lua_context_ptr );
-
 	sf::RenderWindow window(sf::VideoMode(640, 480), "Gameboy");
 	window.setFramerateLimit(60);
 	ImGui::SFML::Init(window);
@@ -208,6 +209,9 @@ int main()
 
 		InputEvents(cpu_ptr, broker, *lua_context_ptr, editor,
 			  input_buffer_ptr, provider_ptr, protocol_ptr, logger_ptr, handler_ptr ) ;
+
+
+		texture_test();
 
 		window.clear();
 		ImGui::SFML::Render(window);

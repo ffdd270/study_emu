@@ -100,6 +100,10 @@ set( UI_SRC
 		${SRC_PATH}/harucar/LuaCommandViewer.h
 		)
 
+set( SFML_USE_SRC
+		src/main.cpp
+		src/gpu-playground/texture_test.h
+		src/gpu-playground/texture_test.cpp)
 
 set( COLOR_TEXT_EDIT
 		external/color_text_edit/TextEditor.cpp
@@ -112,5 +116,5 @@ endif()
 
 
 add_subdirectory(test)
-add_executable(gameboy src/main.cpp ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} ${COLOR_TEXT_EDIT} ${UI_SRC} )
+add_executable(gameboy  ${SFML_USE_SRC} ${IMGUI} ${IMGUI_SFML} ${GAMEBOY_SRC} ${COLOR_TEXT_EDIT} ${UI_SRC} )
 target_link_libraries(gameboy PRIVATE sfml-graphics ${PLATFORM_LIBRARY} ${HARUCAR_LIB} ${LUA_LIBRARIES})
