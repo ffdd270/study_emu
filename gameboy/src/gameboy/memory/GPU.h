@@ -120,8 +120,9 @@ namespace GPUHelper
 	};
 }
 
+using ColorScreenLine = std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>;
+using ColorScreenBits = std::array<ColorScreenLine, GPUHelper::ScreenHeight>;
 
-using ColorScreenBits = std::array<std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>, GPUHelper::ScreenHeight>;
 
 // Video RAM
 // 0x8000~0x9fff

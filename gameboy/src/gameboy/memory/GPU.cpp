@@ -136,7 +136,7 @@ GPU::GPU() :
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
 		mSelectVRAMBank(0 )
 {
-	for( std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth> & line : mColorScreen )
+	for(ColorScreenLine & line : mColorScreen )
 	{
 		for( GPUHelper::ColorPallet & pallet : line )
 		{
