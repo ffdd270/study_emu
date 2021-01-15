@@ -175,7 +175,7 @@ public:
 	void SetHDMAAddresses( WORD source, WORD dest );
 	void SetRemainHDMA(BYTE remain );
 
-	[[nodiscard]] const ColorScreenBits * GetScreenData() const;
+	[[nodiscard]] const ColorScreenBits * GetColorScreenData() const;
 
 	// 타일 시작 주소 리턴.
 	// 타일은 8*8임.

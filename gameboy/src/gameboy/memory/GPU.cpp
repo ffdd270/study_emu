@@ -851,7 +851,7 @@ WORD GPU::GetDMASource() const
 	return ( static_cast<WORD>(mDMASourceHi) << 8u );
 }
 
-const ColorScreenBits *GPU::GetScreenData() const
+const ColorScreenBits *GPU::GetColorScreenData() const
 {
 	return &mColorScreen;
 }
