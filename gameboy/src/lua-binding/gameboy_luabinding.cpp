@@ -11,12 +11,14 @@
 #include "GameboyCPU.h"
 #include "LuaImGuiHandler.h"
 #include "LuaBridge/Vector.h"
+#include "memory/GPU.h"
 
 #include <common/common_logger.h>
 
 static std::shared_ptr<LuaImGuiHandler> StaticLuaImGuiHandler = nullptr;
 static std::shared_ptr<HaruCar::Common::Log::Logger> StaticLuaLoggerInstance = nullptr;
 static std::shared_ptr<GameboyCPU> StaticGameboyCPUInstance = nullptr;
+static std::shared_ptr<GPU> StaticGPUInstance = nullptr;
 
 void gameboy_lua_binding_imgui_handler(std::shared_ptr<LuaImGuiHandler> & ref_ptr_handler)
 {
@@ -33,6 +35,13 @@ void gameboy_lua_binding_cpu(std::shared_ptr<GameboyCPU> cpu)
 	StaticGameboyCPUInstance = std::move(cpu);
 }
 
+
+void gameboy_lua_binding_gpu(std::shared_ptr<GPU> gpu)
+{
+	StaticGPUInstance = std::move(gpu);
+}
+
+
 HaruCar::Common::Log::Logger * GetInstanceLogger()
 {
 	if ( StaticLuaLoggerInstance == nullptr ) { return nullptr; }
@@ -43,6 +52,12 @@ GameboyCPU * GetInstanceCPU()
 {
 	if ( StaticGameboyCPUInstance == nullptr ) { return nullptr; }
 	return StaticGameboyCPUInstance.get();
+}
+
+GPU * GetGPU()
+{
+	if ( StaticGPUInstance == nullptr ) { return nullptr; }
+	return StaticGPUInstance.get();
 }
 
 
@@ -186,7 +201,8 @@ void gameboy_lua_binding(lua_State *lua_state)
 {
 	luabridge::getGlobalNamespace(lua_state)
 		.addFunction( "GetInstanceLogger", &GetInstanceLogger )
-		.addFunction( "GetInstanceCPU", &GetInstanceCPU );
+		.addFunction( "GetInstanceCPU", &GetInstanceCPU )
+		.addFunction("GetGPU", &GetGPU);
 
 	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<GameboyMemory>("GameboyMemory")
@@ -203,6 +219,12 @@ void gameboy_lua_binding(lua_State *lua_state)
 			.addFunction( "GetRegisterDE", &GameboyCPU::GetRegisterDE )
 			.addFunction( "GetRegisterHL", &GameboyCPU::GetRegisterHL )
 			.addFunction( "TestOpCode", &GameboyCPU::TestOpCode )
+		.endClass();
+
+	luabridge::getGlobalNamespace(lua_state)
+		.beginClass<GPU>("GPU")
+		        .addFunction("Get", &GPU::Get )
+		        .addFunction("Set", &GPU::Set )
 		.endClass();
 
 	luabridge::getGlobalNamespace(lua_state)

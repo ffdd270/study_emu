@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 #include <memory/GPU.h>
+#include "../lua-binding/gameboy_luabinding.h"
 
 // https://www.huderlem.com/demos/gameboy2bpp.html  여기 최하단에 있는 걸로 만든
 // CGB 기준으로
@@ -58,6 +59,8 @@ public:
 		{
 			gpu->Set( tile_data_start + i, TILE_TEST_DATA[i] ); // 이게 1번 타일
 		}
+
+		gameboy_lua_binding_gpu( gpu );
 	}
 
 	using Pixels = std::array< BYTE, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
