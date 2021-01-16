@@ -15,10 +15,12 @@ namespace HaruCar::Common::Log
 }
 
 class LuaImGuiHandler;
+class GPU;
 
 void gameboy_lua_binding_imgui_handler( std::shared_ptr<LuaImGuiHandler> & ref_ptr_handler );
 void gameboy_lua_binding_logger( std::shared_ptr<HaruCar::Common::Log::Logger> logger );
 void gameboy_lua_binding_cpu( std::shared_ptr<GameboyCPU> cpu  );
+void gameboy_lua_binding_gpu( std::shared_ptr<GPU> gpu );
 void gameboy_lua_binding( lua_State * lua_state );
 
 

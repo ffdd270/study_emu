@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 #include <memory/GPU.h>
+#include "../lua-binding/gameboy_luabinding.h"
 
 // https://www.huderlem.com/demos/gameboy2bpp.html  여기 최하단에 있는 걸로 만든
 // CGB 기준으로
@@ -38,15 +39,35 @@ class TextureTest
 public:
 	TextureTest()
 	{
+		gpu = std::make_shared<GPU>();
 		mTexture.create( GPUHelper::ScreenWidth, GPUHelper::ScreenHeight );
 		mPixels.fill( 255 );
+
+		// 타일 맵
+		WORD tile_map_start = gpu->GetSelectBGTileMapDisplay();
+
+		// BG 타일 맵은 32 * 32다. 개당 8비트를 표현하는 타일맵이니 256*256이 됨.
+		for ( int i = 0; i < 32 * 32; i++ )
+		{
+			gpu->Set( tile_map_start + i, 0 ); // 1번 타일
+		}
+
+		// 타일이 실제로 있는 곳
+		WORD tile_data_start = gpu->GetSelectBGAndWindowTileData();
+
+		for ( int i = 0; i < TILE_TEST_DATA.size(); i++ )
+		{
+			gpu->Set( tile_data_start + i, TILE_TEST_DATA[i] ); // 이게 1번 타일
+		}
+
+		gameboy_lua_binding_gpu( gpu );
 	}
 
 	using Pixels = std::array< BYTE, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
 
 	void renderColor()
 	{
-		const ColorScreenBits * ptr_bits = gpu.GetScreenData();
+		const ColorScreenBits * ptr_bits = gpu->GetColorScreenData();
 		const ColorScreenBits & ref_bits = (*ptr_bits);
 
 		// 이게 Draw 로직임.
@@ -69,12 +90,30 @@ public:
 
 	void renderMono( )
 	{
+		const MonoScreenBits * ptr_bits = gpu->GetMonoScreenData();
+		const MonoScreenBits & ref_bits = (*ptr_bits);
 
+		// 이게 Draw 로직임.
+		for ( int y = 0; y < GPUHelper::ScreenHeight; y++ )
+		{
+			for( int x = 0; x < GPUHelper::ScreenWidth; x++ )
+			{
+				const GPUHelper::MonoPallet & ref_pallet = ref_bits[y][x];
+
+				// RGBA
+				// 0x1f를 -> 0xff로 사상. 8배 차이니 8 곱해줌.
+				// 4는? 4비트라서.
+				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 0 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][0];
+				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 1 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][1];
+				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 2 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][2];
+				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 3 ] = 255;
+			}
+		}
 	}
 
 	void render()
 	{
-		gpu.NextStep( 1 );
+		renderMono();
 		mTexture.update( mPixels.data() );
 	}
 
@@ -83,9 +122,15 @@ public:
 		return &mTexture;
 	}
 
+	GPU & getGpu()
+	{
+		return (*gpu);
+	}
+
+
 private:
 	Pixels mPixels;
-	GPU gpu;
+	std::shared_ptr<GPU> gpu;
 	sf::Texture mTexture;
 	sf::Sprite mSprite;
 };
@@ -93,11 +138,36 @@ private:
 
 TextureTest * ptr_texture_test = nullptr;
 
-void ImGui_Texture_Draw( const sf::Texture * texture_handle )
+void ImGui_Texture_Draw( const sf::Texture * texture_handle, TextureTest * ptr_test )
 {
+	static int addr = 0;
+	static int value = 0;
 	ImGui::Begin("Texture Test");
 
-	ImGui::Image( *texture_handle );
+	ImGui::Image( *texture_handle, sf::Vector2f(  GPUHelper::ScreenWidth  * 2,  GPUHelper::ScreenHeight *2  ) );
+
+	GPU & ref_gpu = ptr_test->getGpu();
+
+	if( ImGui::Button("DRAW NEXT!") )
+	{
+		ref_gpu.NextStep( GPUHelper::LinePerDots );
+	}
+
+	if( ImGui::Button("DRAW SCREEN!") )
+	{
+		ref_gpu.NextStep( GPUHelper::LinePerDots * GPUHelper::ScreenHeight );
+	}
+
+	if ( ImGui::InputInt( "INPUT ", &addr, 1, 100, ImGuiInputTextFlags_EnterReturnsTrue ))
+	{
+		value = ref_gpu.Get( addr );
+	}
+
+	ImGui::SameLine();
+	ImGui::Text("Value : %x", value );
+
+	ImGui::Text("GetSelectBGTileMapDisplay : %x ", ref_gpu.GetSelectBGTileMapDisplay() );
+	ImGui::Text("GetSelectBGAndWindowTileData : %x ", ref_gpu.GetSelectBGAndWindowTileData() );
 
 	ImGui::End();
 }
@@ -110,5 +180,5 @@ void texture_test()
 	}
 
 	ptr_texture_test->render();
-	ImGui_Texture_Draw(ptr_texture_test->getTexture() );
+	ImGui_Texture_Draw(ptr_texture_test->getTexture(), ptr_texture_test );
 }
