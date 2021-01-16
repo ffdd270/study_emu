@@ -43,7 +43,7 @@ public:
 		mPixels.fill( 255 );
 
 		// 타일 맵
-		WORD tile_map_start = gpu.GetSelectBGTileMapDisplay();
+		WORD tile_map_start = gpu->GetSelectBGTileMapDisplay();
 
 		// BG 타일 맵은 32 * 32다. 개당 8비트를 표현하는 타일맵이니 256*256이 됨.
 		for ( int i = 0; i < 32 * 32; i++ )
@@ -52,7 +52,7 @@ public:
 		}
 
 		// 타일이 실제로 있는 곳
-		WORD tile_data_start = gpu.GetSelectBGAndWindowTileData();
+		WORD tile_data_start = gpu->GetSelectBGAndWindowTileData();
 
 		for ( int i = 0; i < TILE_TEST_DATA.size(); i++ )
 		{
@@ -64,7 +64,7 @@ public:
 
 	void renderColor()
 	{
-		const ColorScreenBits * ptr_bits = gpu.GetColorScreenData();
+		const ColorScreenBits * ptr_bits = gpu->GetColorScreenData();
 		const ColorScreenBits & ref_bits = (*ptr_bits);
 
 		// 이게 Draw 로직임.
@@ -87,7 +87,7 @@ public:
 
 	void renderMono( )
 	{
-		const MonoScreenBits * ptr_bits = gpu.GetMonoScreenData();
+		const MonoScreenBits * ptr_bits = gpu->GetMonoScreenData();
 		const MonoScreenBits & ref_bits = (*ptr_bits);
 
 		// 이게 Draw 로직임.
