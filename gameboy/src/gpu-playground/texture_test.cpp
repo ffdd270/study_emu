@@ -38,6 +38,7 @@ class TextureTest
 public:
 	TextureTest()
 	{
+		gpu = std::make_shared<GPU>();
 		mTexture.create( GPUHelper::ScreenWidth, GPUHelper::ScreenHeight );
 		mPixels.fill( 255 );
 
