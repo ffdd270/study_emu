@@ -29,7 +29,7 @@ namespace GPUHelper
 	[[nodiscard]] BYTE GetModeFlag(BYTE value); // BIT 1-
 
 	// Mono Pallet Decode
-	enum class MonoPallet
+	enum class MonoPallet : BYTE
 	{
 		WHITE = 0,
 		LIGHT_GRAY = 1,
@@ -88,8 +88,9 @@ namespace GPUHelper
 	constexpr BYTE TileDataHeight = 8;
 	constexpr BYTE ScreenWidth = 160;
 	constexpr BYTE ScreenHeight = 144;
-
 	constexpr WORD BGMapSize = 32 * 32;  // 32개의 타일들을 32개의 열로 선택할 수 있음.
+
+	constexpr size_t LinePerDots = 456;
 
 	union SpriteDataAttribute
 	{

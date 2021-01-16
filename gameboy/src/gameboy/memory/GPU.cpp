@@ -145,6 +145,14 @@ GPU::GPU() :
 		}
 	}
 
+	for(MonoScreenLine & line : mMonoScreen )
+	{
+		for( GPUHelper::MonoPallet & pallet : line )
+		{
+			pallet = GPUHelper::MonoPallet::BLACK;
+		}
+	}
+
 
 }
 
@@ -238,7 +246,6 @@ void GPU::NextStep(size_t clock)
 	// 현대 컴퓨터에서 이걸 일일히 다 따라하기보단, 그냥 모드 전환만 적당히 되면 되서 그런 거 아닐까?
 	// 그럼 더 큰값은 안 되냐고 생각할 지도 모르겠지만. 모드 2의 유지 기간이 80이라서. 80으로 해야 모든 모드들에 진입할 수 있다.
 
-	constexpr size_t LINE_PER_DOTS = 456;
 	constexpr size_t REAL_SCANLINE_END = 144;
 	constexpr size_t MAX_SCANLINE = 154;
 
@@ -254,7 +261,7 @@ void GPU::NextStep(size_t clock)
 		}
 
 		size_t prv_dots = mDots;
-		mDots = mDots % LINE_PER_DOTS;
+		mDots = mDots % GPUHelper::LinePerDots;
 
 		if ( prv_dots != mDots ) // 이게 다르다는 게 무슨 뜻이냐면, 라인이 넘어갔다는 뜻이다.
 		{
@@ -300,6 +307,7 @@ void GPU::NextStep(size_t clock)
 			enableHBlank();
 
 			// TODO : 이제 실제로 그리면 됨.
+			drawBackground();
 		}
 	}
 }
@@ -772,6 +780,15 @@ void GPU::setRgb(GPUHelper::ColorPallet pallet, BYTE x)
 	mColorScreen[mScanLineY][x] = pallet;
 }
 
+// 8의 배수로 변경함.
+// 9 -> 8
+// 15 -> 8
+// 16 -> 8
+inline BYTE CovertToMultipleOf8( BYTE value )
+{
+	return ( value - ( value % 8 ) ) / 8;
+}
+
 void GPU::drawBackground()
 {
 	// -7 뺴는 것이 국룰.
@@ -796,10 +813,11 @@ void GPU::drawBackground()
 			base_tile_map = 0x9C00u;
 		}
 
+
 		BYTE pixel_x = mScrollX + i;
 		// 256x256 ->  32 x 32
 		// 8을 버리고, 8을 나눠서 0~32로.
-		BYTE tile_x = ( pixel_x - ( pixel_x % 8 ) ) / 8;
+		BYTE tile_x = CovertToMultipleOf8(pixel_x);
 
 		/* 2바이트 == 8 비트만큼 Width, BG는 아래와 같이 되어있음.
 		 * [0]  ( 2바이트 ) * 16 [31]
@@ -807,18 +825,19 @@ void GPU::drawBackground()
 		 * ....
 		 */
 
-		BYTE tile_index = mMemory[ mSelectVRAMBank ][ base_tile_map + tile_x + ( tile_y * 32 ) ];
-		WORD tile_addr = GetSelectedTileAddress( tile_index );
+		BYTE tile_index = Get(base_tile_map + tile_x + (tile_y * 32));
+		WORD base_tile_addr = GetSelectedTileAddress(tile_index );
+		WORD tile_addr = (base_tile_addr + ( (pixel_y % 8 ) * 2)); // 8x8중 몇번째 라인인가? (pixel_y%8) 그런데 2바이트 단위니까 2를 곱해줌.
 
-		std::array<BYTE, 8> pallets = GPUHelper::ToTileData( mMemory[ mSelectVRAMBank ][ tile_addr  ],
-													   mMemory[ mSelectVRAMBank ][ tile_addr + 1 ] );
+		std::array<BYTE, 8> pallets = GPUHelper::ToTileData(Get(tile_addr),Get(tile_addr + 1) );
 
 		// 일단 모노만 짜놓고 생각하자
-		//pallets[pixel_x % 8]
 
-
+		if (true) // TODO : 여기 모노 구분자 추가
+		{
+			mMonoScreen[mScanLineY][i] = static_cast<GPUHelper::MonoPallet>( pallets[pixel_x % 8] );
+		}
 	}
-
 }
 
 void GPU::autoIncrementPalletIndex(BYTE &pallet_index)
