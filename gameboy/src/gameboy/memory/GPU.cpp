@@ -3,6 +3,7 @@
 //
 
 #include <string>
+#include <vector>
 #include "GPU.h"
 
 
@@ -385,6 +386,12 @@ BYTE GPU::GetModeFlag() const
 	return GPUHelper::GetModeFlag(mLCDStatusRegister );
 }
 
+WORD GPU::GetDMASource() const
+{
+	return ( static_cast<WORD>(mDMASourceHi) << 8u );
+}
+
+
 WORD GPU::GetHDMASource() const
 {
 	WORD addr = static_cast<WORD>( static_cast<WORD>(mHDMASourceHi) << 8u ) | mHDMASourceLo;
@@ -407,6 +414,15 @@ BYTE GPU::GetHDMAMode() const
 	return ( mHDMAStatus & 0x80u ) >> 7u ;
 }
 
+const MonoScreenBits *GPU::GetMonoScreenData() const
+{
+	return &mMonoScreen;
+}
+
+const ColorScreenBits *GPU::GetColorScreenData() const
+{
+	return &mColorScreen;
+}
 
 WORD GPU::GetSelectedTileAddress(BYTE tile_index) const
 {
@@ -415,6 +431,26 @@ WORD GPU::GetSelectedTileAddress(BYTE tile_index) const
 
 	return start_address + ( tile_index_word * 16 );
 }
+
+GPUHelper::ObjectAttribute GPU::GetObjectAttribute(BYTE oam_table_index) const
+{
+	size_t real_position = oam_table_index * 4;
+
+	if ( ( real_position ) > ( mObjectAttributeMemory.size() - 1 )  )
+	{
+		throw std::logic_error("Object Attribute Overflowed.");
+	}
+
+
+	GPUHelper::ObjectAttribute result{};
+	for( int i = 0; i < 4; i++ )
+	{
+		result.data[i] = mObjectAttributeMemory[real_position + i];
+	}
+
+	return result;
+}
+
 
 void GPU::SetHDMAAddresses(WORD source, WORD dest)
 {
@@ -838,6 +874,25 @@ void GPU::drawBackground()
 	}
 }
 
+void GPU::drawSprites()
+{
+	std::vector<GPUHelper::ObjectAttribute> object_attributes;
+
+	for( int i = 0; i < 20; i++ ) // 이번 라인에 그릴 애들을 찾음.
+	{
+		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
+		if( attr.y_position >=( mScanLineY )  && attr.y_position <= ( mScanLineY + 8 )  )
+		{
+			object_attributes.emplace_back( std::move(attr) );
+		}
+	}
+
+	if( object_attributes.empty() ) { return; } // 이번 라인에는 그릴 게 없음
+
+
+}
+
+
 void GPU::autoIncrementPalletIndex(BYTE &pallet_index)
 {
 	bool auto_increment = ( pallet_index & 0b10000000u ) == 0b10000000u;
@@ -862,19 +917,3 @@ BYTE GPU::toPalletIndex(BYTE only_pallet_index, BYTE color_index)
 {
 	return ( only_pallet_index - ( color_index ) ) / 4;
 }
-
-WORD GPU::GetDMASource() const
-{
-	return ( static_cast<WORD>(mDMASourceHi) << 8u );
-}
-
-const MonoScreenBits *GPU::GetMonoScreenData() const
-{
-	return &mMonoScreen;
-}
-
-const ColorScreenBits *GPU::GetColorScreenData() const
-{
-	return &mColorScreen;
-}
-

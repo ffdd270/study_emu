@@ -189,7 +189,7 @@ public:
 	// 타일은 8*8임.
 	// 2바이트가 1라인이니, 8이면 1 타일당 16바이트임.
 	[[nodiscard]] WORD GetSelectedTileAddress( BYTE tile_index ) const;
-
+	[[nodiscard]] GPUHelper::ObjectAttribute GetObjectAttribute( BYTE oam_table ) const;
 private:
 	void procInterruptsOnSet( size_t mem_addr, BYTE value );
 	[[nodiscard]] BYTE procInterruptsOnGet( size_t mem_addr ) const;
@@ -208,6 +208,8 @@ private:
 	void setLCDMode( BYTE mode );
 	void setRgb( GPUHelper::ColorPallet pallet, BYTE x );
 	void drawBackground();
+	void drawSprites();
+
 
 	static void autoIncrementPalletIndex(BYTE & pallet_index);
 
