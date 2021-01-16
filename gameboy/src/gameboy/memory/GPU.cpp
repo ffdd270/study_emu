@@ -246,8 +246,6 @@ void GPU::NextStep(size_t clock)
 	// 현대 컴퓨터에서 이걸 일일히 다 따라하기보단, 그냥 모드 전환만 적당히 되면 되서 그런 거 아닐까?
 	// 그럼 더 큰값은 안 되냐고 생각할 지도 모르겠지만. 모드 2의 유지 기간이 80이라서. 80으로 해야 모든 모드들에 진입할 수 있다.
 
-	constexpr size_t REAL_SCANLINE_END = 144;
-	constexpr size_t MAX_SCANLINE = 154;
 
 	for( int i = 0; i < loop_target; i++ )
 	{
@@ -265,7 +263,7 @@ void GPU::NextStep(size_t clock)
 
 		if ( prv_dots != mDots ) // 이게 다르다는 게 무슨 뜻이냐면, 라인이 넘어갔다는 뜻이다.
 		{
-			mScanLineY = ( mScanLineY + 1 ) % MAX_SCANLINE; // 스캔라인은 154까지 있다.
+			mScanLineY = ( mScanLineY + 1 ) % GPUHelper::RealScanlineEnd; // 스캔라인은 154까지 있다.
 
 			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
 			{
@@ -273,7 +271,7 @@ void GPU::NextStep(size_t clock)
 			}
 		}
 
-		if ( mScanLineY >= REAL_SCANLINE_END ) //  V-BLANK 이벤트. 이미 스캔라인은 다 그렸지만, CPU들이 VRAM에 접근할 수 있도록
+		if ( mScanLineY >= GPUHelper::RealScanlineEnd ) //  V-BLANK 이벤트. 이미 스캔라인은 다 그렸지만, CPU들이 VRAM에 접근할 수 있도록
 		{
 			if( GetModeFlag() == 1 )
 			{

@@ -90,7 +90,10 @@ namespace GPUHelper
 	constexpr BYTE ScreenHeight = 144;
 	constexpr WORD BGMapSize = 32 * 32;  // 32개의 타일들을 32개의 열로 선택할 수 있음.
 
+	// 스캔 라인 관련
 	constexpr size_t LinePerDots = 456;
+	constexpr size_t RealScanlineEnd = 144; // 순수하게 Draw만 끝나는 시점
+	constexpr size_t MaxScanline = 154; // V-BLANK 포함해서 끝나는 시점
 
 	union SpriteDataAttribute
 	{
