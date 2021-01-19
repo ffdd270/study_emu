@@ -307,6 +307,7 @@ void GPU::NextStep(size_t clock)
 
 			// TODO : 이제 실제로 그리면 됨.
 			drawBackground();
+			drawSprites();
 		}
 	}
 }
@@ -876,12 +877,14 @@ void GPU::drawBackground()
 
 void GPU::drawSprites()
 {
+	constexpr BYTE END_RANGE = 7;
+
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;
 
 	for( int i = 0; i < 20; i++ ) // 이번 라인에 그릴 애들을 찾음.
 	{
 		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
-		if( attr.y_position >=( mScanLineY )  && attr.y_position <= ( mScanLineY + 8 )  )
+		if( attr.y_position <= ( mScanLineY )  && ( attr.y_position  + END_RANGE ) >= ( mScanLineY )  )
 		{
 			object_attributes.emplace_back( std::move(attr) );
 		}
@@ -889,6 +892,45 @@ void GPU::drawSprites()
 
 	if( object_attributes.empty() ) { return; } // 이번 라인에는 그릴 게 없음
 
+	for( int i = 0; i < GPUHelper::ScreenWidth; i++ )
+	{
+		// Y는 위에서 계산했음.
+		for ( const GPUHelper::ObjectAttribute & ref_attribute : object_attributes )
+		{
+			// 이번에 그려야 함
+			if (ref_attribute.x_position <= i && ref_attribute.x_position + END_RANGE >= i )
+			{
+				// 이 값들은 0~7범위 일 수 밖에 없다.
+				BYTE x_index = i - ref_attribute.x_position; // 몇번째로 그리고 있는가?
+				BYTE y_index = mScanLineY - ref_attribute.y_position; // Y축은 몇번째인가?
+
+				BYTE tile = ref_attribute.sprite_tile_number;
+				WORD tile_start_address = GPUHelper::SpriteTileStartAddress + (tile * GPUHelper::TileDataLSize); // 16바이트 * 0x0~0xff = 0x1000. 타일 주소와 일치함.
+				WORD tile_address = ( y_index * 2 ) + tile_start_address;
+
+				//일단 모노만..
+				std::array<BYTE, 8> pallets = GPUHelper::ToTileData(Get(tile_address),
+														Get(tile_address + 1) );
+				if ( true )
+				{
+					if ( pallets[x_index] != 0 ) // 0이면 스킵
+					{
+						BYTE pallet_number = ref_attribute.attributes.cgb_pallet_number;
+						if (pallet_number == 0 )
+						{
+							GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mOBJMonoPallet0, pallets[x_index] );
+							mMonoScreen[mScanLineY][i] = pallet_result;
+						}
+						else
+						{
+							GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mOBJMonoPallet1, pallets[x_index] );
+							mMonoScreen[mScanLineY][i] = pallet_result;
+						}
+					}
+				}
+			}
+		}
+	}
 
 }
 

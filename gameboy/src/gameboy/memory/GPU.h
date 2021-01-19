@@ -6,6 +6,8 @@
 #define GAMEBOY_GPU_H
 
 #include "memory/MemoryInterface.h"
+#include "../../gpu-playground/playground_util.h"
+
 #include <array>
 
 namespace GPUHelper
@@ -93,7 +95,7 @@ namespace GPUHelper
 	// 스캔 라인 관련
 	constexpr size_t LinePerDots = 456;
 	constexpr size_t RealScanlineEnd = 144; // 순수하게 Draw만 끝나는 시점
-	constexpr size_t MaxScanline = 154; // V-BLANK 포함해서 끝나는 시점
+	constexpr size_t MaxScanline = 154; // V-BLANK 포함해서 끝나는
 
 	union SpriteDataAttribute
 	{
@@ -101,7 +103,7 @@ namespace GPUHelper
 		{
 			BYTE bg_pallet_number:2;
 			BYTE tile_vram_bank_number:1;
-			BYTE not_used:1;
+			BYTE cgb_pallet_number:1;
 			BYTE horizontal_flip:1;  // 0 -> Normal, 1 -> Mirror.
 			BYTE vertical_flip:1; // 0 Normal, 1 -> Mirror
 			BYTE bg_to_oam_priority:1; // 0 -> Use OAM priority bit, 1 -> bg priority
@@ -122,6 +124,8 @@ namespace GPUHelper
 
 		BYTE data[4];
 	};
+
+	constexpr WORD SpriteTileStartAddress = 0x8000;
 }
 
 using ColorScreenLine = std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>;
