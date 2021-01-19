@@ -127,6 +127,10 @@ public:
 		return (*gpu);
 	}
 
+	std::shared_ptr<GPU> getSharedPtrGPU()
+	{
+		return gpu;
+	}
 
 private:
 	Pixels mPixels;
@@ -138,36 +142,34 @@ private:
 
 TextureTest * ptr_texture_test = nullptr;
 
-void ImGui_Texture_Draw( const sf::Texture * texture_handle, TextureTest * ptr_test )
+void ImGui_Texture_Draw( const char * name ,const sf::Texture * texture_handle, const std::shared_ptr<GPU>& ref_ptr_gpu )
 {
 	static int addr = 0;
 	static int value = 0;
-	ImGui::Begin("Texture Test");
+	ImGui::Begin( name );
 
 	ImGui::Image( *texture_handle, sf::Vector2f(  GPUHelper::ScreenWidth  * 2,  GPUHelper::ScreenHeight *2  ) );
 
-	GPU & ref_gpu = ptr_test->getGpu();
-
 	if( ImGui::Button("DRAW NEXT!") )
 	{
-		ref_gpu.NextStep( GPUHelper::LinePerDots );
+		ref_ptr_gpu->NextStep( GPUHelper::LinePerDots );
 	}
 
 	if( ImGui::Button("DRAW SCREEN!") )
 	{
-		ref_gpu.NextStep( GPUHelper::LinePerDots * GPUHelper::ScreenHeight );
+		ref_ptr_gpu->NextStep( GPUHelper::LinePerDots * GPUHelper::ScreenHeight );
 	}
 
 	if ( ImGui::InputInt( "INPUT ", &addr, 1, 100, ImGuiInputTextFlags_EnterReturnsTrue ))
 	{
-		value = ref_gpu.Get( addr );
+		value = ref_ptr_gpu->Get( addr );
 	}
 
 	ImGui::SameLine();
 	ImGui::Text("Value : %x", value );
 
-	ImGui::Text("GetSelectBGTileMapDisplay : %x ", ref_gpu.GetSelectBGTileMapDisplay() );
-	ImGui::Text("GetSelectBGAndWindowTileData : %x ", ref_gpu.GetSelectBGAndWindowTileData() );
+	ImGui::Text("GetSelectBGTileMapDisplay : %x ", ref_ptr_gpu->GetSelectBGTileMapDisplay() );
+	ImGui::Text("GetSelectBGAndWindowTileData : %x ", ref_ptr_gpu->GetSelectBGAndWindowTileData() );
 
 	ImGui::End();
 }
@@ -180,5 +182,5 @@ void texture_test()
 	}
 
 	ptr_texture_test->render();
-	ImGui_Texture_Draw(ptr_texture_test->getTexture(), ptr_texture_test );
+	ImGui_Texture_Draw("Background Test", ptr_texture_test->getTexture(), ptr_texture_test->getSharedPtrGPU() );
 }
