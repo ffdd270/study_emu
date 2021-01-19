@@ -870,7 +870,8 @@ void GPU::drawBackground()
 
 		if (true) // TODO : 여기 모노 구분자 추가
 		{
-			mMonoScreen[mScanLineY][i] = static_cast<GPUHelper::MonoPallet>( pallets[pixel_x % 8] );
+			GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mBGMonoPallet, pallets[pixel_x % 8] );
+			mMonoScreen[mScanLineY][i] = pallet_result;
 		}
 	}
 }
