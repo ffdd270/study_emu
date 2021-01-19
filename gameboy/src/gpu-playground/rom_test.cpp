@@ -7,7 +7,7 @@ class RomTest
 public:
 	RomTest()
 	{
-		gpu = motherboard.GetInterface( Motherboard::Interface_GPU );
+		gpu = std::static_pointer_cast<GPU>(motherboard.GetInterface( Motherboard::Interface_GPU ));
 	}
 
 	void render()
