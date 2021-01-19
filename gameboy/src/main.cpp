@@ -14,6 +14,8 @@
 #include "gameboy/GameboyCPUBroker.h"
 
 #include "gpu-playground/background_test.h"
+#include "gpu-playground/sprite_test.h"
+
 #include "cpu/cpu_viewer.h"
 #include "harucar/LuaCommandViewer.h"
 
@@ -211,7 +213,8 @@ int main()
 			  input_buffer_ptr, provider_ptr, protocol_ptr, logger_ptr, handler_ptr ) ;
 
 
-		texture_test();
+		//texture_test();
+		sprite_test();
 
 		window.clear();
 		ImGui::SFML::Render(window);
