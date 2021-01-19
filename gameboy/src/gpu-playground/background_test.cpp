@@ -54,14 +54,7 @@ public:
 			gpu->Set( tile_map_start + i, 0 ); // 1번 타일
 		}
 
-		// 타일이 실제로 있는 곳
-		WORD tile_data_start = gpu->GetSelectBGAndWindowTileData();
-
-		for ( int i = 0; i < TILE_TEST_DATA.size(); i++ )
-		{
-			gpu->Set( tile_data_start + i, TILE_TEST_DATA[i] ); // 이게 1번 타일
-		}
-
+		payload_tile_data( gpu, TILE_TEST_DATA, 0 );
 		gameboy_lua_binding_gpu( gpu );
 	}
 
