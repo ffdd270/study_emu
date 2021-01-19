@@ -913,7 +913,20 @@ void GPU::drawSprites()
 														Get(tile_address + 1) );
 				if ( true )
 				{
-					mMonoScreen[mScanLineY][i] = static_cast<GPUHelper::MonoPallet>( pallets[x_index] );
+					if ( pallets[x_index] != 0 ) // 0이면 스킵
+					{
+						BYTE pallet_number = ref_attribute.attributes.cgb_pallet_number;
+						if (pallet_number == 0 )
+						{
+							GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mOBJMonoPallet0, pallets[x_index] );
+							mMonoScreen[mScanLineY][i] = pallet_result;
+						}
+						else
+						{
+							GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mOBJMonoPallet1, pallets[x_index] );
+							mMonoScreen[mScanLineY][i] = pallet_result;
+						}
+					}
 				}
 			}
 		}
