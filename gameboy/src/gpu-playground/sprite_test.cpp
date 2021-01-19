@@ -55,8 +55,8 @@ public:
 		// OAM 세팅
 		GPUHelper::ObjectAttribute attr {};
 		attr.attributes.data = 0;
-		attr.y_position = 0;
-		attr.x_position = 0;
+		attr.y_position = 50;
+		attr.x_position = 50;
 		attr.sprite_tile_number = 1;
 
 		set_attr( mGPUPtr, 0, attr );
@@ -69,6 +69,11 @@ public:
 
 		payload_tile_data( mGPUPtr, TILE_TEST_DATA, 0x8000, 0 );
 		payload_tile_data( mGPUPtr, TILE_WINDOW_TEST_DATA,  0x8000, 1 );
+
+
+		// BG Pallet
+		mGPUPtr->Set( 0xff47, 0b1110001 );
+
 
 		// Object 2
 		// 4->BLACK
