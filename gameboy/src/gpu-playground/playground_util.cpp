@@ -54,3 +54,33 @@ void payload_tile_data(std::shared_ptr<GPU> &ref_gpu_ptr, const std::array<BYTE,
 		ref_gpu_ptr->Set( tile_data_start + i, ref_tile_data[i] ); // 이게 1번 타일
 	}
 }
+
+constexpr std::array< std::array< BYTE, 3 >, 4 > MONO_RGB_VALUE ={
+		std::array<BYTE, 3>({ 224, 248, 208 }),
+		std::array<BYTE, 3>({ 136, 192, 112 }),
+		std::array<BYTE, 3>({ 52, 104, 86 }),
+		std::array<BYTE, 3>({ 8, 24, 32 }),
+};
+
+void render_mono(std::shared_ptr<GPU> &ref_gpu_ptr, Pixels &ref_pixels)
+{
+	const MonoScreenBits * ptr_bits = ref_gpu_ptr->GetMonoScreenData();
+	const MonoScreenBits & ref_bits = (*ptr_bits);
+
+	// 이게 Draw 로직임.
+	for ( int y = 0; y < GPUHelper::ScreenHeight; y++ )
+	{
+		for( int x = 0; x < GPUHelper::ScreenWidth; x++ )
+		{
+			const GPUHelper::MonoPallet & ref_pallet = ref_bits[y][x];
+
+			// RGBA
+			// 0x1f를 -> 0xff로 사상. 8배 차이니 8 곱해줌.
+			// 4는? 4비트라서.
+			ref_pixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 0 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][0];
+			ref_pixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 1 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][1];
+			ref_pixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 2 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][2];
+			ref_pixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 3 ] = 255;
+		}
+	}
+}

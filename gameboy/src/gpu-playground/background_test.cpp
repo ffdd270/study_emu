@@ -4,9 +4,7 @@
 #include "imgui-SFML.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
-#include <memory/GPU.h>
 #include "../lua-binding/gameboy_luabinding.h"
-
 #include "playground_util.h"
 
 // https://www.huderlem.com/demos/gameboy2bpp.html  여기 최하단에 있는 걸로 만든
@@ -28,12 +26,6 @@ constexpr std::array< BYTE, 16 > TILE_TEST_DATA = {0xFF, 0x00,
 												   0x0F, 0xF0,
 												   0xF0, 0x0F,
 												   0x0F, 0x0F};
-
-constexpr std::array< std::array< BYTE, 3 >, 4 > MONO_RGB_VALUE ={
-		std::array<BYTE, 3>({ 224, 248, 208 }),
-		std::array<BYTE, 3>({ 136, 192, 112 }),
-		std::array<BYTE, 3>({ 52, 104, 86 }),
-		std::array<BYTE, 3>({ 8, 24, 32 }),
 };
 class TextureTest
 {
@@ -84,25 +76,7 @@ public:
 
 	void renderMono( )
 	{
-		const MonoScreenBits * ptr_bits = gpu->GetMonoScreenData();
-		const MonoScreenBits & ref_bits = (*ptr_bits);
-
-		// 이게 Draw 로직임.
-		for ( int y = 0; y < GPUHelper::ScreenHeight; y++ )
-		{
-			for( int x = 0; x < GPUHelper::ScreenWidth; x++ )
-			{
-				const GPUHelper::MonoPallet & ref_pallet = ref_bits[y][x];
-
-				// RGBA
-				// 0x1f를 -> 0xff로 사상. 8배 차이니 8 곱해줌.
-				// 4는? 4비트라서.
-				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 0 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][0];
-				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 1 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][1];
-				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 2 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][2];
-				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 3 ] = 255;
-			}
-		}
+		render_mono( gpu, mPixels );
 	}
 
 	void render()
