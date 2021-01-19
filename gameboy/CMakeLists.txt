@@ -105,7 +105,11 @@ set( SFML_USE_SRC
 		src/gpu-playground/background_test.h
 		src/gpu-playground/background_test.cpp
 		src/gpu-playground/rom_test.h
-		src/gpu-playground/rom_test.cpp)
+		src/gpu-playground/rom_test.cpp
+		src/gpu-playground/sprite_test.h
+		src/gpu-playground/sprite_test.cpp
+		src/gpu-playground/playground_util.h
+		src/gpu-playground/playground_util.cpp)
 
 set( COLOR_TEXT_EDIT
 		external/color_text_edit/TextEditor.cpp

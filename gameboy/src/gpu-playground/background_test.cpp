@@ -7,6 +7,8 @@
 #include <memory/GPU.h>
 #include "../lua-binding/gameboy_luabinding.h"
 
+#include "playground_util.h"
+
 // https://www.huderlem.com/demos/gameboy2bpp.html  여기 최하단에 있는 걸로 만든
 // CGB 기준으로
 // 1 => LIGHT_GRAY 8.
@@ -141,38 +143,6 @@ private:
 
 
 TextureTest * ptr_texture_test = nullptr;
-
-void ImGui_Texture_Draw( const char * name ,const sf::Texture * texture_handle, const std::shared_ptr<GPU>& ref_ptr_gpu )
-{
-	static int addr = 0;
-	static int value = 0;
-	ImGui::Begin( name );
-
-	ImGui::Image( *texture_handle, sf::Vector2f(  GPUHelper::ScreenWidth  * 2,  GPUHelper::ScreenHeight *2  ) );
-
-	if( ImGui::Button("DRAW NEXT!") )
-	{
-		ref_ptr_gpu->NextStep( GPUHelper::LinePerDots );
-	}
-
-	if( ImGui::Button("DRAW SCREEN!") )
-	{
-		ref_ptr_gpu->NextStep( GPUHelper::LinePerDots * GPUHelper::ScreenHeight );
-	}
-
-	if ( ImGui::InputInt( "INPUT ", &addr, 1, 100, ImGuiInputTextFlags_EnterReturnsTrue ))
-	{
-		value = ref_ptr_gpu->Get( addr );
-	}
-
-	ImGui::SameLine();
-	ImGui::Text("Value : %x", value );
-
-	ImGui::Text("GetSelectBGTileMapDisplay : %x ", ref_ptr_gpu->GetSelectBGTileMapDisplay() );
-	ImGui::Text("GetSelectBGAndWindowTileData : %x ", ref_ptr_gpu->GetSelectBGAndWindowTileData() );
-
-	ImGui::End();
-}
 
 void texture_test()
 {
