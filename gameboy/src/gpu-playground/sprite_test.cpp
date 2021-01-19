@@ -1,5 +1,5 @@
 #include "sprite_test.h"
-#include "../gameboy/memory/GPU.h"
+#include "playground_util.h"
 
 #include "imgui.h"
 #include "imgui-SFML.h"
@@ -22,13 +22,6 @@ constexpr std::array<BYTE, 16> TILE_WINDOW_TEST_DATA = {
 		0xC9, 0x97, 0x7E, 0xFF,
 };
 
-constexpr std::array< std::array< BYTE, 3 >, 4 > MONO_RGB_VALUE ={
-		std::array<BYTE, 3>({ 224, 248, 208 }),
-		std::array<BYTE, 3>({ 136, 192, 112 }),
-		std::array<BYTE, 3>({ 52, 104, 86 }),
-		std::array<BYTE, 3>({ 8, 24, 32 }),
-};
-
 inline void set_attr( std::shared_ptr<GPU> & ref_gpu_ptr, BYTE index, GPUHelper::ObjectAttribute attr )
 {
 	WORD base_object_attribute_memory_addr = 0xfe00;
@@ -43,9 +36,6 @@ inline void set_attr( std::shared_ptr<GPU> & ref_gpu_ptr, BYTE index, GPUHelper:
 class SpriteTest
 {
 public:
-
-	using Pixels = std::array< BYTE, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
-
 	SpriteTest()
 	{
 		mGPUPtr = std::make_shared<GPU>();
@@ -85,25 +75,7 @@ public:
 
 	void renderMono( )
 	{
-		const MonoScreenBits * ptr_bits = mGPUPtr->GetMonoScreenData();
-		const MonoScreenBits & ref_bits = (*ptr_bits);
-
-		// 이게 Draw 로직임.
-		for ( int y = 0; y < GPUHelper::ScreenHeight; y++ )
-		{
-			for( int x = 0; x < GPUHelper::ScreenWidth; x++ )
-			{
-				const GPUHelper::MonoPallet & ref_pallet = ref_bits[y][x];
-
-				// RGBA
-				// 0x1f를 -> 0xff로 사상. 8배 차이니 8 곱해줌.
-				// 4는? 4비트라서.
-				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 0 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][0];
-				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 1 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][1];
-				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 2 ] = MONO_RGB_VALUE[static_cast<BYTE>(ref_pallet)][2];
-				mPixels[ ( y * GPUHelper::ScreenWidth * 4 ) + ( x * 4 ) + 3 ] = 255;
-			}
-		}
+		render_mono( mGPUPtr, mPixels );
 	}
 
 	void render()

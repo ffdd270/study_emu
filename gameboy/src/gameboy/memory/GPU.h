@@ -6,7 +6,6 @@
 #define GAMEBOY_GPU_H
 
 #include "memory/MemoryInterface.h"
-#include "../../gpu-playground/playground_util.h"
 
 #include <array>
 
@@ -133,7 +132,7 @@ using ColorScreenBits = std::array<ColorScreenLine, GPUHelper::ScreenHeight>;
 
 using MonoScreenLine = std::array<GPUHelper::MonoPallet, GPUHelper::ScreenWidth>;
 using MonoScreenBits = std::array<MonoScreenLine, GPUHelper::ScreenHeight>;
-
+using Pixels = std::array< BYTE, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
 
 // Video RAM
 // 0x8000~0x9fff
