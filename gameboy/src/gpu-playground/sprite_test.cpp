@@ -23,10 +23,10 @@ constexpr std::array<BYTE, 16> TILE_WINDOW_TEST_DATA = {
 };
 
 constexpr std::array< std::array< BYTE, 3 >, 4 > MONO_RGB_VALUE ={
-		std::array<BYTE, 3>({ 8, 24, 32 }),
-		std::array<BYTE, 3>({ 52, 104, 86 }),
-		std::array<BYTE, 3>({ 136, 192, 112 }),
 		std::array<BYTE, 3>({ 224, 248, 208 }),
+		std::array<BYTE, 3>({ 136, 192, 112 }),
+		std::array<BYTE, 3>({ 52, 104, 86 }),
+		std::array<BYTE, 3>({ 8, 24, 32 }),
 };
 
 inline void set_attr( std::shared_ptr<GPU> & ref_gpu_ptr, BYTE index, GPUHelper::ObjectAttribute attr )
