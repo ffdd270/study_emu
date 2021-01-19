@@ -49,6 +49,8 @@ public:
 	SpriteTest()
 	{
 		mGPUPtr = std::make_shared<GPU>();
+		mTexture.create( GPUHelper::ScreenWidth, GPUHelper::ScreenHeight );
+		mPixels.fill( 255 );
 
 		// OAM 세팅
 		GPUHelper::ObjectAttribute attr {};
