@@ -102,12 +102,14 @@ set( UI_SRC
 
 set( SFML_USE_SRC
 		src/main.cpp
-		src/gpu-playground/texture_test.h
-		src/gpu-playground/texture_test.cpp src/gpu-playground/rom_test.h)
+		src/gpu-playground/background_test.h
+		src/gpu-playground/background_test.cpp
+		src/gpu-playground/rom_test.h
+		src/gpu-playground/rom_test.cpp)
 
 set( COLOR_TEXT_EDIT
 		external/color_text_edit/TextEditor.cpp
-		external/color_text_edit/TextEditor.h src/gpu-playground/rom_test.cpp)
+		external/color_text_edit/TextEditor.h)
 
 if(WIN32)
 	set( PLATFORM_LIBRARY OpenGL32 ) # Mac OS는 안 해줘야 '함'

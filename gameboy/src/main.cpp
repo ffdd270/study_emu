@@ -13,7 +13,7 @@
 #include "gameboy/GameboyCPU.h"
 #include "gameboy/GameboyCPUBroker.h"
 
-#include "gpu-playground/texture_test.h"
+#include "gpu-playground/background_test.h"
 #include "cpu/cpu_viewer.h"
 #include "harucar/LuaCommandViewer.h"
 
