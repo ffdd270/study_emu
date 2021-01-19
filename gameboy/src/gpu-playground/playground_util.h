@@ -17,7 +17,7 @@ namespace sf
 class GPU;
 
 void ImGui_Texture_Draw( const char * name ,const sf::Texture * texture_handle, const std::shared_ptr<GPU>& ref_ptr_gpu );
-void payload_tile_data( std::shared_ptr<GPU> & ref_gpu_ptr, const std::array<BYTE, 16> & ref_tile_data, WORD tile_num = 0 );
+void payload_tile_data( std::shared_ptr<GPU> & ref_gpu_ptr, const std::array<BYTE, 16> & ref_tile_data, WORD tile_start_addr, WORD tile_num = 0 );
 
 
 #endif //GAMEBOY_PLAYGROUND_UTIL_H

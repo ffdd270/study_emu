@@ -57,7 +57,7 @@ public:
 		attr.attributes.data = 0;
 		attr.y_position = 0;
 		attr.x_position = 0;
-		attr.sprite_tile_number = 0;
+		attr.sprite_tile_number = 1;
 
 		set_attr( mGPUPtr, 0, attr );
 
@@ -67,8 +67,15 @@ public:
 			set_attr( mGPUPtr, i, attr );
 		}
 
-		payload_tile_data( mGPUPtr, TILE_TEST_DATA, 0 );
-		payload_tile_data( mGPUPtr, TILE_WINDOW_TEST_DATA, 1 );
+		payload_tile_data( mGPUPtr, TILE_TEST_DATA, 0x8000, 0 );
+		payload_tile_data( mGPUPtr, TILE_WINDOW_TEST_DATA,  0x8000, 1 );
+
+		// Object 2
+		// 4->BLACK
+		// 3->어두운 초록색
+		// 2-> 밝은 초록색
+		// 1-> 투명
+		mGPUPtr->Set( 0xff48, 0b11100100 );
 	}
 
 	void renderMono( )

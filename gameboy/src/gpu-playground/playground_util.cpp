@@ -43,12 +43,11 @@ void ImGui_Texture_Draw( const char * name ,const sf::Texture * texture_handle, 
 	ImGui::End();
 }
 
-void payload_tile_data(std::shared_ptr<GPU> &ref_gpu_ptr, const std::array<BYTE, 16> &ref_tile_data, WORD tile_num)
+void payload_tile_data(std::shared_ptr<GPU> &ref_gpu_ptr, const std::array<BYTE, 16> &ref_tile_data, WORD tile_start_addr, WORD tile_num)
 {
-	WORD tile_map_start = ref_gpu_ptr->GetSelectBGTileMapDisplay() + ( tile_num * 16 );
-
 	// 타일이 실제로 있는 곳
-	WORD tile_data_start = ref_gpu_ptr->GetSelectBGAndWindowTileData();
+	WORD tile_data_start = tile_start_addr + ( tile_num * 16 );
+
 
 	for ( int i = 0; i < ref_tile_data.size(); i++ )
 	{
