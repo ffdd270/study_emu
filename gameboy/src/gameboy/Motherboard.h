@@ -28,6 +28,7 @@ public:
 
 	void SetCartridge( std::shared_ptr<MemoryInterface> ptr_cartridge );
 	std::shared_ptr<MemoryInterface> GetInterface( Interfaces selected_interface );
+	std::shared_ptr<GameboyCPU> GetCPU() { return mCPU; }
 private:
 	void procInterrupts(std::array<WORD, 10> & array_interrupt, size_t interrupt_len );
 	void procInterrupt( WORD interrupt_address );
