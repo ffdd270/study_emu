@@ -4,6 +4,7 @@ function init_script()
 	LoggerViewer:init()
 	MemoryWatch:init()
 	LuaCommander:init()
+	InstructionWatch:init()
 end
 
 
