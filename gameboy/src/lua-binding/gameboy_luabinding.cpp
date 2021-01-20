@@ -30,10 +30,24 @@ void gameboy_lua_binding_logger(std::shared_ptr<HaruCar::Common::Log::Logger> lo
 	StaticLuaLoggerInstance = std::move(logger);
 }
 
+struct InstructionData
+{
+	std::string instruction_name;
+	BYTE opcode;
+};
+
+std::vector<InstructionData> InstructionDatas;
+
 void gameboy_lua_binding_cpu(std::shared_ptr<GameboyCPU> cpu)
 {
+	cpu->SetOnInstructionCallback([]( const char * instruction_name, BYTE op_code ){
+		InstructionData data { instruction_name , op_code };
+		InstructionDatas.emplace_back( std::move( data ));
+	} );
 	StaticGameboyCPUInstance = std::move(cpu);
 }
+
+
 
 
 void gameboy_lua_binding_gpu(std::shared_ptr<GPU> gpu)
@@ -197,6 +211,14 @@ int lua_get_last_logs( lua_State * lua_state )
 }
 
 
+int lua_get_last_instructions( lua_State * lua_state )
+{
+	luabridge::Stack<std::vector<InstructionData>>::push( lua_state, InstructionDatas );
+	InstructionDatas.clear();
+	return 1;
+}
+
+
 void gameboy_lua_binding(lua_State *lua_state)
 {
 	luabridge::getGlobalNamespace(lua_state)
@@ -239,6 +261,12 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.beginClass<LogData>("LogData")
 		        .addData( "log", &LogData::log )
 		        .addData( "info", &LogData::info )
+		.endClass();
+
+	luabridge::getGlobalNamespace(lua_state)
+		.beginClass<InstructionData>("InstructionData")
+		        .addData("instruction_name", &InstructionData::instruction_name)
+		        .addData("opcode", &InstructionData::opcode)
 		.endClass();
 
 	luabridge::getGlobalNamespace(lua_state).
@@ -298,6 +326,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.addFunction( "log_warning", log_warning )
 		.addFunction( "log_info", log_info )
 		.addCFunction( "get_last_logs", lua_get_last_logs )
+		.addCFunction( "get_last_instructions", lua_get_last_instructions )
 		.addCFunction( "AddViewer", lua_AddViewer );
 }
 
