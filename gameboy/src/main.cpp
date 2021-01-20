@@ -15,6 +15,7 @@
 
 #include "gpu-playground/background_test.h"
 #include "gpu-playground/sprite_test.h"
+#include "gpu-playground/rom_test.h"
 
 #include "cpu/cpu_viewer.h"
 #include "harucar/LuaCommandViewer.h"
@@ -214,7 +215,8 @@ int main()
 
 
 		//texture_test();
-		sprite_test();
+		//sprite_test();
+		rom_test();
 
 		window.clear();
 		ImGui::SFML::Render(window);

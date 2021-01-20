@@ -26,7 +26,7 @@ constexpr std::array< BYTE, 16 > TILE_TEST_DATA = {0xFF, 0x00,
 												   0x0F, 0xF0,
 												   0xF0, 0x0F,
 												   0x0F, 0x0F};
-};
+
 class TextureTest
 {
 public:
