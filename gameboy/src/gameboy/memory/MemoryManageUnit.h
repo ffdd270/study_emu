@@ -20,6 +20,9 @@ public:
 
 	void SetCartridge( std::shared_ptr<MemoryInterface> ptr_cartridge );
 
+	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
+	void Reset() override {}
+	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
 	~MemoryManageUnit() final = default;
 private:
 

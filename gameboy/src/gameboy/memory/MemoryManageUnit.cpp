@@ -4,10 +4,12 @@
 
 #include "MemoryManageUnit.h"
 
+#include <utility>
+
 MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridge,
-								   std::shared_ptr<MemoryInterface> ptr_vram)
+                                   std::shared_ptr<MemoryInterface> ptr_vram)
 {
-	mCartridge = std::move( ptr_cartridge );
+	mCartridge = std::move(ptr_cartridge);
 	mVRAM = std::move( ptr_vram );
 }
 
@@ -21,7 +23,7 @@ BYTE MemoryManageUnit::Get(size_t mem_addr) const
 	// GPU
 	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff || // VRAM
 			  ( mem_addr >= 0xfe00 && mem_addr <= 0xfe9f ) || // OAM
-			  ( mem_addr >= 0xff00 && mem_addr <= 0xff7f ) ) // Interrupts
+			  ( mem_addr >= 0xff40 && mem_addr <= 0xff7f ) ) // Interrupts
 	{
 		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED GPU"); }
 		return mVRAM->Get( mem_addr );
@@ -57,5 +59,5 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 
 void MemoryManageUnit::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
 {
-	mCartridge = std::move( ptr_cartridge );
+	mCartridge = std::move(ptr_cartridge);
 }

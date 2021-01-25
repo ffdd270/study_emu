@@ -50,7 +50,7 @@ std::shared_ptr<CPUProvider> GameboyCPUBroker::MakeProvider(GameboyCPU &cpu)
 	mIndexSP = provider_ptr->AddRegister( "SP", providerMaker( cpu.GetRegisterSP().reg_16 ));
 	mIndexPC = provider_ptr->AddRegister( "PC", providerMaker( cpu.GetRegisterPC().reg_16 ));
 
-	cpu.SetOnInstructionCallback([&](const char * instruction, BYTE opcode)
+	cpu.SetOnInstructionCallback([&](const char * instruction, BYTE opcode, BYTE address_position)
 	{
 		this->mAddedInstructions.emplace_back( instruction );
 		this->mAddedOpCodes.emplace_back( opcode );
