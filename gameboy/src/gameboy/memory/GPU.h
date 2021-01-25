@@ -144,6 +144,8 @@ public:
 	[[nodiscard]] BYTE Get(size_t mem_addr) const override;
 	void Set(size_t mem_addr, BYTE value) override;
 
+	void Reset() override { }
+
 	[[nodiscard]] bool IsReportedInterrupt() const override;
 	[[nodiscard]] WORD GetReportedInterrupt() const override;
 	void ResolveInterrupt(WORD resolve_interrupt_address) override;

@@ -43,11 +43,13 @@ void Motherboard::Step()
 	size_t interrupt_len = 0;
 	std::array<WORD, 10> interrupt_array = { 0 };
 
-	for( auto & ref_interface : mInterfaces )
+	for( std::shared_ptr<MemoryInterface> & ref_interface : mInterfaces )
 	{
 		if (ref_interface == nullptr) { continue; }
+
+		bool reported = ref_interface->IsReportedInterrupt();
 		
-		if ( ref_interface->IsReportedInterrupt() )
+		if ( reported )
 		{
 			interrupt_array[interrupt_len] = ref_interface->GetReportedInterrupt();
 			interrupt_len++;
