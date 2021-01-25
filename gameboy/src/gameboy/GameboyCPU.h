@@ -62,7 +62,7 @@ public:
 
 	void Reset();
 
-	void NextStep();
+	size_t NextStep();
 	const char * TestOpCode( BYTE op_code, bool prefix );
 
 	[[nodiscard]] bool IsInterruptEnable() const { return  mInturruptEnable; }

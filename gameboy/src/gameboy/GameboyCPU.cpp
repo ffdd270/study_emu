@@ -8,6 +8,49 @@
 #include <string>
 #include <utility>
 
+// https://github.com/mohanson/gameboy/blob/master/src/cpu.rs 에서 따옴.
+// 모든 수는 4가 나눠져 있는 상태임.
+
+//  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+constexpr size_t OP_CYCLES[256] = {
+		1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1, // 0
+		0, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1, // 1
+		2, 3, 2, 2, 1, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1, // 2
+		2, 3, 2, 2, 3, 3, 3, 1, 2, 2, 2, 2, 1, 1, 2, 1, // 3
+		1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // 4
+		1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // 5
+		1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // 6
+		2, 2, 2, 2, 2, 2, 0, 2, 1, 1, 1, 1, 1, 1, 2, 1, // 7
+		1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // 8
+		1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // 9
+		1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // a
+		1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // b
+		2, 3, 3, 4, 3, 4, 2, 4, 2, 4, 3, 0, 3, 6, 2, 4, // c
+		2, 3, 3, 0, 3, 4, 2, 4, 2, 4, 3, 0, 3, 0, 2, 4, // d
+		3, 3, 2, 0, 0, 4, 2, 4, 4, 1, 4, 0, 0, 0, 2, 4, // e
+		3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4, // f
+};
+
+//  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+constexpr  size_t CB_CYCLES[256] = {
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // 0
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // 1
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // 2
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // 3
+		2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2, // 4
+		2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2, // 5
+		2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2, // 6
+		2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2, // 7
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // 8
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // 9
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // a
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // b
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // c
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // d
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // e
+		2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2, // f
+};
+
 
 GameboyCPU::GameboyCPU() : m8bitArguments( 	{
 													  RefRegister8bit( mRegisters.BC.hi ), // 000
@@ -111,8 +154,10 @@ void GameboyCPU::Reset()
 	resetFlags();
 }
 
-void GameboyCPU::NextStep()
+size_t GameboyCPU::NextStep()
 {
+	constexpr size_t NOP_INSTRUCTION =  OP_CYCLES[0] * 4;
+
 	if (!mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) )
 	{
 		if( mBreakPoints[ mPC.reg_16 ] ) // 그냥 Hatled.
@@ -128,25 +173,31 @@ void GameboyCPU::NextStep()
 
 	if( mHalted )
 	{
-		return;
+		return NOP_INSTRUCTION;
 	}
 
 	BYTE op_code = mMemoryInterface->Get( mPC.reg_16 );
 	mPC.reg_16 += 1;
 
 	if ( op_code == 0x00 ) // NOP
-
 	{
-		return;
+		return NOP_INSTRUCTION;
 	}
 
 	bool isPreFixInstruction = false;
+
+	size_t cycles = 0;
 
 	if ( op_code == 0xCB ) // prefix
 	{
 		isPreFixInstruction = true;
 		op_code = mMemoryInterface->Get( mPC.reg_16 );
 		mPC.reg_16 += 1;
+		cycles = CB_CYCLES[op_code];
+	}
+	else
+	{
+		cycles = OP_CYCLES[op_code];
 	}
 
 	auto& func = (isPreFixInstruction) ? mPrefixCBFuncMap[ op_code ] : mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
@@ -157,6 +208,8 @@ void GameboyCPU::NextStep()
 	}
 
 	func( this, op_code, true );
+
+	return cycles * 4;
 }
 
 
