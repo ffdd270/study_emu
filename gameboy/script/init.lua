@@ -81,3 +81,9 @@ function test_op_code( )
 		xpcall( _test_op_code, _test_op_code_err, i )
 	end
 end
+
+function test( pos )
+	local cpu = GetInstanceCPU()
+	info( cpu:GetMemory():GetValue(pos) )
+
+end

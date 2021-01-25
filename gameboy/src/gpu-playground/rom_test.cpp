@@ -87,7 +87,7 @@ void ImGuiHelper( const char * name , RomTest * rom_test )
 
 	if( ImGui::Button("STEP DRAW SCREEN!") )
 	{
-		for ( int i = 0; i < GPUHelper::ScreenHeight; i++ )
+		for ( int i = 0; i < GPUHelper::MaxScanline * GPUHelper::ScreenWidth; i++ )
 		{
 			ref_motherboard.Step();
 		}

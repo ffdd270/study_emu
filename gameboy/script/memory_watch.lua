@@ -8,7 +8,7 @@ function MemoryWatch.render( self )
 	local memory = cpu:GetMemory()
 
 	if memory_address ~= nil and memory_address >= 0 and memory_address <= ( 0xffff - 1 ) then
-		ImGui.Text( memory:GetValue( memory_address ) )
+		ImGui.Text( to_hex_string( memory:GetValue( memory_address ) ) )
 	end
 end
 
@@ -35,9 +35,10 @@ function InstructionWatch.render( self )
 
 	for i = 1, 100 do
 		local index = math.max( len - 100, 0 ) + i
+		local data = self.vars.list[index]
 
-		if self.vars.list[index] then
-			ImGui.Text( self.vars.list[index].instruction_name )
+		if data then
+			ImGui.Text( data.instruction_name .. ' , ' .. to_hex_string( data.opcode ) .. ' , ' ..  to_hex_string( data.instruction_mem_pos ) )
 		end
 	end
 end

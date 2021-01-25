@@ -34,14 +34,15 @@ struct InstructionData
 {
 	std::string instruction_name;
 	BYTE opcode;
+	WORD instruction_mem_pos;
 };
 
 std::vector<InstructionData> InstructionDatas;
 
 void gameboy_lua_binding_cpu(std::shared_ptr<GameboyCPU> cpu)
 {
-	cpu->SetOnInstructionCallback([]( const char * instruction_name, BYTE op_code ){
-		InstructionData data { instruction_name , op_code };
+	cpu->SetOnInstructionCallback([]( const char * instruction_name, BYTE op_code, WORD address_position ){
+		InstructionData data { instruction_name , op_code, address_position };
 		InstructionDatas.emplace_back( std::move( data ));
 	} );
 	StaticGameboyCPUInstance = std::move(cpu);
@@ -267,6 +268,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 		.beginClass<InstructionData>("InstructionData")
 		        .addData("instruction_name", &InstructionData::instruction_name)
 		        .addData("opcode", &InstructionData::opcode)
+		        .addData("instruction_mem_pos", &InstructionData::instruction_mem_pos)
 		.endClass();
 
 	luabridge::getGlobalNamespace(lua_state).
