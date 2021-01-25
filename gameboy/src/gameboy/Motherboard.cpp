@@ -36,8 +36,8 @@ void Motherboard::Boot()
 
 void Motherboard::Step()
 {
-	mCPU->NextStep();
-	std::static_pointer_cast<GPU>(mInterfaces[ Interface_GPU ] )->NextStep( GPUHelper::LinePerDots );
+	size_t clock = mCPU->NextStep();
+	std::static_pointer_cast<GPU>(mInterfaces[ Interface_GPU ] )->NextStep( clock );
 
 	// 인터럽트 처리
 	size_t interrupt_len = 0;
