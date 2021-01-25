@@ -107,6 +107,15 @@ public:
 		mMemory.fill( 0 );
 	}
 
+	[[nodiscard]] bool IsReportedInterrupt() const override
+	{
+		return false;
+	}
+
+	void ResolveInterrupt(WORD resolve_interrupt_address) override
+	{
+
+	}
 private:
 	std::array<BYTE, 0x10000> mMemory;
 };

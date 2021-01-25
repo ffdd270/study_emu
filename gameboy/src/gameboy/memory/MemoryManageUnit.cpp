@@ -4,10 +4,12 @@
 
 #include "MemoryManageUnit.h"
 
+#include <utility>
+
 MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridge,
-								   std::shared_ptr<MemoryInterface> ptr_vram)
+                                   std::shared_ptr<MemoryInterface> ptr_vram)
 {
-	mCartridge = std::move( ptr_cartridge );
+	mCartridge = std::move(ptr_cartridge);
 	mVRAM = std::move( ptr_vram );
 }
 
@@ -57,5 +59,5 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 
 void MemoryManageUnit::SetCartridge(std::shared_ptr<MemoryInterface> ptr_cartridge)
 {
-	mCartridge = std::move( ptr_cartridge );
+	mCartridge = std::move(ptr_cartridge);
 }

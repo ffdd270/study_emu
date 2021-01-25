@@ -31,6 +31,10 @@ public:
 	[[nodiscard]] BYTE GetSelectBank() const { return mSelectBank; }
 	[[nodiscard]] BankMode GetBankMode() const {  return mBankMode; }
 
+	void Reset() override {}
+	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
+	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
+
 	~MBC1() final = default;
 private:
 	[[nodiscard]] BYTE getSelectRomBank() const;

@@ -223,6 +223,9 @@ public:
 	{
 		mDummyMemory[ mem_addr ] = value;
 	}
+	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
+	void Reset() override {}
+	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
 private:
 	std::array<BYTE, 0xffff> mDummyMemory;
 };
