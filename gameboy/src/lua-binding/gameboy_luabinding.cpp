@@ -202,7 +202,10 @@ void gameboy_lua_binding(lua_State *lua_state)
 			.addFunction( "GetRegisterBC", &GameboyCPU::GetRegisterBC )
 			.addFunction( "GetRegisterDE", &GameboyCPU::GetRegisterDE )
 			.addFunction( "GetRegisterHL", &GameboyCPU::GetRegisterHL )
+			.addFunction( "GetRegisterPC", &GameboyCPU::GetRegisterPC )
 			.addFunction( "TestOpCode", &GameboyCPU::TestOpCode )
+			.addFunction( "AddBreakPoint", &GameboyCPU::AddBreakPoint )
+			.addFunction( "ContinueFromBreakPoint", &GameboyCPU::ContinueFromBreakPoint )
 		.endClass();
 
 	luabridge::getGlobalNamespace(lua_state)
