@@ -264,7 +264,7 @@ void GPU::NextStep(size_t clock)
 
 		if ( prv_dots != mDots ) // 이게 다르다는 게 무슨 뜻이냐면, 라인이 넘어갔다는 뜻이다.
 		{
-			mScanLineY = ( mScanLineY + 1 ) % GPUHelper::RealScanlineEnd; // 스캔라인은 154까지 있다.
+			mScanLineY = ( mScanLineY + 1 ) % GPUHelper::MaxScanline; // 스캔라인은 154까지 있다.
 
 			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
 			{

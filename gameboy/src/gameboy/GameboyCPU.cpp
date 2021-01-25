@@ -262,10 +262,11 @@ void GameboyCPU::ContinueFromBreakPoint()
 #define BIND_FUNC( func_name ) static const char * func_name\
 ( GameboyCPU * cpu, BYTE op_code, bool not_test)\
 {\
-	if (not_test) {\
+	if (not_test) {                                            \
+        WORD pc = cpu->GetRegisterPC().reg_16 - 1;                                                    \
 		cpu->func_name\
 		( op_code );\
-		cpu->addInstructionEvent( #func_name, op_code );\
+		cpu->addInstructionEvent( #func_name, op_code, pc );\
 		return "";\
 	} \
 	return #func_name;\
@@ -968,11 +969,11 @@ void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
 	mMemoryInterface->Set( mem_index, value );
 }
 
-void GameboyCPU::addInstructionEvent(const char *name, BYTE opcode)
+void GameboyCPU::addInstructionEvent(const char *name, BYTE opcode, WORD execute_pc_address)
 {
 	if ( mOnInstructionCallback != nullptr )
 	{
-		mOnInstructionCallback( name, opcode );
+		mOnInstructionCallback( name, opcode, execute_pc_address );
 	}
 }
 

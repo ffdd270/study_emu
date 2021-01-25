@@ -26,7 +26,7 @@ union Register
 class GameboyCPU;
 
 typedef const char *(*BindFunctionPointer)(GameboyCPU *, BYTE, bool);
-using InstructionCallback = std::function<void( const char * instruction_name, BYTE opcode )>;
+using InstructionCallback = std::function<void( const char * instruction_name, BYTE opcode, WORD execute_pc_address )>;
 
 
 // 외부 반출용
@@ -695,7 +695,7 @@ private:
 	void restartFromParam(BYTE op_code);
 
 	// Friend로 호출되는 Callback 이벤트
-	void addInstructionEvent(const char * name, BYTE opcode);
+	void addInstructionEvent(const char * name, BYTE opcode, WORD execute_pc_address);
 
 	/*
 	 * Common 함수들. 로직은 똑같은데 Flag에 따른 변화가 있을 경우 , 공용 부분은 이쪽에서..
