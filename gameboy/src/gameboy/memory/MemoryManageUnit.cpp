@@ -11,6 +11,7 @@ MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridg
 {
 	mCartridge = std::move(ptr_cartridge);
 	mVRAM = std::move( ptr_vram );
+	mBankNum = 0;
 }
 
 BYTE MemoryManageUnit::Get(size_t mem_addr) const
@@ -27,6 +28,15 @@ BYTE MemoryManageUnit::Get(size_t mem_addr) const
 	{
 		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED GPU"); }
 		return mVRAM->Get( mem_addr );
+	}
+	// Work Ram BANK 0
+	else if ( mem_addr >= 0xC000u && mem_addr <= 0xCFFF )
+	{
+		return mWorkRam[ ( mem_addr - 0xC000u ) ];
+	}
+	else if ( mem_addr >= 0xD000u && mem_addr <= 0xDFFF )
+	{
+		return mWorkRam[ ( mBankNum * 0x1000u ) + ( mem_addr - 0xD000u ) ];
 	}
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe ) // HI RAM
 	{
@@ -46,10 +56,19 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 	// GPU
 	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff || // VRAM
 			( mem_addr >= 0xfe00 && mem_addr <= 0xfe9f ) || // OAM
-			( mem_addr >= 0xff00 && mem_addr <= 0xff7f ) ) // Interrupts
+			( mem_addr >= 0xff40 && mem_addr <= 0xff7f ) ) // Interrupts
 	{
 		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED GPU"); }
 		return mVRAM->Set( mem_addr, value );
+	}
+		// Work Ram BANK 0
+	else if ( mem_addr >= 0xC000u && mem_addr <= 0xCFFF )
+	{
+		mWorkRam[ ( mem_addr - 0xC000u ) ] = value;
+	}
+	else if ( mem_addr >= 0xD000u && mem_addr <= 0xDFFF )
+	{
+		mWorkRam[ ( mBankNum * 0x1000u ) + ( mem_addr - 0xD000u ) ] = value;
 	}
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe )
 	{
