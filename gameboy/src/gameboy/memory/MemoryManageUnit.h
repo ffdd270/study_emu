@@ -25,10 +25,13 @@ public:
 	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
 	~MemoryManageUnit() final = default;
 private:
+	constexpr static size_t BANK_SIZE = 7;
 
 	//Hi - Ram.
 	// 0xff80~0xfffe.
 	std::array<BYTE, 0x7e> mHRAM;
+	std::array<BYTE, 0x1000 * BANK_SIZE> mWorkRam;
+	size_t mBankNum;
 
 	std::shared_ptr<MemoryInterface> mCartridge;
 	std::shared_ptr<MemoryInterface> mVRAM;
