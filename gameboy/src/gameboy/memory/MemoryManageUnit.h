@@ -29,7 +29,7 @@ private:
 
 	//Hi - Ram.
 	// 0xff80~0xfffe.
-	std::array<BYTE, 0x7e> mHRAM;
+	std::array<BYTE, 0x7f> mHRAM;
 	std::array<BYTE, 0x1000 * BANK_SIZE> mWorkRam;
 	size_t mBankNum;
 
