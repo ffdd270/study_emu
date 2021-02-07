@@ -33,6 +33,19 @@ function InstructionWatch.render( self )
 
 	local len = #self.vars.list
 
+	if len > 100 then
+		local overflow_value = len - 100
+
+		for i = 1, overflow_value do
+			self.vars.list[i] = nil
+		end
+
+		for i = overflow_value, len do
+			self.vars.list[ i - overflow_value ] = self.vars.list[i]
+		end
+	end
+
+
 	for i = 1, 100 do
 		local index = math.max( len - 100, 0 ) + i
 		local data = self.vars.list[index]
