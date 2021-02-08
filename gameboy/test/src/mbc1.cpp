@@ -300,25 +300,20 @@ SCENARIO("Use MBC1.", "[MBC]")
 			{
 				REQUIRE( cpu->GetRegisterPC().reg_16 == 0x0637 );
 			}
+		}
 
 
+		WHEN("Execute Code 3 Step")
+		{
+			cpu->NextStep(); // NOP.
+			cpu->NextStep(); // jumpToWord 0x0637
+			cpu->NextStep(); // JumpToWord 0x0430
+
+		
 			THEN("PC = 0x0430.")
 			{
-				cpu->NextStep(); // JumpToWord 0x0430
-				REQUIRE( cpu->GetRegisterPC().reg_16 == 0x0430 );
+				REQUIRE(cpu->GetRegisterPC().reg_16 == 0x0430);
 			}
-
-			/* TODO : GPU 다 짜고 생각하자.
-			THEN( "Step 10000" )
-			{
-				for( size_t i = 0; i < 10000; i++ )
-				{
-					REQUIRE_NOTHROW( cpu->NextStep() );
-				}
-
-				cpu->NextStep();
-;			}
-			 */
 		}
 	}
 }

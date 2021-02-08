@@ -4,27 +4,6 @@
 #include "memory/MemoryManageUnit.h"
 #include "memory/GPU.h"
 
-class MockMemory : public MemoryInterface
-{
-public:
-	MockMemory() : mMock( { 0 } ) { }
-
-	[[nodiscard]] BYTE Get(size_t mem_addr) const override
-	{
-		return mMock[ mem_addr ];
-	}
-
-	void Set(size_t mem_addr, BYTE value) override
-	{
-		// NO SET.
-	}
-	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
-	void Reset() override {}
-	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
-private:
-	std::array<BYTE, 0xffff> mMock;
-};
-
 SCENARIO("Memory Manage Unit", "[MMUNIT]")
 {
 	GIVEN("A Single Memory Manage Unit, with single cartridge.")
@@ -86,6 +65,46 @@ SCENARIO("Memory Manage Unit", "[MMUNIT]")
 			THEN("READ 0x8250 == 3")
 			{
 				REQUIRE( ptr_memory_manage_unit->Get( 0x8250 ) == 3 );
+			}
+		}
+	}
+
+	GIVEN("Interrupt Enable, 0xffff")
+	{
+		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>
+				(
+						nullptr,
+						nullptr
+				);
+
+
+		WHEN("Write 0xffff, 0xff") // 모든 인터럽트 Enable
+		{
+			ptr_memory_manage_unit->Set( 0xffff, 0xff );
+
+			THEN("READ 0xffff == 0x1f")
+			{
+				REQUIRE( ptr_memory_manage_unit->Get( 0xffff ) == 0x1f );
+			}
+		}
+	}
+
+	GIVEN("Interrupt Flag, 0xff0f")
+	{
+		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>
+				(
+						nullptr,
+						nullptr
+				);
+
+
+		WHEN("Write 0xff0f, 0xff") // 모든 인터럽트 Enable
+		{
+			ptr_memory_manage_unit->Set( 0xff0f, 0xff );
+
+			THEN("READ 0xff0f == 0x1f")
+			{
+				REQUIRE( ptr_memory_manage_unit->Get( 0xff0f ) == 0x1f );
 			}
 		}
 	}

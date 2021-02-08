@@ -12,6 +12,8 @@ MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridg
 	mCartridge = std::move(ptr_cartridge);
 	mVRAM = std::move( ptr_vram );
 	mBankNum = 0;
+	mInterruptEnable = 0;
+	mInterruptFlags = 0;
 }
 
 BYTE MemoryManageUnit::Get(size_t mem_addr) const
@@ -41,6 +43,14 @@ BYTE MemoryManageUnit::Get(size_t mem_addr) const
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe ) // HI RAM
 	{
 		return mHRAM[ mem_addr - 0xff80u ];
+	}
+	else if( mem_addr == 0xff0f )
+	{
+		return mInterruptFlags;
+	}
+	else if ( mem_addr == 0xffff )
+	{
+		return mInterruptEnable;
 	}
 
 	return 0;
@@ -73,6 +83,14 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe )
 	{
 		mHRAM[ mem_addr - 0xff80u ] = value;
+	}
+	else if( mem_addr == 0xff0f )
+	{
+		mInterruptFlags = value & 0x1fu; // 5비트만 씀
+	}
+	else if ( mem_addr == 0xffff )
+	{
+		mInterruptEnable = value & 0x1fu; // 5비트만 씀
 	}
 }
 

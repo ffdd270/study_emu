@@ -494,7 +494,7 @@ SCENARIO("GPU", "[GPU]")
 	{
 		Motherboard motherboard;
 
-		std::shared_ptr<MemoryInterface> dummy_memory_ptr = std::make_shared<DummyMemory>();
+		std::shared_ptr<MemoryInterface> dummy_memory_ptr = std::static_pointer_cast<MemoryInterface>( std::make_shared<DummyMemory>() );
 		motherboard.SetCartridge( dummy_memory_ptr );
 
 		std::shared_ptr<GPU> gpu_ptr = std::static_pointer_cast<GPU>( motherboard.GetInterface( Motherboard::Interface_GPU ) );
@@ -546,7 +546,7 @@ SCENARIO("GPU", "[GPU]")
 				REQUIRE( mmunit_ptr->Get(0xff55) == 0x80 );
 			}
 		}
-
+		
 		WHEN("DMA, 0xff46. Source 0x8000, Dest 0xfe00, length = 0xa0")
 		{
 			const WORD source_address = 0x8000;

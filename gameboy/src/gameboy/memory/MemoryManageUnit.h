@@ -33,6 +33,9 @@ private:
 	std::array<BYTE, 0x1000 * BANK_SIZE> mWorkRam;
 	size_t mBankNum;
 
+	BYTE mInterruptFlags;
+	BYTE mInterruptEnable;
+
 	std::shared_ptr<MemoryInterface> mCartridge;
 	std::shared_ptr<MemoryInterface> mVRAM;
 };

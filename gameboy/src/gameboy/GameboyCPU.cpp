@@ -165,6 +165,104 @@ void GameboyCPU::Reset()
 
 size_t GameboyCPU::NextStep()
 {
+	size_t clock = procInterrupt();
+
+	if ( clock == 0 ) // 처리하지 않았음
+ 	{
+		clock = execute();
+	}
+
+	return clock;
+}
+
+
+const char * GameboyCPU::TestOpCode(BYTE op_code, bool prefix)
+{
+	auto& func = (prefix) ? mPrefixCBFuncMap[ op_code ] : mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
+	if( func == nullptr )
+	{
+		throw std::logic_error("Not Impl Instruction Set, " + std::to_string( op_code ) );
+	}
+
+	return func( this, op_code, false );
+}
+
+
+void GameboyCPU::AddBreakPoint(WORD break_address)
+{
+	auto iter = mBreakPoints.find( break_address );
+	if( iter != mBreakPoints.end() ) { return; }
+	mBreakPoints.insert( std::make_pair( break_address, true ) );
+}
+
+void GameboyCPU::RemoveBreakPoint(WORD break_address)
+{
+	auto iter = mBreakPoints.find( break_address );
+	if( iter == mBreakPoints.end() ) { return; }
+	mBreakPoints.erase( iter );
+}
+
+void GameboyCPU::ContinueFromBreakPoint()
+{
+	if ( mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) ) // 브레이크 포인트 안이며, Halted였으면.
+	{
+		mBreakPoints[mPC.reg_16] = false; // Halted 유무.
+		mHalted = false;
+	}
+}
+
+
+constexpr std::array<size_t, 5> INTERRUPT_VECTORS = {
+		0x40u, // V-BLANK
+		0x48u, // LCD STAT
+		0x50u, // TIMER
+		0x58u, // SERIAL
+		0x60u, // JOYPAD
+};
+
+
+// 사용할 인터럽트
+BYTE get_use_interrupt( BYTE interrupt_vectors )
+{
+	for ( size_t i = 0; i < 5; i++ )
+	{
+		if ( ( interrupt_vectors & ( 0b1u << i ) ) == 1 )
+		{
+			return i;
+		}
+	}
+
+	return 0xff;
+}
+
+size_t GameboyCPU::procInterrupt()
+{
+	if(!mInturruptEnable) // 인터럽트 미허용이면 처리 안 함.
+	{
+		return 0;
+	}
+
+	// 인터럽트는 5비트까지만 씀.
+	BYTE interrupt_enable = mMemoryInterface->Get( 0xffff );
+	BYTE interrupt_flags = mMemoryInterface->Get( 0xff0f );
+
+	// Enable 과 Flag 둘 다 올라와야 한다.
+	BYTE interrupt_vectors = interrupt_enable & interrupt_flags;
+	BYTE interrupt = get_use_interrupt( interrupt_vectors );
+
+	if ( interrupt == 0xff ) // 실행할 게 없음
+	{
+		return 0;
+	}
+
+	mInturruptEnable = false;
+	setWORDToStack( mPC.reg_16 );  // 스택에 올리고
+	mPC.reg_16 = INTERRUPT_VECTORS[ interrupt ];
+	return 4; // 4 클락.
+}
+
+size_t GameboyCPU::execute()
+{
 	constexpr size_t NOP_INSTRUCTION =  OP_CYCLES[0] * 4;
 
 	if (!mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) )
@@ -212,49 +310,13 @@ size_t GameboyCPU::NextStep()
 	auto& func = (isPreFixInstruction) ? mPrefixCBFuncMap[ op_code ] : mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
 
 	if( func ==  nullptr )
-	 {
+	{
 		throw std::logic_error("Not Impl Instruction Set, " + std::to_string( op_code ) );
 	}
 
 	func( this, op_code, true );
 
 	return cycles * 4;
-}
-
-
-const char * GameboyCPU::TestOpCode(BYTE op_code, bool prefix)
-{
-	auto& func = (prefix) ? mPrefixCBFuncMap[ op_code ] : mFuncMap[ op_code ]; // 어떻게 배치되어있는지는 pre0b~GenerateFuncMap 함수 참고.
-	if( func == nullptr )
-	{
-		throw std::logic_error("Not Impl Instruction Set, " + std::to_string( op_code ) );
-	}
-
-	return func( this, op_code, false );
-}
-
-
-void GameboyCPU::AddBreakPoint(WORD break_address)
-{
-	auto iter = mBreakPoints.find( break_address );
-	if( iter != mBreakPoints.end() ) { return; }
-	mBreakPoints.insert( std::make_pair( break_address, true ) );
-}
-
-void GameboyCPU::RemoveBreakPoint(WORD break_address)
-{
-	auto iter = mBreakPoints.find( break_address );
-	if( iter == mBreakPoints.end() ) { return; }
-	mBreakPoints.erase( iter );
-}
-
-void GameboyCPU::ContinueFromBreakPoint()
-{
-	if ( mHalted && ( mBreakPoints.find( mPC.reg_16 ) != mBreakPoints.end() ) ) // 브레이크 포인트 안이며, Halted였으면.
-	{
-		mBreakPoints[mPC.reg_16] = false; // Halted 유무.
-		mHalted = false;
-	}
 }
 
 
