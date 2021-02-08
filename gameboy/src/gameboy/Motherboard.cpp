@@ -25,10 +25,10 @@ void Motherboard::Boot()
 	// 카트리지는 나중에 생각하고.
 
 	// GPU.
-	mInterfaces[ Interface_GPU ] = std::make_shared<GPU>();
+	mInterfaces[ Interface_GPU ] = std::static_pointer_cast<MemoryInterface>(std::make_shared<GPU>() );
 
 	// Memory Management Unit
-	mInterfaces[ Interface_MMUNIT ] = std::make_shared<MemoryManageUnit>( nullptr, mInterfaces[ Interface_GPU ] );
+	mInterfaces[ Interface_MMUNIT ] = std::static_pointer_cast<MemoryInterface>(std::make_shared<MemoryManageUnit>( nullptr, mInterfaces[ Interface_GPU ] ) );
 
 	// CPU
 	mCPU = GameboyCPU::CreateWithMemoryInterface( mInterfaces[ Interface_MMUNIT ] );

@@ -102,6 +102,9 @@ public:
 private:
 	std::array<BindFunctionPointer, 0xFF + 1> mFuncMap;
 	std::array<BindFunctionPointer, 0xFF + 1> mPrefixCBFuncMap;
+private: // 로직 컨트롤
+	size_t procInterrupt();
+	size_t execute();
 private:
 	void pre0b00GenerateFuncMap();
 	void pre0b01GenerateFuncMap();

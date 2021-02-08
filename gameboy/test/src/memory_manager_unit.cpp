@@ -4,27 +4,6 @@
 #include "memory/MemoryManageUnit.h"
 #include "memory/GPU.h"
 
-class MockMemory : public MemoryInterface
-{
-public:
-	MockMemory() : mMock( { 0 } ) { }
-
-	[[nodiscard]] BYTE Get(size_t mem_addr) const override
-	{
-		return mMock[ mem_addr ];
-	}
-
-	void Set(size_t mem_addr, BYTE value) override
-	{
-		// NO SET.
-	}
-	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
-	void Reset() override {}
-	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
-private:
-	std::array<BYTE, 0xffff> mMock;
-};
-
 SCENARIO("Memory Manage Unit", "[MMUNIT]")
 {
 	GIVEN("A Single Memory Manage Unit, with single cartridge.")
