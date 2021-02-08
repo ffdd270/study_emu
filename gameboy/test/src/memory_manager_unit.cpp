@@ -89,4 +89,44 @@ SCENARIO("Memory Manage Unit", "[MMUNIT]")
 			}
 		}
 	}
+
+	GIVEN("Interrupt Enable, 0xffff")
+	{
+		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>
+				(
+						nullptr,
+						nullptr
+				);
+
+
+		WHEN("Write 0xffff, 0xff") // 모든 인터럽트 Enable
+		{
+			ptr_memory_manage_unit->Set( 0xffff, 0xff );
+
+			THEN("READ 0xffff == 0x1f")
+			{
+				REQUIRE( ptr_memory_manage_unit->Get( 0xffff ) == 0x1f );
+			}
+		}
+	}
+
+	GIVEN("Interrupt Flag, 0xff0f")
+	{
+		std::shared_ptr<MemoryManageUnit> ptr_memory_manage_unit = std::make_shared<MemoryManageUnit>
+				(
+						nullptr,
+						nullptr
+				);
+
+
+		WHEN("Write 0xff0f, 0xff") // 모든 인터럽트 Enable
+		{
+			ptr_memory_manage_unit->Set( 0xff0f, 0xff );
+
+			THEN("READ 0xff0f == 0x1f")
+			{
+				REQUIRE( ptr_memory_manage_unit->Get( 0xff0f ) == 0x1f );
+			}
+		}
+	}
 }
