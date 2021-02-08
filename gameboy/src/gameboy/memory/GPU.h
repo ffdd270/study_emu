@@ -6,7 +6,6 @@
 #define GAMEBOY_GPU_H
 
 #include "memory/MemoryInterface.h"
-#include "../../gpu-playground/playground_util.h"
 
 #include <array>
 
