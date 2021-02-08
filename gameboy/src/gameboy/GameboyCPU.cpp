@@ -212,9 +212,53 @@ void GameboyCPU::ContinueFromBreakPoint()
 }
 
 
+constexpr std::array<size_t, 5> INTERRUPT_VECTORS = {
+		0x40u, // V-BLANK
+		0x48u, // LCD STAT
+		0x50u, // TIMER
+		0x58u, // SERIAL
+		0x60u, // JOYPAD
+};
+
+
+// 사용할 인터럽트
+BYTE get_use_interrupt( BYTE interrupt_vectors )
+{
+	for ( size_t i = 0; i < 5; i++ )
+	{
+		if ( ( interrupt_vectors & ( 0b1u << i ) ) == 1 )
+		{
+			return i;
+		}
+	}
+
+	return 0xff;
+}
+
 size_t GameboyCPU::procInterrupt()
 {
-	return 0;
+	if(!mInturruptEnable) // 인터럽트 미허용이면 처리 안 함.
+	{
+		return 0;
+	}
+
+	// 인터럽트는 5비트까지만 씀.
+	BYTE interrupt_enable = mMemoryInterface->Get( 0xffff );
+	BYTE interrupt_flags = mMemoryInterface->Get( 0xff0f );
+
+	// Enable 과 Flag 둘 다 올라와야 한다.
+	BYTE interrupt_vectors = interrupt_enable & interrupt_flags;
+	BYTE interrupt = get_use_interrupt( interrupt_vectors );
+
+	if ( interrupt == 0xff ) // 실행할 게 없음
+	{
+		return 0;
+	}
+
+	mInturruptEnable = false;
+	setWORDToStack( mPC.reg_16 );  // 스택에 올리고
+	mPC.reg_16 = INTERRUPT_VECTORS[ interrupt ];
+	return 4; // 4 클락.
 }
 
 size_t GameboyCPU::execute()
