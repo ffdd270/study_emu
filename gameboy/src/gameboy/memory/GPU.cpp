@@ -135,7 +135,7 @@ GPU::GPU() :
 		mHDMADestHi( 0 ), mHDMADestLo(0 ),
 		mHDMAStatus( 0 ), mIsHDMAStart(false ),
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
-		mSelectVRAMBank(0 )
+		mSelectVRAMBank(0 ), mReportLCDStat( false ), mReportVBlank( false )
 {
 	for(ColorScreenLine & line : mColorScreen )
 	{
@@ -201,27 +201,55 @@ void GPU::Set(size_t mem_addr, BYTE value)
 
 bool GPU::IsReportedInterrupt() const
 {
-	return mIsHDMAStart || mIsDMAStart;
+	return mIsHDMAStart || mIsDMAStart || mReportVBlank || mReportLCDStat;
 }
 
-WORD GPU::GetReportedInterrupt() const
+std::vector<InterruptsType> GPU::GetReportedInterrupts() const
 {
+	std::vector<InterruptsType> types;
+
 	if ( mIsDMAStart )
 	{
-		return 0xff46u;
+		types.emplace_back( InterruptsType::DMA );
 	}
-	else
+	else if ( mIsHDMAStart )
 	{
-		return 0xff55u;
+		types.emplace_back( InterruptsType::HDMA );
+	}
+	else if ( mReportLCDStat )
+	{
+		types.emplace_back( InterruptsType::LCD_STAT );
+	}
+	else if ( mReportVBlank )
+	{
+		types.emplace_back( InterruptsType::V_BLANK );
 	}
 
+	return types;
 }
 
 
-void GPU::ResolveInterrupt(WORD resolve_interrupt_address)
+void GPU::ResolveInterrupt(InterruptsType resolve_interrupt_address)
 {
-	mIsHDMAStart = false;
+	switch (resolve_interrupt_address)
+	{
+		case InterruptsType::HDMA:
+			mIsHDMAStart = false;
+			break;
+		case InterruptsType::DMA:
+			mIsDMAStart = false;
+			break;
+		case InterruptsType::LCD_STAT:
+			mReportLCDStat = false;
+			break;
+		case InterruptsType::V_BLANK:
+			mReportVBlank = false;
+			break;
+		default:
+			break;
+	}
 }
+
 
 
 void GPU::NextStep(size_t clock)
@@ -269,6 +297,7 @@ void GPU::NextStep(size_t clock)
 			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
 			{
 				setCoincidenceInterrupt(mScanLineY == mLYC); // LYC랑 같으면 인터럽트 발생.
+				mReportLCDStat = true;
 			}
 		}
 
@@ -281,12 +310,24 @@ void GPU::NextStep(size_t clock)
 
 			setLCDMode(1);
 			enableVBlank();
+
+			if (IsEnableMode1VBlankInterrupt())
+			{
+				mReportLCDStat = true;
+			}
+
+			mReportVBlank = true;
 		}
 		else if ( mDots <= 80 ) // Searching Object / OAM 접근 불가.
 		{
 			if ( GetModeFlag() == 2 )
 			{
 				continue;
+			}
+
+			if (IsEnableMode2OAMInterrupt())
+			{
+				mReportLCDStat = true;
 			}
 
 			setLCDMode( 2 );
@@ -304,6 +345,11 @@ void GPU::NextStep(size_t clock)
 
 			setLCDMode( 0 );
 			enableHBlank();
+
+			if (IsEnableMode0HBlankInterrupt())
+			{
+				mReportLCDStat = true;
+			}
 
 			// TODO : 이제 실제로 그리면 됨.
 			drawBackground();

@@ -112,7 +112,7 @@ public:
 		return false;
 	}
 
-	void ResolveInterrupt(WORD resolve_interrupt_address) override
+	void ResolveInterrupt(InterruptsType resolve_interrupt_address) override
 	{
 
 	}
