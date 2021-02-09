@@ -33,7 +33,7 @@ public:
 
 	void Reset() override {}
 	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
-	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
+	void ResolveInterrupt(InterruptsType resolve_interrupt_address) override { }
 
 	~MBC1() final = default;
 private:

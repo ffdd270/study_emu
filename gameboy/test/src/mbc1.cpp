@@ -288,7 +288,7 @@ SCENARIO("Use MBC1.", "[MBC]")
 					        std::static_pointer_cast<MemoryInterface>( ptr_vram )
 				);
 
-		std::shared_ptr<GameboyCPU> cpu = GameboyCPU::CreateWithMemoryInterface(mmunit_ptr);
+		std::shared_ptr<GameboyCPU> cpu = GameboyCPU::CreateWithMemoryInterface(std::static_pointer_cast<MemoryInterface>(mmunit_ptr));
 
 		WHEN("Execute Codes.")
 		{

@@ -22,7 +22,7 @@ public:
 
 	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
 	void Reset() override {}
-	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
+	void ResolveInterrupt(InterruptsType resolve_interrupt_address) override { }
 	~MemoryManageUnit() final = default;
 private:
 	constexpr static size_t BANK_SIZE = 7;

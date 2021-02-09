@@ -7,7 +7,7 @@
 
 
 #include "typedef.h"
-
+#include <vector>
 /*
  * 이건 메모리다.
  */
@@ -33,11 +33,10 @@ public:
 	[[nodiscard]] virtual bool IsReportedInterrupt() const = 0;
 
 	// 해결 
-	virtual void ResolveInterrupt(WORD resolve_interrupt_address) = 0;
+	virtual void ResolveInterrupt(InterruptsType resolve_interrupt_address) = 0;
 
-	// GetReportedInterrupt -> 보고된 인터럽트의 메모리 주소. 이 주소를 기반으로 마더보드가 문제를 처리함.
-	[[nodiscard]] virtual WORD GetReportedInterrupt() const { return 0; }
-
+	// GetReportedInterrupts ->  보고된 인터럽트의 ENUM 리스트. 이 리스트 기반으로 마더보드가 문제를 처리함.
+	[[nodiscard]] virtual std::vector<InterruptsType> GetReportedInterrupts() const { return {}; }
 
 	virtual ~MemoryInterface() {};
 };

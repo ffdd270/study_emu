@@ -147,8 +147,8 @@ public:
 	void Reset() override { }
 
 	[[nodiscard]] bool IsReportedInterrupt() const override;
-	[[nodiscard]] WORD GetReportedInterrupt() const override;
-	void ResolveInterrupt(WORD resolve_interrupt_address) override;
+	[[nodiscard]] std::vector<InterruptsType> GetReportedInterrupts() const override;
+	void ResolveInterrupt(InterruptsType resolve_interrupt_address) override;
 
 	void NextStep(size_t clock);
 
@@ -287,6 +287,9 @@ private:
 
 	// 컬러 게임 보이
 	ColorScreenBits mColorScreen;
+
+	bool mReportLCDStat;
+	bool mReportVBlank;
 };
 
 
