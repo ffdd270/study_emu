@@ -32,6 +32,7 @@ SCENARIO( "CPU INTERRUPT TEST", "[INTERRUPT]")
 			THEN("CPU MOVE TO INTERRUPT VECTOR, 0x40")
 			{
 				REQUIRE( ptr_cpu->GetRegisterPC().reg_16 == 0x40 );
+				REQUIRE( ptr_cpu->IsInterruptEnable() == false ); // 실행후 인터럽트는 꺼져 있다.
 			}
 
 		}
