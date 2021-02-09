@@ -204,33 +204,52 @@ bool GPU::IsReportedInterrupt() const
 	return mIsHDMAStart || mIsDMAStart || mReportVBlank || mReportLCDStat;
 }
 
-InterruptsType GPU::GetReportedInterrupt() const
+std::vector<InterruptsType> GPU::GetReportedInterrupts() const
 {
+	std::vector<InterruptsType> types;
+
 	if ( mIsDMAStart )
 	{
-		return InterruptsType::DMA;
+		types.emplace_back( InterruptsType::DMA );
 	}
-	else if (mIsHDMAStart )
+	else if ( mIsHDMAStart )
 	{
-		return InterruptsType::HDMA;
+		types.emplace_back( InterruptsType::HDMA );
 	}
 	else if ( mReportLCDStat )
 	{
-		return InterruptsType::LCD_STAT;
+		types.emplace_back( InterruptsType::LCD_STAT );
 	}
 	else if ( mReportVBlank )
 	{
-		return  InterruptsType::V_BLANK;
+		types.emplace_back( InterruptsType::V_BLANK );
 	}
 
-	return InterruptsType::NONE;
+	return types;
 }
 
 
 void GPU::ResolveInterrupt(InterruptsType resolve_interrupt_address)
 {
-	mIsHDMAStart = false;
+	switch (resolve_interrupt_address)
+	{
+		case InterruptsType::HDMA:
+			mIsHDMAStart = false;
+			break;
+		case InterruptsType::DMA:
+			mIsDMAStart = false;
+			break;
+		case InterruptsType::LCD_STAT:
+			mReportLCDStat = false;
+			break;
+		case InterruptsType::V_BLANK:
+			mReportVBlank = false;
+			break;
+		default:
+			break;
+	}
 }
+
 
 
 void GPU::NextStep(size_t clock)
@@ -278,6 +297,7 @@ void GPU::NextStep(size_t clock)
 			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
 			{
 				setCoincidenceInterrupt(mScanLineY == mLYC); // LYC랑 같으면 인터럽트 발생.
+				mReportLCDStat = true;
 			}
 		}
 
@@ -290,12 +310,24 @@ void GPU::NextStep(size_t clock)
 
 			setLCDMode(1);
 			enableVBlank();
+
+			if (IsEnableMode1VBlankInterrupt())
+			{
+				mReportLCDStat = true;
+			}
+
+			mReportVBlank = true;
 		}
 		else if ( mDots <= 80 ) // Searching Object / OAM 접근 불가.
 		{
 			if ( GetModeFlag() == 2 )
 			{
 				continue;
+			}
+
+			if (IsEnableMode2OAMInterrupt())
+			{
+				mReportLCDStat = true;
 			}
 
 			setLCDMode( 2 );
@@ -313,6 +345,11 @@ void GPU::NextStep(size_t clock)
 
 			setLCDMode( 0 );
 			enableHBlank();
+
+			if (IsEnableMode0HBlankInterrupt())
+			{
+				mReportLCDStat = true;
+			}
 
 			// TODO : 이제 실제로 그리면 됨.
 			drawBackground();

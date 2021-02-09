@@ -528,6 +528,13 @@ SCENARIO("GPU", "[GPU]")
 
 			THEN("One Step = Copy 0x10.")
 			{
+				std::vector<InterruptsType> types = gpu_ptr->GetReportedInterrupts();
+
+				for (InterruptsType type : types)
+				{
+					REQUIRE(type == InterruptsType::HDMA);
+				}
+				
 				WORD copyed_source_addr = source_addr;
 				WORD copyed_dest_addr = dest_addr;
 
@@ -542,7 +549,13 @@ SCENARIO("GPU", "[GPU]")
 					copyed_source_addr += 0x10;
 				}
 
-				REQUIRE( gpu_ptr->IsReportedInterrupt() == false );
+				types =  gpu_ptr->GetReportedInterrupts();
+
+				for ( InterruptsType type : types ) // HDMA 인터럽트 내려감.
+				{
+					REQUIRE(type != InterruptsType::HDMA);
+				}
+				
 				REQUIRE( mmunit_ptr->Get(0xff55) == 0x80 );
 			}
 		}
