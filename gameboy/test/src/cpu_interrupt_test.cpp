@@ -54,5 +54,25 @@ SCENARIO( "CPU INTERRUPT TEST", "[INTERRUPT]")
 				REQUIRE( ptr_cpu->IsInterruptEnable() == false );
 			}
 		}
+
+		WHEN("Interrupt Disable, Flag Set.")
+		{
+			ptr_cpu->InjectionMemory( 0xFB ); // 인터럽트 활성화 ( EI )
+			ptr_cpu->NextStep(); // EI
+
+			ptr_mmunit->Set( 0xffff, 0x1e ); // V-BLANK 빼고 모든 인터럽트 활성화.
+			ptr_mmunit->Set( 0xff0f, 0x1  ); // V-BLANK 인터럽트 활성화
+
+			WORD prv_pc = ptr_cpu->GetRegisterPC().reg_16;
+			ptr_cpu->NextStep(); // PROC INTERRUPT, But failed.
+
+			THEN("Not Interrupted")
+			{
+				REQUIRE( ptr_cpu->GetRegisterPC().reg_16 == prv_pc + 1 );
+				REQUIRE( ptr_cpu->IsInterruptEnable()  );  // 작동 안 돼었으니 그냥 계속 true.
+			}
+
+
+		}
 	}
 }
