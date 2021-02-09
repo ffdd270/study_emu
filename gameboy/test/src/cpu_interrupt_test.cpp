@@ -36,11 +36,22 @@ SCENARIO( "CPU INTERRUPT TEST", "[INTERRUPT]")
 
 		}
 
-		WHEN("ID, INT V-BLANK")
+		WHEN("DI, INT V-BLANK")
 		{
+			ptr_cpu->InjectionMemory( 0xF3 );
+			ptr_cpu->NextStep(); // DI. 이걸 먼저 해야 우선순위가 있는 인터럽트에게 안 뺐김.
 
+			WORD prv_pc = ptr_cpu->GetRegisterPC().reg_16;
+			ptr_mmunit->Set( 0xffff, 0x1f ); // 모든 인터럽트 활성화
+			ptr_mmunit->Set( 0xff0f, 0x1  ); // V-BLANK 인터럽트 활성화
+
+			ptr_cpu->NextStep();
+
+			THEN("CPU NOT INTERRUPTED")
+			{
+				REQUIRE( ptr_cpu->GetRegisterPC().reg_16 == prv_pc + 1 );
+				REQUIRE( ptr_cpu->IsInterruptEnable() == false );
+			}
 		}
-
 	}
-
 }
