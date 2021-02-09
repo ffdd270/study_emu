@@ -29,8 +29,8 @@ public:
 	void SetCartridge( std::shared_ptr<MemoryInterface> ptr_cartridge );
 	std::shared_ptr<MemoryInterface> GetInterface( Interfaces selected_interface );
 private:
-	void procInterrupts(std::array<WORD, 10> & array_interrupt, size_t interrupt_len );
-	void procInterrupt( WORD interrupt_address );
+	void procInterrupts(std::array<InterruptsType, 10> & array_interrupt, size_t interrupt_len );
+	void procInterrupt( InterruptsType interrupt_address );
 private:
 
 

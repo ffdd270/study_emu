@@ -647,7 +647,7 @@ public:
 	}
 	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
 	void Reset() override {}
-	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
+	void ResolveInterrupt(InterruptsType resolve_interrupt_address) override { }
 private:
 	std::array<BYTE, 0xffff> mMock;
 };
@@ -668,7 +668,7 @@ public:
 	}
 	[[nodiscard]] bool IsReportedInterrupt() const override { return false; }
 	void Reset() override {}
-	void ResolveInterrupt(WORD resolve_interrupt_address) override { }
+	void ResolveInterrupt(InterruptsType resolve_interrupt_address) override { }
 private:
 	std::array<BYTE, 0xffff> mMock;
 };

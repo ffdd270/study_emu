@@ -135,7 +135,7 @@ GPU::GPU() :
 		mHDMADestHi( 0 ), mHDMADestLo(0 ),
 		mHDMAStatus( 0 ), mIsHDMAStart(false ),
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
-		mSelectVRAMBank(0 )
+		mSelectVRAMBank(0 ), mReportLCDStat( false ), mReportVBlank( false )
 {
 	for(ColorScreenLine & line : mColorScreen )
 	{
@@ -201,24 +201,33 @@ void GPU::Set(size_t mem_addr, BYTE value)
 
 bool GPU::IsReportedInterrupt() const
 {
-	return mIsHDMAStart || mIsDMAStart;
+	return mIsHDMAStart || mIsDMAStart || mReportVBlank || mReportLCDStat;
 }
 
-WORD GPU::GetReportedInterrupt() const
+InterruptsType GPU::GetReportedInterrupt() const
 {
 	if ( mIsDMAStart )
 	{
-		return 0xff46u;
+		return InterruptsType::DMA;
 	}
-	else
+	else if (mIsHDMAStart )
 	{
-		return 0xff55u;
+		return InterruptsType::HDMA;
+	}
+	else if ( mReportLCDStat )
+	{
+		return InterruptsType::LCD_STAT;
+	}
+	else if ( mReportVBlank )
+	{
+		return  InterruptsType::V_BLANK;
 	}
 
+	return InterruptsType::NONE;
 }
 
 
-void GPU::ResolveInterrupt(WORD resolve_interrupt_address)
+void GPU::ResolveInterrupt(InterruptsType resolve_interrupt_address)
 {
 	mIsHDMAStart = false;
 }

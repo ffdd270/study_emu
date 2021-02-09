@@ -41,7 +41,7 @@ void Motherboard::Step()
 
 	// 인터럽트 처리
 	size_t interrupt_len = 0;
-	std::array<WORD, 10> interrupt_array = { 0 };
+	std::array<InterruptsType, 10> interrupt_array = { InterruptsType::NONE };
 
 	for( std::shared_ptr<MemoryInterface> & ref_interface : mInterfaces )
 	{
@@ -70,7 +70,7 @@ std::shared_ptr<MemoryInterface> Motherboard::GetInterface(Motherboard::Interfac
 	return mInterfaces[ selected_interface ];
 }
 
-void Motherboard::procInterrupts(std::array<WORD, 10> &array_interrupt, size_t interrupt_len)
+void Motherboard::procInterrupts(std::array<InterruptsType, 10> &array_interrupt, size_t interrupt_len)
 {
 	if ( interrupt_len == 0 ) { return; }
 
@@ -149,7 +149,7 @@ bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<Memo
 	return true;
 }
 
-void Motherboard::procInterrupt(WORD interrupt_address)
+void Motherboard::procInterrupt(InterruptsType interrupt_address)
 {
 	bool interrupt_resolved = false;
 
@@ -158,18 +158,18 @@ void Motherboard::procInterrupt(WORD interrupt_address)
 
 	switch ( interrupt_address )
 	{
-		case 0xff46u:
+		case InterruptsType::DMA:
 		{
 			interrupt_resolved = proc_dma_interrupt( gpu_ptr, mmunit_ptr );
 			break;
 		}
-		case 0xff55u:
+		case InterruptsType::HDMA:
 		{
 			interrupt_resolved = proc_hdma_interrupt(gpu_ptr, mmunit_ptr);
 			break;
 		}
 		default:
-			throw std::logic_error("Not Impl Interrupt : " + std::to_string( interrupt_address ) );
+			throw std::logic_error("Not Impl Interrupt : " + std::to_string( static_cast<WORD>(interrupt_address) ) );
 	}
 
 	if ( interrupt_resolved )
