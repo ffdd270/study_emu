@@ -258,6 +258,10 @@ size_t GameboyCPU::procInterrupt()
 	mInturruptEnable = false;
 	setWORDToStack( mPC.reg_16 );  // 스택에 올리고
 	mPC.reg_16 = INTERRUPT_VECTORS[ interrupt ];
+
+	interrupt_flags = interrupt_flags & static_cast<BYTE>( ~static_cast<BYTE>( 1u << interrupt ) );
+	mMemoryInterface->Set( 0xff0f, interrupt_flags );
+
 	return 4; // 4 클락.
 }
 
