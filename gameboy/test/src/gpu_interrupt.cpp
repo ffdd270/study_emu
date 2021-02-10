@@ -45,4 +45,23 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 		}
 	}
 
+	GIVEN("0xff0f->0, GPU Interrupt HBLANK ON.")
+	{
+		ptr_mmunit->Set( 0xff0f, 0 );
+		ptr_mmunit->Set( 0xff41, 0b1000 );
+
+		REQUIRE( ptr_gpu->IsEnableMode0HBlankInterrupt() );
+
+		WHEN("H-BLANK")
+		{
+			ptr_gpu->NextStep( 80 + 172  ); // H-BLANK 직전
+			motherboard.Step(); // H-BLANK
+
+			THEN( "0xff0f, BIT 1 is Set" )
+			{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0b10 );
+				REQUIRE( ptr_gpu->IsEnableMode0HBlankInterrupt() );
+			}
+		}
+	}
 }
