@@ -212,15 +212,15 @@ std::vector<InterruptsType> GPU::GetReportedInterrupts() const
 	{
 		types.emplace_back( InterruptsType::DMA );
 	}
-	else if ( mIsHDMAStart )
+	if ( mIsHDMAStart )
 	{
 		types.emplace_back( InterruptsType::HDMA );
 	}
-	else if ( mReportLCDStat )
+	if ( mReportLCDStat )
 	{
 		types.emplace_back( InterruptsType::LCD_STAT );
 	}
-	else if ( mReportVBlank )
+	if ( mReportVBlank )
 	{
 		types.emplace_back( InterruptsType::V_BLANK );
 	}
