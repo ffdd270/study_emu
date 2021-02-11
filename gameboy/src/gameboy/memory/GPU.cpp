@@ -254,8 +254,6 @@ void GPU::ResolveInterrupt(InterruptsType resolve_interrupt_address)
 
 void GPU::NextStep(size_t clock)
 {
-	disableHBlank();
-
 	// 1 Cycle = 4 Clock, 114 Cycle = 456 Dots = One Line.
 	// Line == LY
 
@@ -343,13 +341,12 @@ void GPU::NextStep(size_t clock)
 				continue; // 계속.
 			}
 
-			setLCDMode( 0 );
-			enableHBlank();
-
 			if (IsEnableMode0HBlankInterrupt())
 			{
 				mReportLCDStat = true;
 			}
+
+			setLCDMode( 0 );
 
 			// TODO : 이제 실제로 그리면 됨.
 			drawBackground();

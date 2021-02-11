@@ -57,7 +57,7 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 			THEN("0xff0f, ALL BIT NOT SET, HBLANK INTERRUPT FALSE")
 			{
 				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0 );
-				REQUIRE( ptr_gpu->IsEnableMode0HBlankInterrupt() );
+				REQUIRE_FALSE( ptr_gpu->IsEnableMode0HBlankInterrupt() );
 			}
 		}
 	}
