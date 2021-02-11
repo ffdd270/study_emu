@@ -12,6 +12,12 @@ inline void HBLANK( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_mother
 	ref_motherboard.Step(); // H-BLANK
 }
 
+inline void VBLANK( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboard )
+{
+	ref_ptr_gpu->NextStep( GPUHelper::RealScanlineEnd * GPUHelper::LinePerDots - 1 );
+	ref_motherboard.Step(); // 여기서 GPU +1.
+}
+
 /*
  * TODO : 남은 테스트 리스트
 LCD STAT / HBLANK INTERRUPT ON, REQ INTERRUPT
@@ -33,16 +39,15 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 	std::shared_ptr<GPU> ptr_gpu = std::static_pointer_cast<GPU>( motherboard.GetInterface( Motherboard::Interface_GPU ) );
 	std::shared_ptr<MemoryManageUnit> ptr_mmunit = std::static_pointer_cast<MemoryManageUnit>( motherboard .GetInterface( Motherboard::Interface_MMUNIT ));
 
+	ptr_mmunit->Set( 0xff0f, 0 );
 
 	GIVEN("0xff0f -> 0, Not GPU Interrupt Set")
 	{
-		ptr_mmunit->Set( 0xff0f, 0 );
-		ptr_gpu->Set( 0xff41, 0 ); // 인터럽트 호영  다 끔.
+		ptr_mmunit->Set( 0xff41, 0 ); // 인터럽트 호영  다 끔.
 
 		WHEN("V-BLANK")
 		{
-			ptr_gpu->NextStep( GPUHelper::RealScanlineEnd * GPUHelper::LinePerDots - 1 );
-			motherboard.Step(); // 여기서 GPU +1.
+			VBLANK( ptr_gpu, motherboard );
 
 			THEN("0xff0f, BIT 0 is Set.")
 			{
@@ -64,7 +69,6 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 
 	GIVEN("0xff0f->0, GPU Interrupt HBLANK ON.")
 	{
-		ptr_mmunit->Set( 0xff0f, 0 );
 		ptr_mmunit->Set( 0xff41, 0b1000 );
 
 		REQUIRE( ptr_gpu->IsEnableMode0HBlankInterrupt() );
