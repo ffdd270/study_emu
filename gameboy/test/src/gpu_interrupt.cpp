@@ -48,13 +48,14 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 	{
 		ptr_mmunit->Set( 0xff41, 0 ); // 인터럽트 호영  다 끔.
 
-		WHEN("V-BLANK")
+		WHEN("V-BLANK, NOT ENABLE LCD STAT/V-BLANK")
 		{
 			VBLANK( ptr_gpu, motherboard );
 
 			THEN("0xff0f, BIT 0 is Set.")
 			{
 				REQUIRE( ptr_mmunit->Get( 0xff0f ) == V_BLANK_INTERRUPT_REQ_VALUE );
+				REQUIRE_FALSE( ptr_gpu->IsEnableMode1VBlankInterrupt() );
 			}
 		}
 

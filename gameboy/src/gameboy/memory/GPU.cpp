@@ -307,7 +307,6 @@ void GPU::NextStep(size_t clock)
 			}
 
 			setLCDMode(1);
-			enableVBlank();
 
 			if (IsEnableMode1VBlankInterrupt())
 			{

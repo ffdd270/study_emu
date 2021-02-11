@@ -172,13 +172,15 @@ void Motherboard::procInterrupt(InterruptsType interrupt_address)
 		case InterruptsType::V_BLANK:
 		{
 			interrupt_resolved = true;
-			mmunit_ptr->Set( 0xff0f, 1 );
+			BYTE origin_value =  mmunit_ptr->Get( 0xff0f );
+			mmunit_ptr->Set( 0xff0f, origin_value | 1u );
 			break;
 		}
 		case InterruptsType::LCD_STAT:
 		{
 			interrupt_resolved = true;
-			mmunit_ptr->Set( 0xff0f, 0b10 );
+			BYTE origin_value =  mmunit_ptr->Get( 0xff0f );
+			mmunit_ptr->Set( 0xff0f, origin_value | 0b10u );
 			break;
 		}
 

@@ -460,7 +460,6 @@ SCENARIO("GPU", "[GPU]")
 			THEN(", VBLANK is Active.")
 			{
 				REQUIRE( gpu.GetModeFlag() == 1 );
-				REQUIRE( gpu.IsEnableMode1VBlankInterrupt() );
 			}
 
 			THEN("LY = 144")
