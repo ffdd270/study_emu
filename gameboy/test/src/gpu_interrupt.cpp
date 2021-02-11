@@ -6,6 +6,12 @@
 #include "memory/GPU.h"
 #include <iostream>
 
+inline void HBLANK( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboard )
+{
+	ref_ptr_gpu->NextStep( 80 + 172  ); // H-BLANK 직전
+	ref_motherboard.Step(); // H-BLANK
+}
+
 /*
  * TODO : 남은 테스트 리스트
 LCD STAT / HBLANK INTERRUPT ON, REQ INTERRUPT
@@ -43,6 +49,17 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 1 );
 			}
 		}
+
+		WHEN("H-BLANK / LCD STAT")
+		{
+			HBLANK( ptr_gpu, motherboard );
+
+			THEN("0xff0f, ALL BIT NOT SET, HBLANK INTERRUPT FALSE")
+			{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0 );
+				REQUIRE( ptr_gpu->IsEnableMode0HBlankInterrupt() );
+			}
+		}
 	}
 
 	GIVEN("0xff0f->0, GPU Interrupt HBLANK ON.")
@@ -54,9 +71,7 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 
 		WHEN("H-BLANK")
 		{
-			ptr_gpu->NextStep( 80 + 172  ); // H-BLANK 직전
-			motherboard.Step(); // H-BLANK
-
+			HBLANK( ptr_gpu, motherboard );
 			THEN( "0xff0f, BIT 1 is Set" )
 			{
 				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0b10 );
