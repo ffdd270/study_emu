@@ -32,6 +32,9 @@ LCD STAT / LYC Interrupt OFF, NOT_REQ Interrupt
 
 SCENARIO("GPU INTERRUPT", "[GPU]")
 {
+	constexpr BYTE LCD_STAT_INTERRUPT_REQ_VALUE = 0b10;
+	constexpr BYTE V_BLANK_INTERRUPT_REQ_VALUE = 0b1;
+
 	Motherboard motherboard;
 	std::shared_ptr<MockMemory> memory = std::make_shared<MockMemory>();
 	motherboard.SetCartridge( std::static_pointer_cast<MockMemory>( memory ) );
@@ -51,7 +54,7 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 
 			THEN("0xff0f, BIT 0 is Set.")
 			{
-				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 1 );
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == V_BLANK_INTERRUPT_REQ_VALUE );
 			}
 		}
 
@@ -78,8 +81,23 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 			HBLANK( ptr_gpu, motherboard );
 			THEN( "0xff0f, BIT 1 is Set" )
 			{
-				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0b10 );
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == LCD_STAT_INTERRUPT_REQ_VALUE );
 				REQUIRE( ptr_gpu->IsEnableMode0HBlankInterrupt() );
+			}
+		}
+	}
+	GIVEN("0xff0f->0, GPU Interrupt LCD STAT/VBLANK ON")
+	{
+		ptr_mmunit->Set( 0xff41, 0b10000 );
+		REQUIRE( ptr_gpu->IsEnableMode1VBlankInterrupt() );
+
+		WHEN("V-BLANK")
+		{
+			VBLANK( ptr_gpu, motherboard );
+			THEN("0xff0f, BIT 0, 1 is Set. VBLANK Interrupt Active.")
+			{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == ( LCD_STAT_INTERRUPT_REQ_VALUE | V_BLANK_INTERRUPT_REQ_VALUE ));
+				REQUIRE( ptr_gpu->IsEnableMode1VBlankInterrupt() );
 			}
 		}
 	}
