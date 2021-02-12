@@ -154,6 +154,14 @@ GPU::GPU() :
 		}
 	}
 
+	for(BGPalletIndexLine & line : mBGIndexScreen )
+	{
+		for( BYTE & bg_index : line )
+		{
+			bg_index = 0;
+		}
+	}
+
 
 }
 
@@ -910,10 +918,11 @@ void GPU::drawBackground()
 		std::array<BYTE, 8> pallets = GPUHelper::ToTileData(Get(tile_addr),Get(tile_addr + 1) );
 
 		// 일단 모노만 짜놓고 생각하자
-
+		BYTE pallet_index = pallets[pixel_x % 8];
+		mBGIndexScreen[mScanLineY][i] = pallet_index;
 		if (true) // TODO : 여기 모노 구분자 추가
 		{
-			GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mBGMonoPallet, pallets[pixel_x % 8] );
+			GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mBGMonoPallet, pallet_index );
 			mMonoScreen[mScanLineY][i] = pallet_result;
 		}
 	}
@@ -948,6 +957,12 @@ void GPU::drawSprites()
 		// Y는 위에서 계산했음.
 		for ( const GPUHelper::ObjectAttribute & ref_attribute : object_attributes )
 		{
+			// BG가 뒤덮고 있으면 Skip
+			if( ref_attribute.attributes.bg_to_oam_priority == 1 && ( mBGIndexScreen[mScanLineY][i] != 0 )  )
+			{
+				continue;
+			}
+
 
 			BYTE real_pos_x = GPUHelper::GetSpriteRenderPositionX( ref_attribute.x_position );
 			BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( ref_attribute.y_position );
