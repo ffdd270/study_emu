@@ -237,7 +237,7 @@ BYTE get_use_interrupt( BYTE interrupt_vectors )
 
 size_t GameboyCPU::procInterrupt()
 {
-	if(!mInturruptEnable) // 인터럽트 미허용이면 처리 안 함.
+	if(!mHalted && !mInturruptEnable) // 인터럽트 미허용 && 정지 상태면 무시.
 	{
 		return 0;
 	}
@@ -248,7 +248,13 @@ size_t GameboyCPU::procInterrupt()
 
 	// Enable 과 Flag 둘 다 올라와야 한다.
 	BYTE interrupt_vectors = interrupt_enable & interrupt_flags;
+	if ( interrupt_vectors == 0x00 ) // 인터럽트 플래그가 안 올라갔슴.
+	{
+		return 0;
+	}
+
 	BYTE interrupt = get_use_interrupt( interrupt_vectors );
+	mHalted = false; // 인터럽트가 올라갔기 때문에 중지 상태에서 벗어남.
 
 	if ( interrupt == 0xff ) // 실행할 게 없음
 	{
