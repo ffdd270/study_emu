@@ -144,6 +144,10 @@ using ColorScreenBits = std::array<ColorScreenLine, GPUHelper::ScreenHeight>;
 using MonoScreenLine = std::array<GPUHelper::MonoPallet, GPUHelper::ScreenWidth>;
 using MonoScreenBits = std::array<MonoScreenLine, GPUHelper::ScreenHeight>;
 
+using BGPalletIndexLine = std::array<BYTE, GPUHelper::ScreenWidth>;
+using BGPalletIndexScreen = std::array<BGPalletIndexLine , GPUHelper::ScreenHeight>;
+
+using Pixels = std::array< BYTE, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
 
 // Video RAM
 // 0x8000~0x9fff
@@ -298,6 +302,9 @@ private:
 
 	// 컬러 게임 보이
 	ColorScreenBits mColorScreen;
+
+	// 우선순위 할당을 위한 BG 인덱스 지시용
+	BGPalletIndexScreen mBGIndexScreen;
 
 	bool mReportLCDStat;
 	bool mReportVBlank;
