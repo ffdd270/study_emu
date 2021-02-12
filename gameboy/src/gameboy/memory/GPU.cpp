@@ -927,6 +927,11 @@ void GPU::drawSprites()
 
 	for( int i = 0; i < 39; i++ ) // 이번 라인에 그릴 애들을 찾음.
 	{
+		if ( object_attributes.size() >= 10 ) // 한 라인 당 오브젝트는 10개 렌더링이 최대임.
+		{
+			break;
+		}
+		
 		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
 		BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( attr.y_position );
 
