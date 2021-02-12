@@ -928,7 +928,9 @@ void GPU::drawSprites()
 	for( int i = 0; i < 39; i++ ) // 이번 라인에 그릴 애들을 찾음.
 	{
 		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
-		if( attr.y_position <= ( mScanLineY )  && ( attr.y_position  + END_RANGE ) >= ( mScanLineY )  )
+		BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( attr.y_position );
+
+		if( real_pos_y <= ( mScanLineY )  && ( real_pos_y + END_RANGE ) >= ( mScanLineY )  )
 		{
 			object_attributes.emplace_back( attr );
 		}
@@ -941,18 +943,26 @@ void GPU::drawSprites()
 		// Y는 위에서 계산했음.
 		for ( const GPUHelper::ObjectAttribute & ref_attribute : object_attributes )
 		{
+
+			BYTE real_pos_x = GPUHelper::GetSpriteRenderPositionX( ref_attribute.x_position );
+			BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( ref_attribute.y_position );
 			// 이번에 그려야 함
-			if (ref_attribute.x_position <= i && ref_attribute.x_position + END_RANGE >= i )
+			if (real_pos_x <= i && real_pos_x + END_RANGE >= i )
 			{
 				// 이 값들은 0~7범위 일 수 밖에 없다.
-				BYTE x_index = i - ref_attribute.x_position; // 몇번째로 그리고 있는가?
+				BYTE x_index = i - real_pos_x; // 몇번째로 그리고 있는가?
 
 				if ( ref_attribute.attributes.horizontal_flip )
 				{
 					x_index = (END_RANGE - x_index);
 				}
 
-				BYTE y_index = mScanLineY - ref_attribute.y_position; // Y축은 몇번째인가?
+				BYTE y_index = mScanLineY - real_pos_y; // Y축은 몇번째인가?
+
+				if ( ref_attribute.attributes.vertical_flip )
+				{
+					y_index = (END_RANGE - y_index);
+				}
 
 				BYTE tile = ref_attribute.sprite_tile_number;
 				WORD tile_start_address = GPUHelper::SpriteTileStartAddress + (tile * GPUHelper::TileDataLSize); // 16바이트 * 0x0~0xff = 0x1000. 타일 주소와 일치함.
