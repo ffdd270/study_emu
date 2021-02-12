@@ -100,9 +100,9 @@ namespace GPUHelper
 	{
 		struct
 		{
-			BYTE bg_pallet_number:2;
-			BYTE tile_vram_bank_number:1;
-			BYTE gb_pallet_number:1;
+			BYTE bg_pallet_number:3; // BIT 0~2
+			BYTE tile_vram_bank_number:1; // BIT 3
+			BYTE gb_pallet_number:1;  // BIT 4
 			BYTE horizontal_flip:1;  // 0 -> Normal, 1 -> Mirror.
 			BYTE vertical_flip:1; // 0 Normal, 1 -> Mirror
 			BYTE bg_to_oam_priority:1; // 0 -> Use OAM priority bit, 1 -> bg priority
