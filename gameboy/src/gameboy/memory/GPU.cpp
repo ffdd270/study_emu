@@ -946,6 +946,12 @@ void GPU::drawSprites()
 			{
 				// 이 값들은 0~7범위 일 수 밖에 없다.
 				BYTE x_index = i - ref_attribute.x_position; // 몇번째로 그리고 있는가?
+
+				if ( ref_attribute.attributes.horizontal_flip )
+				{
+					x_index = (END_RANGE - x_index);
+				}
+
 				BYTE y_index = mScanLineY - ref_attribute.y_position; // Y축은 몇번째인가?
 
 				BYTE tile = ref_attribute.sprite_tile_number;
