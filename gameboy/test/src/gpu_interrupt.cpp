@@ -33,6 +33,12 @@ inline void JUMP_TO_100LINE( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & r
 	STEP( ref_ptr_gpu, ref_motherboard, ( 100 * GPUHelper::LinePerDots ) - 1 );
 }
 
+inline void JUMP_TO_NEXT_LINE( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboard )
+{
+	STEP( ref_ptr_gpu, ref_motherboard, (  GPUHelper::LinePerDots ) - 1 );
+}
+
+
 /*
  * TODO : 남은 테스트 리스트
 LCD STAT / HBLANK INTERRUPT ON, REQ INTERRUPT
@@ -166,6 +172,18 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 				REQUIRE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
 			}
 		}
+
+		WHEN("Jump to Next Line")
+		{
+			JUMP_TO_NEXT_LINE( ptr_gpu, motherboard );
+
+			THEN("NO INTERRUPT, LYC Interrupt Active. Coincidence Not Active ")
+			{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0);
+				REQUIRE_FALSE( ptr_gpu->IsCoincidence() );
+				REQUIRE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
+			}
+		}
 	}
 
 	GIVEN("GPU Interrupt LCD STAT ALL OFF. LYC = 100")
@@ -179,12 +197,44 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 		{
 			JUMP_TO_100LINE( ptr_gpu, motherboard );
 
-			THEN("0xff0f, BIT 2 is Set, OAM Interrupt Active")
+			THEN("NO INTERRUPT LYC Interrupt False. Coincidence Active")
 			{
 				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0);
 				REQUIRE( ptr_gpu->IsCoincidence() );
 				REQUIRE_FALSE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
 			}
 		}
+
+		WHEN("Jump to Next Line")
+		{
+			JUMP_TO_NEXT_LINE( ptr_gpu, motherboard );
+
+			THEN("NO INTERRUPT, LYC Interrupt Active. Coincidence Not Active ")
+			{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0);
+				REQUIRE_FALSE( ptr_gpu->IsCoincidence() );
+				REQUIRE_FALSE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
+			}
+		}
 	}
+}
+
+TEST_CASE("LYC Interrupt Flag Set on every next line", "[GPU]")
+{
+	Motherboard motherboard;
+	std::shared_ptr<MockMemory> memory = std::make_shared<MockMemory>();
+	motherboard.SetCartridge( std::static_pointer_cast<MockMemory>( memory ) );
+
+	std::shared_ptr<GPU> ptr_gpu = std::static_pointer_cast<GPU>( motherboard.GetInterface( Motherboard::Interface_GPU ) );
+	std::shared_ptr<MemoryManageUnit> ptr_mmunit = std::static_pointer_cast<MemoryManageUnit>( motherboard .GetInterface( Motherboard::Interface_MMUNIT ));
+
+	ptr_mmunit->Set( 0xff41, 0b1u << 6u );
+	REQUIRE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
+	ptr_mmunit->Set( 0xff45, 100 ); // 100라인에서 LYC 작동
+
+	JUMP_TO_NEXT_LINE( ptr_gpu, motherboard );
+
+	REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0 );
+	REQUIRE_FALSE( ptr_gpu->IsCoincidence() );
+	REQUIRE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
 }
