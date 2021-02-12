@@ -125,6 +125,17 @@ namespace GPUHelper
 	};
 
 	constexpr WORD SpriteTileStartAddress = 0x8000;
+
+	inline BYTE GetSpriteRenderPositionY( BYTE y_position )
+	{
+		return y_position - 16;
+	}
+
+
+	inline BYTE GetSpriteRenderPositionX( BYTE x_position )
+	{
+		return x_position - 8;
+	}
 }
 
 using ColorScreenLine = std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>;
