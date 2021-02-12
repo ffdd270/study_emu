@@ -66,21 +66,21 @@ function InstructionWatch.init( self )
 	self.vars.list = {}
 end
 
+local OAM_BASE = 0xfe00
+local OAM_END = 0xfe9f
 OAMWatch = {}
 
 function OAMWatch.render( self )
 	local cpu = GetInstanceCPU()
 	local memory = cpu:GetMemory()
 
-	local oam_base = 0xfe00
-	local oam_end = 0xfe9f
-	local oam_count = ( oam_end - oam_base )  / 4
+	local oam_count = ( OAM_END - OAM_BASE )  / 4
 
 	for i = 0, oam_count - 1 do
 		local values = {}
 
 		for cnt = 0, 3 do
-			table.insert( values, memory:GetValue( oam_base + ( i * 4 ) + cnt ) )
+			table.insert( values, memory:GetValue( OAM_BASE + ( i * 4 ) + cnt ) )
 		end
 
 		local y_pos = values[1]
@@ -96,6 +96,38 @@ end
 
 function OAMWatch.init( self )
 	AddViewer( "OAMWatch", function()
+		self:render()
+	end)
+end
+
+
+OAMSetter = { }
+function OAMSetter.render( self )
+	ImGui.Text( "OAM NUMBER" ); ImGui.SameLine(); ImGui.InputTextWithFlags( " ",  self.vars.oam_buf, 0 );
+	ImGui.Text( "Y POSITION" ); ImGui.SameLine(); ImGui.InputTextWithFlags( "  ",  self.vars.y_buf, 0 );
+	ImGui.Text( "X POSITION" ); ImGui.SameLine(); ImGui.InputTextWithFlags( "   ",  self.vars.x_buf, 0 );
+
+	if ImGui.Button("SET!") then
+		local cpu = GetInstanceCPU()
+		local memory = cpu:GetMemory()
+
+		local oam_number = tonumber( self.vars.oam_buf:GetViewString() )
+		local y_pos = tonumber( self.vars.y_buf:GetViewString() )
+		local x_pos = tonumber( self.vars.x_buf:GetViewString() )
+
+		memory:SetValue( OAM_BASE + ( oam_number * 4 ),   y_pos ) -- Y
+		memory:SetValue( OAM_BASE + ( oam_number * 4 ) + 1,   x_pos ) -- Y
+	end
+end
+
+
+function OAMSetter.init( self )
+	self.vars = {}
+	self.vars.oam_buf = StringBuf( 3 )
+	self.vars.y_buf = StringBuf( 4 )
+	self.vars.x_buf = StringBuf( 4 )
+
+	AddViewer( "OAMSetter", function()
 		self:render()
 	end)
 end
