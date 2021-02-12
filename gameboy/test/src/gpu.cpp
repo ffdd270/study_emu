@@ -193,10 +193,10 @@ BYTE generate_bg_map_attribute(BYTE bg_pallet_number, BYTE tile_vram_bank_number
 	Bit 7    BG-to-OAM Priority         (0=Use OAM priority bit, 1=BG Priority
 	 */
 	return static_cast<BYTE>( bg_pallet_number |
-		static_cast<BYTE>( tile_vram_bank_number << 2u ) |
-		static_cast<BYTE>( horizontal_flip << 4u ) |
-		static_cast<BYTE>( vertical_flip << 5u ) |
-		static_cast<BYTE>( bg_to_oam_priority << 6u ) );
+		static_cast<BYTE>( tile_vram_bank_number << 3u ) |
+		static_cast<BYTE>( horizontal_flip << 5u ) |
+		static_cast<BYTE>( vertical_flip << 6u ) |
+		static_cast<BYTE>( bg_to_oam_priority << 7u ) );
 }
 
 
@@ -611,7 +611,7 @@ SCENARIO("GPU", "[GPU]")
 	GIVEN("Sprite Data Attribute / Original GB Pallet")
 	{
 		GPUHelper::ObjectAttribute attribute{};
-		attribute.data[3] = 1u << 3u;
+		attribute.data[3] = 1u << 4u;
 
 		THEN("Original Pallet Number == 1")
 		{
