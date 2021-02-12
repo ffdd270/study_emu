@@ -302,7 +302,7 @@ void GPU::NextStep(size_t clock)
 
 			setConincidence(mScanLineY == mLYC); // LYC랑 같으면 Status Set.
 
-			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
+			if ( IsEnableLYCoincidenceInterrupt() && IsCoincidence() ) // 플래그 올라가면 체크.
 			{
 				mReportLCDStat = true;
 			}
