@@ -292,9 +292,10 @@ void GPU::NextStep(size_t clock)
 		{
 			mScanLineY = ( mScanLineY + 1 ) % GPUHelper::MaxScanline; // 스캔라인은 154까지 있다.
 
+			setConincidence(mScanLineY == mLYC); // LYC랑 같으면 Status Set.
+
 			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
 			{
-				setCoincidenceInterrupt(mScanLineY == mLYC); // LYC랑 같으면 인터럽트 발생.
 				mReportLCDStat = true;
 			}
 		}
@@ -835,7 +836,7 @@ void GPU::disableHBlank()
 	OffBit( mLCDStatusRegister, 3 );
 }
 
-void GPU::setCoincidenceInterrupt(bool value)
+void GPU::setConincidence(bool value)
 {
 	if ( value )
 	{

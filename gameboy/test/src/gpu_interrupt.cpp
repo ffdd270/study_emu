@@ -28,6 +28,11 @@ inline void OAM( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboa
 	STEP( ref_ptr_gpu, ref_motherboard, 79 );
 }
 
+inline void JUMP_TO_100LINE( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboard )
+{
+	STEP( ref_ptr_gpu, ref_motherboard, ( 100 * GPUHelper::LinePerDots ) - 1 );
+}
+
 /*
  * TODO : 남은 테스트 리스트
 LCD STAT / HBLANK INTERRUPT ON, REQ INTERRUPT
@@ -139,6 +144,46 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 			{
 				REQUIRE( ptr_mmunit->Get( 0xff0f ) == LCD_STAT_INTERRUPT_REQ_VALUE );
 				REQUIRE( ptr_gpu->IsEnableMode2OAMInterrupt() );
+			}
+		}
+	}
+
+	GIVEN("GPU Interrupt LCD STAT/LYC ON. LYC = 100")
+	{
+		ptr_mmunit->Set( 0xff41, 0b1u << 6u );
+		REQUIRE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
+
+		ptr_mmunit->Set( 0xff45, 100 ); // 100라인에서 LYC 작동
+
+		WHEN("Jump to 100 Line")
+		{
+			JUMP_TO_100LINE( ptr_gpu, motherboard );
+
+			THEN("0xff0f, BIT 2 is Set, OAM Interrupt Active")
+	 		{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == LCD_STAT_INTERRUPT_REQ_VALUE );
+				REQUIRE( ptr_gpu->IsCoincidence() );
+				REQUIRE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
+			}
+		}
+	}
+
+	GIVEN("GPU Interrupt LCD STAT ALL OFF. LYC = 100")
+	{
+		ptr_mmunit->Set( 0xff41, 0 );
+		REQUIRE_FALSE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
+
+		ptr_mmunit->Set( 0xff45, 100 ); // 100라인에서 LYC 작동
+
+		WHEN("Jump to 100 Line")
+		{
+			JUMP_TO_100LINE( ptr_gpu, motherboard );
+
+			THEN("0xff0f, BIT 2 is Set, OAM Interrupt Active")
+			{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0);
+				REQUIRE( ptr_gpu->IsCoincidence() );
+				REQUIRE_FALSE( ptr_gpu->IsEnableLYCoincidenceInterrupt() );
 			}
 		}
 	}
