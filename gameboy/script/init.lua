@@ -1,10 +1,11 @@
 function init_script()
-	TestUI:init()
+	--TestUI:init()
 	MemoryViewer:init()
 	LoggerViewer:init()
 	MemoryWatch:init()
 	LuaCommander:init()
 	InstructionWatch:init()
+	OAMWatch:init()
 end
 
 
