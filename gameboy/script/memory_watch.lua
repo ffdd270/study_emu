@@ -85,10 +85,10 @@ function OAMWatch.render( self )
 
 		local y_pos = values[1]
 		local x_pos = values[2]
-		local pallet = ( values[4] & 8 ) >> 3
-		local horizontal_flip = ( values[4] & 16 ) >> 4
-		local vertical_flip = ( values[4] & 32 ) >> 5
-		local bg_to_oam_priority = ( values[4] & 64 ) >> 6
+		local pallet = ( values[4] & 16 ) >> 4
+		local horizontal_flip = ( values[4] & 32 ) >> 5
+		local vertical_flip = ( values[4] & 64 ) >> 6
+		local bg_to_oam_priority = ( values[4] & 128 ) >> 7
 
 		ImGui.Text( i  .. " : Y " .. y_pos .. " X " .. x_pos .. " / ATTR. P " .. pallet .. ' H-F ' .. horizontal_flip .. ' V-F ' .. vertical_flip .. ' PRI ' .. bg_to_oam_priority)
 	end
