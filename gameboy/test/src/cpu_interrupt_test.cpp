@@ -92,3 +92,24 @@ SCENARIO( "CPU INTERRUPT TEST", "[INTERRUPT]")
 		}
 	}
 }
+
+// get_use_interrupt에서 0b10을 1로 안 내려서 생긴 문제.
+TEST_CASE("CPU -> LCD STAT Interrupt Flag and Enable Seted. But Not Interrupt Problem Check.")
+{
+	std::shared_ptr<MockRWMemory> ptr_mock_memory = std::make_shared<MockRWMemory>();
+	std::shared_ptr<MemoryManageUnit> ptr_mmunit = std::make_shared<MemoryManageUnit>( std::static_pointer_cast<MemoryInterface>( ptr_mock_memory ),
+																					   nullptr );
+	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::CreateWithMemoryInterface( ptr_mmunit );
+
+	ptr_cpu->InjectionMemory( 0xF3 ); // 인터럽트 비활성화 ( DI )
+	ptr_cpu->InjectionMemory( 0xFB ); // 인터럽트 활성화 ( EI )
+
+	ptr_cpu->NextStep(); // DI
+	ptr_mmunit->Set( 0xffff, 0x1f ); // 모든 인터럽트 활성화
+	ptr_mmunit->Set( 0xff0f, 0x2  ); // LCD STAT 인터럽트 활성화
+	ptr_cpu->NextStep(); // EI
+	ptr_cpu->NextStep(); // Interrupt
+
+	REQUIRE( ptr_cpu->GetRegisterPC().reg_16 == 0x48 );
+	REQUIRE_FALSE( ptr_cpu->IsInterruptEnable() );
+}

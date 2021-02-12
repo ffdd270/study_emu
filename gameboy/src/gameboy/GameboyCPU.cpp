@@ -226,7 +226,7 @@ BYTE get_use_interrupt( BYTE interrupt_vectors )
 {
 	for ( size_t i = 0; i < 5; i++ )
 	{
-		if ( ( interrupt_vectors & ( 0b1u << i ) ) == 1 )
+		if ( ( ( interrupt_vectors & ( 0b1u << i ) ) >> i ) == 1 )
 		{
 			return i;
 		}
