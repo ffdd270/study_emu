@@ -460,7 +460,6 @@ SCENARIO("GPU", "[GPU]")
 			THEN(", VBLANK is Active.")
 			{
 				REQUIRE( gpu.GetModeFlag() == 1 );
-				REQUIRE( gpu.IsEnableMode1VBlankInterrupt() );
 			}
 
 			THEN("LY = 144")
@@ -658,7 +657,6 @@ TEST_CASE("GPU / LCD MODE start to end")
 
 	gpu.NextStep( 172 );
 	REQUIRE( gpu.GetModeFlag() == 0 ); // H-BLANK 시작.
-	REQUIRE( gpu.IsEnableMode0HBlankInterrupt() );
 
 	// 이제 다음 라인이겠지? LY Set.
 	gpu.Set( 0xff45, 1 );

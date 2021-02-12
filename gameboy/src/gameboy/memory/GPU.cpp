@@ -254,8 +254,6 @@ void GPU::ResolveInterrupt(InterruptsType resolve_interrupt_address)
 
 void GPU::NextStep(size_t clock)
 {
-	disableHBlank();
-
 	// 1 Cycle = 4 Clock, 114 Cycle = 456 Dots = One Line.
 	// Line == LY
 
@@ -294,9 +292,10 @@ void GPU::NextStep(size_t clock)
 		{
 			mScanLineY = ( mScanLineY + 1 ) % GPUHelper::MaxScanline; // 스캔라인은 154까지 있다.
 
+			setConincidence(mScanLineY == mLYC); // LYC랑 같으면 Status Set.
+
 			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
 			{
-				setCoincidenceInterrupt(mScanLineY == mLYC); // LYC랑 같으면 인터럽트 발생.
 				mReportLCDStat = true;
 			}
 		}
@@ -309,7 +308,6 @@ void GPU::NextStep(size_t clock)
 			}
 
 			setLCDMode(1);
-			enableVBlank();
 
 			if (IsEnableMode1VBlankInterrupt())
 			{
@@ -343,13 +341,12 @@ void GPU::NextStep(size_t clock)
 				continue; // 계속.
 			}
 
-			setLCDMode( 0 );
-			enableHBlank();
-
 			if (IsEnableMode0HBlankInterrupt())
 			{
 				mReportLCDStat = true;
 			}
+
+			setLCDMode( 0 );
 
 			// TODO : 이제 실제로 그리면 됨.
 			drawBackground();
@@ -839,7 +836,7 @@ void GPU::disableHBlank()
 	OffBit( mLCDStatusRegister, 3 );
 }
 
-void GPU::setCoincidenceInterrupt(bool value)
+void GPU::setConincidence(bool value)
 {
 	if ( value )
 	{

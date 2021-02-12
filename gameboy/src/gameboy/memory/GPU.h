@@ -208,7 +208,7 @@ private:
 	void enableHBlank();
 	void disableHBlank();
 
-	void setCoincidenceInterrupt(bool value );
+	void setConincidence(bool value );
 
 	void setLCDMode( BYTE mode );
 	void setRgb( GPUHelper::ColorPallet pallet, BYTE x );
