@@ -608,6 +608,17 @@ SCENARIO("GPU", "[GPU]")
 		}
 	}
 
+	GIVEN("Sprite Data Attribute / Original GB Pallet")
+	{
+		GPUHelper::ObjectAttribute attribute{};
+		attribute.data[3] = 1u << 3u;
+
+		THEN("Original Pallet Number == 1")
+		{
+			REQUIRE( attribute.attributes.gb_pallet_number == 1 );
+		}
+	}
+
 	GIVEN("Object Attribute")
 	{
 		GPUHelper::ObjectAttribute attribute{};

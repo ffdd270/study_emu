@@ -478,7 +478,7 @@ WORD GPU::GetSelectedTileAddress(BYTE tile_index) const
 
 GPUHelper::ObjectAttribute GPU::GetObjectAttribute(BYTE oam_table_index) const
 {
-	size_t real_position = oam_table_index * 4;
+	size_t real_position = static_cast<size_t>(oam_table_index) * 4;
 
 	if ( ( real_position ) > ( mObjectAttributeMemory.size() - 1 )  )
 	{
@@ -925,12 +925,12 @@ void GPU::drawSprites()
 
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;
 
-	for( int i = 0; i < 20; i++ ) // 이번 라인에 그릴 애들을 찾음.
+	for( int i = 0; i < 39; i++ ) // 이번 라인에 그릴 애들을 찾음.
 	{
 		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
 		if( attr.y_position <= ( mScanLineY )  && ( attr.y_position  + END_RANGE ) >= ( mScanLineY )  )
 		{
-			object_attributes.emplace_back( std::move(attr) );
+			object_attributes.emplace_back( attr );
 		}
 	}
 
@@ -959,7 +959,7 @@ void GPU::drawSprites()
 				{
 					if ( pallets[x_index] != 0 ) // 0이면 스킵
 					{
-						BYTE pallet_number = ref_attribute.attributes.cgb_pallet_number;
+						BYTE pallet_number = ref_attribute.attributes.gb_pallet_number;
 						if (pallet_number == 0 )
 						{
 							GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mOBJMonoPallet0, pallets[x_index] );
