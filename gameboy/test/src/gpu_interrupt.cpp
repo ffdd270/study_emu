@@ -6,16 +6,26 @@
 #include "memory/GPU.h"
 #include <iostream>
 
+inline void STEP( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboard, size_t prv_clock )
+{
+	ref_ptr_gpu->NextStep( prv_clock );
+	ref_motherboard.Step(); // 여기서 한 클럭 더 씀
+}
+
+
 inline void HBLANK( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboard )
 {
-	ref_ptr_gpu->NextStep( 80 + 172  ); // H-BLANK 직전
-	ref_motherboard.Step(); // H-BLANK
+	STEP( ref_ptr_gpu, ref_motherboard, 80 + 172 );
 }
 
 inline void VBLANK( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboard )
 {
-	ref_ptr_gpu->NextStep( GPUHelper::RealScanlineEnd * GPUHelper::LinePerDots - 1 );
-	ref_motherboard.Step(); // 여기서 GPU +1.
+	STEP( ref_ptr_gpu, ref_motherboard, GPUHelper::RealScanlineEnd * GPUHelper::LinePerDots - 1  );
+}
+
+inline void OAM( std::shared_ptr<GPU> & ref_ptr_gpu, Motherboard & ref_motherboard )
+{
+	STEP( ref_ptr_gpu, ref_motherboard, 79 );
 }
 
 /*
@@ -34,6 +44,7 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 {
 	constexpr BYTE LCD_STAT_INTERRUPT_REQ_VALUE = 0b10;
 	constexpr BYTE V_BLANK_INTERRUPT_REQ_VALUE = 0b1;
+
 
 	Motherboard motherboard;
 	std::shared_ptr<MockMemory> memory = std::make_shared<MockMemory>();
@@ -69,6 +80,17 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 				REQUIRE_FALSE( ptr_gpu->IsEnableMode0HBlankInterrupt() );
 			}
 		}
+
+		WHEN("OAM / LCD STAT")
+		{
+			OAM(ptr_gpu, motherboard);
+
+			THEN("0xff0f, ALL BIT NO SET, OAM INTERRUPT Flag FALSE")
+			{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == 0 );
+				REQUIRE_FALSE( ptr_gpu->IsEnableMode2OAMInterrupt() );
+			}
+		}
 	}
 
 	GIVEN("0xff0f->0, GPU Interrupt HBLANK ON.")
@@ -99,6 +121,24 @@ SCENARIO("GPU INTERRUPT", "[GPU]")
 			{
 				REQUIRE( ptr_mmunit->Get( 0xff0f ) == ( LCD_STAT_INTERRUPT_REQ_VALUE | V_BLANK_INTERRUPT_REQ_VALUE ));
 				REQUIRE( ptr_gpu->IsEnableMode1VBlankInterrupt() );
+			}
+		}
+	}
+
+	GIVEN("GPU Interrupt LCD STAT/OAM ON")
+	{
+		ptr_mmunit->Set( 0xff41, 0b1u << 5u );
+		REQUIRE( ptr_gpu->IsEnableMode2OAMInterrupt() );
+
+		WHEN("MODE 2")
+		{
+			// MODE 2 => 80 ㅍ클ㄹ럭
+			OAM( ptr_gpu, motherboard );
+
+			THEN("0xff0f, BIT 2 is Set, OAM Interrupt Active")
+			{
+				REQUIRE( ptr_mmunit->Get( 0xff0f ) == LCD_STAT_INTERRUPT_REQ_VALUE );
+				REQUIRE( ptr_gpu->IsEnableMode2OAMInterrupt() );
 			}
 		}
 	}
