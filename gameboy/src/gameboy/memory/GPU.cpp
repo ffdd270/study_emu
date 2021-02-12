@@ -891,7 +891,7 @@ void GPU::drawBackground()
 
 	for ( int i = 0; i < GPUHelper::ScreenWidth; i++ )
 	{
-		bool this_pixel_render_window = i <= window_x && window_enable;
+		bool this_pixel_render_window = i >= window_x && window_enable;
 		
 		WORD base_tile_map  = 0x9800u;
 
@@ -936,7 +936,7 @@ void GPU::drawSprites()
 
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;
 
-	for( int i = 0; i < 39; i++ ) // 이번 라인에 그릴 애들을 찾음.
+	for( int i = 0; i < 40; i++ ) // 이번 라인에 그릴 애들을 찾음.
 	{
 		if ( object_attributes.size() >= 10 ) // 한 라인 당 오브젝트는 10개 렌더링이 최대임.
 		{
