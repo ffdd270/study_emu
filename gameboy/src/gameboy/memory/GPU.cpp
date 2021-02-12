@@ -154,6 +154,14 @@ GPU::GPU() :
 		}
 	}
 
+	for(BGPalletIndexLine & line : mBGIndexScreen )
+	{
+		for( BYTE & bg_index : line )
+		{
+			bg_index = 0;
+		}
+	}
+
 
 }
 
@@ -294,7 +302,7 @@ void GPU::NextStep(size_t clock)
 
 			setConincidence(mScanLineY == mLYC); // LYC랑 같으면 Status Set.
 
-			if ( IsEnableLYCoincidenceInterrupt() ) // 플래그 올라가면 체크.
+			if ( IsEnableLYCoincidenceInterrupt() && IsCoincidence() ) // 플래그 올라가면 체크.
 			{
 				mReportLCDStat = true;
 			}
@@ -478,7 +486,7 @@ WORD GPU::GetSelectedTileAddress(BYTE tile_index) const
 
 GPUHelper::ObjectAttribute GPU::GetObjectAttribute(BYTE oam_table_index) const
 {
-	size_t real_position = oam_table_index * 4;
+	size_t real_position = static_cast<size_t>(oam_table_index) * 4;
 
 	if ( ( real_position ) > ( mObjectAttributeMemory.size() - 1 )  )
 	{
@@ -883,10 +891,12 @@ void GPU::drawBackground()
 
 	for ( int i = 0; i < GPUHelper::ScreenWidth; i++ )
 	{
+		bool this_pixel_render_window = i >= window_x && window_enable;
+		
 		WORD base_tile_map  = 0x9800u;
 
-		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && ( i > window_x || !window_enable ) ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
-				( GetSelectedWindowTileMap() == 0x9C00u && i <= window_x && window_enable ) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례임.
+		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && (!this_pixel_render_window) ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
+				( GetSelectedWindowTileMap() == 0x9C00u && this_pixel_render_window) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례임.
 		{
 			base_tile_map = 0x9C00u;
 		}
@@ -910,10 +920,11 @@ void GPU::drawBackground()
 		std::array<BYTE, 8> pallets = GPUHelper::ToTileData(Get(tile_addr),Get(tile_addr + 1) );
 
 		// 일단 모노만 짜놓고 생각하자
-
+		BYTE pallet_index = pallets[pixel_x % 8];
+		mBGIndexScreen[mScanLineY][i] = pallet_index;
 		if (true) // TODO : 여기 모노 구분자 추가
 		{
-			GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mBGMonoPallet, pallets[pixel_x % 8] );
+			GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mBGMonoPallet, pallet_index );
 			mMonoScreen[mScanLineY][i] = pallet_result;
 		}
 	}
@@ -925,12 +936,19 @@ void GPU::drawSprites()
 
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;
 
-	for( int i = 0; i < 20; i++ ) // 이번 라인에 그릴 애들을 찾음.
+	for( int i = 0; i < 40; i++ ) // 이번 라인에 그릴 애들을 찾음.
 	{
-		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
-		if( attr.y_position <= ( mScanLineY )  && ( attr.y_position  + END_RANGE ) >= ( mScanLineY )  )
+		if ( object_attributes.size() >= 10 ) // 한 라인 당 오브젝트는 10개 렌더링이 최대임.
 		{
-			object_attributes.emplace_back( std::move(attr) );
+			break;
+		}
+		
+		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
+		BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( attr.y_position );
+
+		if( real_pos_y <= ( mScanLineY )  && ( real_pos_y + END_RANGE ) >= ( mScanLineY )  )
+		{
+			object_attributes.emplace_back( attr );
 		}
 	}
 
@@ -941,12 +959,32 @@ void GPU::drawSprites()
 		// Y는 위에서 계산했음.
 		for ( const GPUHelper::ObjectAttribute & ref_attribute : object_attributes )
 		{
+			// BG가 뒤덮고 있으면 Skip
+			if( ref_attribute.attributes.bg_to_oam_priority == 1 && ( mBGIndexScreen[mScanLineY][i] != 0 )  )
+			{
+				continue;
+			}
+
+
+			BYTE real_pos_x = GPUHelper::GetSpriteRenderPositionX( ref_attribute.x_position );
+			BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( ref_attribute.y_position );
 			// 이번에 그려야 함
-			if (ref_attribute.x_position <= i && ref_attribute.x_position + END_RANGE >= i )
+			if (real_pos_x <= i && real_pos_x + END_RANGE >= i )
 			{
 				// 이 값들은 0~7범위 일 수 밖에 없다.
-				BYTE x_index = i - ref_attribute.x_position; // 몇번째로 그리고 있는가?
-				BYTE y_index = mScanLineY - ref_attribute.y_position; // Y축은 몇번째인가?
+				BYTE x_index = i - real_pos_x; // 몇번째로 그리고 있는가?
+
+				if ( ref_attribute.attributes.horizontal_flip )
+				{
+					x_index = (END_RANGE - x_index);
+				}
+
+				BYTE y_index = mScanLineY - real_pos_y; // Y축은 몇번째인가?
+
+				if ( ref_attribute.attributes.vertical_flip )
+				{
+					y_index = (END_RANGE - y_index);
+				}
 
 				BYTE tile = ref_attribute.sprite_tile_number;
 				WORD tile_start_address = GPUHelper::SpriteTileStartAddress + (tile * GPUHelper::TileDataLSize); // 16바이트 * 0x0~0xff = 0x1000. 타일 주소와 일치함.
@@ -959,7 +997,7 @@ void GPU::drawSprites()
 				{
 					if ( pallets[x_index] != 0 ) // 0이면 스킵
 					{
-						BYTE pallet_number = ref_attribute.attributes.cgb_pallet_number;
+						BYTE pallet_number = ref_attribute.attributes.gb_pallet_number;
 						if (pallet_number == 0 )
 						{
 							GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mOBJMonoPallet0, pallets[x_index] );

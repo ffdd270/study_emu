@@ -100,9 +100,9 @@ namespace GPUHelper
 	{
 		struct
 		{
-			BYTE bg_pallet_number:2;
-			BYTE tile_vram_bank_number:1;
-			BYTE cgb_pallet_number:1;
+			BYTE bg_pallet_number:3; // BIT 0~2
+			BYTE tile_vram_bank_number:1; // BIT 3
+			BYTE gb_pallet_number:1;  // BIT 4
 			BYTE horizontal_flip:1;  // 0 -> Normal, 1 -> Mirror.
 			BYTE vertical_flip:1; // 0 Normal, 1 -> Mirror
 			BYTE bg_to_oam_priority:1; // 0 -> Use OAM priority bit, 1 -> bg priority
@@ -125,6 +125,17 @@ namespace GPUHelper
 	};
 
 	constexpr WORD SpriteTileStartAddress = 0x8000;
+
+	inline BYTE GetSpriteRenderPositionY( BYTE y_position )
+	{
+		return y_position - 16;
+	}
+
+
+	inline BYTE GetSpriteRenderPositionX( BYTE x_position )
+	{
+		return x_position - 8;
+	}
 }
 
 using ColorScreenLine = std::array<GPUHelper::ColorPallet, GPUHelper::ScreenWidth>;
@@ -132,6 +143,10 @@ using ColorScreenBits = std::array<ColorScreenLine, GPUHelper::ScreenHeight>;
 
 using MonoScreenLine = std::array<GPUHelper::MonoPallet, GPUHelper::ScreenWidth>;
 using MonoScreenBits = std::array<MonoScreenLine, GPUHelper::ScreenHeight>;
+
+using BGPalletIndexLine = std::array<BYTE, GPUHelper::ScreenWidth>;
+using BGPalletIndexScreen = std::array<BGPalletIndexLine , GPUHelper::ScreenHeight>;
+
 using Pixels = std::array< BYTE, GPUHelper::ScreenWidth * GPUHelper::ScreenHeight * 4 >;
 
 // Video RAM
@@ -287,6 +302,9 @@ private:
 
 	// 컬러 게임 보이
 	ColorScreenBits mColorScreen;
+
+	// 우선순위 할당을 위한 BG 인덱스 지시용
+	BGPalletIndexScreen mBGIndexScreen;
 
 	bool mReportLCDStat;
 	bool mReportVBlank;

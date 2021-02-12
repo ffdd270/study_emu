@@ -230,6 +230,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<GameboyMemory>("GameboyMemory")
 			.addFunction("GetValue", &GameboyMemory::GetValue)
+			.addFunction("SetValue", &GameboyMemory::SetValue)
 		.endClass();
 
 	luabridge::getGlobalNamespace(lua_state)

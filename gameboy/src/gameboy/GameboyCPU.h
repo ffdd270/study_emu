@@ -41,6 +41,13 @@ public:
 
 		return mMemoryInterface->Get( memory_index );
 	}
+
+	void SetValue( std::size_t memory_index, BYTE value )
+	{
+		if( memory_index > 0xffff ) { throw std::logic_error("Out of index!"); }
+
+		mMemoryInterface->Set( memory_index, value );
+	}
 private:
 	GameboyMemory( std::shared_ptr<MemoryInterface> & ref_ptr_interface ) {  mMemoryInterface = ref_ptr_interface; }
 
