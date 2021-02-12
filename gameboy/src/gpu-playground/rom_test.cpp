@@ -93,6 +93,22 @@ void ImGuiHelper( const char * name , RomTest * rom_test )
 		}
 	}
 
+	if ( ImGui::Button("Step Until Next V-BLANK") )
+	{
+		std::shared_ptr<GPU> ptr_gpu = std::static_pointer_cast<GPU>( ref_motherboard.GetInterface(Motherboard::Interface_GPU) );
+
+		while( ptr_gpu->GetModeFlag() != 1 ) // 다음 화면까지 쩜프
+		{
+			ref_motherboard.Step();
+		}
+
+		while( ptr_gpu->GetModeFlag() == 1 ) // 다음 모드까지 점프
+		{
+			ref_motherboard.Step();
+		}
+
+	}
+
 	ImGui::End();
 }
 

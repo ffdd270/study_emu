@@ -74,9 +74,11 @@ function OAMWatch.render( self )
 	local cpu = GetInstanceCPU()
 	local memory = cpu:GetMemory()
 
-	ImGui.Text("LCD Control Register " .. memory:GetValue(0xff40));
+	ImGui.Text("LCD Control Register : " .. memory:GetValue(0xff40));
+	ImGui.Text("WINDOW X : "  .. memory:GetValue( 0xff4b ) )
+	ImGui.Text("WINDOW Y : "  .. memory:GetValue( 0xff4a ) )
 
-	local oam_count = ( OAM_END - OAM_BASE )  / 4
+	local oam_count = ( ( OAM_END - OAM_BASE )  / 4 ) + 1
 
 	for i = 0, oam_count - 1 do
 		local values = {}
