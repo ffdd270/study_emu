@@ -891,10 +891,12 @@ void GPU::drawBackground()
 
 	for ( int i = 0; i < GPUHelper::ScreenWidth; i++ )
 	{
+		bool this_pixel_render_window = i <= window_x && window_enable;
+		
 		WORD base_tile_map  = 0x9800u;
 
-		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && ( i > window_x || !window_enable ) ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
-				( GetSelectedWindowTileMap() == 0x9C00u && i <= window_x && window_enable ) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례임.
+		if( ( GetSelectBGTileMapDisplay() == 0x9C00u && (!this_pixel_render_window) ) || // BG가 9C00u가 선택된 상태로, 아직 윈도우 그릴 차례가 아님.
+				( GetSelectedWindowTileMap() == 0x9C00u && this_pixel_render_window) ) // WindowTileMap이 9C00 선택되었고. 윈도우 그릴 차례임.
 		{
 			base_tile_map = 0x9C00u;
 		}
