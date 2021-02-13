@@ -962,6 +962,11 @@ void GPU::drawBackground()
 
 void GPU::drawSprites()
 {
+	if ( !IsSpriteDisplayEnable() )
+	{
+		return;
+	}
+
 	constexpr BYTE END_RANGE = 7;
 
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;
