@@ -393,10 +393,11 @@ SCENARIO("GPU", "[GPU]")
 			// start from 0x8800;
 			gpu.Set(0xff40, 0b00000000u);
 
-			THEN("Tile Data 5, => 0x8000 + 3 * 16 ")
+			THEN("Tile Data 5, => 0x8000 + 3 * 16. And SIGNED VALUE!")
 			{
-				constexpr BYTE tile_index = 0x5;
-				REQUIRE( gpu.GetSelectedTileAddress( tile_index ) == 0x8800 + ( tile_index * 16 )  );
+				constexpr char tile_index = -3;
+				// 128은 BYTE의 HALF
+				REQUIRE( gpu.GetSelectedTileAddress( tile_index ) ==  ( 0x8800 ) + ( ( tile_index + 128 ) * 16 )  );
 			}
 		}
 
