@@ -127,7 +127,7 @@ std::array<BYTE, 8> GPUHelper::ToTileData(BYTE lo, BYTE hi)
 }
 
 GPU::GPU() :
-	mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
+		mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
 		mDots( 0 ), mScanLineY( 0 ),
 		mScrollX( 0 ), mScrollY( 0 ),
 		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
@@ -135,7 +135,7 @@ GPU::GPU() :
 		mHDMADestHi( 0 ), mHDMADestLo(0 ),
 		mHDMAStatus( 0 ), mIsHDMAStart(false ),
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
-		mSelectVRAMBank(0 ), mReportLCDStat( false ), mReportVBlank( false )
+		mSelectVRAMBank(0 ), mReportLCDStat( false ), mReportVBlank( false ), mWindowInternalCount(0 )
 {
 	for(ColorScreenLine & line : mColorScreen )
 	{
@@ -322,6 +322,7 @@ void GPU::NextStep(size_t clock)
 				mReportLCDStat = true;
 			}
 
+			mWindowInternalCount = 0; // 윈도우 내부 카운트 초기화
 			mReportVBlank = true;
 		}
 		else if ( mDots <= 80 ) // Searching Object / OAM 접근 불가.
@@ -891,7 +892,7 @@ void GPU::drawBackground()
 	BYTE pixel_y = mScrollY + mScanLineY;
 
 	// 0~31로 사상됨
-	BYTE tile_y = ( pixel_y - ( pixel_y % 8 ) ) / 8;
+	BYTE tile_y = 0;
 
 	bool window_enable = IsWindowDisplayEnable() && mScanLineY >= window_y; // 현재 스캔 라인이 윈도우보다 크면
 
@@ -907,23 +908,21 @@ void GPU::drawBackground()
 			base_tile_map = 0x9C00u;
 		}
 
-
 		BYTE pixel_x = mScrollX + i;
 
 		if (this_pixel_render_window)
 		{
 			pixel_x = i - window_x;
-			pixel_y = mScanLineY - window_y;
-			tile_y = (pixel_y - (pixel_y % 8)) / 8;
+			pixel_y = mWindowInternalCount;
 		}
 		else
 		{
 			pixel_y = mScrollY + mScanLineY;
-			tile_y = (pixel_y - (pixel_y % 8)) / 8;
 		}
 		
 		// 256x256 ->  32 x 32
 		// 8을 버리고, 8을 나눠서 0~32로.
+		tile_y = CovertToMultipleOf8( pixel_y );
 		BYTE tile_x = CovertToMultipleOf8(pixel_x);
 
 		/* 2바이트 == 8 비트만큼 Width, BG는 아래와 같이 되어있음.
@@ -946,6 +945,12 @@ void GPU::drawBackground()
 			GPUHelper::MonoPallet pallet_result = GPUHelper::GetPalletData( mBGMonoPallet, pallet_index );
 			mMonoScreen[mScanLineY][i] = pallet_result;
 		}
+	}
+
+	// 윈도우 내부 카운트
+	if ( window_enable && window_x >= 0 && window_x <= GPUHelper::ScreenWidth  ) // 이번에 그렸으면 올림.
+	{
+		mWindowInternalCount += 1;
 	}
 }
 

@@ -308,6 +308,8 @@ private:
 
 	bool mReportLCDStat;
 	bool mReportVBlank;
+
+	BYTE mWindowInternalCount;
 };
 
 
