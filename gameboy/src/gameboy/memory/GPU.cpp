@@ -968,6 +968,7 @@ void GPU::drawSprites()
 	}
 
 	constexpr BYTE END_RANGE = 7;
+	const BYTE SPRITE_SIZE = IsSpriteSize() ? 15 : 7;
 
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;
 
@@ -981,7 +982,7 @@ void GPU::drawSprites()
 		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
 		BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( attr.y_position );
 
-		if( real_pos_y <= ( mScanLineY )  && ( real_pos_y + END_RANGE ) >= ( mScanLineY )  )
+		if( real_pos_y <= ( mScanLineY )  && ( real_pos_y + SPRITE_SIZE ) >= ( mScanLineY )  )
 		{
 			object_attributes.emplace_back( attr );
 		}
@@ -1000,13 +1001,12 @@ void GPU::drawSprites()
 				continue;
 			}
 
-
 			BYTE real_pos_x = GPUHelper::GetSpriteRenderPositionX( ref_attribute.x_position );
 			BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( ref_attribute.y_position );
 			// 이번에 그려야 함
-			if (real_pos_x <= i && real_pos_x + END_RANGE >= i )
+			if (real_pos_x <= i && real_pos_x + ( END_RANGE ) >= i )
 			{
-				// 이 값들은 0~7범위 일 수 밖에 없다.
+				// 이 값들은 0~7, 혹은 8~15.. 인데.  7넘으면 주소를 다음 걸 긁어야 할듯?
 				BYTE x_index = i - real_pos_x; // 몇번째로 그리고 있는가?
 
 				if ( ref_attribute.attributes.horizontal_flip )
@@ -1018,10 +1018,20 @@ void GPU::drawSprites()
 
 				if ( ref_attribute.attributes.vertical_flip )
 				{
-					y_index = (END_RANGE - y_index);
+					y_index = (SPRITE_SIZE - y_index);
 				}
 
 				BYTE tile = ref_attribute.sprite_tile_number;
+
+				if ( IsSpriteSize() && ( y_index < 8 ) ) // 높은 건 이거 쓰고
+				{
+					tile &= 0xfeu;
+				}
+				else if( IsSpriteSize() ) // 낮은 건 이거 쓰고..
+				{
+					tile |= 0x1u;
+				}
+
 				WORD tile_start_address = GPUHelper::SpriteTileStartAddress + (tile * GPUHelper::TileDataLSize); // 16바이트 * 0x0~0xff = 0x1000. 타일 주소와 일치함.
 				WORD tile_address = ( y_index * 2 ) + tile_start_address;
 
