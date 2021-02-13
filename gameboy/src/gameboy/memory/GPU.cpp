@@ -903,6 +903,19 @@ void GPU::drawBackground()
 
 
 		BYTE pixel_x = mScrollX + i;
+
+		if (this_pixel_render_window)
+		{
+			pixel_x = i - window_x;
+			pixel_y = mScanLineY - window_y;
+			tile_y = (pixel_y - (pixel_y % 8)) / 8;
+		}
+		else
+		{
+			pixel_y = mScrollY + mScanLineY;
+			tile_y = (pixel_y - (pixel_y % 8)) / 8;
+		}
+		
 		// 256x256 ->  32 x 32
 		// 8을 버리고, 8을 나눠서 0~32로.
 		BYTE tile_x = CovertToMultipleOf8(pixel_x);
