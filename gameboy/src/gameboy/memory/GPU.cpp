@@ -402,7 +402,7 @@ bool GPU::IsSpriteDisplayEnable() const
 	return GPUHelper::IsSpriteDisplayEnable(mLCDControlRegister );
 }
 
-bool GPU::CheckProperty() const
+bool GPU::IsBGWindowVisible() const
 {
 	return GPUHelper::CheckProperty(mLCDControlRegister );
 }
@@ -939,6 +939,12 @@ void GPU::drawBackground()
 
 		// 일단 모노만 짜놓고 생각하자
 		BYTE pallet_index = pallets[pixel_x % 8];
+
+		if( !IsBGWindowVisible() )
+		{
+			pallet_index = 0;
+		}
+
 		mBGIndexScreen[mScanLineY][i] = pallet_index;
 		if (true) // TODO : 여기 모노 구분자 추가
 		{
@@ -956,6 +962,11 @@ void GPU::drawBackground()
 
 void GPU::drawSprites()
 {
+	if ( !IsSpriteDisplayEnable() )
+	{
+		return;
+	}
+
 	constexpr BYTE END_RANGE = 7;
 
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;

@@ -177,7 +177,7 @@ public:
 	[[nodiscard]] WORD GetSelectBGTileMapDisplay() const; // BIT 3
 	[[nodiscard]] bool IsSpriteSize() const; // BIT 2
 	[[nodiscard]] bool IsSpriteDisplayEnable() const; // BIT 1
-	[[nodiscard]] bool CheckProperty() const; // BIT 0
+	[[nodiscard]] bool IsBGWindowVisible() const; // BIT 0
 
 	//LCD Status Register
 	[[nodiscard]] bool IsEnableLYCoincidenceInterrupt() const;  // BIT 6
