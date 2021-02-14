@@ -49,6 +49,13 @@ void GameboyCPU::loadMemHLFromReg(BYTE op_code)
 	mMemoryInterface->Set( mRegisters.HL.reg_16, m8bitArguments[origin_reg_index].ref );
 }
 
+// LD (HL), imm8
+// 0b01110rrr
+void GameboyCPU::loadMemHLFromImm8(BYTE op_code)
+{
+	mMemoryInterface->Set(mRegisters.HL.reg_16, immediateValue());
+}
+
 
 void GameboyCPU::loadMemoryImm16FromSP( BYTE op_code )
 {

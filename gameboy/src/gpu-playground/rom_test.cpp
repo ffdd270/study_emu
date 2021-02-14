@@ -109,6 +109,28 @@ void ImGuiHelper( const char * name , RomTest * rom_test )
 
 	}
 
+	static int hblank_count = 0;
+	ImGui::DragInt("H-BLANK COUNT", &hblank_count,  1.0f, 0, 100 );
+	ImGui::SameLine();
+
+	if ( ImGui::Button("H-BLANK - DO IT!") )
+	{
+		std::shared_ptr<GPU> ptr_gpu = std::static_pointer_cast<GPU>( ref_motherboard.GetInterface(Motherboard::Interface_GPU) );
+
+		for ( int i = 0; i < hblank_count; i++ )
+		{
+			while ( ptr_gpu->GetModeFlag() != 0 )
+			{
+				ref_motherboard.Step();
+			}
+
+			while( ptr_gpu->GetModeFlag() == 0 )
+			{
+				ref_motherboard.Step();
+			}
+		}
+	}
+
 	ImGui::End();
 }
 

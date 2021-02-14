@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include "GPU.h"
-
+#include <unordered_map>
 
 inline bool GetBit( BYTE origin, BYTE bit_pos )
 {
@@ -127,7 +127,7 @@ std::array<BYTE, 8> GPUHelper::ToTileData(BYTE lo, BYTE hi)
 }
 
 GPU::GPU() :
-	mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
+		mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
 		mDots( 0 ), mScanLineY( 0 ),
 		mScrollX( 0 ), mScrollY( 0 ),
 		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
@@ -135,7 +135,7 @@ GPU::GPU() :
 		mHDMADestHi( 0 ), mHDMADestLo(0 ),
 		mHDMAStatus( 0 ), mIsHDMAStart(false ),
 		mDMASourceHi( 0 ), mIsDMAStart( false ),
-		mSelectVRAMBank(0 ), mReportLCDStat( false ), mReportVBlank( false )
+		mSelectVRAMBank(0 ), mReportLCDStat( false ), mReportVBlank( false ), mWindowInternalCount(0 )
 {
 	for(ColorScreenLine & line : mColorScreen )
 	{
@@ -322,6 +322,7 @@ void GPU::NextStep(size_t clock)
 				mReportLCDStat = true;
 			}
 
+			mWindowInternalCount = 0; // 윈도우 내부 카운트 초기화
 			mReportVBlank = true;
 		}
 		else if ( mDots <= 80 ) // Searching Object / OAM 접근 불가.
@@ -401,7 +402,7 @@ bool GPU::IsSpriteDisplayEnable() const
 	return GPUHelper::IsSpriteDisplayEnable(mLCDControlRegister );
 }
 
-bool GPU::CheckProperty() const
+bool GPU::IsBGWindowVisible() const
 {
 	return GPUHelper::CheckProperty(mLCDControlRegister );
 }
@@ -891,7 +892,7 @@ void GPU::drawBackground()
 	BYTE pixel_y = mScrollY + mScanLineY;
 
 	// 0~31로 사상됨
-	BYTE tile_y = ( pixel_y - ( pixel_y % 8 ) ) / 8;
+	BYTE tile_y = 0;
 
 	bool window_enable = IsWindowDisplayEnable() && mScanLineY >= window_y; // 현재 스캔 라인이 윈도우보다 크면
 
@@ -907,23 +908,21 @@ void GPU::drawBackground()
 			base_tile_map = 0x9C00u;
 		}
 
-
 		BYTE pixel_x = mScrollX + i;
 
 		if (this_pixel_render_window)
 		{
 			pixel_x = i - window_x;
-			pixel_y = mScanLineY - window_y;
-			tile_y = (pixel_y - (pixel_y % 8)) / 8;
+			pixel_y = mWindowInternalCount;
 		}
 		else
 		{
 			pixel_y = mScrollY + mScanLineY;
-			tile_y = (pixel_y - (pixel_y % 8)) / 8;
 		}
 		
 		// 256x256 ->  32 x 32
 		// 8을 버리고, 8을 나눠서 0~32로.
+		tile_y = CovertToMultipleOf8( pixel_y );
 		BYTE tile_x = CovertToMultipleOf8(pixel_x);
 
 		/* 2바이트 == 8 비트만큼 Width, BG는 아래와 같이 되어있음.
@@ -940,6 +939,12 @@ void GPU::drawBackground()
 
 		// 일단 모노만 짜놓고 생각하자
 		BYTE pallet_index = pallets[pixel_x % 8];
+
+		if( !IsBGWindowVisible() )
+		{
+			pallet_index = 0;
+		}
+
 		mBGIndexScreen[mScanLineY][i] = pallet_index;
 		if (true) // TODO : 여기 모노 구분자 추가
 		{
@@ -947,13 +952,26 @@ void GPU::drawBackground()
 			mMonoScreen[mScanLineY][i] = pallet_result;
 		}
 	}
+
+	// 윈도우 내부 카운트
+	if ( window_enable && window_x >= 0 && window_x <= GPUHelper::ScreenWidth  ) // 이번에 그렸으면 올림.
+	{
+		mWindowInternalCount += 1;
+	}
 }
 
 void GPU::drawSprites()
 {
+	if ( !IsSpriteDisplayEnable() )
+	{
+		return;
+	}
+
 	constexpr BYTE END_RANGE = 7;
+	const BYTE SPRITE_SIZE = IsSpriteSize() ? 15 : 7;
 
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;
+	std::unordered_map<int, bool> object_same_pos;
 
 	for( int i = 0; i < 40; i++ ) // 이번 라인에 그릴 애들을 찾음.
 	{
@@ -965,9 +983,11 @@ void GPU::drawSprites()
 		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
 		BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( attr.y_position );
 
-		if( real_pos_y <= ( mScanLineY )  && ( real_pos_y + END_RANGE ) >= ( mScanLineY )  )
+		if( ( real_pos_y <= ( mScanLineY ) ) && ( ( real_pos_y + SPRITE_SIZE ) >= ( mScanLineY ) )
+			&& ( object_same_pos.find(attr.x_position) == object_same_pos.end() ) ) // 같은 위치면 인덱스 높은 게 먼저.
 		{
 			object_attributes.emplace_back( attr );
+			object_same_pos.insert( std::make_pair( attr.x_position, true ) );
 		}
 	}
 
@@ -984,13 +1004,12 @@ void GPU::drawSprites()
 				continue;
 			}
 
-
 			BYTE real_pos_x = GPUHelper::GetSpriteRenderPositionX( ref_attribute.x_position );
 			BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( ref_attribute.y_position );
 			// 이번에 그려야 함
-			if (real_pos_x <= i && real_pos_x + END_RANGE >= i )
+			if (real_pos_x <= i && real_pos_x + ( END_RANGE ) >= i )
 			{
-				// 이 값들은 0~7범위 일 수 밖에 없다.
+				// 이 값들은 0~7, 혹은 8~15.. 인데.  7넘으면 주소를 다음 걸 긁어야 할듯?
 				BYTE x_index = i - real_pos_x; // 몇번째로 그리고 있는가?
 
 				if ( ref_attribute.attributes.horizontal_flip )
@@ -1002,10 +1021,20 @@ void GPU::drawSprites()
 
 				if ( ref_attribute.attributes.vertical_flip )
 				{
-					y_index = (END_RANGE - y_index);
+					y_index = (SPRITE_SIZE - y_index);
 				}
 
 				BYTE tile = ref_attribute.sprite_tile_number;
+
+				if ( IsSpriteSize() && ( y_index < 8 ) ) // 높은 건 이거 쓰고
+				{
+					tile &= 0xfeu;
+				}
+				else if( IsSpriteSize() ) // 낮은 건 이거 쓰고..
+				{
+					tile |= 0x1u;
+				}
+
 				WORD tile_start_address = GPUHelper::SpriteTileStartAddress + (tile * GPUHelper::TileDataLSize); // 16바이트 * 0x0~0xff = 0x1000. 타일 주소와 일치함.
 				WORD tile_address = ( y_index * 2 ) + tile_start_address;
 

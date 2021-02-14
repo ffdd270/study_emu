@@ -74,7 +74,9 @@ function OAMWatch.render( self )
 	local cpu = GetInstanceCPU()
 	local memory = cpu:GetMemory()
 
-	ImGui.Text("LCD Control Register : " .. memory:GetValue(0xff40));
+	ImGui.Text("LCD Control Register : " .. memory:GetValue(0xff40))
+	ImGui.Text("LY : " .. memory:GetValue(0xff44))
+	ImGui.Text("IS WINDOW ENABLE : " .. tostring((memory:GetValue(0xff40) & 16) >> 4))
 	ImGui.Text("WINDOW X : "  .. memory:GetValue( 0xff4b ) )
 	ImGui.Text("WINDOW Y : "  .. memory:GetValue( 0xff4a ) )
 
