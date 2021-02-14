@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include "GPU.h"
-
+#include <unordered_map>
 
 inline bool GetBit( BYTE origin, BYTE bit_pos )
 {
@@ -971,6 +971,7 @@ void GPU::drawSprites()
 	const BYTE SPRITE_SIZE = IsSpriteSize() ? 15 : 7;
 
 	std::vector<GPUHelper::ObjectAttribute> object_attributes;
+	std::unordered_map<int, bool> object_same_pos;
 
 	for( int i = 0; i < 40; i++ ) // 이번 라인에 그릴 애들을 찾음.
 	{
@@ -982,9 +983,11 @@ void GPU::drawSprites()
 		GPUHelper::ObjectAttribute attr = GetObjectAttribute( i );
 		BYTE real_pos_y = GPUHelper::GetSpriteRenderPositionY( attr.y_position );
 
-		if( real_pos_y <= ( mScanLineY )  && ( real_pos_y + SPRITE_SIZE ) >= ( mScanLineY )  )
+		if( ( real_pos_y <= ( mScanLineY ) ) && ( ( real_pos_y + SPRITE_SIZE ) >= ( mScanLineY ) )
+			&& ( object_same_pos.find(attr.x_position) == object_same_pos.end() ) ) // 같은 위치면 인덱스 높은 게 먼저.
 		{
 			object_attributes.emplace_back( attr );
+			object_same_pos.insert( std::make_pair( attr.x_position, true ) );
 		}
 	}
 
