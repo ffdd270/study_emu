@@ -158,6 +158,10 @@ private:
 	// (HL)<-r
 	void loadMemHLFromReg(BYTE op_code );
 
+	// LD (HL), imm8
+	// 0x36
+	void loadMemHLFromImm8(BYTE op_code);
+
 	//LD (WORD) SP
 	// 0x08
 	// (Word) <- SP

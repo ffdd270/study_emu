@@ -444,6 +444,7 @@ public:
 	//load
 	BIND_FUNC( loadMemoryImm16FromSP )
 	BIND_FUNC( loadRegFromImm8 )
+	BIND_FUNC( loadMemHLFromImm8 )
 	BIND_FUNC( loadRegAFromMemBC )
 	BIND_FUNC( loadRegAFromMemDE )
 	BIND_FUNC( loadRegAFromMemHLAndIncHL )
@@ -511,7 +512,15 @@ void GameboyCPU::pre0b00GenerateFuncMap()
 	for(BYTE i = 0b000; i <= 0b111; i++)
 	{
 		BYTE op_code = 0b00000000u | static_cast<BYTE>( i << 3u ) | 0b110u;
-		mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromImm8;
+
+		if ( i == 0b110u )
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::loadMemHLFromImm8;
+		}
+		else
+		{
+			mFuncMap[ op_code ] = BIND_FUNCS::loadRegFromImm8;
+		}
 	}
 
 	// LD (WORD) SP
