@@ -47,6 +47,8 @@ private:
 	
 	BYTE mTimerControl;
 	bool mTimerEnable;
+
+	BYTE mTimerModulo;
 };
 
 

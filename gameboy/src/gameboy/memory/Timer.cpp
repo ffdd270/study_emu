@@ -39,9 +39,9 @@ void Clock::ResetByTimerModulo(BYTE timer_modulo)
 // ---- 여기서부터는 타이머
 
 
-Timer::Timer() : mDivClock( 256 ), mTimerClock( 1 ), mTimerControl( 0 )
+Timer::Timer() : mDivClock( 256 ), mTimerClock( 1 ), mTimerControl( 0 ), mTimerModulo( 0 ), mTimerEnable( false )
 {
-
+	updateTimerControlValues();
 }
 
 void Timer::NextStep(size_t clock)
@@ -59,7 +59,7 @@ BYTE Timer::Get(size_t mem_addr) const
 		case 0xff05u:
 			break;
 		case 0xff06u:
-			break;
+			return mTimerModulo;
 		case 0xff07u:
 			return mTimerControl;
 		default:
@@ -79,6 +79,7 @@ void Timer::Set(size_t mem_addr, BYTE value)
 		case 0xff05u:
 			break;
 		case 0xff06u:
+			mTimerModulo = value;
 			break;
 		case 0xff07u:
 			mTimerControl = value & 0x07u; // 비트 0~2.
