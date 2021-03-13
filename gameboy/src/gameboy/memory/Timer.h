@@ -51,6 +51,7 @@ private:
 	bool mTimerEnable;
 
 	BYTE mTimerModulo;
+	bool mTimerInterrupt;
 };
 
 

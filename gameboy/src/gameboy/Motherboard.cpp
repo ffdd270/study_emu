@@ -5,6 +5,7 @@
 #include "Motherboard.h"
 #include <memory/MemoryManageUnit.h>
 #include <memory/GPU.h>
+#include "memory/Timer.h"
 #include <string>
 
 Motherboard::Motherboard()
@@ -27,8 +28,13 @@ void Motherboard::Boot()
 	// GPU.
 	mInterfaces[ Interface_GPU ] = std::static_pointer_cast<MemoryInterface>(std::make_shared<GPU>() );
 
+	// Timer
+	mInterfaces[ Interface_TIMER ] = std::static_pointer_cast<MemoryInterface>( std::make_shared<Timer>() );
+
 	// Memory Management Unit
-	mInterfaces[ Interface_MMUNIT ] = std::static_pointer_cast<MemoryInterface>(std::make_shared<MemoryManageUnit>( nullptr, mInterfaces[ Interface_GPU ] ) );
+	mInterfaces[ Interface_MMUNIT ] = std::static_pointer_cast<MemoryInterface>(
+			std::make_shared<MemoryManageUnit>(
+					nullptr, mInterfaces[ Interface_GPU ], mInterfaces[Interface_TIMER] ) );
 
 	// CPU
 	mCPU = GameboyCPU::CreateWithMemoryInterface( mInterfaces[ Interface_MMUNIT ] );
@@ -38,6 +44,7 @@ void Motherboard::Step()
 {
 	size_t clock = mCPU->NextStep();
 	std::static_pointer_cast<GPU>(mInterfaces[ Interface_GPU ] )->NextStep( clock );
+	std::static_pointer_cast<Timer>(mInterfaces[ Interface_TIMER ] )->NextStep( clock );
 
 	// 인터럽트 처리
 	std::vector<InterruptsType> interrupt_array = {};
@@ -152,6 +159,7 @@ bool proc_dma_interrupt(std::shared_ptr<GPU> & ref_ptr_gpu, std::shared_ptr<Memo
 
 void Motherboard::procInterrupt(InterruptsType interrupt_address)
 {
+	Interfaces resolve_interrupt_interface = Interface_GPU;
 	bool interrupt_resolved = false;
 
 	std::shared_ptr<GPU> gpu_ptr = std::static_pointer_cast<GPU>( mInterfaces[ Interface_GPU ] );
@@ -183,13 +191,21 @@ void Motherboard::procInterrupt(InterruptsType interrupt_address)
 			mmunit_ptr->Set( 0xff0f, origin_value | 0b10u );
 			break;
 		}
+		case InterruptsType::TIMER:
+		{
+			interrupt_resolved = true;
+			resolve_interrupt_interface = Interface_TIMER;
 
+			BYTE origin_value =  mmunit_ptr->Get( 0xff0f );
+			mmunit_ptr->Set( 0xff0f, origin_value | 0b100u );
+			break;
+		}
 		default:
 			throw std::logic_error("Not Impl Interrupt : " + std::to_string( static_cast<WORD>(interrupt_address) ) );
 	}
 
 	if ( interrupt_resolved )
 	{
-		gpu_ptr->ResolveInterrupt( interrupt_address );
+		mInterfaces[ resolve_interrupt_interface ]->ResolveInterrupt( interrupt_address );
 	}
 }

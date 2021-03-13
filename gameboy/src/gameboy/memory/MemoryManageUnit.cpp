@@ -7,10 +7,13 @@
 #include <utility>
 
 MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridge,
-                                   std::shared_ptr<MemoryInterface> ptr_vram)
+                                   std::shared_ptr<MemoryInterface> ptr_vram,
+								   std::shared_ptr<MemoryInterface> ptr_timer)
 {
 	mCartridge = std::move(ptr_cartridge);
 	mVRAM = std::move( ptr_vram );
+
+
 	mBankNum = 0;
 	mInterruptEnable = 0;
 	mInterruptFlags = 0;
@@ -39,6 +42,12 @@ BYTE MemoryManageUnit::Get(size_t mem_addr) const
 	else if ( mem_addr >= 0xD000u && mem_addr <= 0xDFFF )
 	{
 		return mWorkRam[ ( mBankNum * 0x1000u ) + ( mem_addr - 0xD000u ) ];
+	}
+	else if( mem_addr >= 0xff04u && mem_addr <= 0xff07u )
+	{
+		if (mTimer == nullptr) { throw std::logic_error("NOT LOADED TIMER"); }
+		return mTimer->Get( mem_addr );
+
 	}
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe ) // HI RAM
 	{
@@ -79,6 +88,10 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 	else if ( mem_addr >= 0xD000u && mem_addr <= 0xDFFF )
 	{
 		mWorkRam[ ( mBankNum * 0x1000u ) + ( mem_addr - 0xD000u ) ] = value;
+	}
+	else if( mem_addr >= 0xff04u && mem_addr <= 0xff07u )
+	{
+		mTimer->Set( mem_addr, value );
 	}
 	else if( mem_addr >= 0xff80u && mem_addr <= 0xfffe )
 	{

@@ -1,7 +1,8 @@
 #include <catch.hpp>
 #include "Motherboard.h"
 #include "memory/Timer.h"
-
+#include "memory/MemoryManageUnit.h"
+#include "util.h"
 
 SCENARIO("Timer", "[TMR]")
 {
@@ -149,6 +150,31 @@ SCENARIO("Timer", "[TMR]")
 			THEN("Overflow Check.")
 			{
 				REQUIRE( timer.Get( 0xff05 ) == TIMER_MODULO );
+			}
+		}
+	}
+
+	GIVEN("A Single Motherboard")
+	{
+		Motherboard motherboard;
+		std::shared_ptr<MemoryManageUnit> mmunit_ptr = std::static_pointer_cast<MemoryManageUnit>(motherboard.GetInterface(Motherboard::Interface_MMUNIT));
+		std::shared_ptr<MemoryInterface> dummy_memory_ptr = std::static_pointer_cast<MemoryInterface>( std::make_shared<MockRWMemory>() );
+		motherboard.SetCartridge( dummy_memory_ptr );
+		std::shared_ptr<Timer> timer = std::static_pointer_cast<Timer>( motherboard.GetInterface( Motherboard::Interface_TIMER ) );
+
+		// Set Timer Enable
+		timer->Set( 0xff07, 0b100 );
+
+		WHEN("Overflowed Timer")
+		{
+			timer->NextStep( 1024 * 0x100 );
+			REQUIRE( timer->IsReportedInterrupt() );
+			motherboard.Step(); //인터럽트 전파.
+
+			THEN("0xff0f, -> Interrupt Flag. BIT 2 ON.")
+			{
+				REQUIRE( mmunit_ptr->Get( 0xff0f ) == 0b100 );
+				REQUIRE( timer->IsReportedInterrupt() == false );
 			}
 		}
 	}

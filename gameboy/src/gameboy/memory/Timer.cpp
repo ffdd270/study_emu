@@ -51,7 +51,7 @@ void Clock::SetClockValue(BYTE value)
 // ---- 여기서부터는 타이머
 
 
-Timer::Timer() : mDivClock( 256 ), mTimerClock( 1 ), mTimerControl( 0 ), mTimerModulo( 0 ), mTimerEnable( false )
+Timer::Timer() : mDivClock( 256 ), mTimerClock( 1 ), mTimerControl( 0 ), mTimerModulo( 0 ), mTimerEnable( false ), mTimerInterrupt( false )
 {
 	updateTimerControlValues();
 }
@@ -67,6 +67,7 @@ void Timer::NextStep(size_t clock)
 		if (mTimerClock.IsTimerOverflow())
 		{
 			mTimerClock.ResetByTimerModulo( mTimerModulo );
+			mTimerInterrupt = true;
 		}
 	}
 }
@@ -115,17 +116,17 @@ void Timer::Set(size_t mem_addr, BYTE value)
 
 bool Timer::IsReportedInterrupt() const
 {
-	return false;
+	return mTimerInterrupt;
 }
 
 std::vector<InterruptsType> Timer::GetReportedInterrupts() const
 {
-	return MemoryInterface::GetReportedInterrupts();
+	return { InterruptsType::TIMER };
 }
 
 void Timer::ResolveInterrupt(InterruptsType resolve_interrupt_address)
 {
-
+	mTimerInterrupt = false;
 }
 
 constexpr std::array<size_t, 4> CLOCK_DIV_VALUES = {
