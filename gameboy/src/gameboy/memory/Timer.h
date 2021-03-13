@@ -13,6 +13,7 @@ public:
 	Clock(size_t clock_div);
 
 	void SetClockDiv( size_t div_value );
+	void ResetByTimerModulo(BYTE timer_modulo);
 	void Update(size_t clock);
 	void Reset();
 	[[nodiscard]] BYTE GetTimerValue() const;
@@ -39,8 +40,13 @@ public:
 
 	~Timer() final = default;
 private:
+	void updateTimerControlValues();
+private:
 	Clock mDivClock;
 	Clock mTimerClock;
+	
+	BYTE mTimerControl;
+	bool mTimerEnable;
 };
 
 

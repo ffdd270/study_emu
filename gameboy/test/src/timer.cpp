@@ -9,7 +9,16 @@ SCENARIO("Timer", "[TMR]")
 	{
 		Timer timer;
 
+		WHEN("Just A R/W Test, 0xff07")
+		{
+			timer.Set( 0xff07, 0xf );
 
+			THEN("Just Remain 3 BIT Value.")
+			{
+				REQUIRE( timer.Get( 0xff07 ) == 0x7 );
+			}
+		}
+		
 		WHEN("After Clock 0")
 		{
 			timer.NextStep( 0 );
