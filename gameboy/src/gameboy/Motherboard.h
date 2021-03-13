@@ -19,6 +19,7 @@ public:
 		Interface_MMUNIT = 0,
 		Interface_GPU = 1,
 		Interface_ROM = 2,
+		Interface_TIMER = 3,
 	};
 
 	Motherboard();
@@ -33,9 +34,6 @@ private:
 	void procInterrupts(const std::vector<InterruptsType> & array_interrupt);
 	void procInterrupt( InterruptsType interrupt_address );
 private:
-
-
-
 	std::shared_ptr<GameboyCPU> mCPU;
 	std::array<std::shared_ptr<MemoryInterface>, 10> mInterfaces;
 };

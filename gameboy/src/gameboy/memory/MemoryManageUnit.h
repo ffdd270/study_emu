@@ -13,7 +13,8 @@ class MemoryManageUnit final : public MemoryInterface
 public:
 	explicit MemoryManageUnit(
 			std::shared_ptr<MemoryInterface> ptr_cartridge,
-			std::shared_ptr<MemoryInterface> ptr_vram);
+			std::shared_ptr<MemoryInterface> ptr_vram,
+			std::shared_ptr<MemoryInterface> ptr_timer = nullptr);
 
 	[[nodiscard]] BYTE Get(size_t mem_addr) const override;
 	void Set(size_t mem_addr, BYTE value) override;
@@ -38,6 +39,7 @@ private:
 
 	std::shared_ptr<MemoryInterface> mCartridge;
 	std::shared_ptr<MemoryInterface> mVRAM;
+	std::shared_ptr<MemoryInterface> mTimer;
 };
 
 
