@@ -13,9 +13,11 @@ public:
 	Clock(size_t clock_div);
 
 	void SetClockDiv( size_t div_value );
+	void SetClockValue( BYTE value );
 	void ResetByTimerModulo(BYTE timer_modulo);
 	void Update(size_t clock);
 	void Reset();
+	[[nodiscard]] bool IsTimerOverflow() const;
 	[[nodiscard]] BYTE GetTimerValue() const;
 private:
 	size_t mClock;

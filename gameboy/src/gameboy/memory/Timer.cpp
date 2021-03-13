@@ -13,7 +13,9 @@ Clock::Clock(size_t clock_div) : mClock( 0 ), mClockDiv( clock_div )
 
 void Clock::SetClockDiv(size_t div_value)
 {
+	BYTE timer_value = GetTimerValue();
 	mClockDiv = div_value;
+	mClock = timer_value * mClockDiv;
 }
 
 void Clock::Update(size_t clock)
@@ -36,6 +38,16 @@ void Clock::ResetByTimerModulo(BYTE timer_modulo)
 	mClock = ( timer_modulo * mClockDiv );
 }
 
+bool Clock::IsTimerOverflow() const
+{
+	return ( mClock > mClockDiv ) && GetTimerValue() == 0;
+}
+
+void Clock::SetClockValue(BYTE value)
+{
+	mClock = ( mClockDiv * value );
+}
+
 // ---- 여기서부터는 타이머
 
 
@@ -47,6 +59,16 @@ Timer::Timer() : mDivClock( 256 ), mTimerClock( 1 ), mTimerControl( 0 ), mTimerM
 void Timer::NextStep(size_t clock)
 {
 	mDivClock.Update( clock );
+
+	if ( mTimerEnable )
+	{
+		mTimerClock.Update( clock );
+
+		if (mTimerClock.IsTimerOverflow())
+		{
+			mTimerClock.ResetByTimerModulo( mTimerModulo );
+		}
+	}
 }
 
 
@@ -57,7 +79,7 @@ BYTE Timer::Get(size_t mem_addr) const
 		case 0xff04u:
 			return mDivClock.GetTimerValue();
 		case 0xff05u:
-			break;
+			return mTimerClock.GetTimerValue();
 		case 0xff06u:
 			return mTimerModulo;
 		case 0xff07u:
@@ -77,6 +99,7 @@ void Timer::Set(size_t mem_addr, BYTE value)
 			mDivClock.Reset();
 			break;
 		case 0xff05u:
+			mTimerClock.SetClockValue( value );
 			break;
 		case 0xff06u:
 			mTimerModulo = value;
@@ -105,9 +128,13 @@ void Timer::ResolveInterrupt(InterruptsType resolve_interrupt_address)
 
 }
 
+constexpr std::array<size_t, 4> CLOCK_DIV_VALUES = {
+		1024, 16, 64, 256
+};
+
 void Timer::updateTimerControlValues()
 {
 	mTimerEnable = ( mTimerControl & 0x04u ) != 0; // BIT 2 is True?
-	mTimerClock.SetClockDiv( mTimerControl & 0x03u );
+	mTimerClock.SetClockDiv( CLOCK_DIV_VALUES[mTimerControl & 0x03u] );
 }
 
