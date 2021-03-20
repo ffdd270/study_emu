@@ -76,8 +76,8 @@ void MBC1::Set(size_t mem_addr, BYTE value)
 BYTE MBC1::getSelectRomBank() const
 {
 	return mBankMode == BankMode::ROM ?
-		mSelectBank & 0x1fu :
-		mSelectBank & 0x7fu ;
+		mSelectBank & 0x7fu :
+		mSelectBank & 0x1fu ;
 }
 
 BYTE MBC1::getSelectRamBank() const

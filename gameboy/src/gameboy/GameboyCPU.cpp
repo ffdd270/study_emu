@@ -144,6 +144,11 @@ void GameboyCPU::SetMemoryInterface(std::shared_ptr<MemoryInterface> memory_inte
 
 void GameboyCPU::Reset()
 {
+	mRegisters.AF.reg_16 = 0x01;
+	mRegisters.AF.lo = 0xB0;
+	mRegisters.BC.reg_16 = 0x0013;
+	mRegisters.DE.reg_16 = 0x00D8;
+	mRegisters.HL.reg_16 = 0x14D;
 	mPC.reg_16 = 0x0100;
 	mSP.reg_16 = 0xfffe;
 	mDebugInjectionCount.reg_16 = 0x0100;
@@ -152,15 +157,8 @@ void GameboyCPU::Reset()
 	{
 		mMemoryInterface->Reset();
 	}
-
-	for( Register & ref_register : mRegisters.array )
-	{
-		ref_register.reg_16 = 0xffff;
-	}
-
 	mHalted = false;
 	mInturruptEnable = true;
-	resetFlags();
 }
 
 size_t GameboyCPU::NextStep()
