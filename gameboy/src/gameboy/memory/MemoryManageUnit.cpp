@@ -12,6 +12,7 @@ MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridg
 {
 	mCartridge = std::move(ptr_cartridge);
 	mVRAM = std::move( ptr_vram );
+	mTimer = std::move(ptr_timer);
 
 
 	mBankNum = 0;
@@ -71,7 +72,7 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 	{
 		if ( mCartridge == nullptr ) { throw std::logic_error("NOT LOADED CARTRIDGE."); }
 		mCartridge->Set( mem_addr, value );
-	}
+		}
 	// GPU
 	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff || // VRAM
 			( mem_addr >= 0xfe00 && mem_addr <= 0xfe9f ) || // OAM

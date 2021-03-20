@@ -127,9 +127,9 @@ std::array<BYTE, 8> GPUHelper::ToTileData(BYTE lo, BYTE hi)
 }
 
 GPU::GPU() :
-		mLCDStatusRegister( 0 ), mLCDControlRegister( 0 ),
+		mLCDStatusRegister( 0 ), mLCDControlRegister( 0x91 ),
 		mDots( 0 ), mScanLineY( 0 ),
-		mScrollX( 0 ), mScrollY( 0 ),
+		mScrollX( 0 ), mScrollY( 0 ), mWX(0), mWY(0), mBGMonoPallet(0xFC),
 		mLYC( 0 ), mBGColorPalletIndex( 0 ), mObjectColorPalletIndex( 0 ),
 		mHDMASourceHi( 0 ), mHDMASourceLo( 0 ),
 		mHDMADestHi( 0 ), mHDMADestLo(0 ),
@@ -677,7 +677,7 @@ void GPU::procInterruptsOnSet( size_t mem_addr, BYTE value )
 			break;
 		}
 		default:
-			throw std::logic_error("Not Impl Interrupt : " + std::to_string( mem_addr ) );
+			//throw std::logic_error("Not Impl Interrupt : " + std::to_string( mem_addr ) );
 			break;
 	}
 }
