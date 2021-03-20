@@ -245,6 +245,7 @@ void gameboy_lua_binding(lua_State *lua_state)
 			.addFunction( "GetRegisterPC", &GameboyCPU::GetRegisterPC )
 			.addFunction( "TestOpCode", &GameboyCPU::TestOpCode )
 			.addFunction( "AddBreakPoint", &GameboyCPU::AddBreakPoint )
+			.addFunction( "RemoveBreakPoint", &GameboyCPU::RemoveBreakPoint )
 			.addFunction( "ContinueFromBreakPoint", &GameboyCPU::ContinueFromBreakPoint )
 		.endClass();
 

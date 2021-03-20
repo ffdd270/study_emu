@@ -23,7 +23,7 @@ public:
 		mPtrGPU = std::static_pointer_cast<GPU>(mMotherboard.GetInterface( Motherboard::Interface_GPU ));
 
 		Cartridge cartridge;
-		cartridge.Load("roms/dmg-acid2.gb");
+		cartridge.Load("roms/cpu_instrs.gb");
 
 		std::cout << " cartridge.GetCartridgeType() : " << cartridge.GetCartridgeType() << std::endl;
 
@@ -78,7 +78,6 @@ void ImGuiHelper( const char * name , RomTest * rom_test )
 	ImGui::Image( *(rom_test->getTexture()), sf::Vector2f(  GPUHelper::ScreenWidth  * 4,  GPUHelper::ScreenHeight * 4  ) );
 
 	Motherboard & ref_motherboard = rom_test->getMotherboard();
-
 
 	if( ImGui::Button("STEP NEXT!") )
 	{
