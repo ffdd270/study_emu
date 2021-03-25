@@ -7,18 +7,36 @@ OPCODE_TO_COMMAND = {
 
 
 function Disassembler.render( self )
-	for i = 0x100, 0x103 do
+	local memory = GetInstanceCPU():GetMemory()
 
-		local memory = GetInstanceCPU():GetMemory()
-		local value = memory:GetValue( i )
-
+	for mem_pos = 0x100, 0x110 do
+		local value = memory:GetValue( mem_pos )
 		local tbl = self.vars.opcode_table['unprefixed']
-		local select_tbl = tbl[to_hex_string(value)]
-		if select_tbl and select_tbl.mnemonic then
-			ImGui.Text( select_tbl.mnemonic)
+		local select_tbl = tbl[to_hex_string(value, nil, true)]
+
+		local text = ''
+		local mnemonic = ''
+
+		if select_tbl then
+			mnemonic = select_tbl.mnemonic
+
+			local op1 = select_tbl.operand1 or ''
+			local op2 = select_tbl.operand2 or ''
+
+			if op1 == select_tbl.operand1 then
+				op1 = ' ' .. op1
+			end
+
+			if op2 == select_tbl.operand2 then
+				op2 = ', ' .. op2
+			end
+
+			mnemonic = mnemonic .. op1 .. op2
 		end
 
+		text = to_hex_string(mem_pos) .. ': ' ..  to_hex_string(value) .. '/' .. mnemonic
 
+		ImGui.Text( text )
 	end
 
 end
