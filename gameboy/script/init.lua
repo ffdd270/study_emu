@@ -7,6 +7,7 @@ function init_script()
 	InstructionWatch:init()
 	OAMWatch:init()
 	OAMSetter:init()
+	Disassembler:init()
 end
 
 
