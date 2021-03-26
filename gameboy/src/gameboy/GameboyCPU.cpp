@@ -269,6 +269,12 @@ size_t GameboyCPU::procInterrupt()
 	return 4; // 4 클락.
 }
 
+size_t GameboyCPU::CheckAdditionalClock( BYTE opcode ) const
+{
+	return 0;
+}
+
+
 size_t GameboyCPU::execute()
 {
 	constexpr size_t NOP_INSTRUCTION =  OP_CYCLES[0] * 4;
@@ -323,8 +329,9 @@ size_t GameboyCPU::execute()
 	}
 
 	func( this, op_code, true );
+	size_t additional_clock = CheckAdditionalClock( op_code );
 
-	return cycles * 4;
+	return ( cycles  + additional_clock ) * 4;
 }
 
 
