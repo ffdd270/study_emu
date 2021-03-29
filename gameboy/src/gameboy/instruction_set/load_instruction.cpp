@@ -159,9 +159,7 @@ void GameboyCPU::loadRegSPFromRegHL(BYTE op_code)
 void GameboyCPU::pushReg16(BYTE op_code)
 {
 	BYTE argument =  ( op_code & 0b00110000u ) >> 4u;
-	WORD & ref_16 = m16bitArguments[ argument ].ref;
-
-	setWORDToStack( ref_16 );
+	setWORDToStack(mRegisters.array[argument].reg_16);
 }
 
 
@@ -171,9 +169,7 @@ void GameboyCPU::pushReg16(BYTE op_code)
 void GameboyCPU::popReg16(BYTE op_code)
 {
 	BYTE argument  = ( op_code & 0b00110000u ) >> 4u;
-	Register & ref_register = mRegisters.array[ argument ];
-
-	ref_register.reg_16 = getWORDFromStack();
+	mRegisters.array[argument].reg_16 = getWORDFromStack();
 }
 
 void GameboyCPU::loadHalfWordMemImm8FromRegA(BYTE op_code)
