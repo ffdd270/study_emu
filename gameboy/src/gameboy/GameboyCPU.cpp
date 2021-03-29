@@ -161,6 +161,15 @@ void GameboyCPU::Reset()
 	mInturruptEnable = true;
 }
 
+void GameboyCPU::TestReset()
+{
+	mRegisters.AF.reg_16 = 0x00;
+	mRegisters.AF.lo = 0x00;
+	mRegisters.BC.reg_16 = 0x0000;
+	mRegisters.DE.reg_16 = 0x0000;
+	mRegisters.HL.reg_16 = 0x0000;
+}
+
 size_t GameboyCPU::NextStep()
 {
 	size_t clock = procInterrupt();

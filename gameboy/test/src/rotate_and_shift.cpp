@@ -12,6 +12,7 @@ TEST_CASE( "ROTATE AND SHIFT", "[ROTATE AND SHIFT]" )
 {
 	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
     GameboyCPU & cpu = *(ptr_cpu);
+	cpu.TestReset();
 
     // RLC A, But not prefix 0xcb.
     SECTION("RLCA")

@@ -6,7 +6,7 @@ TEST_CASE( "BIT SET RESET TEST", "[BIT SET RESET TEST]" )
 {
 	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
     GameboyCPU & cpu = *(ptr_cpu);;
-
+	cpu.TestReset();
 	SECTION("BIT B, R")
 	{
 		SECTION("BIT 0~7, A")

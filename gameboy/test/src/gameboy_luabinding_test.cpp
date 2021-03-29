@@ -10,7 +10,9 @@
 
 GameboyCPU getCPU()
 {
-	return GameboyCPU();
+	GameboyCPU cpu;
+	cpu.TestReset();
+	return cpu;
 }
 
 void test_helper_lua_functions( lua_State * lua_state )
@@ -39,9 +41,9 @@ TEST_CASE("TEST GAMEBOY ON LUA", "[LUA]")
 
 		auto result_value = getValue<Register>( lua_state, "HL" );
 
-		REQUIRE( result_value.reg_16 == 0xffff );
-		REQUIRE( result_value.hi == 0xff );
-		REQUIRE( result_value.lo == 0xff );
+		REQUIRE( result_value.reg_16 == 0x0000 );
+		REQUIRE( result_value.hi == 0x00 );
+		REQUIRE( result_value.lo == 0x00 );
 	}
 
 	SECTION("logger")

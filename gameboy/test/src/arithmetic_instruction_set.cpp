@@ -50,6 +50,7 @@ void HalfFlagCheck( GameboyCPU & cpu )
 void MemHLFlagTest( GameboyCPU & cpu )
 {
 	cpu.Reset();
+			cpu.TestReset();
 
 	NoFlagCheck( cpu );
 	setMemory3Step( cpu, 0, 0xA0A0, 0x0 );
@@ -115,6 +116,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("register = D")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			setRegister8(cpu, Register8BitIndex::D, 0x21 );   // D = 0x21
 			// 1 Step.
@@ -133,6 +135,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("Flag Check.")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			NoFlagCheck( cpu );
 
@@ -173,6 +176,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("ADD A, 0x24")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			setRegister8(cpu, Register8BitIndex::A, 0x6 );
 			// 1 Step.
@@ -190,6 +194,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("Flags Test")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			setRegister8(cpu, Register8BitIndex::A, 0x0 );
@@ -233,6 +238,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "Add Test.")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			addAtoHL( cpu, 0xBEEF, 0x30, 0xA );
 			REQUIRE( cpu.GetRegisterAF().hi == 0x3A );
@@ -250,6 +256,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "Add Test" )
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			setRegister8(cpu, Register8BitIndex::D, 0x80);   // D = 0b10000000
 			// 1 Step.
@@ -279,6 +286,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("Flag Test.")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			BYTE ADC_A_D = 0b10001010;
 
 			NoFlagCheck( cpu );
@@ -312,6 +320,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("ADD TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			setRegister8(cpu, Register8BitIndex::A, 0x80 );
 			// 1 Step.
@@ -337,6 +346,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("FLAGS TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck(  cpu );
 
 			setRegister8(cpu, Register8BitIndex::A, 0 );
@@ -369,6 +379,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("ADD TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			setMemory3Step(cpu, Register8BitIndex::B, 0x0765, 0x8B );
 			// HL = 0x765, B = 0xA,  (0x765) = 0x80 ( Carry )
 
@@ -404,6 +415,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("SUB TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			setRegister8(cpu, Register8BitIndex::A, 0xA );
 			setRegister8( cpu, 0, 0xA );
@@ -421,6 +433,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("FLAG TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			setRegister8(cpu, Register8BitIndex::A, 0xA8 );
 			setRegister8(cpu, Register8BitIndex::B, 0x99 );
@@ -460,6 +473,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "SUB TEST" )
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			call_subN(cpu, 0x30, 0x28);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x8 );
 
@@ -470,6 +484,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "FLAG TEST" )
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			call_subN(cpu, 0x35, 0x31);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x4 );
@@ -494,6 +509,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "SUB TEST" )
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			call_subHL(cpu, 0xff, 0x3000, 0xfe);
 			REQUIRE( cpu.GetRegisterAF().hi == 0x1 );
 		}
@@ -501,6 +517,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "FLAG TEST" )
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			call_subHL(cpu, 0xfb, 0x3000, 0xea); // NO FLAG.
 			REQUIRE( cpu.GetRegisterAF().hi == 0x11 );
 			check_flags( cpu, false, false, true, false );
@@ -524,6 +541,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION( "SUB TEST" )
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			call_subRC(cpu, 0x30, 0x31);
 			// Carry.
@@ -543,6 +561,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("SUB TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			call_subNC(cpu, 0x30, 0x31);
 			// Carry.
@@ -559,6 +578,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("FLAG TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			call_subNC(cpu, 0x41, 0x45); // Underflow 4.
 			REQUIRE( cpu.GetRegisterAF().hi == ( 0xff - 3 ) );
@@ -582,6 +602,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("SUB TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_subHLC(cpu, 0xf0, 0xf0f0, 0xf1);
@@ -607,6 +628,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("AND TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_andR(cpu, 0xff, 0x22);
@@ -626,6 +648,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("AND TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_andN(cpu, 0x80, 0xf0);
@@ -644,6 +667,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("AND TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_andHL(cpu, 0x2f, 0x3030, 0xf2);
@@ -661,6 +685,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("OR TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_orR(cpu, 0x3f, 0x21);
@@ -682,6 +707,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("OR TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_orN(cpu, 0x56, 0x72);
@@ -703,6 +729,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("OR TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_orHL(cpu, 0x56, 0x30f0, 0x72);
@@ -724,6 +751,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("XOR TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_xorR(cpu, 0x31, 0x93);
@@ -745,6 +773,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("XOR TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_xorN(cpu, 0x21, 0x9);
@@ -766,6 +795,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("XOR TEST")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_xorHL(cpu, 0x82, 0xf2f2, 0x51);
@@ -787,6 +817,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("N")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_cpN(cpu, 0x84, 0x32);
@@ -813,6 +844,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("R")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_cpR(cpu, 0x84, 0x32);
@@ -839,6 +871,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("HL")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 			NoFlagCheck( cpu );
 
 			call_cpHL(cpu, 0x84, 0xf3f3, 0x32);
@@ -868,6 +901,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("REGISTER")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			incR( cpu, 0, 0x3 );
 			REQUIRE( cpu.GetRegisterBC().hi == 0x4 );
@@ -885,6 +919,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("MEM HL")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			incHL( cpu, 0x3000, 0x3 );
 			REQUIRE( cpu.GetMemoryValue( 0x3000 ) == 0x4 );
@@ -905,6 +940,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("REGISTER")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			decR( cpu, 0, 0x3 );
 			REQUIRE( cpu.GetRegisterBC().hi == 0x2 );
@@ -922,6 +958,7 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 		SECTION("HL")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			decHL( cpu, 0x3000, 0x3 );
 			REQUIRE( cpu.GetMemoryValue( 0x3000 ) == 0x2 );
@@ -940,6 +977,8 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 	SECTION( "ADD HL, ss" )
 	{
 		// 0b00rr1001 { r = m16BitArguments }
+		cpu.TestReset();
+
 		SECTION("ss = BC")
 		{
 			addHLFromReg16( cpu, 0x3000, 0x4000, 0b00 );
@@ -964,6 +1003,8 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 	SECTION( "INC ss" )
 	{
+		cpu.TestReset();
+
 		SECTION("ss = BC")
 		{
 			incReg16( cpu, 0x0000, 0b00 );
@@ -983,6 +1024,8 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 	SECTION( "DEC ss" )
 	{
+		cpu.TestReset();
+
 		SECTION("ss = BC")
 		{
 			decReg16( cpu, 0x0000, 0b00 );
@@ -1001,6 +1044,8 @@ TEST_CASE( "ARITHMETIC INSTRUCTION", "[Math]")
 
 	SECTION("ADD SP, singed imm8")
 	{
+		cpu.TestReset();
+
 		SECTION("NORMAL.")
 		{
 			test_ADD_SP_SingedImm8( cpu, 0 );

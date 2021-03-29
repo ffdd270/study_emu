@@ -68,6 +68,7 @@ public:
 
 
 	void Reset();
+	void TestReset();
 
 	// 있으면 0외의 값.
 	size_t CheckAdditionalClock( BYTE opcode ) const;
