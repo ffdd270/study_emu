@@ -15,16 +15,28 @@ HexTable = {
 	[15] = 'F',
 }
 
-function to_hex_string( number, base_num )
+LowerHexTable = {
+	[10] = 'a',
+	[11] = 'b',
+	[12] = 'c',
+	[13] = 'd',
+	[14] = 'e',
+	[15] = 'f',
+}
+
+
+function to_hex_string( number, base_num, lower_case )
 	local base = '0x'
 	local result_string = ''
 	base_num = base_num or 2
 
 	local proc_number = number
 
+	local hex_tbl = ( lower_case and LowerHexTable ) or HexTable
+
 	while proc_number ~= 0 do
 		local mod_value = proc_number % 16
-		local result = HexTable[ mod_value ] ~= nil and HexTable[ mod_value ] or tostring( mod_value )
+		local result = hex_tbl[ mod_value ] ~= nil and hex_tbl[ mod_value ] or tostring( mod_value )
  		result_string = result .. result_string
 		proc_number = math.floor( proc_number / 16 )
 	end

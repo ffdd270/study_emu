@@ -16,6 +16,7 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 {
 	std::shared_ptr<GameboyCPU> ptr_cpu = GameboyCPU::Create();
     GameboyCPU & cpu = *(ptr_cpu);;
+	cpu.TestReset();
 
 	SECTION("DAA Test")
 	{
@@ -80,6 +81,7 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 		SECTION("Set Flag.")
 		{
 			cpu.Reset();
+			cpu.TestReset();
 
 			REQUIRE( cpu.GetFlagC() == false );
 			scf( cpu );
@@ -90,6 +92,7 @@ TEST_CASE( "CPU CONTROL INSTRUCTION", "[CPU]" )
 	SECTION("NOP Test") // 테스트가 생각나면 다시..
 	{
 		cpu.Reset();
+		cpu.TestReset();
 
 		cpu.InjectionMemory( 0x00 );
 		cpu.NextStep();

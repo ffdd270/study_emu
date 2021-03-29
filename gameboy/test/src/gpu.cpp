@@ -79,7 +79,7 @@ void check_colors( GPU & ref_gpu, WORD base_address, RequireColors & ref_require
 		std::array<BYTE, 8> pallets = GPUHelper::ToTileData( lo, hi );
 		for( size_t pallet = 0; pallet < GPUHelper::TileDataWidth; pallet++ )
 		{
-			REQUIRE(pallets[pallet] == ref_require_colors[tile_line - 1 ][ pallet ] );
+			REQUIRE(pallets[pallet] == ref_require_colors[tile_line - 1][ pallet ] );
 		}
 	}
 }
@@ -247,22 +247,6 @@ SCENARIO("GPU", "[GPU]")
 			}
 		}
 
-		WHEN("Write 0xA001, 3")
-		{
-			THEN("THROW.")
-			{
-				REQUIRE_THROWS(gpu.Set(0xA001, 3 ) );
-			}
-		}
-
-		WHEN("Read 0xA001")
-		{
-			THEN("THROW")
-			{
-				REQUIRE_THROWS(gpu.Get(0xA001) );
-			}
-		}
-
 		WHEN("Write 0xff40, 0b11011011")
 		{
 			gpu.Set( 0xff40, 0b11010011u );
@@ -411,13 +395,13 @@ SCENARIO("GPU", "[GPU]")
 			}
 
 			//LCDC BIT 4=  	0=9800-9BFF, 1=9C00-9FFF
-			gpu.Set( 0xff40, 0b00001000 ); // Seted.
-			gpu.Set( 0x9C00, select_tile_index );
+			//0x8000u 시작.
+			gpu.Set( 0xff40, 0b00011000 ); // Seted.
 
 			THEN("( TileStartAddress ) = 0x3. and tile get OK.")
 			{
 				RequireColors require_colors = get_require_color_tile_test_data();
-				check_colors( gpu, gpu.GetSelectedTileAddress( gpu.Get( gpu.GetSelectBGTileMapDisplay() ) ), require_colors );
+				check_colors( gpu, gpu.GetSelectedTileAddress( select_tile_index ), require_colors );
 			}
 		}
 

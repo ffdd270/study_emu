@@ -161,6 +161,15 @@ void GameboyCPU::Reset()
 	mInturruptEnable = true;
 }
 
+void GameboyCPU::TestReset()
+{
+	mRegisters.AF.reg_16 = 0x00;
+	mRegisters.AF.lo = 0x00;
+	mRegisters.BC.reg_16 = 0x0000;
+	mRegisters.DE.reg_16 = 0x0000;
+	mRegisters.HL.reg_16 = 0x0000;
+}
+
 size_t GameboyCPU::NextStep()
 {
 	size_t clock = procInterrupt();
@@ -269,6 +278,63 @@ size_t GameboyCPU::procInterrupt()
 	return 4; // 4 클락.
 }
 
+size_t GameboyCPU::CheckAdditionalClock( BYTE opcode ) const
+{
+	switch (opcode)
+	{
+		case 0x20: //JR NZ, r8 12/8 → 0x20
+			if (!GetFlagZ()) { return 1; }
+			break;
+		case 0x28: //JR Z, r8 12/8  → 0x28
+			if (GetFlagZ()) { return 1; }
+			break;
+		case 0x30: // JR NC, r8 12/8  → 0x30
+			if (!GetFlagC()) { return 1; }
+			break;
+		case 0x38: // JR C, r8 12/8  → 0x38
+			if (GetFlagC()) { return 1; }
+			break;
+		case 0xC0: //RET NZ 20/8  → 0xC0
+			if (!GetFlagZ()) { return 3; }
+			break;
+		case 0xD0: //RET NC 20/8  → 0xD0
+			if (!GetFlagC()) { return 3; }
+			break;
+		case 0xC2: //JP NZ, a16 16/12 →0xC2
+			if (!GetFlagZ()) { return 1; }
+			break;
+		case 0xD2: //JP NC, a16 16/12 → 0xD2
+			if (!GetFlagC()) { return 1; }
+			break;
+		case 0xC4: //CALL NZ, a16 24/12 → 0xC4
+			if (!GetFlagZ()) { return 2; }
+			break;
+		case 0xD4: //CALL NC, a16 24/12 →0xD4
+			if (!GetFlagC()) { return 2; }
+			break;
+		case 0xC8: //RET Z 20/8 → 0xC8
+			if (GetFlagZ()) { return 3; }
+			break;
+		case 0xD8: //RET C 20/8 → 0xD8
+			if (GetFlagC()) { return 3; }
+			break;
+		case 0xCA: //JP Z, a16 16/12  → 0xCA
+			if (GetFlagZ()) { return 1; }
+			break;
+		case 0xDA: //JP C, a16 16/12 → 0xDA
+			if (GetFlagC()) { return 1; }
+			break;
+		case 0xCC: //CALL Z,a16 24/12 → 0xCC
+			if (GetFlagZ()) { return 2; }
+			break;
+		case 0xDC: //CALL C,a16 24/12 → 0xDC
+			if (GetFlagC()) { return 2; }
+			break;
+	}
+	return 0;
+}
+
+
 size_t GameboyCPU::execute()
 {
 	constexpr size_t NOP_INSTRUCTION =  OP_CYCLES[0] * 4;
@@ -323,8 +389,9 @@ size_t GameboyCPU::execute()
 	}
 
 	func( this, op_code, true );
+	size_t additional_clock = CheckAdditionalClock( op_code );
 
-	return cycles * 4;
+	return ( cycles  + additional_clock ) * 4;
 }
 
 
