@@ -115,6 +115,37 @@ function Disassembler.render( self )
 	ImGui.InputTextWithFlags( "",  self.vars.string_buf, ImGuiInputTextFlags_.CharsHexadecimal )
 	local memory_address = tonumber( self.vars.string_buf:GetViewString(), 16 )
 
+	ImGui.InputTextWithFlags( "BreakPoint",  self.vars.break_point, ImGuiInputTextFlags_.CharsHexadecimal )
+	if ImGui.Button( "BREAK" ) then
+		local bp_point = tonumber( self.vars.break_point:GetViewString(), 16 )
+
+		if self.vars.bp_point then
+			GetInstanceCPU():ContinueFromBreakPoint()
+			GetInstanceCPU():RemoveBreakPoint(self.vars.bp_point)
+			self.vars.bp_point = nil
+		end
+
+		if bp_point ~= nil and bp_point >= 0 and bp_point <= ( 0xffff - 1 ) then
+			self.vars.bp_point = bp_point
+			GetInstanceCPU():AddBreakPoint(self.vars.bp_point)
+		end
+	end
+
+	ImGui.SameLine()
+
+	if ImGui.Button( "CONTINUE" ) and self.vars.bp_point then
+		GetInstanceCPU():ContinueFromBreakPoint()
+		GetInstanceCPU():RemoveBreakPoint(self.vars.bp_point)
+		self.vars.bp_point = nil
+	end
+
+	if self.vars.bp_point then
+		ImGui.SameLine()
+		ImGui.Text(to_hex_string( self.vars.bp_point ))
+	end
+
+	ImGui.Text("AF : " .. to_hex_string( GetInstanceCPU():GetRegisterAF().reg_16 ) )
+
 	if memory_address ~= nil and memory_address >= 0 and memory_address <= ( 0xffff - 1 ) then
 		self:renderOpcodes( memory_address )
 	end
@@ -133,4 +164,6 @@ function Disassembler.init( self )
 
 	self.vars.opcode_table = table
 	self.vars.string_buf = StringBuf( 5 )
+	self.vars.break_point = StringBuf(5)
+	self.vars.bp_point = nil
 end
