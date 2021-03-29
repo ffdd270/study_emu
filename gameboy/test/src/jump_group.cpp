@@ -19,15 +19,17 @@ inline void test_jr_cond( GameboyCPU & cpu, BYTE op_code, char signed_value, boo
 
 	cpu.InjectionMemory( op_code );
 	cpu.InjectionMemory( signed_value );
-	cpu.NextStep();
+	size_t clock = cpu.NextStep();
 
 	if ( cond )
 	{
 		REQUIRE( cpu.GetRegisterPC().reg_16 == prv + signed_value + 2 );
+		REQUIRE( clock == 12 );
 	}
 	else
 	{
 		REQUIRE( cpu.GetRegisterPC().reg_16 == prv + 2 );
+		REQUIRE( clock == 8 );
 	}
 }
 
