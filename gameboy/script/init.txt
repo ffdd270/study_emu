@@ -6,3 +6,4 @@ logger_viewer.lua
 lua_commander.lua
 json.lua
 disassembler.lua
+instructions.lua

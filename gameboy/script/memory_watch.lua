@@ -26,29 +26,8 @@ InstructionWatch = {}
 
 
 function InstructionWatch.render( self )
-	local list = get_last_instructions()
-	for k, v in pairs( list ) do
-		table.insert( self.vars.list, v )
-	end
-
-	local len = #self.vars.list
-
-	if len > 100 then
-		local overflow_value = len - 100
-
-		for i = 1, overflow_value do
-			self.vars.list[i] = nil
-		end
-
-		for i = overflow_value, len do
-			self.vars.list[ i - overflow_value ] = self.vars.list[i]
-		end
-	end
-
-
 	for i = 1, 100 do
-		local index = math.max( len - 100, 0 ) + i
-		local data = self.vars.list[index]
+		local data = self.vars.list[i]
 
 		if data then
 			ImGui.Text( data.instruction_name .. ' , ' .. to_hex_string( data.opcode ) .. ' , ' ..  to_hex_string( data.instruction_mem_pos ) )
@@ -64,6 +43,30 @@ function InstructionWatch.init( self )
 
 	self.vars = {}
 	self.vars.list = {}
+
+
+	Instructions:addEventList( function( list )
+		if #list == 1 then info( list[1]) end
+
+		for k, v in pairs( list ) do
+			table.insert( self.vars.list, v )
+		end
+
+		local len = #self.vars.list
+
+		if len > 100 then
+			local overflow_value = len - 100
+			info(overflow_value)
+			for i = 1, overflow_value do
+				self.vars.list[i] = nil
+			end
+
+			for i = overflow_value + 1, len do
+				self.vars.list[ i - overflow_value ] = self.vars.list[i]
+			end
+		end
+
+	end )
 end
 
 local OAM_BASE = 0xfe00

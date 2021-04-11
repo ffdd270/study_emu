@@ -1,6 +1,7 @@
 function init_script()
 	--TestUI:init()
 	--MemoryViewer:init()
+	Instructions:init()
 	LoggerViewer:init()
 	--MemoryWatch:init()
 	LuaCommander:init()
