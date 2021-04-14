@@ -49,6 +49,13 @@ function get_op_translate_value( memory, mem_pos, op )
 	return op, nil
 end
 
+function Disassembler.getSelectOpcodeTable( self, value )
+	local tbl = self.vars.opcode_table['unprefixed']
+	local select_tbl = tbl[to_hex_string(value, nil, true)]
+
+	return select_tbl
+end
+
 function Disassembler.renderOpcodes( self, memory_address )
 	local memory = GetInstanceCPU():GetMemory()
 	local mem_pos = memory_address
@@ -66,8 +73,7 @@ function Disassembler.renderOpcodes( self, memory_address )
 
 
 		local value = memory:GetValue( mem_pos )
-		local tbl = self.vars.opcode_table['unprefixed']
-		local select_tbl = tbl[to_hex_string(value, nil, true)]
+		local select_tbl = self:getSelectOpcodeTable( value )
 
 		local text = ''
 		local mnemonic = ''
@@ -150,6 +156,7 @@ function Disassembler.render( self )
 		self:renderOpcodes( memory_address )
 	end
 end
+
 
 function Disassembler.init( self )
 	AddViewer("Disassembler", function()

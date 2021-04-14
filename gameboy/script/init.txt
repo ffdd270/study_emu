@@ -7,3 +7,4 @@ lua_commander.lua
 json.lua
 disassembler.lua
 instructions.lua
+stack_traceback.lua

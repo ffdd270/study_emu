@@ -9,6 +9,7 @@ function init_script()
 	OAMWatch:init()
 	OAMSetter:init()
 	Disassembler:init()
+	StackTraceback:init()
 end
 
 

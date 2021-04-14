@@ -633,6 +633,8 @@ void GPU::procInterruptsOnSet( size_t mem_addr, BYTE value )
 			// Bit 5-9   Green Intensity (00-1F)
 			// Bit 10-14 Blue Intensity  (00-1F)
 			// 이건 쓸때랑 받을떄 알아서 해석할 것 = ㅁ=
+
+			if(true){break;}
 			BYTE only_pallet_index = toOnlyPalletIndex( mBGColorPalletIndex ); // 실제로는 3f만 쓸 수 있음.
 			BYTE to_color_index = toColorIndex( only_pallet_index );
 			BYTE to_pallet = toPalletIndex( only_pallet_index, to_color_index );
