@@ -1,6 +1,7 @@
 function init_script()
 	--TestUI:init()
 	--MemoryViewer:init()
+	Instructions:init()
 	LoggerViewer:init()
 	--MemoryWatch:init()
 	LuaCommander:init()
@@ -8,6 +9,7 @@ function init_script()
 	OAMWatch:init()
 	OAMSetter:init()
 	Disassembler:init()
+	StackTraceback:init()
 end
 
 

@@ -400,10 +400,11 @@ size_t GameboyCPU::execute()
 ( GameboyCPU * cpu, BYTE op_code, bool not_test)\
 {\
 	if (not_test) {                                            \
+        cpu->setConditionResult(false);                                               \
         WORD pc = cpu->GetRegisterPC().reg_16 - 1;                                                    \
 		cpu->func_name\
 		( op_code );\
-		cpu->addInstructionEvent( #func_name, op_code, pc );\
+		cpu->addInstructionEvent( #func_name, op_code, pc, cpu->getConditionResult() );\
 		return "";\
 	} \
 	return #func_name;\
@@ -1115,11 +1116,11 @@ void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
 	mMemoryInterface->Set( mem_index, value );
 }
 
-void GameboyCPU::addInstructionEvent(const char *name, BYTE opcode, WORD execute_pc_address)
+void GameboyCPU::addInstructionEvent(const char *name, BYTE opcode, WORD execute_pc_address, bool condition_result)
 {
 	if ( mOnInstructionCallback != nullptr )
 	{
-		mOnInstructionCallback( name, opcode, execute_pc_address );
+		mOnInstructionCallback( name, opcode, execute_pc_address, condition_result);
 	}
 }
 
@@ -1244,5 +1245,16 @@ void GameboyCPU::commonAddSPInstructionFlags(char imm8)
 		setFlagH(false );
 		setFlagC(false );
 	}
+}
+
+
+void GameboyCPU::setConditionResult(bool value)
+{
+	mConditionResult = value;
+}
+
+bool GameboyCPU::getConditionResult()
+{
+	return mConditionResult;
 }
 
