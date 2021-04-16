@@ -40,7 +40,7 @@ function get_op_translate_value( memory, mem_pos, op )
 	end
 
 
-	if op == 'd8' or op == 'a8' then
+	if op == 'd8' or op == 'a8' or op == '(d8)' or op == '(a8)' then
 		local lo = memory:GetValue( mem_pos + 1 )
 		op = to_hex_string( lo )
 		return op, mem_pos + 1
