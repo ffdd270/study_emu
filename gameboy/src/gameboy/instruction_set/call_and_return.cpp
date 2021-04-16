@@ -16,6 +16,10 @@ void GameboyCPU::callIfCondition(BYTE op_code)
 	{
 		callWord( op_code );
 	}
+	else
+	{
+		mPC.reg_16 += 2; // Imm 무시.
+	}
 }
 
 void GameboyCPU::returnInstruction(BYTE op_code)

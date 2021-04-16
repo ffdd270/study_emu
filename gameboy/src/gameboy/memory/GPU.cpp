@@ -808,9 +808,9 @@ BYTE GPU::procInterruptsOnGet(size_t mem_addr) const
 			{
 				return mObjectColorPallet[ to_pallet ][ to_color_index ].GetHi();
 			}
-		}
+		}/*
 		default:
-			throw std::logic_error("Not Impl Interrupt, Get : " + std::to_string( mem_addr ) );
+			throw std::logic_error("Not Impl Interrupt, Get : " + std::to_string( mem_addr ) );*/
 	}
 
 	return 0;
