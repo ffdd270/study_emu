@@ -5,6 +5,7 @@
 #include "MemoryManageUnit.h"
 
 #include <utility>
+#include <stdexcept>
 
 MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridge,
                                    std::shared_ptr<MemoryInterface> ptr_vram,

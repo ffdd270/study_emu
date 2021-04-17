@@ -6,6 +6,7 @@
 #include <vector>
 #include "GPU.h"
 #include <unordered_map>
+#include <stdexcept>
 
 inline bool GetBit( BYTE origin, BYTE bit_pos )
 {

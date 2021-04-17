@@ -7,6 +7,7 @@
 
 #include "memory/MemoryInterface.h"
 #include <array>
+#include <memory>
 
 class MemoryManageUnit final : public MemoryInterface
 {

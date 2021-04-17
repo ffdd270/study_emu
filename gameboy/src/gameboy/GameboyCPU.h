@@ -11,6 +11,8 @@
 #include <vector>
 #include <functional>
 #include <unordered_map>
+#include <exception>
+#include <stdexcept>
 
 union Register
 {
