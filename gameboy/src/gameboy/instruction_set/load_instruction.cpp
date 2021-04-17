@@ -170,6 +170,11 @@ void GameboyCPU::popReg16(BYTE op_code)
 {
 	BYTE argument  = ( op_code & 0b00110000u ) >> 4u;
 	mRegisters.array[argument].reg_16 = getWORDFromStack();
+
+	if ( argument == 0b11 )
+	{
+		mRegisters.AF.lo = ( mRegisters.AF.lo & 0xf0 ); // F는 늘 4칸 비워놔야 함.
+	}
 }
 
 void GameboyCPU::loadHalfWordMemImm8FromRegA(BYTE op_code)

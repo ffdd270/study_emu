@@ -360,7 +360,7 @@ size_t GameboyCPU::execute()
 	BYTE op_code = mMemoryInterface->Get( mPC.reg_16 );
 	mPC.reg_16 += 1;
 
-	if ( op_code == 0x00 ) // NOP
+	if ( op_code == 0x00 || op_code == 0x10 ) // NOP, STOP.
 	{
 		return NOP_INSTRUCTION;
 	}
