@@ -360,7 +360,7 @@ size_t GameboyCPU::execute()
 	BYTE op_code = mMemoryInterface->Get( mPC.reg_16 );
 	mPC.reg_16 += 1;
 
-	if ( op_code == 0x00 ) // NOP
+	if ( op_code == 0x00 || op_code == 0x10 ) // NOP, STOP.
 	{
 		return NOP_INSTRUCTION;
 	}
@@ -1145,10 +1145,11 @@ WORD GameboyCPU::immediateValue16()
 
 void GameboyCPU::setWORDToStack(WORD value)
 {
-	mMemoryInterface->Set( mSP.reg_16 - 1, static_cast<BYTE>((value & 0xff00u) >> 8u) );
-	mMemoryInterface->Set( mSP.reg_16 - 2, static_cast<BYTE>(value & 0x00ffu));
-
 	mSP.reg_16 = mSP.reg_16 - 2;
+	
+	mMemoryInterface->Set( mSP.reg_16 + 1, static_cast<BYTE>((value & 0xff00u) >> 8u) );
+	mMemoryInterface->Set( mSP.reg_16, static_cast<BYTE>(value & 0x00ffu));
+
 }
 
 WORD GameboyCPU::getWORDFromStack()
@@ -1158,9 +1159,7 @@ WORD GameboyCPU::getWORDFromStack()
 
 	mSP.reg_16 = mSP.reg_16 + 2;
 
-	WORD word = static_cast<WORD>(hi << 8u) | lo;
-
-	return word;
+	return (static_cast<WORD>(static_cast<WORD>(hi) << 8u) | static_cast<WORD>(lo));
 }
 
 bool GameboyCPU::getIfConditionResult(BYTE op_code) const

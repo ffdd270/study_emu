@@ -8,3 +8,4 @@ json.lua
 disassembler.lua
 instructions.lua
 stack_traceback.lua
+jp_history.lua

@@ -17,7 +17,6 @@ function StackTraceback.iterFunc( self, tbl, instruction )
 		local mnemonic = tbl.mnemonic
 
 		if mnemonic == 'RET' then
-			info("YES. IT'S RET!")
 			self.vars.stack[#self.vars.stack] = nil
 		elseif mnemonic == 'CALL' then
 			table.insert( self.vars.stack, instruction )
