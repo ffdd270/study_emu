@@ -6,9 +6,10 @@
 
 void GameboyCPU::callWord(BYTE op_code)
 {
-	setWORDToStack( mPC.reg_16 + 2 ); // WORD 이후 값.
+	WORD imm = immediateValue16();
+	setWORDToStack( mPC.reg_16 ); // WORD 이후 값.
 	setConditionResult( true );
-	mPC.reg_16 = immediateValue16();
+	mPC.reg_16 = imm;
 }
 
 void GameboyCPU::callIfCondition(BYTE op_code)

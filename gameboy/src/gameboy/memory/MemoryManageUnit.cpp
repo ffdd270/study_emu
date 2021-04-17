@@ -22,27 +22,35 @@ MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridg
 
 BYTE MemoryManageUnit::Get(size_t mem_addr) const
 {
-	if( ( mem_addr <= 0x7fffu ) || ( mem_addr >= 0xA000u && mem_addr <= 0xBFFF ) ) // CARTRIDGE ROM || RAM
+	if ((mem_addr <= 0x7fffu) || (mem_addr >= 0xA000u && mem_addr <= 0xBFFF)) // CARTRIDGE ROM || RAM
 	{
-		if ( mCartridge == nullptr ) { throw std::logic_error("NOT LOADED CARTRIDGE."); }
-		return mCartridge->Get( mem_addr );
+		if (mCartridge == nullptr) { throw std::logic_error("NOT LOADED CARTRIDGE."); }
+		return mCartridge->Get(mem_addr);
 	}
 	// GPU
-	else if ( mem_addr >= 0x8000u && mem_addr <= 0x9fff || // VRAM
-			  ( mem_addr >= 0xfe00 && mem_addr <= 0xfe9f ) || // OAM
-			  ( mem_addr >= 0xff40 && mem_addr <= 0xff7f ) ) // Interrupts
+	else if (mem_addr >= 0x8000u && mem_addr <= 0x9fff || // VRAM
+		(mem_addr >= 0xfe00 && mem_addr <= 0xfe9f) || // OAM
+		(mem_addr >= 0xff40 && mem_addr <= 0xff7f)) // Interrupts
 	{
-		if ( mVRAM == nullptr ) { throw  std::logic_error("NOT LOADED GPU"); }
-		return mVRAM->Get( mem_addr );
+		if (mVRAM == nullptr) { throw  std::logic_error("NOT LOADED GPU"); }
+		return mVRAM->Get(mem_addr);
 	}
 	// Work Ram BANK 0
-	else if ( mem_addr >= 0xC000u && mem_addr <= 0xCFFF )
+	else if (mem_addr >= 0xC000u && mem_addr <= 0xCFFF)
 	{
-		return mWorkRam[ ( mem_addr - 0xC000u ) ];
+		return mWorkRam[(mem_addr - 0xC000u)];
 	}
-	else if ( mem_addr >= 0xD000u && mem_addr <= 0xDFFF )
+	else if (mem_addr >= 0xD000u && mem_addr <= 0xDFFF)
 	{
-		return mWorkRam[ ( mBankNum * 0x1000u ) + ( mem_addr - 0xD000u ) ];
+		return mWorkRam[(mBankNum * 0x1000u) + (mem_addr - 0xC000u)];
+	}
+	else if (mem_addr >= 0xE000 && mem_addr <= 0xEFFF)
+	{
+		return mWorkRam[(mem_addr - 0xE000)];
+	}
+	else if (mem_addr >= 0xF000 && mem_addr <= 0xFDFF)
+	{
+		return mWorkRam[(mBankNum * 0x1000u) + (mem_addr - 0xE000)];
 	}
 	else if( mem_addr >= 0xff04u && mem_addr <= 0xff07u )
 	{
@@ -88,7 +96,15 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 	}
 	else if ( mem_addr >= 0xD000u && mem_addr <= 0xDFFF )
 	{
-		mWorkRam[ ( mBankNum * 0x1000u ) + ( mem_addr - 0xD000u ) ] = value;
+		mWorkRam[ ( mBankNum * 0x1000u ) + ( mem_addr - 0xC000u ) ] = value;
+	}
+	else if (mem_addr >= 0xE000 && mem_addr <= 0xEFFF)
+	{
+		mWorkRam[(mem_addr - 0xE000)] = value;
+	}
+	else if (mem_addr >= 0xF000 && mem_addr <= 0xFDFF)
+	{
+		mWorkRam[(mBankNum * 0x1000u) + (mem_addr - 0xE000)] = value;
 	}
 	else if( mem_addr >= 0xff04u && mem_addr <= 0xff07u )
 	{
