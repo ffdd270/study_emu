@@ -10,6 +10,7 @@ function init_script()
 	OAMSetter:init()
 	Disassembler:init()
 	StackTraceback:init()
+	JPHistory:init()
 end
 
 
