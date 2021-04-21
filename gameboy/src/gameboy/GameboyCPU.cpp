@@ -404,7 +404,7 @@ size_t GameboyCPU::execute()
         WORD pc = cpu->GetRegisterPC().reg_16 - 1;                                                    \
 		cpu->func_name\
 		( op_code );\
-		cpu->addInstructionEvent( #func_name, op_code, pc, cpu->getConditionResult() );\
+		cpu->addInstructionEvent( op_code, { cpu->mRegisters.BC, cpu->mRegisters.DE, cpu->mRegisters.HL, cpu->mRegisters.AF, cpu->mPC, cpu->mSP }, pc, cpu->getConditionResult() );\
 		return "";\
 	} \
 	return #func_name;\
@@ -1116,11 +1116,13 @@ void GameboyCPU::SetMemoryValue(unsigned int mem_index, BYTE value)
 	mMemoryInterface->Set( mem_index, value );
 }
 
-void GameboyCPU::addInstructionEvent(const char *name, BYTE opcode, WORD execute_pc_address, bool condition_result)
+void GameboyCPU::addInstructionEvent(BYTE opcode, std::array<Register, 6> registers, WORD execute_pc_address,
+									 bool condition_result)
 {
+
 	if ( mOnInstructionCallback != nullptr )
 	{
-		mOnInstructionCallback( name, opcode, execute_pc_address, condition_result);
+		mOnInstructionCallback( opcode, registers, execute_pc_address, condition_result);
 	}
 }
 

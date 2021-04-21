@@ -32,8 +32,13 @@ void gameboy_lua_binding_logger(std::shared_ptr<HaruCar::Common::Log::Logger> lo
 
 struct InstructionData
 {
-	std::string instruction_name;
 	BYTE opcode;
+	Register BC;
+	Register DE;
+	Register HL;
+	Register AF;
+	Register PC;
+	Register SP;
 	WORD instruction_mem_pos;
 	bool cond;
 };
@@ -42,8 +47,8 @@ std::vector<InstructionData> InstructionDatas;
 
 void gameboy_lua_binding_cpu(std::shared_ptr<GameboyCPU> cpu)
 {
-	cpu->SetOnInstructionCallback([]( const char * instruction_name, BYTE op_code, WORD address_position, bool cond ){
-		InstructionData data { instruction_name , op_code, address_position, cond };
+	cpu->SetOnInstructionCallback([]( BYTE op_code, std::array<Register, 6> registers, WORD address_position, bool cond ){
+		InstructionData data { op_code, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5] ,address_position, cond };
 		InstructionDatas.emplace_back( std::move( data ));
 	} );
 	StaticGameboyCPUInstance = std::move(cpu);
@@ -272,8 +277,13 @@ void gameboy_lua_binding(lua_State *lua_state)
 
 	luabridge::getGlobalNamespace(lua_state)
 		.beginClass<InstructionData>("InstructionData")
-		        .addData("instruction_name", &InstructionData::instruction_name)
 		        .addData("opcode", &InstructionData::opcode)
+		        .addData("BC", &InstructionData::BC)
+		        .addData("DE", &InstructionData::DE)
+		        .addData("HL", &InstructionData::HL)
+		        .addData("AF", &InstructionData::AF)
+		        .addData("PC", &InstructionData::PC)
+		        .addData("SP", &InstructionData::SP)
 		        .addData("instruction_mem_pos", &InstructionData::instruction_mem_pos)
 		        .addData("cond", &InstructionData::cond)
 		.endClass();
