@@ -26,11 +26,41 @@ InstructionWatch = {}
 
 
 function InstructionWatch.render( self )
+	local memory = GetInstanceCPU():GetMemory()
+
 	for i = 1, 100 do
 		local data = self.vars.list[i]
 
 		if data then
-			ImGui.Text( data.instruction_name .. ' , ' .. to_hex_string( data.opcode ) .. ' , ' ..  to_hex_string( data.instruction_mem_pos ) )
+			local select_tbl = Disassembler:getSelectOpcodeTable( data.opcode )
+
+			if select_tbl then
+				local mnemonic = select_tbl.mnemonic
+				local op1 = select_tbl.operand1 or ''
+				local op2 = select_tbl.operand2 or ''
+
+				local mem_pos = data.instruction_mem_pos
+				local next_mem_pos = nil
+
+				if op1 == select_tbl.operand1 then
+					local pos = nil
+					op1, pos = get_op_translate_value( memory, mem_pos, op1 )
+					if pos then next_mem_pos = pos end
+
+					op1 = ' ' .. op1
+				end
+
+				if op2 == select_tbl.operand2 then
+					local pos = nil
+					op2, pos = get_op_translate_value( memory, mem_pos, op2 )
+					if pos then next_mem_pos = pos end
+
+					op2 = ', ' .. op2
+				end
+
+				mnemonic = mnemonic .. op1 .. op2
+				ImGui.Text( mnemonic .. ' , ' .. to_hex_string( data.opcode ) .. ' , ' ..  to_hex_string( data.instruction_mem_pos ) )
+			end
 		end
 	end
 end
