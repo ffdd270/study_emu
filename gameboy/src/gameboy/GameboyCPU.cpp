@@ -268,6 +268,11 @@ size_t GameboyCPU::procInterrupt()
 		return 0;
 	}
 
+	if (!mInturruptEnable) // 인터럽트 활성화가 아니면 플래그는 내리지 않는다.
+	{
+		return 0;
+	}
+
 	mInturruptEnable = false;
 	setWORDToStack( mPC.reg_16 );  // 스택에 올리고
 	mPC.reg_16 = INTERRUPT_VECTORS[ interrupt ];
