@@ -2,6 +2,7 @@
 // Created by HaruGakkaP on 2020-11-30.
 //
 
+#include <stdexcept>
 #include "MBC1.h"
 
 MBC1::MBC1(Cartridge &&cartridge) : mCartridge( cartridge )
