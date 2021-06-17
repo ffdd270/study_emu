@@ -211,23 +211,12 @@ void GameboyCPU::loadRegAFromMemImm16(BYTE op_code)
 
 void GameboyCPU::loadRegHLFromSPAddSingedImm8(BYTE op_code)
 {
-	char imm8 = static_cast<char>( immediateValue() );
-	commonAddSPInstructionFlags(imm8);
-	setFlagZ( false );
+	char imm8 = static_cast<char>(immediateValue());
+
+	setFlagC( (imm8 & 0xff) + (mSP.reg_16 & 0xff) > 0xff );
+	setFlagH( (imm8 & 0x0f) + (mSP.reg_16 & 0x0f) > 0xf );
 	setFlagN( false );
-
-	if( imm8 > 0  )
-	{
-		BYTE check_value = static_cast<BYTE>(imm8);
-
-		setFlagH( static_cast<int>(check_value & 0x0fu) + static_cast<int>(mSP.reg_16 & 0x0fu) > 0xf );
-		setFlagC( static_cast<int>(check_value & 0xffu) + static_cast<int>(mSP.reg_16 & 0xffu) > 0xff );
-	}
-	else
-	{
-		setFlagH(false );
-		setFlagC(false );
-	}
+	setFlagZ( false );
 
 	mRegisters.HL.reg_16 = mSP.reg_16 + imm8;
 }

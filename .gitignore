@@ -50,3 +50,4 @@ gameboy/.DS_Store
 *.ini
 .DS_Store
 gameboy/roms
+harucar/cmake-build-release
