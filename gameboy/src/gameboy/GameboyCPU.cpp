@@ -1235,18 +1235,7 @@ void GameboyCPU::commonAddSPInstructionFlags(char imm8)
 {
 	setFlagZ( false );
 	setFlagN( false );
-
-	if( imm8 > 0  )
-	{
-		BYTE check_value = static_cast<BYTE>(imm8);
-
-		setFlagH( static_cast<int>(check_value & 0x0fu) + static_cast<int>(mSP.reg_16 & 0x0fu) > 0xf );
-		setFlagC( static_cast<int>(check_value & 0xffu) + static_cast<int>(mSP.reg_16 & 0xffu) > 0xff );
-	}
-	else
-	{
-		setFlagH(false );
-		setFlagC(false );
-	}
+	setFlagH( (imm8 & 0x0f) + (mSP.reg_16 & 0x0f) > 0xf );
+	setFlagC( (imm8 & 0xff) + (mSP.reg_16 & 0xff) > 0xff );
 }
 
