@@ -21,12 +21,11 @@ void GameboyCPU::commonAddSetFlag(BYTE origin_value, BYTE add_value, BYTE carry)
 // N -> Set.
 void GameboyCPU::commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry )
 {
-	setFlagZ( ( origin_value - sub_value - carry ) == 0 );
-	setFlagH( ( origin_value & 0x0fu ) < ( ( sub_value & 0x0fu ) + ( carry & 0x0fu ) ) );
-
 	uint16_t sub_value_sum = static_cast<uint16_t>(sub_value) + static_cast<uint16_t>( carry );
 	setFlagC(  origin_value < sub_value_sum ); // 내림 당함!
+	setFlagH( ( origin_value & 0x0fu ) < ( ( sub_value & 0x0fu ) + ( carry ) ) );
 	setFlagN( true );
+	setFlagZ( ( origin_value - sub_value - carry ) == 0 );
 }
 
 void GameboyCPU::commonBitSetFlag()
@@ -224,6 +223,7 @@ void GameboyCPU::andRegAFromRegister(BYTE op_code)
 
 	mRegisters.AF.hi = mRegisters.AF.hi & register_value;
 	commonBitSetFlag();
+	setFlagH(true);
 }
 
 //AND n
@@ -233,6 +233,7 @@ void GameboyCPU::andRegAFromImm8(BYTE op_code)
 {
 	mRegisters.AF.hi = mRegisters.AF.hi & immediateValue();
 	commonBitSetFlag();
+	setFlagH(true);
 }
 
 //AND (HL)
@@ -242,6 +243,7 @@ void GameboyCPU::andRegAFromMemHL(BYTE op_code)
 {
 	mRegisters.AF.hi &= mMemoryInterface->Get( mRegisters.HL.reg_16 );
 	commonBitSetFlag();
+	setFlagH(true);
 }
 
 //OR r
@@ -341,14 +343,23 @@ void GameboyCPU::incRegister(BYTE op_code)
 {
 	BYTE argument = (0b00111000u & op_code) >> 3u;
 	BYTE & register_value = m8bitArguments[ argument ].ref;
-	commonAddSetFlag( register_value, 1, 0 );
+
+	setFlagZ( static_cast<BYTE>( register_value + 1 ) == 0 );
+	setFlagN( false );
+	setFlagH( ( register_value & 0x0f ) == 0x0f );
+
 	register_value++;
 }
 
 void GameboyCPU::incMemHL(BYTE op_code)
 {
 	BYTE mem_value = mMemoryInterface->Get( mRegisters.HL.reg_16 );
-	commonAddSetFlag(mem_value, 1, 0 );
+
+	setFlagZ( static_cast<BYTE>( mem_value + 1 ) == 0 );
+	setFlagN( false );
+	setFlagH( ( mem_value & 0x0f ) == 0x0f );
+
+
 	mMemoryInterface->Set( mRegisters.HL.reg_16, mem_value + 1 );
 }
 
@@ -357,7 +368,10 @@ void GameboyCPU::decRegister(BYTE op_code)
 	BYTE argument = (0b00111000u & op_code) >> 3u;
 	BYTE & register_value = m8bitArguments[ argument ].ref;
 
-	commonSubSetFlag( register_value, 1, 0 );
+	setFlagZ(  static_cast<BYTE>(register_value - 1 ) == 0 );
+	setFlagN(  true );
+	setFlagH( ( register_value & 0x0f ) < 1 );
+
 	register_value--;
 }
 
@@ -365,7 +379,10 @@ void GameboyCPU::decMemHL(BYTE op_code)
 {
 	BYTE mem_value = mMemoryInterface->Get( mRegisters.HL.reg_16 );
 
-	commonSubSetFlag( mem_value, 1, 0 );
+	setFlagZ(  static_cast<BYTE>(mem_value - 1 ) == 0 );
+	setFlagN(  true );
+	setFlagH( ( mem_value & 0x0f ) < 1 );
+
 	mMemoryInterface->Set( mRegisters.HL.reg_16, mem_value - 1 );
 }
 

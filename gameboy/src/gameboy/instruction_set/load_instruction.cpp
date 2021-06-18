@@ -223,8 +223,8 @@ void GameboyCPU::loadRegHLFromSPAddSingedImm8(BYTE op_code)
 
 void GameboyCPU::complementCarryFlag(BYTE op_code)
 {
-	setFlagH( GetFlagC() );
 	setFlagC( !GetFlagC() );
+	setFlagH( false );
 	setFlagN( false );
 }
 

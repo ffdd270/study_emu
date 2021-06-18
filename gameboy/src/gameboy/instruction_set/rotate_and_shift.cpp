@@ -86,6 +86,7 @@ void GameboyCPU::rotateLeft(BYTE op_code)
 void GameboyCPU::rotateLeftRegisterA(BYTE op_code)
 {
 	rotateLeft( 0b00000111u );
+	setFlagZ( false );
 }
 
 void GameboyCPU::rotateRight(BYTE op_code)
