@@ -25,7 +25,7 @@ void GameboyCPU::commonSubSetFlag( BYTE origin_value, BYTE sub_value, BYTE carry
 	setFlagC(  origin_value < sub_value_sum ); // 내림 당함!
 	setFlagH( ( origin_value & 0x0fu ) < ( ( sub_value & 0x0fu ) + ( carry ) ) );
 	setFlagN( true );
-	setFlagZ( ( origin_value - sub_value - carry ) == 0 );
+	setFlagZ( static_cast<BYTE>( origin_value - sub_value - carry ) == 0 );
 }
 
 void GameboyCPU::commonBitSetFlag()
