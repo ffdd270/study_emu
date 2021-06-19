@@ -312,10 +312,10 @@ size_t GameboyCPU::CheckAdditionalClock( BYTE opcode ) const
 			if (!GetFlagC()) { return 1; }
 			break;
 		case 0xC4: //CALL NZ, a16 24/12 → 0xC4
-			if (!GetFlagZ()) { return 2; }
+			if (!GetFlagZ()) { return 3; }
 			break;
 		case 0xD4: //CALL NC, a16 24/12 →0xD4
-			if (!GetFlagC()) { return 2; }
+			if (!GetFlagC()) { return 3; }
 			break;
 		case 0xC8: //RET Z 20/8 → 0xC8
 			if (GetFlagZ()) { return 3; }
@@ -330,10 +330,12 @@ size_t GameboyCPU::CheckAdditionalClock( BYTE opcode ) const
 			if (GetFlagC()) { return 1; }
 			break;
 		case 0xCC: //CALL Z,a16 24/12 → 0xCC
-			if (GetFlagZ()) { return 2; }
+			if (GetFlagZ()) { return 3; }
 			break;
 		case 0xDC: //CALL C,a16 24/12 → 0xDC
-			if (GetFlagC()) { return 2; }
+			if (GetFlagC()) { return 3; }
+			break;
+		default:
 			break;
 	}
 	return 0;
@@ -1171,8 +1173,14 @@ bool GameboyCPU::getIfConditionResult(BYTE op_code) const
 	BYTE check_condition_param = (op_code & 0b00011000u) >> 3u;
 	BYTE check_condition = (check_condition_param & 0b10u) == 0b10u ? GetFlagC() : GetFlagZ();
 
-	// 0b00이면 Flag, 0b01이면 Not Flag.
-	return (check_condition_param & 0b01u) == 1u ? check_condition == false : check_condition == true;
+	if( (check_condition_param & 0b01u) == 1u )
+	{
+		return check_condition == true;
+	}
+	else
+	{
+		return check_condition == false;
+	}
 }
 
 #define SET_BIT_ZERO( value, bit_pos ) value & ( 0xFFu ^ ( 0b1u << bit_pos ) )

@@ -20,6 +20,7 @@ public:
 	[[nodiscard]] bool IsTimerOverflow() const;
 	[[nodiscard]] BYTE GetTimerValue() const;
 private:
+	size_t mCycles;
 	size_t mClock;
 	size_t mClockDiv;
 };

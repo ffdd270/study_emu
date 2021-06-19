@@ -13,7 +13,10 @@ void GameboyCPU::jumpToWordIfCondition(BYTE op_code)
 
 	// 1100이면 Z, 아니면 C.
 	BYTE flag = ( flag_check_opcode == 0b1100 ) ? GetFlagZ() : GetFlagC();
-	flag = ( not_check_opcode == 0b0010 ) ? !flag : flag;
+	if ( not_check_opcode == 0b10 )
+	{
+		flag = !flag;
+	}
 
 	if ( flag )
 	{
