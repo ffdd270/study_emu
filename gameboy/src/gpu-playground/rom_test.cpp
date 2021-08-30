@@ -9,6 +9,7 @@
 #include "playground_util.h"
 #include "../lua-binding/gameboy_luabinding.h"
 #include <iostream>
+#include <memory/Joypad.h>
 
 
 #include "imgui.h"
@@ -23,7 +24,7 @@ public:
 		mPtrGPU = std::static_pointer_cast<GPU>(mMotherboard.GetInterface( Motherboard::Interface_GPU ));
 
 		Cartridge cartridge;
-		cartridge.Load("roms/cpu_instrs.gb");
+		cartridge.Load("roms/THEBOUNCINGBALL.GB");
 
 		std::cout << " cartridge.GetCartridgeType() : " << cartridge.GetCartridgeType() << std::endl;
 
@@ -69,6 +70,84 @@ private:
 RomTest * test_ptr = nullptr;
 
 
+
+void input( std::shared_ptr<Joypad> & ptr_joypad )
+{
+	if (sf::Keyboard::isKeyPressed( sf::Keyboard::Left ))
+	{
+		ptr_joypad->KeyDown( JoypadKey::Left );
+	}
+	else
+	{
+		ptr_joypad->KeyUp( JoypadKey::Left );
+	}
+
+	if (sf::Keyboard::isKeyPressed( sf::Keyboard::Right ))
+	{
+		ptr_joypad->KeyDown( JoypadKey::Right );
+	}
+	else
+	{
+		ptr_joypad->KeyUp( JoypadKey::Right );
+	}
+
+	if (sf::Keyboard::isKeyPressed( sf::Keyboard::Up ))
+	{
+		ptr_joypad->KeyDown( JoypadKey::Up );
+	}
+	else
+	{
+		ptr_joypad->KeyUp( JoypadKey::Up );
+	}
+
+	if (sf::Keyboard::isKeyPressed( sf::Keyboard::Down ))
+	{
+		ptr_joypad->KeyDown( JoypadKey::Down );
+	}
+	else
+	{
+		ptr_joypad->KeyUp( JoypadKey::Down );
+	}
+
+
+	if (sf::Keyboard::isKeyPressed( sf::Keyboard::A ))
+	{
+		ptr_joypad->KeyDown( JoypadKey::A );
+	}
+	else
+	{
+		ptr_joypad->KeyUp( JoypadKey::A );
+	}
+
+	if (sf::Keyboard::isKeyPressed( sf::Keyboard::B ))
+	{
+		ptr_joypad->KeyDown( JoypadKey::B );
+	}
+	else
+	{
+		ptr_joypad->KeyUp( JoypadKey::B );
+	}
+
+	if (sf::Keyboard::isKeyPressed( sf::Keyboard::Space ))
+	{
+		ptr_joypad->KeyDown( JoypadKey::Start );
+	}
+	else
+	{
+		ptr_joypad->KeyUp( JoypadKey::Start );
+	}
+
+	if (sf::Keyboard::isKeyPressed( sf::Keyboard::Enter))
+	{
+		ptr_joypad->KeyDown( JoypadKey::Select );
+	}
+	else
+	{
+		ptr_joypad->KeyUp( JoypadKey::Select );
+	}
+}
+
+
 void ImGuiHelper( const char * name , RomTest * rom_test )
 {
 	static int addr = 0;
@@ -83,6 +162,7 @@ void ImGuiHelper( const char * name , RomTest * rom_test )
 	{
 		ref_motherboard.Step();
 	}
+
 
 	if( ImGui::Button("STEP DRAW SCREEN!") )
 	{
@@ -116,6 +196,7 @@ void ImGuiHelper( const char * name , RomTest * rom_test )
 	{
 		std::shared_ptr<GPU> ptr_gpu = std::static_pointer_cast<GPU>( ref_motherboard.GetInterface(Motherboard::Interface_GPU) );
 
+
 		for ( int i = 0; i < hblank_count; i++ )
 		{
 			while ( ptr_gpu->GetModeFlag() != 0 )
@@ -128,6 +209,13 @@ void ImGuiHelper( const char * name , RomTest * rom_test )
 				ref_motherboard.Step();
 			}
 		}
+	}
+	std::shared_ptr<Joypad> ptr_joypad= std::static_pointer_cast<Joypad>( ref_motherboard.GetInterface(Motherboard::Interface_JOYPAD) );
+
+	input( ptr_joypad );
+	for ( int i = 0; i < GPUHelper::MaxScanline * GPUHelper::ScreenWidth; i++ )
+	{
+		ref_motherboard.Step();
 	}
 
 	ImGui::End();

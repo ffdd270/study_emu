@@ -6,6 +6,7 @@
 #include <memory/MemoryManageUnit.h>
 #include <memory/GPU.h>
 #include "memory/Timer.h"
+#include "memory/Joypad.h"
 #include <string>
 
 Motherboard::Motherboard()
@@ -31,10 +32,12 @@ void Motherboard::Boot()
 	// Timer
 	mInterfaces[ Interface_TIMER ] = std::static_pointer_cast<MemoryInterface>( std::make_shared<Timer>() );
 
+	mInterfaces[ Interface_JOYPAD ] = std::static_pointer_cast<MemoryInterface>(std::make_shared<Joypad>() );
 	// Memory Management Unit
 	mInterfaces[ Interface_MMUNIT ] = std::static_pointer_cast<MemoryInterface>(
 			std::make_shared<MemoryManageUnit>(
-					nullptr, mInterfaces[ Interface_GPU ], mInterfaces[Interface_TIMER] ) );
+					nullptr, mInterfaces[ Interface_GPU ],
+					mInterfaces[Interface_TIMER], mInterfaces[ Interface_JOYPAD ] ) );
 
 	// CPU
 	mCPU = GameboyCPU::CreateWithMemoryInterface( mInterfaces[ Interface_MMUNIT ] );
@@ -198,6 +201,15 @@ void Motherboard::procInterrupt(InterruptsType interrupt_address)
 
 			BYTE origin_value =  mmunit_ptr->Get( 0xff0f );
 			mmunit_ptr->Set( 0xff0f, origin_value | 0b100u );
+			break;
+		}
+		case InterruptsType::JOYPAD:
+		{
+			interrupt_resolved = true;
+			resolve_interrupt_interface = Interface_JOYPAD;
+
+			BYTE origin_value =  mmunit_ptr->Get( 0xff0f );
+			mmunit_ptr->Set( 0xff0f, origin_value | 0b10000u );
 			break;
 		}
 		default:

@@ -18,6 +18,7 @@ enum class InterruptsType : WORD
 	TIMER = 0xff05u,
 	LCD_STAT = 0x100,
 	V_BLANK = 0x200,
+	JOYPAD = 0x300,
 };
 
 #endif //GAMEBOY_TYPEDEF_H
