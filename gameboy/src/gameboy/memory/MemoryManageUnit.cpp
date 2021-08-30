@@ -7,14 +7,15 @@
 #include <utility>
 #include <stdexcept>
 
-MemoryManageUnit::MemoryManageUnit(std::shared_ptr<MemoryInterface> ptr_cartridge,
-                                   std::shared_ptr<MemoryInterface> ptr_vram,
-								   std::shared_ptr<MemoryInterface> ptr_timer)
+MemoryManageUnit::MemoryManageUnit(	std::shared_ptr<MemoryInterface> ptr_cartridge,
+											   std::shared_ptr<MemoryInterface> ptr_vram,
+											   std::shared_ptr<MemoryInterface> ptr_timer,
+											   std::shared_ptr<MemoryInterface> ptr_joypad)
 {
 	mCartridge = std::move(ptr_cartridge);
 	mVRAM = std::move( ptr_vram );
 	mTimer = std::move(ptr_timer);
-
+	mJoypad = std::move(ptr_joypad);
 
 	mBankNum = 0;
 	mInterruptEnable = 0;
@@ -52,6 +53,10 @@ BYTE MemoryManageUnit::Get(size_t mem_addr) const
 	else if (mem_addr >= 0xF000 && mem_addr <= 0xFDFF)
 	{
 		return mWorkRam[(mBankNum * 0x1000u) + (mem_addr - 0xE000)];
+	}
+	else if (mem_addr == 0xff00u)
+	{
+		return mJoypad->Get( mem_addr );
 	}
 	else if( mem_addr >= 0xff04u && mem_addr <= 0xff07u )
 	{
@@ -106,6 +111,10 @@ void MemoryManageUnit::Set(size_t mem_addr, BYTE value)
 	else if (mem_addr >= 0xF000 && mem_addr <= 0xFDFF)
 	{
 		mWorkRam[(mBankNum * 0x1000u) + (mem_addr - 0xE000)] = value;
+	}
+	else if (mem_addr == 0xff00u)
+	{
+		mJoypad->Set( mem_addr, value );
 	}
 	else if( mem_addr >= 0xff04u && mem_addr <= 0xff07u )
 	{

@@ -20,6 +20,7 @@ public:
 		Interface_GPU = 1,
 		Interface_ROM = 2,
 		Interface_TIMER = 3,
+		Interface_JOYPAD = 4,
 	};
 
 	Motherboard();

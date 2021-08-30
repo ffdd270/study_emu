@@ -396,6 +396,11 @@ size_t GameboyCPU::execute()
 	}
 
 	func( this, op_code, true );
+	if ( isPreFixInstruction )
+	{
+		return (cycles * 4);
+	}
+
 	size_t additional_clock = CheckAdditionalClock( op_code );
 
 	return ( cycles  + additional_clock ) * 4;

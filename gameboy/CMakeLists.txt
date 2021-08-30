@@ -96,7 +96,10 @@ set( GAMEBOY_SRC
 		${SRC_PATH}/gameboy/Motherboard.h
 
 		${SRC_PATH}/gameboy/memory/Timer.cpp
-		${SRC_PATH}/gameboy/memory/Timer.h)
+		${SRC_PATH}/gameboy/memory/Timer.h
+
+		${SRC_PATH}/gameboy/memory/Joypad.cpp
+		${SRC_PATH}/gameboy/memory/Joypad.h)
 
 set( UI_SRC
 		${SRC_PATH}/harucar/LuaCommandViewer.cpp

@@ -192,7 +192,7 @@ int main()
 		command_viewer.Render( nullptr, protocol_ptr );
 		editor.Render( "Absoulte" );
 
-		handler_ptr->Render( nullptr, nullptr );
+		//handler_ptr->Render( nullptr, nullptr );
 		if ( handler_ptr->IsRenderFailed() )
 		{
 			auto reasons = handler_ptr->GetRenderFailedReasons();
